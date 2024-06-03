@@ -1,0 +1,122 @@
+@import url("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
+
+#map {
+    height: 70vh;
+    width: 100%;
+    background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png'); /* Texture for the map */
+    border-top: 2px solid #6f4e37;
+  }
+  
+  .container-fluid {
+    max-width: 1200px;
+  }
+  
+  .sidebar {
+    background-color: #f7f3e9;
+    padding: 20px;
+    border-left: 2px solid #6f4e37;
+  }
+  
+  .sidebar h2 {
+    font-size: 1.8rem;
+    color: #6f4e37;
+  }
+  
+  .sidebar p {
+    color: #4b3832;
+  }
+  
+  .sidebar img {
+    margin-bottom: 15px;
+  }
+  
+  .floating-button {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background-color: #6f4e37;
+    color: #f7f3e9;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    z-index: 1000;
+  }
+  
+  .floating-button:hover {
+    background-color: #4b3832;
+  }
+  
+  .floating-button i {
+    font-size: 24px;
+  }
+  .flex-container {
+    display: flex;
+    justify-content: center; /* Alinea los elementos al centro horizontalmente */
+    align-items: center; /* Alinea los elementos al centro verticalmente */
+  }
+  
+  .button-container-footer {
+    margin-top: 20px; /* Margen superior para separar del contenido debajo */
+  }
+  
+  .button-book {
+    margin-right: 10px; /* Espacio entre los botones */
+  }
+  
+  .button-camera {
+    margin-left: 60px; /* Espacio entre los botones */
+  }
+  
+  .modal-content {
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    padding: 20px;
+  }
+  
+  .modal-header {
+    border-bottom: none;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 0;
+  }
+  
+  .modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .modal-footer {
+    border-top: none;
+    display: flex;
+    justify-content: center;
+    padding-top: 0;
+  }
+  
+  .modal-footer .btn {
+    margin: 0 10px;
+  }
+  
+  .album {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .album-page {
+    flex: 1 0 30%; /* Ajusta el tamaño según el diseño que prefieras */
+    text-align: center;
+  }
+  
+  .album-page img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }
