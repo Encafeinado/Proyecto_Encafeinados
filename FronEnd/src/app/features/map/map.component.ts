@@ -10,6 +10,12 @@ import * as L from 'leaflet';
 import 'leaflet-routing-machine';
 import * as toastr from 'toastr';
 
+// Definición de la interfaz
+interface Tienda {
+  nombre: string;
+  codigo: string;
+}
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -30,6 +36,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
   enteredCode: string = '';
   verified: boolean = false;
   message: string = '';
+  tiendas: Tienda[] = [];
 
   albumImages = [
     {
@@ -301,19 +308,29 @@ export class MapComponent implements OnDestroy, AfterViewInit {
 
   verifyCode() {
     const storeCode = localStorage.getItem('storeCode');
-    console.log(storeCode);
-    console.log('Codigo hola');
     if (this.enteredCode === storeCode) {
-      this.verified = true;
-      console.log('Codigo exitoso verificado');
-      toastr.success('Código verificado exitosamente');
-      setTimeout(() => {
-        this.modalRef.close(); // Método para cerrar el modal
-      }, 2000);
+      // Verificar si el código ya existe en la lista de tiendas
+      const existeCodigo = this.tiendas.some(tienda => tienda.codigo === this.enteredCode);
+      if (!existeCodigo) {
+        // Si el código no existe en la lista, agregar la tienda
+        this.verified = true;
+        const nuevaTienda: Tienda = {
+          nombre: 'Aroma Café Sabaneta', // Nombre de la tienda
+          codigo: this.enteredCode // Código verificado
+        };
+        console.log(nuevaTienda);
+        this.tiendas.push(nuevaTienda); // Agregar la tienda a la lista
+        toastr.success('Código verificado exitosamente');
+        setTimeout(() => {
+          this.modalRef.close(); // Método para cerrar el modal
+        }, 2000);
+      } else {
+        // Si el código ya existe en la lista, mostrar un mensaje de error
+        toastr.error('El código ya ha sido utilizado');
+      }
     } else {
       this.verified = false;
-      console.log('Codigo incorrecto');
       toastr.error('Error al verificar el código');
     }
-  }
+  }  
 }
