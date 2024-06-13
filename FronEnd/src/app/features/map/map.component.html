@@ -5,7 +5,7 @@
         <div id="map" style="height: 600px;"></div>
         <button *ngIf="showCancelButton" class="floating-button" (click)="cancelRoute()">
           <i class="fas fa-times text-white"></i>
-        </button>
+        </button> 
       </div>
       <div class="col-md-4 sidebar">
         <h2>Bienvenido a Encafeinados</h2>
@@ -34,6 +34,17 @@
     <div class="modal-body">
       <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid" style="width: 100%;">
       <p style="padding-top: 3%;" *ngIf="destinationName === 'Aroma Café Sabaneta' || destinationName === 'Viejo Baul' || destinationName === 'Leal Coffee'">Información sobre el café...</p>
+      <div class="transport-selection">
+        <label>
+          <input type="radio" name="transport" value="car" (change)="selectTransportMode('car')" checked> Vehículo
+        </label>
+        <label>
+          <input type="radio" name="transport" value="foot" (change)="selectTransportMode('foot')"> A pie
+        </label>
+        <label>
+          <input type="radio" name="transport" value="bike" (change)="selectTransportMode('bike')"> A bicicleta
+        </label>
+      </div>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-primary" (click)="showRouteGuia()">Guiame</button>
@@ -44,16 +55,30 @@
   <!-- Modal para cancelar la ruta -->
   <ng-template #cancelModal let-modal>
     <div class="modal-header">
-      <h4 class="modal-title">Cancelar Ruta</h4>
+      <h4 class="modal-title">Cancelar Rutas</h4>
     </div>
     <div class="modal-body">
-      <p>¿Estás seguro de que quieres cancelar la ruta?</p>
+      <p>¿Estás seguro de que quieres cancelar las rutas?</p>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">No</button>
       <button type="button" class="btn btn-primary" (click)="confirmCancelRoute()">Sí</button>
     </div>
   </ng-template>
+
+    <!-- Modal para cancelar todas las rutas -->
+    <!-- <ng-template #cancelModal let-modal>
+      <div class="modal-header">
+        <h4 class="modal-title">Cancelar Rutas</h4>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que quieres cancelar todas las rutas?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">No</button>
+        <button type="button" class="btn btn-primary" (click)="confirmCancelRoute()">Sí</button>
+      </div>
+    </ng-template> -->
   
   <!-- Modal para ingresar el código -->
   <ng-template #codeModal let-modal>

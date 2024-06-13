@@ -19,6 +19,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
   modalRef!: NgbModalRef;
   openedModal = false;
   title = 'Proyecto_Aroma';
+  selectedTransport: string = 'car';
   watchId: number | undefined;
   routingControl: any;
   showCancelButton: boolean = false;
@@ -84,16 +85,18 @@ export class MapComponent implements OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const map = new L.Map('map').setView(
-      [6.150155571503784, -75.61905204382627],
-      13
-    );
+    const map = new L.Map('map', {
+      center: [6.150155571503784, -75.61905204382627],
+      zoom: 13,
+      attributionControl: false // Desactiva el control de atribución
+    });
+    
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      // Si deseas conservar la atribución en otro lugar, puedes especificarlo aquí.
+      // attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
-
+    
     const aromaIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cafeteriaAroma.png',
       iconSize: [25, 41],
@@ -101,7 +104,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
       popupAnchor: [1, -34],
       shadowSize: [41, 41],
     });
-
+  
     const baulIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cafeteriaCoffe.png',
       iconSize: [25, 41],
@@ -109,7 +112,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
       popupAnchor: [1, -34],
       shadowSize: [41, 41],
     });
-
+  
     const lealIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cafeteriaLeal.png',
       iconSize: [25, 41],
@@ -117,43 +120,43 @@ export class MapComponent implements OnDestroy, AfterViewInit {
       popupAnchor: [1, -34],
       shadowSize: [41, 41],
     });
-
+  
     const aromaMarker = L.marker([6.15150999618405, -75.61369180892304], {
       icon: aromaIcon,
     })
       .addTo(map)
       .bindPopup('Aroma Café Sabaneta');
-
+  
     const baulMarker = L.marker([6.149950147326389, -75.61758096298057], {
       icon: baulIcon,
     })
       .addTo(map)
       .bindPopup('Viejo Baul');
-
+  
     const lealMarker = L.marker([6.150555615946403, -75.61797956390538], {
       icon: lealIcon,
     })
       .addTo(map)
       .bindPopup('Leal Coffee');
-
+  
     map.fitBounds([
       [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
       [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
       [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
     ]);
-
+  
     const userLocationMarker = L.marker([0, 0], { icon: this.userLocationIcon })
       .addTo(map)
       .bindPopup('Tu ubicación actual');
-
+  
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
-
+  
         userLocationMarker.setLatLng([userLat, userLng]);
         map.setView([userLat, userLng], map.getZoom());
-
+  
         map.fitBounds([
           [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
           [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
@@ -177,7 +180,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
         timeout: 10000,
       }
     );
-
+  
     aromaMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -186,7 +189,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
         'Aroma Café Sabaneta'
       );
     });
-
+  
     baulMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -195,7 +198,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
         'Viejo Baul'
       );
     });
-
+  
     lealMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -220,19 +223,15 @@ export class MapComponent implements OnDestroy, AfterViewInit {
   }
 
   showRouteGuia(): void {
-    if (
-      this.map &&
-      this.targetMarker &&
-      this.userLocationMarker &&
-      this.destinationName
-    ) {
+    if (this.map && this.targetMarker && this.userLocationMarker && this.destinationName) {
       this.showRoute(
         this.map,
         this.userLocationMarker.getLatLng().lat,
         this.userLocationMarker.getLatLng().lng,
         this.targetMarker.getLatLng().lat,
         this.targetMarker.getLatLng().lng,
-        this.targetMarker.options.icon as L.Icon
+        this.targetMarker.options.icon as L.Icon,
+        this.selectedTransport
       );
       this.showCancelButton = true;
       this.modalRef.close();
@@ -241,18 +240,68 @@ export class MapComponent implements OnDestroy, AfterViewInit {
     }
   }
 
-  showRoute( map: L.Map, startLat: number,startLng: number,endLat: number,endLng: number,icon: L.Icon): void {
-    this.routingControl = (L as any).Routing.control({
-      waypoints: [L.latLng(startLat, startLng), L.latLng(endLat, endLng)],
-      routeWhileDragging: true,
-      createMarker: (i: number, waypoint: any, n: number) => {
-        if (i === n - 1) {
-          return L.marker(waypoint.latLng, { icon: icon });
-        } else {
-          return L.marker(waypoint.latLng, { icon: this.userLocationIcon });
+  showRoute(map: L.Map, startLat: number, startLng: number, endLat: number, endLng: number, icon: L.Icon, transport: string): void {
+    let profile: string;
+    let routed: string;
+    let url: any;
+    
+    if (transport === 'foot') {
+      profile = 'foot';
+      routed = 'routed-foot'
+    } else if (transport === 'car') {
+      profile = 'driving';
+      routed = 'routed-driving'
+    } else {
+      profile = 'bike';
+      routed = 'routed-bike'
+    }
+    console.log(transport)
+    console.log(profile)
+    console.log(map)
+    if (transport === 'foot' || transport === 'bike') {
+      url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
+    }else{
+      url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
+    }
+    
+
+    console.log(url)
+    fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error en la solicitud al servicio OSRM');
         }
-      },
-    }).addTo(map);
+        return response.json();
+      })
+      .then(data => {
+        if (!data || !data.routes || data.routes.length === 0) {
+          throw new Error('No se encontraron rutas válidas');
+        }
+  
+        const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
+        const routeCoordinates = route.geometry.coordinates.map((coord: [number, number]) => [coord[1], coord[0]]);
+
+  
+        // Dibujar la ruta en el mapa usando Leaflet
+        
+        if (transport === 'foot') {
+          this.routingControl = L.polyline(routeCoordinates, { color: 'blue' }).addTo(map);
+        } else if (transport === 'car') {
+          this.routingControl = L.polyline(routeCoordinates, { color: 'red' }).addTo(map);
+        } else {
+          this.routingControl = L.polyline(routeCoordinates, { color: 'green' }).addTo(map);
+        }
+      })
+      .catch(error => {
+        console.error('Error al obtener la ruta desde OSRM:', error);
+        // Aquí puedes manejar el error de manera adecuada, por ejemplo, mostrar un mensaje al usuario
+      });
+  }
+  
+  
+
+    selectTransportMode(mode: string) {
+    this.selectedTransport = mode;
   }
 
   cancelRoute(): void {
