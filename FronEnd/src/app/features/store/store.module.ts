@@ -9,7 +9,6 @@ import { StoreComponent } from './store.component';
 @NgModule({
   declarations: [
     StoreComponent,
-   
   ],
   imports: [
     CommonModule,
