@@ -95,15 +95,15 @@ export class MapComponent implements OnDestroy, AfterViewInit {
     const map = new L.Map('map', {
       center: [6.150155571503784, -75.61905204382627],
       zoom: 13,
-      attributionControl: false // Desactiva el control de atribución
+      attributionControl: false, // Desactiva el control de atribución
     });
-    
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       // Si deseas conservar la atribución en otro lugar, puedes especificarlo aquí.
       // attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
-    
+
     const aromaIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cafeteriaAroma.png',
       iconSize: [25, 41],
@@ -111,7 +111,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
       popupAnchor: [1, -34],
       shadowSize: [41, 41],
     });
-  
+
     const baulIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cafeteriaCoffe.png',
       iconSize: [25, 41],
@@ -119,7 +119,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
       popupAnchor: [1, -34],
       shadowSize: [41, 41],
     });
-  
+
     const lealIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cafeteriaLeal.png',
       iconSize: [25, 41],
@@ -127,43 +127,43 @@ export class MapComponent implements OnDestroy, AfterViewInit {
       popupAnchor: [1, -34],
       shadowSize: [41, 41],
     });
-  
+
     const aromaMarker = L.marker([6.15150999618405, -75.61369180892304], {
       icon: aromaIcon,
     })
       .addTo(map)
       .bindPopup('Aroma Café Sabaneta');
-  
+
     const baulMarker = L.marker([6.149950147326389, -75.61758096298057], {
       icon: baulIcon,
     })
       .addTo(map)
       .bindPopup('Viejo Baul');
-  
+
     const lealMarker = L.marker([6.150555615946403, -75.61797956390538], {
       icon: lealIcon,
     })
       .addTo(map)
       .bindPopup('Leal Coffee');
-  
+
     map.fitBounds([
       [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
       [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
       [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
     ]);
-  
+
     const userLocationMarker = L.marker([0, 0], { icon: this.userLocationIcon })
       .addTo(map)
       .bindPopup('Tu ubicación actual');
-  
+
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
-  
+
         userLocationMarker.setLatLng([userLat, userLng]);
         map.setView([userLat, userLng], map.getZoom());
-  
+
         map.fitBounds([
           [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
           [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
@@ -187,7 +187,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
         timeout: 10000,
       }
     );
-  
+
     aromaMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -196,7 +196,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
         'Aroma Café Sabaneta'
       );
     });
-  
+
     baulMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -205,7 +205,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
         'Viejo Baul'
       );
     });
-  
+
     lealMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -230,7 +230,12 @@ export class MapComponent implements OnDestroy, AfterViewInit {
   }
 
   showRouteGuia(): void {
-    if (this.map && this.targetMarker && this.userLocationMarker && this.destinationName) {
+    if (
+      this.map &&
+      this.targetMarker &&
+      this.userLocationMarker &&
+      this.destinationName
+    ) {
       this.showRoute(
         this.map,
         this.userLocationMarker.getLatLng().lat,
@@ -247,67 +252,79 @@ export class MapComponent implements OnDestroy, AfterViewInit {
     }
   }
 
-  showRoute(map: L.Map, startLat: number, startLng: number, endLat: number, endLng: number, icon: L.Icon, transport: string): void {
+  showRoute(
+    map: L.Map,
+    startLat: number,
+    startLng: number,
+    endLat: number,
+    endLng: number,
+    icon: L.Icon,
+    transport: string
+  ): void {
     let profile: string;
     let routed: string;
     let url: any;
-    
+
     if (transport === 'foot') {
       profile = 'foot';
-      routed = 'routed-foot'
+      routed = 'routed-foot';
     } else if (transport === 'car') {
       profile = 'driving';
-      routed = 'routed-driving'
+      routed = 'routed-driving';
     } else {
       profile = 'bike';
-      routed = 'routed-bike'
+      routed = 'routed-bike';
     }
-    console.log(transport)
-    console.log(profile)
-    console.log(map)
+    console.log(transport);
+    console.log(profile);
+    console.log(map);
     if (transport === 'foot' || transport === 'bike') {
       url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-    }else{
+    } else {
       url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
     }
-    
 
-    console.log(url)
+    console.log(url);
     fetch(url)
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           throw new Error('Error en la solicitud al servicio OSRM');
         }
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
         if (!data || !data.routes || data.routes.length === 0) {
           throw new Error('No se encontraron rutas válidas');
         }
-  
-        const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
-        const routeCoordinates = route.geometry.coordinates.map((coord: [number, number]) => [coord[1], coord[0]]);
 
-  
+        const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
+        const routeCoordinates = route.geometry.coordinates.map(
+          (coord: [number, number]) => [coord[1], coord[0]]
+        );
+
         // Dibujar la ruta en el mapa usando Leaflet
-        
+
         if (transport === 'foot') {
-          this.routingControl = L.polyline(routeCoordinates, { color: 'blue' }).addTo(map);
+          this.routingControl = L.polyline(routeCoordinates, {
+            color: 'blue',
+          }).addTo(map);
         } else if (transport === 'car') {
-          this.routingControl = L.polyline(routeCoordinates, { color: 'red' }).addTo(map);
+          this.routingControl = L.polyline(routeCoordinates, {
+            color: 'red',
+          }).addTo(map);
         } else {
-          this.routingControl = L.polyline(routeCoordinates, { color: 'green' }).addTo(map);
+          this.routingControl = L.polyline(routeCoordinates, {
+            color: 'green',
+          }).addTo(map);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error al obtener la ruta desde OSRM:', error);
         // Aquí puedes manejar el error de manera adecuada, por ejemplo, mostrar un mensaje al usuario
       });
   }
-  
-  
 
-    selectTransportMode(mode: string) {
+  selectTransportMode(mode: string) {
     this.selectedTransport = mode;
   }
 
@@ -359,13 +376,15 @@ export class MapComponent implements OnDestroy, AfterViewInit {
     const storeCode = localStorage.getItem('storeCode');
     if (this.enteredCode === storeCode) {
       // Verificar si el código ya existe en la lista de tiendas
-      const existeCodigo = this.tiendas.some(tienda => tienda.codigo === this.enteredCode);
+      const existeCodigo = this.tiendas.some(
+        (tienda) => tienda.codigo === this.enteredCode
+      );
       if (!existeCodigo) {
         // Si el código no existe en la lista, agregar la tienda
         this.verified = true;
         const nuevaTienda: Tienda = {
           nombre: 'Aroma Café Sabaneta', // Nombre de la tienda
-          codigo: this.enteredCode // Código verificado
+          codigo: this.enteredCode, // Código verificado
         };
         console.log(nuevaTienda);
         this.tiendas.push(nuevaTienda); // Agregar la tienda a la lista
@@ -381,5 +400,5 @@ export class MapComponent implements OnDestroy, AfterViewInit {
       this.verified = false;
       toastr.error('Error al verificar el código');
     }
-  }  
+  }
 }

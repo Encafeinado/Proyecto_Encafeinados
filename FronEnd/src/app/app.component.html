@@ -1,16 +1,9 @@
 <!-- <app-loading *ngIf="isLoading"></app-loading>
 <div *ngIf="!isLoading">
-  <nav>
-    <ul>
-      <li><a routerLink="/login">Login</a></li>
-      <li><a routerLink="/store">Store</a></li>
-      <li><a routerLink="/map">Map</a></li>
-    </ul>
-  </nav>
-
-  
   <router-outlet/> -->
-  <app-loading *ngIf="isLoading"></app-loading>
+<!-- </div> -->
+
+<!-- <app-loading *ngIf="isLoading"></app-loading>
 <nav class="navbar navbar-expand-lg bg-coffee">
   <div class="container-fluid">
       <a class="navbar-brand" href="#">Encafeinados</a>
@@ -39,4 +32,16 @@
 <h1 *ngIf="!finishedAuthCheck()">
  </h1>
 
-<router-outlet *ngIf="finishedAuthCheck() && !isLoading"></router-outlet>
+<router-outlet *ngIf="finishedAuthCheck() && !isLoading"></router-outlet> -->
+
+<app-navbar *ngIf="showNavbar"></app-navbar>
+
+<div *ngIf="isLoading" class="loading-container">
+  <div class="loading-content">
+    <app-loading></app-loading>
+  </div>
+</div>
+
+<div *ngIf="!isLoading">
+  <router-outlet></router-outlet>
+</div>

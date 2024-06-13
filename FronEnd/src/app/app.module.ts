@@ -6,6 +6,8 @@ import { LoadingComponent } from './shared/loading/loading.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NavbarComponent } from './shared/navbar/navbar.component';
+import { LandingComponent } from './features/landing/landing.component';
 
 
 
@@ -13,7 +15,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 @NgModule({
   declarations: [
     AppComponent,
-    LoadingComponent
+    LoadingComponent,
+    NavbarComponent,
+    LandingComponent
   ],
   imports: [
     BrowserModule,

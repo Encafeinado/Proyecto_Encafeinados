@@ -103,7 +103,7 @@
   .modal-footer .btn {
     margin: 0 10px;
   }
-  
+/* ------------------------------------------------------------------------------------------------- */
   .album {
     display: flex;
     flex-wrap: wrap;
@@ -139,3 +139,126 @@
       height: 40px;
     }
   }
+  
+  .modal-book {
+    background-color: #fffaf0; /* Color de fondo más claro */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-family: 'Georgia', serif; /* Fuente estilo libro */
+    position: relative; /* Para las decoraciones */
+    overflow: hidden; /* Evitar que se muestren elementos que sobresalen */
+}
+
+.modal-book::before,
+.modal-book::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    width: 20px;
+    background: linear-gradient(to bottom, #f5dcb7, #d1b5a1);
+    z-index: -1;
+    border-radius: 10px;
+}
+
+.modal-book::before {
+    left: -25px;
+    transform: rotate(2deg);
+}
+
+.modal-book::after {
+    right: -25px;
+    transform: rotate(-2deg);
+}
+
+.modal-book .modal-header {
+    background-color: #6f4e37;
+    color: #f7f3e9;
+    border: none; /* Eliminamos el borde */
+    padding: 15px;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.modal-book .modal-header::after {
+    content: "Pasaporte";
+    position: absolute;
+    bottom: -20px;
+    right: 20px;
+    font-size: 0.8rem;
+    color: #6f4e37;
+}
+
+.modal-book .modal-header .close {
+    color: #f7f3e9;
+    opacity: 1;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.modal-book .modal-body {
+    padding: 20px;
+    background-color: #fdf5e6;
+    border-radius: 0 0 10px 10px;
+}
+
+.modal-book .album {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Aumentamos el espacio entre elementos */
+    justify-content: center;
+}
+
+.modal-book .album-page {
+    flex: 1 0 30%;
+    text-align: center;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-book .album-page table {
+    width: 100%;
+    margin-top: 15px;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.modal-book .album-page thead th {
+    background-color: #6f4e37;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px 5px 0 0;
+}
+
+.modal-book .album-page tbody td {
+    text-align: center;
+    padding: 10px;
+    background: white;
+    border-radius: 5px;
+}
+
+.modal-book .modal-footer {
+    border-top: none;
+    display: flex;
+    justify-content: center;
+    padding-top: 20px; /* Aumentamos el espacio en la parte superior del footer */
+    padding-bottom: 20px;
+}
+
+.modal-book .modal-footer .btn {
+    margin: 0 10px;
+    background-color: #6f4e37;
+    color: #f7f3e9;
+    border: none;
+}
+
+.modal-book .modal-footer .btn:hover {
+    background-color: #5a3927;
+}

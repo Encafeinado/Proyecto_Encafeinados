@@ -1,134 +1,122 @@
-
-  <div class="container">
-    <div class="row">
-      <div class="col-md-8 position-relative">
-        <div id="map" style="height: 600px;"></div>
-        <button *ngIf="showCancelButton" class="floating-button" (click)="cancelRoute()">
-          <i class="fas fa-times text-white"></i>
-        </button> 
-      </div>
-      <div class="col-md-4 sidebar">
-        <h2>Bienvenido a Encafeinados</h2>
-        <p>¡Encuentra los mejores lugares de café en tu área!</p>
-        <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid">
-        <p>Explora nuestras mejores recomendaciones para los amantes del café.</p>
-      </div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 position-relative">
+      <div id="map" style="height: 600px;"></div>
+      <button *ngIf="showCancelButton" class="floating-button" (click)="cancelRoute()">
+        <i class="fas fa-times text-white"></i>
+      </button>
+    </div>
+    <div class="col-md-4 sidebar">
+      <h2>Bienvenido a Encafeinados</h2>
+      <p>¡Encuentra los mejores lugares de café en tu área!</p>
+      <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid">
+      <p>Explora nuestras mejores recomendaciones para los amantes del café.</p>
     </div>
   </div>
-    
-  <!-- Botón del librito -->
-  <div class="button-container-footer">
-    <button class="floating-button button-book" (click)="openModalAlbum()">
-      <i class="fas fa-book text-white"></i>
-    </button>
-    <button class="floating-button button-camera" (click)="openModalWithCodigo()">
-      <i class="fas fa-coffee text-white"></i>
-    </button>
+</div>
+
+<!-- Botón del librito -->
+<div class="button-container-footer">
+  <button class="floating-button button-book" (click)="openModalAlbum()">
+    <i class="fas fa-book text-white"></i>
+  </button>
+  <button class="floating-button button-camera" (click)="openModalWithCodigo()">
+    <i class="fas fa-coffee text-white"></i>
+  </button>
+</div>
+
+<!-- Modal para confirmar la ruta -->
+<ng-template #createModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">{{ destinationName }}</h4>
   </div>
-  
-  <!-- Modal para confirmar la ruta -->
-  <ng-template #createModal let-modal>
+  <div class="modal-body">
+    <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid" style="width: 100%;">
+    <p style="padding-top: 3%;"
+      *ngIf="destinationName === 'Aroma Café Sabaneta' || destinationName === 'Viejo Baul' || destinationName === 'Leal Coffee'">
+      Información sobre el café...</p>
+    <div class="transport-selection">
+      <label>
+        <input type="radio" name="transport" value="car" (change)="selectTransportMode('car')" checked> Vehículo
+      </label>
+      <label>
+        <input type="radio" name="transport" value="foot" (change)="selectTransportMode('foot')"> A pie
+      </label>
+      <label>
+        <input type="radio" name="transport" value="bike" (change)="selectTransportMode('bike')"> A bicicleta
+      </label>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="showRouteGuia()">Guiame</button>
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancelar</button>
+  </div>
+</ng-template>
+
+<!-- Modal para cancelar la ruta -->
+<ng-template #cancelModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Cancelar Rutas</h4>
+  </div>
+  <div class="modal-body">
+    <p>¿Estás seguro de que quieres cancelar las rutas?</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">No</button>
+    <button type="button" class="btn btn-primary" (click)="confirmCancelRoute()">Sí</button>
+  </div>
+</ng-template>
+
+<!-- Modal para ingresar el código -->
+<ng-template #codeModal let-modal>
+  <div class="modal-content">
     <div class="modal-header">
-      <h4 class="modal-title" id="modal-title">{{ destinationName }}</h4>
+      <h5 class="modal-title">Ingresa tu código:</h5>
     </div>
     <div class="modal-body">
-      <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid" style="width: 100%;">
-      <p style="padding-top: 3%;" *ngIf="destinationName === 'Aroma Café Sabaneta' || destinationName === 'Viejo Baul' || destinationName === 'Leal Coffee'">Información sobre el café...</p>
-      <div class="transport-selection">
-        <label>
-          <input type="radio" name="transport" value="car" (change)="selectTransportMode('car')" checked> Vehículo
-        </label>
-        <label>
-          <input type="radio" name="transport" value="foot" (change)="selectTransportMode('foot')"> A pie
-        </label>
-        <label>
-          <input type="radio" name="transport" value="bike" (change)="selectTransportMode('bike')"> A bicicleta
-        </label>
-      </div>
+      <label for="code">Código:</label>
+      <input #codeInput type="text" id="code" class="form-control" [(ngModel)]="enteredCode"
+        placeholder="Ingresa tu código">
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-primary" (click)="showRouteGuia()">Guiame</button>
+      <button type="button" class="btn btn-primary" (click)="verifyCode()">Verificar</button>
       <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancelar</button>
     </div>
-  </ng-template>
-  
-  <!-- Modal para cancelar la ruta -->
-  <ng-template #cancelModal let-modal>
+  </div>
+</ng-template>
+
+<!-- Modal para ver el álbum -->
+<ng-template #modalBook let-modal>
+  <div class="modal-content modal-book">
     <div class="modal-header">
-      <h4 class="modal-title">Cancelar Rutas</h4>
+      <h5 class="modal-title">Álbum</h5>
     </div>
     <div class="modal-body">
-      <p>¿Estás seguro de que quieres cancelar las rutas?</p>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">No</button>
-      <button type="button" class="btn btn-primary" (click)="confirmCancelRoute()">Sí</button>
-    </div>
-  </ng-template>
-
-    <!-- Modal para cancelar todas las rutas -->
-    <!-- <ng-template #cancelModal let-modal>
-      <div class="modal-header">
-        <h4 class="modal-title">Cancelar Rutas</h4>
-      </div>
-      <div class="modal-body">
-        <p>¿Estás seguro de que quieres cancelar todas las rutas?</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">No</button>
-        <button type="button" class="btn btn-primary" (click)="confirmCancelRoute()">Sí</button>
-      </div>
-    </ng-template> -->
-  
-  <!-- Modal para ingresar el código -->
-  <ng-template #codeModal let-modal>
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Ingresa tu código:</h5>
-      </div>
-      <div class="modal-body">
-        <label for="code">Código:</label>
-        <input #codeInput type="text" id="code" class="form-control" [(ngModel)]="enteredCode" placeholder="Ingresa tu código">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="verifyCode()">Verificar</button>
-        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancelar</button>
-      </div>
-    </div>
-  </ng-template>
-  
-  <!-- Modal para ver el album -->
-  <ng-template #modalBook let-modal>
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Álbum</h5>
-      </div>
-      <div class="modal-body">
-        <div class="album">
-          <!-- <div class="album-page" *ngFor="let image of albumImages">
-            <img [src]="image.src" [alt]="image.alt" class="img-fluid">
-            <p>{{ image.info }}</p>
-          </div> -->
-          <div class="album-page">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Tienda</th>
-                  <th>Código</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let tienda of tiendas">
-                  <td>{{ tienda.nombre }}</td>
-                  <td>{{ tienda.codigo }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      <div class="album">
+        <!-- <div class="album-page" *ngFor="let image of albumImages">
+          <img [src]="image.src" [alt]="image.alt" class="img-fluid">
+          <p>{{ image.info }}</p>
+        </div> -->
+        <div class="album-page">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Tienda</th>
+                <th>Código</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let tienda of tiendas">
+                <td>{{ tienda.nombre }}</td>
+                <td>{{ tienda.codigo }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cerrar</button>
-      </div>
     </div>
-  </ng-template>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cerrar</button>
+    </div>
+  </div>
+</ng-template>
