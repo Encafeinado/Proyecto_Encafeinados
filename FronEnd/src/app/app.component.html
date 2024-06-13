@@ -1,11 +1,35 @@
 <app-loading *ngIf="isLoading"></app-loading>
-<div *ngIf="!isLoading">
-  <!-- <nav>
-    <ul>
-      <li><a routerLink="/login">Login</a></li>
-      <li><a routerLink="/store">Store</a></li>
-      <li><a routerLink="/map">Map</a></li>
-    </ul>
-  </nav> -->
-  
-  <router-outlet/>
+<nav class="navbar navbar-expand-lg bg-coffee">
+  <div class="container-fluid">
+      <a class="navbar-brand" href="#">Encafeinados</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarText">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" routerLink="/store">Tienda</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" routerLink="/map">Mapa</a>
+              </li>
+          </ul>
+          <span class="navbar-text me-2">
+              Descubre el mejor café cerca de ti
+          </span>
+          <button (click)="onLogout()" class="btn btn-outline-light">Cerrar Sesión</button>
+      </div>
+  </div>
+</nav>
+<h1 *ngIf="!finishedAuthCheck()">
+ </h1>
+
+<router-outlet *ngIf="finishedAuthCheck() && !isLoading"></router-outlet>
+
+
+
+
+
