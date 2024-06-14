@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, OnInit } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthStatus } from 'src/app/auth/interfaces';
 import { AuthService } from 'src/app/auth/services/auth.service';
@@ -8,10 +8,11 @@ import { AuthService } from 'src/app/auth/services/auth.service';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, AfterViewInit {
 
   private authService = inject(AuthService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef); // Inyecta ChangeDetectorRef
 
   public navbarText: string = 'Descubre el mejor café cerca de ti';
 
@@ -26,23 +27,35 @@ export class NavbarComponent implements OnInit {
     switch (this.authService.authStatus()) {
       case AuthStatus.checking:
         return;
-
+  
       case AuthStatus.authenticated:
         this.router.navigateByUrl('/store');
+        this.cdr.detectChanges(); // Forzar verificación de cambios
         return;
-
+  
       case AuthStatus.notAuthenticated:
-        this.router.navigateByUrl('/auth/login');
+        const currentUrl = this.router.url;
+        if (currentUrl !== '/auth/register') {
+          this.router.navigateByUrl('/auth/login');
+          this.cdr.detectChanges(); // Forzar verificación de cambios
+        }
         return;
     }
   });
+  
 
   ngOnInit(): void {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.updateNavbarText(event.url);
+        this.cdr.detectChanges(); // Forzar verificación de cambios
       }
     });
+  }
+
+  ngAfterViewInit() {
+    // Forzar la detección de cambios después de la inicialización de la vista
+    this.cdr.detectChanges();
   }
 
   updateNavbarText(url: string): void {

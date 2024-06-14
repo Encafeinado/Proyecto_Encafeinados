@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 
 @Component({
@@ -6,12 +6,12 @@ import { Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationErr
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
-  title = 'ProyectoEncafeinados';
+export class AppComponent {
+
   isLoading = true;
   showNavbar = true;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.router.events.subscribe(event => {
@@ -19,11 +19,10 @@ export class AppComponent implements OnInit {
         this.isLoading = true;
       } else if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
         this.isLoading = false;
-      }
-
-      if (event instanceof NavigationEnd) {
-        this.showNavbar = event.url !== '/auth/login';
+        this.showNavbar = !event.url.includes('/auth/login');
+        this.cdr.detectChanges(); 
       }
     });
   }
+
 }

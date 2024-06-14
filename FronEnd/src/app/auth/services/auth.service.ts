@@ -55,8 +55,10 @@ export class AuthService {
 
     return this.http.get<CheckTokenResponse>(url, { headers }).pipe(
       map(({ user, token }) => this.setAuthentication(user, token)),
-      catchError(() => {
+      catchError(err => {
+        console.error('Error al verificar el token', err);
         this._authStatus.set(AuthStatus.notAuthenticated);
+        this.logout();  // Asegura que se desloguee si el token no es válido
         return of(false);
       })
     );
