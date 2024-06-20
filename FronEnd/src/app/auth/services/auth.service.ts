@@ -70,28 +70,5 @@ export class AuthService {
     this._authStatus.set(AuthStatus.notAuthenticated);
   }
 
-  onLogout() {
-    const modalElement = document.getElementById('logoutModal');
-    if (modalElement) {
-      const modal = new bootstrap.Modal(modalElement);
-      modal.show();
-    } else {
-      console.error('Logout modal element not found');
-    }
-  }
-
-  confirmLogout() {
-    this.logout();
-    const modalElement = document.getElementById('logoutModal');
-    if (modalElement) {
-      const modal = bootstrap.Modal.getInstance(modalElement);
-      if (modal) {
-        modal.hide();
-      } else {
-        console.error('Bootstrap modal instance not found');
-      }
-    } else {
-      console.error('Logout modal element not found');
-    }
-  }
+  
 }
