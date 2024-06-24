@@ -19,7 +19,7 @@ export class AppComponent {
         this.isLoading = true;
       } else if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
         this.isLoading = false;
-        this.showNavbar = !event.url.includes('/auth/login');
+        this.showNavbar = !event.url.includes('/auth/login') && !event.url.includes('/auth/register');
         this.cdr.detectChanges(); 
       }
     });
