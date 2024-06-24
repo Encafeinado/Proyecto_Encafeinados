@@ -85,7 +85,7 @@
   </div>
 </ng-template>
 
-<!-- Modal para ver el álbum -->
+<!-- Modal álbum -->
 <ng-template #modalBook let-modal>
   <div class="modal-content modal-book">
     <div class="modal-header">
@@ -93,25 +93,8 @@
     </div>
     <div class="modal-body">
       <div class="album">
-        <!-- <div class="album-page" *ngFor="let image of albumImages">
-          <img [src]="image.src" [alt]="image.alt" class="img-fluid">
-          <p>{{ image.info }}</p>
-        </div> -->
-        <div class="album-page">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Tienda</th>
-                <th>Código</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let tienda of tiendas">
-                <td>{{ tienda.nombre }}</td>
-                <td>{{ tienda.codigo }}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="album-page" *ngFor="let image of albumImages">
+          <img [src]="image.src" [alt]="image.alt" class="img-fluid" [class.colored]="image.colored">
         </div>
       </div>
     </div>

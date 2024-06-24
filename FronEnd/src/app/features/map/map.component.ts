@@ -4,24 +4,20 @@ import {
   AfterViewInit,
   ViewChild,
   ElementRef,
+  OnInit
 } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import * as L from 'leaflet';
 import 'leaflet-routing-machine';
 import * as toastr from 'toastr';
-
-// Definición de la interfaz
-interface Tienda {
-  nombre: string;
-  codigo: string;
-}
+import { AlbumService, Image } from '../../service/album.service';
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
 })
-export class MapComponent implements OnDestroy, AfterViewInit {
+export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   modalRef!: NgbModalRef;
   openedModal = false;
   title = 'Proyecto_Aroma';
@@ -37,40 +33,8 @@ export class MapComponent implements OnDestroy, AfterViewInit {
   enteredCode: string = '';
   verified: boolean = false;
   message: string = '';
-  tiendas: Tienda[] = [];
-
-  albumImages = [
-    {
-      src: 'https://via.placeholder.com/150',
-      alt: 'Imagen 1',
-      info: 'Información sobre la imagen 1',
-    },
-    {
-      src: 'https://via.placeholder.com/150',
-      alt: 'Imagen 2',
-      info: 'Información sobre la imagen 2',
-    },
-    {
-      src: 'https://via.placeholder.com/150',
-      alt: 'Imagen 3',
-      info: 'Información sobre la imagen 3',
-    },
-    {
-      src: 'https://via.placeholder.com/150',
-      alt: 'Imagen 4',
-      info: 'Información sobre la imagen 4',
-    },
-    {
-      src: 'https://via.placeholder.com/150',
-      alt: 'Imagen 5',
-      info: 'Información sobre la imagen 5',
-    },
-    {
-      src: 'https://via.placeholder.com/150',
-      alt: 'Imagen 6',
-      info: 'Información sobre la imagen 6',
-    },
-  ];
+  albumImages: Image[] = [];
+  currentImageIndex: number = 0;  // Índice de la imagen actual para colorear
 
   @ViewChild('createModal', { static: true }) createModal: any;
   @ViewChild('cancelModal', { static: true }) cancelModal: any;
@@ -78,7 +42,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
   @ViewChild('modalBook', { static: true }) modalBook: any;
   @ViewChild('codeInput', { static: false }) codeInput!: ElementRef;
 
-  constructor(private modalService: NgbModal) {
+  constructor(private modalService: NgbModal, private albumService: AlbumService) {
     this.userLocationIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cosechaUser.png',
       iconSize: [25, 41],
@@ -86,9 +50,10 @@ export class MapComponent implements OnDestroy, AfterViewInit {
       popupAnchor: [1, -34],
       shadowSize: [41, 41],
     });
+  }
 
-    console.log(this.userLocationIcon);
-    console.log('6.15150999618405, -75.61369180892304');
+  ngOnInit(): void {
+    this.albumImages = this.albumService.getAlbumImages();
   }
 
   ngAfterViewInit(): void {
@@ -97,13 +62,13 @@ export class MapComponent implements OnDestroy, AfterViewInit {
       zoom: 13,
       attributionControl: false, // Desactiva el control de atribución
     });
-
+  
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       // Si deseas conservar la atribución en otro lugar, puedes especificarlo aquí.
       // attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
-
+  
     const aromaIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cafeteriaAroma.png',
       iconSize: [25, 41],
@@ -111,7 +76,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
       popupAnchor: [1, -34],
       shadowSize: [41, 41],
     });
-
+  
     const baulIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cafeteriaCoffe.png',
       iconSize: [25, 41],
@@ -119,7 +84,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
       popupAnchor: [1, -34],
       shadowSize: [41, 41],
     });
-
+  
     const lealIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cafeteriaLeal.png',
       iconSize: [25, 41],
@@ -127,56 +92,58 @@ export class MapComponent implements OnDestroy, AfterViewInit {
       popupAnchor: [1, -34],
       shadowSize: [41, 41],
     });
-
+  
     const aromaMarker = L.marker([6.15150999618405, -75.61369180892304], {
       icon: aromaIcon,
     })
       .addTo(map)
       .bindPopup('Aroma Café Sabaneta');
-
+  
     const baulMarker = L.marker([6.149950147326389, -75.61758096298057], {
       icon: baulIcon,
     })
       .addTo(map)
       .bindPopup('Viejo Baul');
-
+  
     const lealMarker = L.marker([6.150555615946403, -75.61797956390538], {
       icon: lealIcon,
     })
       .addTo(map)
       .bindPopup('Leal Coffee');
-
+  
     map.fitBounds([
       [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
       [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
       [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
     ]);
-
+  
     const userLocationMarker = L.marker([0, 0], { icon: this.userLocationIcon })
       .addTo(map)
       .bindPopup('Tu ubicación actual');
-
+  
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
-
-        userLocationMarker.setLatLng([userLat, userLng]);
-        map.setView([userLat, userLng], map.getZoom());
-
-        map.fitBounds([
-          [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
-          [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
-          [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
-          [
-            userLocationMarker.getLatLng().lat,
-            userLocationMarker.getLatLng().lng,
-          ],
-        ]);
-        console.log(
-          userLocationMarker.getLatLng().lat,
-          userLocationMarker.getLatLng().lng
-        );
+        const accuracy = position.coords.accuracy;
+  
+        console.log('Posición obtenida:', position);
+  
+        // Verificar si la precisión es aceptable (por ejemplo, menos de 50 metros)
+        if (accuracy < 50) {
+          userLocationMarker.setLatLng([userLat, userLng]);
+          map.setView([userLat, userLng], map.getZoom());
+  
+          map.fitBounds([
+            [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
+            [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
+            [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
+            [userLocationMarker.getLatLng().lat, userLocationMarker.getLatLng().lng],
+          ]);
+          console.log(userLocationMarker.getLatLng().lat, userLocationMarker.getLatLng().lng);
+        } else {
+          console.log('Precisión no aceptable:', accuracy);
+        }
       },
       (error) => {
         console.error('Error al obtener la ubicación del usuario:', error);
@@ -184,10 +151,10 @@ export class MapComponent implements OnDestroy, AfterViewInit {
       {
         enableHighAccuracy: true,
         maximumAge: 0,
-        timeout: 10000,
+        timeout: 30000, // Aumentar el tiempo de espera para obtener una ubicación más precisa
       }
     );
-
+  
     aromaMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -196,7 +163,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
         'Aroma Café Sabaneta'
       );
     });
-
+  
     baulMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -205,7 +172,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
         'Viejo Baul'
       );
     });
-
+  
     lealMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -214,7 +181,7 @@ export class MapComponent implements OnDestroy, AfterViewInit {
         'Leal Coffee'
       );
     });
-  }
+  }  
 
   showRouteConfirmation(
     map: L.Map,
@@ -375,30 +342,24 @@ export class MapComponent implements OnDestroy, AfterViewInit {
   verifyCode() {
     const storeCode = localStorage.getItem('storeCode');
     if (this.enteredCode === storeCode) {
-      // Verificar si el código ya existe en la lista de tiendas
-      const existeCodigo = this.tiendas.some(
-        (tienda) => tienda.codigo === this.enteredCode
-      );
-      if (!existeCodigo) {
-        // Si el código no existe en la lista, agregar la tienda
-        this.verified = true;
-        const nuevaTienda: Tienda = {
-          nombre: 'Aroma Café Sabaneta', // Nombre de la tienda
-          codigo: this.enteredCode, // Código verificado
-        };
-        console.log(nuevaTienda);
-        this.tiendas.push(nuevaTienda); // Agregar la tienda a la lista
-        toastr.success('Código verificado exitosamente');
-        setTimeout(() => {
-          this.modalRef.close(); // Método para cerrar el modal
-        }, 2000);
-      } else {
-        // Si el código ya existe en la lista, mostrar un mensaje de error
-        toastr.error('El código ya ha sido utilizado');
-      }
+      this.verified = true;
+      toastr.success('Código verificado exitosamente','¡OBTUVISTE UNA ESTAMPITA!'); 
+      this.coloredImage();
+      setTimeout(() => {
+        this.modalRef.close(); // Método para cerrar el modal
+      }, 2000);
     } else {
       this.verified = false;
       toastr.error('Error al verificar el código');
     }
   }
+  
+  coloredImage(): void {
+    if (this.currentImageIndex < this.albumImages.length) {
+      this.albumImages[this.currentImageIndex].colored = true;
+      this.currentImageIndex++;
+    } else {
+      console.log('Todas las imágenes ya están coloreadas');
+    }
+  } 
 }
