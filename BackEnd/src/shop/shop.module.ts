@@ -28,4 +28,4 @@ import { Shop , ShopSchema } from './entities/shop.entity';
   ]
   
 })
-export class AuthModule {}
+export class ShopModule {}
