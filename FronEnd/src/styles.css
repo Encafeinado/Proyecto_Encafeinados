@@ -219,6 +219,12 @@ button:hover {
 }
 
 
+.small-placeholder::placeholder {
+  font-size: 12px; /* Ajusta este valor según tus necesidades */
+  color: #888; /* Opcional: para cambiar el color del placeholder */
+}
+
+
 
 /*------------------------------------------------------------------
 [ Form ]*/
