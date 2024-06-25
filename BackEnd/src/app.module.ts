@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { ShopModule } from './shop/shop.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { ShopModule } from './shop/shop.module';
       dbName: process.env.MONGO_DB_NAME,
     }),
     ShopModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
