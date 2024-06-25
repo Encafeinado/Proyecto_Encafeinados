@@ -12,6 +12,4 @@ export class RegisterShopDto {
     
     @MinLength(6)
     password: string;
-
-  
 }

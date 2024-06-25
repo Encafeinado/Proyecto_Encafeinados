@@ -1,52 +1,36 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
-import { AuthService } from './shop.service';
-import { CreateShopDto, LoginDto, RegisterShopDto, UpdateAuthDto } from './dto';
+import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { ShopService } from './shop.service';
+import { RegisterShopDto } from './dto';
 import { Shop } from './entities/shop.entity';
 import { LoginResponce } from './interfaces/login-responce';
-import { AuthGuard } from './guards/auth.guard';
-
-
+import { AuthGuard } from './guards/shop.guard';
 
 @Controller('shop')
-export class AuthController {
-  constructor(private readonly authService: AuthService) { }
-
-  @Post()
-  create(@Body() createShopDto: CreateShopDto) {
-    return this.authService.create(createShopDto);
-  }
+export class ShopController {  // Cambié el nombre a ShopController
+  constructor(private readonly shopService: ShopService) {}
 
 
-  @Post('/login')
-  login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
-  }
-
-  @Post('/registerShop')
+  @Post('/register')
   register(@Body() registerDto: RegisterShopDto) {
-    return this.authService.register(registerDto);
+    return this.shopService.register(registerDto);
   }
 
   @UseGuards(AuthGuard)
   @Get()
   findAll(@Request() req: Request) {
-    //const user = req['user'];
-    //return user;
-    return this.authService.findAll();
+    return this.shopService.findAll();
   }
 
   @UseGuards(AuthGuard)
   @Get('check-token')
-  checkToken(@Request() req: Request): LoginResponce{
-    
+  checkToken(@Request() req: Request): LoginResponce {
     const shop = req['shop'] as Shop;
-
     return {
       shop,
-      token: this.authService.getJwtToken( {id: shop._id})
-    }
-
+      token: this.shopService.getJwtToken({ id: shop._id }),
+    };
   }
+
 
   //@Get(':id')
   //findOne(@Param('id') id: string) {

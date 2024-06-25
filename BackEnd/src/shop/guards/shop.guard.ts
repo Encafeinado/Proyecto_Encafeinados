@@ -1,13 +1,13 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from '../interfaces/jwt-payload';
-import { AuthService } from '../shop.service';
+import { ShopService } from '../shop.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
-    private authService: AuthService,
+    private shopService: ShopService,
   ) {}
 
   async canActivate(
@@ -24,7 +24,7 @@ export class AuthGuard implements CanActivate {
         token, { secret: process.env.JWT_SEED }
       );
       
-      const shop = await this.authService.findShopById(payload.id);
+      const shop = await this.shopService.findShopById(payload.id);
       if (!shop) throw new UnauthorizedException('El usuario no existe');
       if (!shop.isActive) throw new UnauthorizedException('El usuario no está activo');
 

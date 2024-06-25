@@ -1,12 +1,8 @@
 import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-
 import * as bcryptjs from 'bcryptjs';
-
-import { RegisterShopDto,CreateShopDto,UpdateAuthDto,LoginDto } from './dto';
-
-
+import { RegisterShopDto } from './dto';
 import { Shop } from './entities/shop.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
@@ -16,7 +12,7 @@ import { LoginResponce } from './interfaces/login-responce';
 
 
 @Injectable()
-export class AuthService {
+export class ShopService {
 
   constructor(
     @InjectModel(Shop.name)
@@ -26,7 +22,7 @@ export class AuthService {
   ){
 }
 
-  async create(createShopDto: CreateShopDto): Promise<Shop>{
+  async create(createShopDto: RegisterShopDto): Promise<Shop>{
 
       try {
         const { password, ...shopData} = createShopDto;
@@ -61,23 +57,7 @@ export class AuthService {
   }
 
 
-  async login(loginDto: LoginDto):Promise<LoginResponce>{
-
-    const {email, password} = loginDto
-    const shop = await this.shopModel.findOne({ email});
-    if (!shop){
-      throw new UnauthorizedException('Credenciales del correo no validas')
-    }
-    if (!bcryptjs.compareSync( password, shop.password)){
-      throw new UnauthorizedException('Credenciales de la contraseña no validas')
-    }
-
-    const { password:_,...rest }= shop.toJSON();
-    return {
-      shop:rest,
-      token: this.getJwtToken({id: shop.id}),
-    }
-  }
+ 
 
   findAll(): Promise<Shop[]> {
     return this.shopModel.find();
@@ -91,10 +71,6 @@ export class AuthService {
 
   findOne(id: number) {
     return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
   }
 
   remove(id: number) {
