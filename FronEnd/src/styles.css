@@ -170,6 +170,12 @@ button:hover {
   justify-content: center;
 }
 
+.icon-container2 {
+  flex: 1; /* Ajusta el tamaño del contenedor del icono */
+  display: flex;
+  justify-content: center;
+}
+
 .wrap-login100 {
   width: 100%; /* Ajustar el ancho del contenedor para que ocupe todo el espacio posible */
   max-width: 600px; /* Limitar el ancho máximo */
@@ -190,10 +196,26 @@ button:hover {
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
 }
 
+.company-icon2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #D2B48C; /* Café claro */
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+}
+
 .company-icon img {
-  max-width: 300px; /* Ajusta el tamaño del icono según sea necesario */
+  max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
   height: auto;
   max-height: 380px; /* Limita la altura máxima de la imagen */
+}
+
+.company-icon2 img {
+  max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
+  height: auto;
+  max-height: 511px; /* Limita la altura máxima de la imagen */
 }
 
 

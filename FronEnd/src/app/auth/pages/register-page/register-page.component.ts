@@ -3,9 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr'; // Importa ToastrService
 
-
 import { AuthService } from '../../services/auth.service';
-
 
 @Component({
   templateUrl: './register-page.component.html',
@@ -18,28 +16,28 @@ export class RegisterPageComponent {
   private router = inject(Router);
   private toastr = inject(ToastrService); // Inyecta ToastrService
 
-
   public myForm: FormGroup = this.fb.group({
+    name: ['', [ Validators.required ]],
     email: ['', [ Validators.required, Validators.email ]],
     password: ['', [ Validators.required, Validators.minLength(6) ]],
+    phone: ['', [ Validators.required, Validators.pattern('^[0-9]+$') ]],
   });
 
+  register() {
+    const { name, email, password, phone } = this.myForm.value;
 
-  login() {
-    const { email, password } = this.myForm.value;
-  
-    this.authService.login(email, password)
+    this.authService.register(name, email, password, phone)
       .subscribe({
         next: () => {
           // Mostrar Toastr con mensaje de éxito
-          this.toastr.success('¡Inicio de sesión exitoso!', 'Éxito');
-          // Redirigir al usuario a la página de la tienda
-          this.router.navigateByUrl('/store');
+          this.toastr.success('¡Registro exitoso!', 'Éxito');
+          // Redirigir al usuario a la página de inicio de sesión
+          this.router.navigateByUrl('/auth/login');
         },
         error: (message) => {
-          // Mostrar Toastr con mensaje de error en caso de fallo en el inicio de sesión
-          this.toastr.error(message, 'Error al iniciar sesión');
+          // Mostrar Toastr con mensaje de error en caso de fallo en el registro
+          this.toastr.error(message, 'Error al registrar');
         }
       });
-    }
   }
+}

@@ -4,8 +4,6 @@ import { environment } from 'src/environments/environments';
 import { Observable, catchError, map, of, throwError } from 'rxjs';
 import { AuthStatus, CheckTokenResponse, LoginResponse, User } from '../interfaces';
 
-declare var bootstrap: any;
-
 @Injectable({
   providedIn: 'root'
 })
@@ -42,6 +40,16 @@ export class AuthService {
     );
   }
 
+  register(name: string, email: string, password: string, phone: string): Observable<boolean> {
+    const url = `${this.baseUrl}/auth/register`;
+    const body = { name, email, password, phone };
+
+    return this.http.post<LoginResponse>(url, body).pipe(
+      map(({ user, token }) => this.setAuthentication(user, token)),
+      catchError(err => throwError(() => err.error.message))
+    );
+  }
+
   checkAuthStatus(): Observable<boolean> {
     const url = `${this.baseUrl}/auth/check-token`;
     const token = localStorage.getItem('token');
@@ -69,6 +77,4 @@ export class AuthService {
     this._currentUser.set(null);
     this._authStatus.set(AuthStatus.notAuthenticated);
   }
-
-  
 }

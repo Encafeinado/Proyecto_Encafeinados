@@ -8,7 +8,7 @@ export class IsCellPhoneConstraint implements ValidatorConstraintInterface {
   }
 
   defaultMessage() {
-    return 'El número de teléfono debe ser un número de celular válido';
+    return 'El número de celular debe ser un número válido';
   }
 }
 
