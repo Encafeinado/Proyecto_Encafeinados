@@ -11,7 +11,7 @@ export class User {
     @Prop({required: true})
     name: string;
 
-    @Prop({required: true})
+    @Prop({required: true,type: [Number],maxLength: 10,})
     phone: string;
 
     @Prop({minLength: 6, required: true})
