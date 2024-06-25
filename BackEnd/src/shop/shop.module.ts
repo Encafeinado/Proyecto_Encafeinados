@@ -1,13 +1,31 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ShopController } from './shop.controller';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
 import { ShopService } from './shop.service';
-import { Shop, ShopSchema } from './entities/shop.entity';
+import { ShopController } from './shop.controller';
+import { Shop , ShopSchema } from './entities/shop.entity';
+
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Shop.name, schema: ShopSchema }])],
   controllers: [ShopController],
   providers: [ShopService],
-  exports: [ShopService],
+  imports:[
+    ConfigModule.forRoot(),
+
+    MongooseModule.forFeature([
+      {
+        name: Shop.name,
+        schema: ShopSchema
+      }
+    ]),
+
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SEED,
+      signOptions: { expiresIn: '6h' },
+    }),
+  ]
+  
 })
-export class ShopModule {}
+export class AuthModule {}
