@@ -24,7 +24,7 @@ export class User {
     roles: string[];
 
     @Prop({default: 0})
-    cafecoin: string;
+    cafecoin: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
