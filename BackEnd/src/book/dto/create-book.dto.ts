@@ -10,9 +10,6 @@ export class CreateBookDto {
   @IsString()
   code: string;
 
-  @IsBoolean()
-  status: boolean;
-
   @IsArray()
   @IsOptional()
   images?: { url: string }[];

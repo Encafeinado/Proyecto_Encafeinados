@@ -1,10 +1,127 @@
 .store-content {
-    text-align: center;
-    margin-top: 20px;
-  }
-  
-  .store-content p {
-    font-size: 18px;
-    color: #333;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.header h1 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.info p {
+  margin: 10px 0;
+  font-size: 18px;
+  color: #555;
+}
+
+.actions {
+  margin: 20px 0;
+}
+
+.actions .btn {
+  margin: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.actions .btn:hover {
+  background-color: #0056b3;
+}
+
+.activation-section {
+  margin-top: 30px;
+  padding: 20px;
+  border-top: 1px solid #ddd;
+  width: 100%;
+  max-width: 600px;
+}
+
+.activation-section h2 {
+  margin-bottom: 20px;
+  font-size: 20px;
+  color: #333;
+}
+
+.activation-section .btn {
+  background-color: #28a745;
+}
+
+.activation-section .btn:hover {
+  background-color: #218838;
+}
+
+.status p {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.status p.active {
+  color: #28a745;
+}
+
+.status p.inactive {
+  color: #dc3545;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+}
+
+.modal-actions {
+  margin-top: 20px;
+}
+
+.modal-actions .btn {
+  margin: 0 10px;
+}
+
+.modal-actions .confirm {
+  background-color: #28a745;
+}
+
+.modal-actions .confirm:hover {
+  background-color: #218838;
+}
+
+.modal-actions .cancel {
+  background-color: #dc3545;
+}
+
+.modal-actions .cancel:hover {
+  background-color: #c82333;
+}
