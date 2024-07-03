@@ -1,5 +1,34 @@
-
 <div class="store-content">
-    <h1>Bienvenido a la tienda</h1>
-    <p>Tu código aleatorio es: <strong>{{ codigo }}</strong></p>
+  <div class="header">
+    <h1>Bienvenido a la tienda de cafés de especialidad</h1>
   </div>
+  <div class="info">
+    <p>Tu código aleatorio es: <strong>{{ codigo }}</strong></p>
+    <p>Número de personas que han ingresado el código: <strong>{{ codeEntries }}</strong></p>
+  </div>
+  <div class="actions">
+    <button class="btn" (click)="useCode()">Usar Código</button>
+  </div>
+  <div class="activation-section">
+    <h2>Activar Tienda en el Mapa</h2>
+    <button class="btn" (click)="openModal()">
+      {{ isStoreOpen ? 'Desactivar Tienda' : 'Activar Tienda' }}
+    </button>
+    <div class="status">
+      <p [ngClass]="{ 'active': isStoreOpen, 'inactive': !isStoreOpen }">
+        {{ isStoreOpen ? 'La tienda está encendida.' : 'La tienda está apagada.' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" [ngClass]="{ 'show': showModal }">
+    <div class="modal-content">
+      <p>¿Deseas {{ isStoreOpen ? 'desactivar' : 'activar' }} la tienda en el mapa?</p>
+      <div class="modal-actions">
+        <button class="btn confirm" (click)="confirmToggleStoreActivation()">Sí</button>
+        <button class="btn cancel" (click)="closeModal()">No</button>
+      </div>
+    </div>
+  </div>
+</div>

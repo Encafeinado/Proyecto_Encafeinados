@@ -11,6 +11,11 @@
       <p>¡Encuentra los mejores lugares de café en tu área!</p>
       <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid">
       <p>Explora nuestras mejores recomendaciones para los amantes del café.</p>
+      <br>
+      <h1>Mapa de la Tienda</h1>
+      <p [ngClass]="{ 'active': isStoreOpen, 'inactive': !isStoreOpen }">
+        {{ isStoreOpen ? 'La tienda está activa en el mapa.' : 'La tienda no está activa en el mapa.' }}
+      </p>
     </div>
   </div>
 </div>
