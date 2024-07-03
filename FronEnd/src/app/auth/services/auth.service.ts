@@ -49,6 +49,15 @@ export class AuthService {
       catchError(err => throwError(() => err.error.message))
     );
   }
+  registerShop(name: string, email: string, password: string, phone: string, specialties: string, address: string): Observable<boolean> {
+    const url = `${this.baseUrl}/shop/register`;
+    const body = { name, email, password, phone,specialties, address };
+
+    return this.http.post<LoginResponse>(url, body).pipe(
+      map(({ user, token }) => this.setAuthentication(user, token)),
+      catchError(err => throwError(() => err.error.message))
+    );
+  }
 
   checkAuthStatus(): Observable<boolean> {
     const url = `${this.baseUrl}/auth/check-token`;
