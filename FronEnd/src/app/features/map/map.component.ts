@@ -66,53 +66,39 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     const map = new L.Map('map', {
       center: [6.150155571503784, -75.61905204382627],
       zoom: 13,
-      attributionControl: false, // Desactiva el control de atribución
+      attributionControl: false,
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      // Si deseas conservar la atribución en otro lugar, puedes especificarlo aquí.
-      // attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
 
-    const aromaIcon = L.icon({
-      iconUrl: 'assets/IconsMarker/cafeteriaAroma.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
-    });
-
-    const baulIcon = L.icon({
-      iconUrl: 'assets/IconsMarker/cafeteriaCoffe.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
-    });
-
-    const lealIcon = L.icon({
-      iconUrl: 'assets/IconsMarker/cafeteriaLeal.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
-    });
-
     const aromaMarker = L.marker([6.15150999618405, -75.61369180892304], {
-      icon: aromaIcon,
+      icon: this.createStoreIcon(
+        'assets/IconsMarker/cafeteriaAroma.png',
+        this.isStoreOpen,
+        'grayscale-icon'
+      ),
     })
       .addTo(map)
       .bindPopup('Aroma Café Sabaneta');
 
     const baulMarker = L.marker([6.149950147326389, -75.61758096298057], {
-      icon: baulIcon,
+      icon: this.createStoreIcon(
+        'assets/IconsMarker/cafeteriaCoffe.png',
+        this.isStoreOpen,
+        'grayscale-icon'
+      ),
     })
       .addTo(map)
       .bindPopup('Viejo Baul');
 
     const lealMarker = L.marker([6.150555615946403, -75.61797956390538], {
-      icon: lealIcon,
+      icon: this.createStoreIcon(
+        'assets/IconsMarker/cafeteriaLeal.png',
+        this.isStoreOpen,
+        'grayscale-icon'
+      ),
     })
       .addTo(map)
       .bindPopup('Leal Coffee');
@@ -135,7 +121,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
         console.log('Posición obtenida:', position);
 
-        // Verificar si la precisión es aceptable (por ejemplo, menos de 50 metros)
         if (accuracy < 50) {
           userLocationMarker.setLatLng([userLat, userLng]);
           map.setView([userLat, userLng], map.getZoom());
@@ -144,10 +129,12 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
             [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
             [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
             [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
-            [userLocationMarker.getLatLng().lat, userLocationMarker.getLatLng().lng],
+            [
+              userLocationMarker.getLatLng().lat,
+              userLocationMarker.getLatLng().lng,
+            ],
           ]);
 
-          // Verificar proximidad a las tiendas
           this.checkProximityToStores(
             userLat,
             userLng,
@@ -156,7 +143,10 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
             lealMarker
           );
 
-          console.log(userLocationMarker.getLatLng().lat, userLocationMarker.getLatLng().lng);
+          console.log(
+            userLocationMarker.getLatLng().lat,
+            userLocationMarker.getLatLng().lng
+          );
         } else {
           console.log('Precisión no aceptable:', accuracy);
         }
@@ -167,7 +157,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       {
         enableHighAccuracy: true,
         maximumAge: 0,
-        timeout: 30000, // Aumentar el tiempo de espera para obtener una ubicación más precisa
+        timeout: 30000,
       }
     );
 
@@ -228,18 +218,62 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       lealMarker.getLatLng().lng
     );
 
-    // Verifica si el usuario está cerca de alguna tienda y muestra el modal correspondiente
+    // Verifica si el usuario está cerca de alguna tienda y cambia el estado del ícono
     if (distanceToAroma <= proximityThreshold) {
+      aromaMarker.setIcon(
+        this.createStoreIcon(
+          'assets/IconsMarker/cafeteriaAroma.png',
+          this.isStoreOpen
+        )
+      );
       console.log('Estás cerca de Aroma Café Sabaneta');
       this.openModal(this.createModal); // Abre el modal correspondiente
+    } else {
+      aromaMarker.setIcon(
+        this.createStoreIcon(
+          'assets/IconsMarker/cafeteriaAroma.png',
+          this.isStoreOpen,
+          'grayscale-icon'
+        )
+      );
     }
+
     if (distanceToBaul <= proximityThreshold) {
+      baulMarker.setIcon(
+        this.createStoreIcon(
+          'assets/IconsMarker/cafeteriaCoffe.png',
+          this.isStoreOpen
+        )
+      );
       console.log('Estás cerca de Viejo Baul');
       this.openModal(this.createModal); // Abre el modal correspondiente
+    } else {
+      baulMarker.setIcon(
+        this.createStoreIcon(
+          'assets/IconsMarker/cafeteriaCoffe.png',
+          this.isStoreOpen,
+          'grayscale-icon'
+        )
+      );
     }
+
     if (distanceToLeal <= proximityThreshold) {
+      lealMarker.setIcon(
+        this.createStoreIcon(
+          'assets/IconsMarker/cafeteriaLeal.png',
+          this.isStoreOpen
+        )
+      );
       console.log('Estás cerca de Leal Coffee');
       this.openModal(this.createModal); // Abre el modal correspondiente
+    } else {
+      lealMarker.setIcon(
+        this.createStoreIcon(
+          'assets/IconsMarker/cafeteriaLeal.png',
+          this.isStoreOpen,
+          'grayscale-icon'
+        )
+      );
     }
   }
 
@@ -405,6 +439,27 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     }
   }
 
+  private createStoreIcon(
+    iconUrl: string,
+    isOpen: boolean,
+    additionalClass: string = ''
+  ) {
+    return L.divIcon({
+      html: `
+        <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+          <img src="${iconUrl}" class="${additionalClass}" style="width: 25px; height: 41px; border-radius: 5px;" />
+          <div style="position: absolute; top: -5px; right: -5px; width: 12px; height: 12px; background-color: ${
+            isOpen ? 'green' : 'red'
+          }; border-radius: 50%; border: 2px solid white;"></div>
+        </div>
+      `,
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      className: '',
+    });
+  }
+
   ngOnDestroy(): void {
     if (this.watchId !== undefined) {
       navigator.geolocation.clearWatch(this.watchId);
@@ -423,7 +478,10 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     const storeCode = localStorage.getItem('storeCode');
     if (this.enteredCode === storeCode) {
       this.verified = true;
-      toastr.success('Código verificado exitosamente', '¡OBTUVISTE UNA ESTAMPITA!');
+      toastr.success(
+        'Código verificado exitosamente',
+        '¡OBTUVISTE UNA ESTAMPITA!'
+      );
       this.coloredImage();
       setTimeout(() => {
         this.modalRef.close(); // Método para cerrar el modal
