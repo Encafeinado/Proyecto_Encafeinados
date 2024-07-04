@@ -1,5 +1,6 @@
-import { Component, computed, effect, inject, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef, ViewChild, computed, effect } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { AuthStatus } from 'src/app/auth/interfaces';
 import { AuthService } from 'src/app/auth/services/auth.service';
 
@@ -13,8 +14,11 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef); // Inyecta ChangeDetectorRef
-
   public navbarText: string = 'Descubre el mejor café cerca de ti';
+  @ViewChild('sesionModal', { static: true }) sesionModal: any;
+  modalRef!: NgbModalRef;
+  openedModal = false;
+  showCancelButton: boolean = false;
 
   public finishedAuthCheck = computed<boolean>(() => {
     if (this.authService.authStatus() === AuthStatus.checking) {
@@ -27,12 +31,12 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     switch (this.authService.authStatus()) {
       case AuthStatus.checking:
         return;
-  
+
       case AuthStatus.authenticated:
         this.router.navigateByUrl('/store');
         this.cdr.detectChanges(); // Forzar verificación de cambios
         return;
-  
+
       case AuthStatus.notAuthenticated:
         const currentUrl = this.router.url;
         if (currentUrl !== '/auth/register') {
@@ -42,7 +46,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         return;
     }
   });
-  
+
+  constructor(private modalService: NgbModal) {}
 
   ngOnInit(): void {
     this.router.events.subscribe(event => {
@@ -75,5 +80,32 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   isStoreOrMapRoute(): boolean {
     // Verifica si estamos en la ruta de /store o /map
     return this.router.url === '/store' || this.router.url === '/map';
+  }
+
+  openModal(content: any): void {
+    if (!this.openedModal) {
+      this.openedModal = true;
+      this.modalRef = this.modalService.open(content, {
+        centered: true,
+        backdrop: 'static',
+      });
+      this.modalRef.result.then(
+        () => {
+          this.openedModal = false;
+        },
+        () => {
+          this.openedModal = false;
+        }
+      );
+    }
+  }
+
+  openLogoutModal(content: any): void {
+    this.openModal(content);
+  }
+
+  confirmLogout(): void {
+    this.authService.logout();
+    this.modalRef.close();
   }
 }

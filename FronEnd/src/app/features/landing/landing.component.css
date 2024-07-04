@@ -1,0 +1,40 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+  }
+  
+  header h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+  }
+  
+  header p {
+    font-size: 1.5rem;
+    color: #6c757d;
+  }
+  
+  .carousel-item img {
+    height: 400px;
+    object-fit: cover;
+  }
+  
+  section h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  section p {
+    font-size: 1.2rem;
+  }
+  
+  blockquote {
+    background-color: #fff;
+    padding: 20px;
+    border-left: 5px solid #007bff;
+  }
+  
+  footer p {
+    font-size: 1rem;
+    color: #6c757d;
+  }
+  
