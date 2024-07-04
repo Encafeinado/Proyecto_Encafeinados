@@ -11,6 +11,35 @@
       <p>¡Encuentra los mejores lugares de café en tu área!</p>
       <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid">
       <p>Explora nuestras mejores recomendaciones para los amantes del café.</p>
+      <br>
+      <h1>Mapa de la Tienda</h1>
+      <p [ngClass]="{ 'active': isStoreOpen, 'inactive': !isStoreOpen }">
+        {{ isStoreOpen ? 'La tienda está activa en el mapa.' : 'La tienda no está activa en el mapa.' }}
+      </p>
+
+      <!-- Información adicional -->
+      <div style="margin-top: 20px; background-color: #f8f9fa; padding: 10px; border-radius: 5px;">
+        <h3 style="margin-bottom: 10px;">Información adicional</h3>
+        <ul style="list-style-type: none; padding-left: 0;">
+          <li style="margin-bottom: 10px;">
+            <img src="assets/IconsMarker/cosechaUser.png" alt="Icono de persona"
+              style="width: 20px; height: 20px; margin-right: 10px;">
+            <span style="font-size: 16px;">Eres tú</span>
+          </li>
+          <li style="margin-bottom: 10px;">
+            <img src="assets/IconsMarker/cafeteriaAroma.png" alt="Icono de persona"
+              style="width: 20px; height: 20px; margin-right: 10px;">
+            <span style="font-size: 16px;">Tienda de café</span>
+          </li>
+          <li style="margin-bottom: 10px;" [ngClass]="{ 'active': isStoreOpen, 'inactive': !isStoreOpen }">
+            <span style="color: green; font-size: 18px;">&#8226;</span> Tienda abierta
+          </li>
+          <li style="margin-bottom: 10px;" [ngClass]="{ 'active': isStoreOpen, 'inactive': !isStoreOpen }">
+            <span style="color: red; font-size: 18px;">&#8226;</span> Tienda cerrada
+          </li>
+        </ul>
+      </div>
+
     </div>
   </div>
 </div>
