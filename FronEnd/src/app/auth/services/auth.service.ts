@@ -15,7 +15,6 @@ export class AuthService {
   private _currentUser = signal<User | null>(null);
   private _authStatus = signal<AuthStatus>(AuthStatus.checking);
 
-  //! Al mundo exterior
   public currentUser = computed(() => this._currentUser());
   public authStatus = computed(() => this._authStatus());
 
@@ -31,8 +30,25 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<boolean> {
-    const url = `${this.baseUrl}/auth/login`;
+    const urlUser = `${this.baseUrl}/auth/login`;
+    const urlStore = `${this.baseUrl}/shop/login`; // Asumiendo que existe una ruta para login de tiendas
     const body = { email, password };
+
+    return this.http.post<LoginResponse>(urlUser, body).pipe(
+      map(({ user, token }) => this.setAuthentication(user, token)),
+      catchError(err => {
+        // Intentar el login de tienda si falla el login de usuario
+        return this.http.post<LoginResponse>(urlStore, body).pipe(
+          map(({ user, token }) => this.setAuthentication(user, token)),
+          catchError(err => throwError(() => err.error.message))
+        );
+      })
+    );
+  }
+
+  register(name: string, email: string, password: string, phone: string): Observable<boolean> {
+    const url = `${this.baseUrl}/auth/register`;
+    const body = { name, email, password, phone };
 
     return this.http.post<LoginResponse>(url, body).pipe(
       map(({ user, token }) => this.setAuthentication(user, token)),
@@ -40,9 +56,9 @@ export class AuthService {
     );
   }
 
-  register(name: string, email: string, password: string, phone: string): Observable<boolean> {
-    const url = `${this.baseUrl}/auth/register`;
-    const body = { name, email, password, phone };
+  registerStore(name: string, email: string, password: string, phone: string, specialties: string, address: string): Observable<boolean> {
+    const url = `${this.baseUrl}/shop/register`;
+    const body = { name, email, password, phone, specialties, address };
 
     return this.http.post<LoginResponse>(url, body).pipe(
       map(({ user, token }) => this.setAuthentication(user, token)),

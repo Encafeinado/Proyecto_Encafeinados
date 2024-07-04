@@ -1,11 +1,19 @@
 <div class="limiter">
   <div class="main-container">
-    <!-- Contenedor del formulario -->
     <div class="form-container">
       <form class="login100-form" autocomplete="off" [formGroup]="myForm" (ngSubmit)="register()">
         <span class="login100-form-title-1 p-b-35">
-          Registro de Usuario
+          {{ formTitle }}
         </span>
+
+        <!-- Espacio para los checkboxes -->
+        <div class="wrap-input100 m-b-23" style="margin-bottom: 20px;">
+          <span class="label-input100">Tipo de Registro</span>
+          <div style="margin-top: 10px;">
+            <input type="checkbox" (change)="onUserTypeChange('user')" [checked]="isUser"> Usuario
+            <input type="checkbox" (change)="onUserTypeChange('store')" [checked]="isStore" style="margin-left: 20px;"> Tienda
+          </div>
+        </div>
 
         <div class="wrap-input100 m-b-23">
           <span class="label-input100">Nombre</span>
@@ -31,6 +39,21 @@
           <span class="focus-input100"></span>
         </div>
 
+        <!-- Campos adicionales para Tienda -->
+        <div *ngIf="isStore">
+          <div class="wrap-input100 m-b-23">
+            <span class="label-input100">Especialidad</span>
+            <input class="input100 small-placeholder" type="text" formControlName="specialties" placeholder="Especialidad">
+            <span class="focus-input100"></span>
+          </div>
+
+          <div class="wrap-input100 m-b-23">
+            <span class="label-input100">Dirección</span>
+            <input class="input100 small-placeholder" type="text" formControlName="address" placeholder="Dirección">
+            <span class="focus-input100"></span>
+          </div>
+        </div>
+
         <div class="text-right p-t-8 p-b-31"></div>
 
         <div class="container-login100-form-btn">
@@ -47,14 +70,12 @@
             Volver
           </a>
         </div>
-        
       </form>
     </div>
 
-    <!-- Contenedor del icono de la empresa -->
     <div class="icon-container2">
-      <div class="company-icon2 coffee-background">
-        <img src="../../../../assets/images/logodescafeinados.jpg" alt="Icono de la empresa">
+      <div [ngClass]="{'company-icon2': isUser, 'company-icon3': isStore, 'coffee-background': true}">
+        <img [src]="isUser ? '../../../../assets/images/logodescafeinados.jpg' : '../../../../assets/images/logodescafeinados.jpg'" alt="Icono de la empresa">
       </div>
     </div>
   </div>

@@ -1,9 +1,10 @@
 import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { ShopService } from './shop.service';
-import { RegisterShopDto } from './dto';
+import { RegisterShopDto,LoginDto } from './dto';
 import { Shop } from './entities/shop.entity';
 import { LoginResponce } from './interfaces/login-responce';
 import { AuthGuard } from './guards/shop.guard';
+
 
 @Controller('shop')
 export class ShopController {  // Cambié el nombre a ShopController
@@ -14,6 +15,11 @@ export class ShopController {  // Cambié el nombre a ShopController
   register(@Body() registerDto: RegisterShopDto) {
     return this.shopService.register(registerDto);
   }
+  @Post('/login')
+  login(@Body() loginDto: LoginDto) {
+    return this.shopService.login(loginDto);
+  }
+
 
   @UseGuards(AuthGuard)
   @Get()
