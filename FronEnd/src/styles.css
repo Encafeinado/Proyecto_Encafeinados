@@ -206,6 +206,16 @@ button:hover {
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
 }
 
+.company-icon3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #D2B48C; /* Café claro */
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+}
+
 .company-icon img {
   max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
   height: auto;
@@ -215,7 +225,13 @@ button:hover {
 .company-icon2 img {
   max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
   height: auto;
-  max-height: 511px; /* Limita la altura máxima de la imagen */
+  max-height: 600px; /* Limita la altura máxima de la imagen */
+}
+
+.company-icon3 img {
+  max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
+  height: auto;
+  max-height:750px; /* Limita la altura máxima de la imagen */
 }
 
 

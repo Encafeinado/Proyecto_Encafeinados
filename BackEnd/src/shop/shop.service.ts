@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, Unauthor
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcryptjs from 'bcryptjs';
-import { RegisterShopDto } from './dto';
+import { RegisterShopDto,LoginDto } from './dto';
 import { Shop } from './entities/shop.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
@@ -43,6 +43,24 @@ export class ShopService {
         throw new InternalServerErrorException('Algo terrible esta sucediendo!!!!')
       }
 
+  }
+
+  async login(loginDto: LoginDto):Promise<LoginResponce>{
+
+    const {email, password} = loginDto
+    const shop = await this.shopModel.findOne({ email});
+    if (!shop){
+      throw new UnauthorizedException('Credenciales del correo no validas')
+    }
+    if (!bcryptjs.compareSync( password, shop.password)){
+      throw new UnauthorizedException('Credenciales de la contraseña no validas')
+    }
+
+    const { password:_,...rest }= shop.toJSON();
+    return {
+      shop:rest,
+      token: this.getJwtToken({id: shop.id}),
+    }
   }
 
   async register(registerDto: RegisterShopDto): Promise<LoginResponce>{
