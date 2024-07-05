@@ -68,11 +68,11 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       zoom: 13,
       attributionControl: false,
     });
-
+  
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
     }).addTo(map);
-
+  
     const aromaMarker = L.marker([6.15150999618405, -75.61369180892304], {
       icon: this.createStoreIcon(
         'assets/IconsMarker/cafeteriaAroma.png',
@@ -82,7 +82,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     })
       .addTo(map)
       .bindPopup('Aroma Café Sabaneta');
-
+  
     const baulMarker = L.marker([6.149950147326389, -75.61758096298057], {
       icon: this.createStoreIcon(
         'assets/IconsMarker/cafeteriaCoffe.png',
@@ -92,7 +92,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     })
       .addTo(map)
       .bindPopup('Viejo Baul');
-
+  
     const lealMarker = L.marker([6.150555615946403, -75.61797956390538], {
       icon: this.createStoreIcon(
         'assets/IconsMarker/cafeteriaLeal.png',
@@ -102,54 +102,52 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     })
       .addTo(map)
       .bindPopup('Leal Coffee');
-
+  
     map.fitBounds([
       [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
       [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
       [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
     ]);
-
+  
     const userLocationMarker = L.marker([0, 0], { icon: this.userLocationIcon })
       .addTo(map)
       .bindPopup('Tu ubicación actual');
-
+  
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
-        const accuracy = position.coords.accuracy;
-
+        const accuracy = position.coords.accuracy;  
+        console.log("precicion: ", accuracy)
+  
         console.log('Posición obtenida:', position);
-
-        if (accuracy < 50) {
-          userLocationMarker.setLatLng([userLat, userLng]);
-          map.setView([userLat, userLng], map.getZoom());
-
-          map.fitBounds([
-            [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
-            [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
-            [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
-            [
-              userLocationMarker.getLatLng().lat,
-              userLocationMarker.getLatLng().lng,
-            ],
-          ]);
-
-          this.checkProximityToStores(
-            userLat,
-            userLng,
-            aromaMarker,
-            baulMarker,
-            lealMarker
-          );
-
-          console.log(
+  
+        userLocationMarker.setLatLng([userLat, userLng]);
+        userLocationMarker.bindPopup('Tu ubicación actual (precisión: ' + accuracy + ' metros)').openPopup();
+        map.setView([userLat, userLng], map.getZoom());
+  
+        map.fitBounds([
+          [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
+          [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
+          [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
+          [
             userLocationMarker.getLatLng().lat,
-            userLocationMarker.getLatLng().lng
-          );
-        } else {
-          console.log('Precisión no aceptable:', accuracy);
-        }
+            userLocationMarker.getLatLng().lng,
+          ],
+        ]);
+  
+        this.checkProximityToStores(
+          userLat,
+          userLng,
+          aromaMarker,
+          baulMarker,
+          lealMarker
+        );
+  
+        console.log(
+          userLocationMarker.getLatLng().lat,
+          userLocationMarker.getLatLng().lng
+        );
       },
       (error) => {
         console.error('Error al obtener la ubicación del usuario:', error);
@@ -160,7 +158,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         timeout: 30000,
       }
     );
-
+  
     aromaMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -169,7 +167,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         'Aroma Café Sabaneta'
       );
     });
-
+  
     baulMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -178,7 +176,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         'Viejo Baul'
       );
     });
-
+  
     lealMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -188,6 +186,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       );
     });
   }
+  
+  
 
   checkProximityToStores(
     userLat: number,
@@ -329,7 +329,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         this.userLocationMarker.getLatLng().lng,
         this.targetMarker.getLatLng().lat,
         this.targetMarker.getLatLng().lng,
-        this.targetMarker.options.icon as L.Icon,
         this.selectedTransport
       );
       this.showCancelButton = true;
@@ -345,63 +344,50 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     startLng: number,
     endLat: number,
     endLng: number,
-    icon: L.Icon,
     transport: string
   ): void {
     let profile: string;
-    let routed: string;
-    let url: any;
-
+  
     if (transport === 'foot') {
       profile = 'foot';
-      routed = 'routed-foot';
     } else if (transport === 'car') {
       profile = 'driving';
-      routed = 'routed-driving';
     } else {
       profile = 'bike';
-      routed = 'routed-bike';
     }
-
-    if (transport === 'foot' || transport === 'bike') {
-      url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-    } else {
-      url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-    }
-
+  
+    const url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
+  
     fetch(url)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Error en la solicitud al servicio OSRM');
-        }
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
-        if (!data || !data.routes || data.routes.length === 0) {
-          throw new Error('No se encontraron rutas válidas');
+        if (data.routes && data.routes.length > 0) {
+          const route = data.routes[0];
+          const routeCoordinates = route.geometry.coordinates.map(
+            (coord: [number, number]) => [coord[1], coord[0]]
+          );
+  
+          let color = 'blue'; // Default color for foot transport
+  
+          if (transport === 'car') {
+            color = 'red';
+          } else if (transport === 'bike') {
+            color = 'green';
+          }
+  
+          if (this.routingControl) {
+            this.routingControl.remove();
+          }
+  
+          this.routingControl = L.polyline(routeCoordinates, {
+            color: color,
+          }).addTo(map);
+  
+          this.showCancelButton = true;
         }
-
-        const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
-        const routeCoordinates = route.geometry.coordinates.map(
-          (coord: [number, number]) => [coord[1], coord[0]]
-        );
-
-        // Dibujar la ruta en el mapa usando Leaflet
-        let color = 'blue'; // Default color for foot transport
-
-        if (transport === 'car') {
-          color = 'red';
-        } else if (transport === 'bike') {
-          color = 'green';
-        }
-
-        this.routingControl = L.polyline(routeCoordinates, {
-          color: color,
-        }).addTo(map);
       })
       .catch((error) => {
         console.error('Error al obtener la ruta desde OSRM:', error);
-        // Manejar el error adecuadamente, por ejemplo, mostrar un mensaje al usuario
       });
   }
 

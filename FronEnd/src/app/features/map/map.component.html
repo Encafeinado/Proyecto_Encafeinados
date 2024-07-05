@@ -39,7 +39,6 @@
           </li>
         </ul>
       </div>
-
     </div>
   </div>
 </div>
@@ -66,13 +65,13 @@
       Información sobre el café...</p>
     <div class="transport-selection">
       <label>
-        <input type="radio" name="transport" value="car" (change)="selectTransportMode('car')" checked> Vehículo
+        <input type="radio" name="transport" value="car" (change)="selectTransportMode('car')" checked> A Vehículo
       </label>
       <label>
-        <input type="radio" name="transport" value="foot" (change)="selectTransportMode('foot')"> A pie
+        <input type="radio" name="transport" value="foot" (change)="selectTransportMode('foot')"> A Pie
       </label>
       <label>
-        <input type="radio" name="transport" value="bike" (change)="selectTransportMode('bike')"> A bicicleta
+        <input type="radio" name="transport" value="bike" (change)="selectTransportMode('bike')"> En bicicleta
       </label>
     </div>
   </div>
@@ -95,6 +94,9 @@
     <button type="button" class="btn btn-primary" (click)="confirmCancelRoute()">Sí</button>
   </div>
 </ng-template>
+<button *ngIf="showCancelButton" class="floating-button" (click)="cancelRoute()">
+  <i class="fas fa-times text-white"></i>
+</button>
 
 <!-- Modal para ingresar el código -->
 <ng-template #codeModal let-modal>
