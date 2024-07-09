@@ -45,6 +45,19 @@ export class BookService {
     }
   }
 
+
+  async registerInBook(data: any): Promise<any> {
+    const { nameUser } = data;
+    const newBookEntry = new this.bookModel({
+      nameShop: '', // Ajusta según tu estructura de datos
+      nameUser,
+      code: '', // Ajusta según tu estructura de datos
+      images: []
+    });
+    const result = await newBookEntry.save();
+    return result.toJSON();
+  }
+
   async findAll(): Promise<Book[]> {
     return this.bookModel.find();
   }

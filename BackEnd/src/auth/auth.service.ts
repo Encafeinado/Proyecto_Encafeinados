@@ -11,6 +11,7 @@ import { User } from './entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
 import { LoginResponce } from './interfaces/login-responce';
+import { BookService } from '../book/book.service'; // Ajusta la ruta según la ubicación de BookService
 
 
 
@@ -22,44 +23,38 @@ export class AuthService {
     @InjectModel(User.name)
     
     private userModel: Model<User>,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private readonly bookService: BookService // Asegúrate de que BookService se importe correctamente
   ){
 }
 
-  async create(createUserDto: CreateUserDto): Promise<User>{
-
-      try {
-        const { password, ...userData} = createUserDto;
-
-        const newUser = new this.userModel( {
-          password: bcryptjs.hashSync(password, 10),
-          ...userData
-      });
-       await newUser.save();
-      const {password:_,... user} = newUser.toJSON();
-
-      return user;
-
-      } catch (error) {
-       if(error.code === 11000){
-        throw new BadRequestException(`${createUserDto.email} Ya Existe!`)
-       }
-        throw new InternalServerErrorException('Algo terrible esta sucediendo!!!!')
-      }
-
-  }
-
-  async register(registerDto: RegisterUserDto): Promise<LoginResponce>{
-    
-    const user = await this.create(registerDto)
-    console.log({user});
-    return{
-      user: user,
-      token: this.getJwtToken({id: user._id})
+async create(createUserDto: CreateUserDto): Promise<User> {
+  try {
+    const { password, ...userData } = createUserDto;
+    const newUser = new this.userModel({
+      password: bcryptjs.hashSync(password, 10),
+      ...userData
+    });
+    await newUser.save();
+    const { password: _, ...user } = newUser.toJSON();
+    return user;
+  } catch (error) {
+    if (error.code === 11000) {
+      throw new BadRequestException(`${createUserDto.email} Ya Existe!`);
     }
-
+    throw new InternalServerErrorException('Algo terrible está sucediendo!!!!');
   }
+}
 
+async register(registerDto: RegisterUserDto): Promise<LoginResponce> {
+  const user = await this.create(registerDto);
+  // Llama al método para registrar en la tabla 'book' después de crear el usuario
+  await this.bookService.registerInBook({ nameUser: user.name }); // Ajusta los parámetros según tu lógica
+  return {
+    user,
+    token: this.getJwtToken({ id: user._id })
+  };
+}
 
   async login(loginDto: LoginDto):Promise<LoginResponce>{
 
@@ -107,3 +102,6 @@ export class AuthService {
 
   }
 }
+
+
+

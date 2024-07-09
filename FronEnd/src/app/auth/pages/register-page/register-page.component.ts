@@ -11,6 +11,7 @@ interface CustomFile {
   value: string | ArrayBuffer | null; // Cambiado a solo aceptar string o ArrayBuffer
 }
 
+
 @Component({
   templateUrl: './register-page.component.html',
   styleUrls: ['./register-page.component.css']
@@ -36,6 +37,8 @@ export class RegisterPageComponent {
   public isStore: boolean = false;
   public formTitle: string = 'Registro de Usuario';
   logoFile: CustomFile | null = null;
+
+  constructor() {}
 
   onUserTypeChange(type: string) {
     if (type === 'user') {
@@ -86,6 +89,7 @@ export class RegisterPageComponent {
         .subscribe({
           next: () => {
             this.toastr.success('¡Registro de tienda exitoso!', 'Éxito');
+            this.registerInBook(name); // Registro en la tabla book
             this.router.navigateByUrl('/auth/login');
           },
           error: (err) => {
@@ -98,6 +102,7 @@ export class RegisterPageComponent {
         .subscribe({
           next: () => {
             this.toastr.success('¡Registro de usuario exitoso!', 'Éxito');
+            this.registerInBook(name); // Registro en la tabla book
             this.router.navigateByUrl('/auth/login');
           },
           error: (err) => {
@@ -107,4 +112,17 @@ export class RegisterPageComponent {
         });
     }
   }
-}  
+
+  private registerInBook(userName: string) {
+    // Llama al método correspondiente en AuthService para registrar en la tabla book
+    this.authService.registerInBook(userName)
+      .subscribe({
+        next: () => {
+          console.log('Registro en la tabla book exitoso');
+        },
+        error: (err) => {
+          console.error('Error al registrar en la tabla book:', err);
+        }
+      });
+  }
+}
