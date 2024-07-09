@@ -34,6 +34,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         return;
 
       case AuthStatus.authenticated:
+        this.userName = this.authService.currentUser()?.name || 'Nombre del Usuario';
         this.router.navigateByUrl('/store');
         this.cdr.detectChanges(); // Forzar verificación de cambios
         return;
@@ -57,6 +58,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         this.cdr.detectChanges(); // Forzar verificación de cambios
       }
     });
+
+    // Asignar el nombre del usuario desde el servicio de autenticación
+    this.userName = this.authService.currentUser()?.name || 'Nombre del Usuario';
   }
 
   ngAfterViewInit() {
@@ -65,7 +69,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   }
 
   updateNavbarText(url: string): void {
-    if (url === '/store') {
+    if (url === '/store' || url === '/landing') {
       this.navbarText = 'Descubre el mejor café cerca de ti';
     } else if (url === '/map') {
       this.navbarText = 'Explora las ubicaciones en el mapa';
@@ -80,7 +84,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   isStoreOrMapRoute(): boolean {
     // Verifica si estamos en la ruta de /store o /map
-    return this.router.url === '/store' || this.router.url === '/map';
+    return this.router.url === '/store' || this.router.url === '/map' || this.router.url === '/landing';
   }
 
   openModal(content: any): void {
