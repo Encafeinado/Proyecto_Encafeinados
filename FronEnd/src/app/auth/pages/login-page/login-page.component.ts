@@ -34,7 +34,7 @@ export class LoginPageComponent {
           // Mostrar Toastr con mensaje de éxito
           this.toastr.success('¡Inicio de sesión exitoso!', 'Éxito');
           // Redirigir al usuario a la página de la tienda
-          this.router.navigateByUrl('/landing');
+          this.router.navigateByUrl('/store');
         },
         error: (message) => {
           // Mostrar Toastr con mensaje de error en caso de fallo en el inicio de sesión
