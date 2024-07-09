@@ -53,10 +53,11 @@
 
           <div class="wrap-input100 m-b-23">
             <span class="label-input100">Logo</span>
-            <input type="file" (change)="onFileChange($event)">
+              <input class="file-input-label" type="file" (change)="onFileChange($event)">
+            
+            </div>
           </div>
-        </div>
-
+          
         <div class="text-right p-t-8 p-b-31"></div>
 
         <div class="container-login100-form-btn">
@@ -77,9 +78,9 @@
     </div>
 
     <div class="icon-container2">
-      <div class="company-icon2 coffee-background">
-        <img src="../../../../assets/images/logodescafeinados.jpg" alt="Icono de la empresa">
+      <div [ngClass]="{'company-icon2': isUser, 'company-icon3': isStore, 'coffee-background': true}">
+        <img [src]="isUser ? '../../../../assets/images/logodescafeinados.jpg' : '../../../../assets/images/logodescafeinados.jpg'" alt="Icono de la empresa">
       </div>
     </div>
   </div>
-</div>
+

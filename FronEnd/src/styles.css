@@ -235,6 +235,59 @@ button:hover {
 }
 
 
+
+/* Estilo para el contenedor del input file */
+.file-input-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  width: auto;
+  height: 40px; /* Ajusta la altura según tus necesidades */
+}
+
+/* Estilo para el input de texto */
+.input100 {
+  /* Estilos de tu input de texto actual */
+  width: 100%; /* Ajusta el ancho según tus necesidades */
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Estilo para el input file oculto */
+.input100[type="file"] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Estilo para la etiqueta del archivo seleccionado */
+.file-input-label {
+  display: block;
+  padding: 10px;
+  background-color: #ffffff; /* Color de fondo */
+  border: 1px solid #ffffff; /* Borde */
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  
+
+}
+
+.file-input-label::-webkit-file-upload-button {
+  font-size: 12px; /* Tamaño de fuente más pequeño */
+}
+/* Estilo para el botón cuando se pasa el mouse */
+.file-input-label:hover {
+  background-color: #ffffff; /* Color de fondo al pasar el mouse */
+}
+
+
+
 .small-placeholder::placeholder {
   font-size: 12px; /* Ajusta este valor según tus necesidades */
   color: #888; /* Opcional: para cambiar el color del placeholder */
