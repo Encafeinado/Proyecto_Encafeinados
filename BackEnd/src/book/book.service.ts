@@ -20,6 +20,8 @@ export class BookService {
     private jwtService: JwtService,
   ) {}
 
+
+  
   async addImage(bookId: string, imageUrl: string): Promise<Book> {
     const book = await this.bookModel.findById(bookId);
     if (!book) {
@@ -33,6 +35,22 @@ export class BookService {
     book.images.push({ url: imageUrl });
     return book.save();
   }
+
+  async registerInBook(username: string) {
+    try {
+      const newBook = new this.bookModel({
+        nameUser: username,
+        nameShop: '', // Puedes ajustar los campos según necesites
+        code: '',
+      });
+
+      await newBook.save();
+      return newBook;
+    } catch (error) {
+      throw new InternalServerErrorException('Error registrando en Book');
+    }
+  }
+
 
   async create(createBookDto: CreateBookDto): Promise<Book> {
     try {

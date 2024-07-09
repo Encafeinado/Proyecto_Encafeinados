@@ -29,7 +29,7 @@ export class RegisterPageComponent {
     phone: ['', [ Validators.required, Validators.pattern('^[0-9]+$') ]],
     specialties: [''], // Campo adicional para tienda
     address: [''], // Campo adicional para tienda
-    logo: ['', Validators.required] // Agrega validador para logo
+    logo: [''] // Agrega validador para logo
   });
 
   public isUser: boolean = true;
