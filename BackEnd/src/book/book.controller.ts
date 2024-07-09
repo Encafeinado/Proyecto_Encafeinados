@@ -19,11 +19,7 @@ export class BookController {
   ) {
     return this.bookService.addImage(bookId, addImageDto.url);
   }
-  @Post('/register')
-  async registerInBook(@Body() data: any) {
-    return this.bookService.registerInBook(data);
-  }
-  
+
   @Get()
   async findAll() {
     return this.bookService.findAll();
