@@ -4,6 +4,12 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../services/auth.service';
 
+interface CustomFile {
+  filename: string;
+  filetype: string;
+  value: string | ArrayBuffer | null; // Cambiado a solo aceptar string o ArrayBuffer
+}
+
 @Component({
   templateUrl: './register-page.component.html',
   styleUrls: ['./register-page.component.css']
@@ -14,7 +20,7 @@ export class RegisterPageComponent implements OnInit {
   isUser: boolean = true;
   isStore: boolean = false;
   formTitle: string = 'Registro de Usuario';
-  logoFile: File | null = null;
+  logoFile: CustomFile | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -56,7 +62,15 @@ export class RegisterPageComponent implements OnInit {
   onFileChange(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.logoFile = file;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.logoFile = {
+          filename: file.name,
+          filetype: file.type,
+          value: reader.result // El resultado del FileReader ya es un string o ArrayBuffer
+        };
+      };
+      reader.readAsDataURL(file);
     }
   }
 
@@ -67,8 +81,8 @@ export class RegisterPageComponent implements OnInit {
 
     const { name, email, password, phone, specialties, address } = this.myForm.value;
 
-    if (this.isStore) {
-      this.authService.registerStore(name, email, password, phone, specialties, address, this.logoFile)
+    if (this.isStore && this.logoFile && typeof this.logoFile.value === 'string') {
+      this.authService.registerStore(name, email, password, phone, specialties, address, this.logoFile.value)
         .subscribe({
           next: () => {
             this.toastr.success('¡Registro de tienda exitoso!', 'Éxito');

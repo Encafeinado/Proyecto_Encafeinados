@@ -50,7 +50,7 @@ export class AuthService {
     );
   }
 
-  registerStore(name: string, email: string, password: string, phone: string, specialties: string, address: string, logo: File | null): Observable<boolean> {
+  registerStore(name: string, email: string, password: string, phone: string, specialties: string, address: string, logoBase64: string): Observable<boolean> {
     const url = `${this.baseUrl}/shop/register`;
     const formData: FormData = new FormData();
     formData.append('name', name);
@@ -59,8 +59,8 @@ export class AuthService {
     formData.append('phone', phone);
     formData.append('specialties', specialties);
     formData.append('address', address);
-    if (logo) {
-      formData.append('logo', logo);
+    if (logoBase64) {
+      formData.append('logo', logoBase64);
     }
 
     return this.http.post<LoginResponse>(url, formData).pipe(
