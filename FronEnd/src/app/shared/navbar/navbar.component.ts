@@ -34,8 +34,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         return;
 
       case AuthStatus.authenticated:
-        this.userName = this.authService.currentUser()?.name || 'Nombre del Usuario';
-        this.router.navigateByUrl('/store');
+        const currentUser = this.authService.currentUser();
+        this.userName = currentUser ? currentUser.name : 'Nombre del Usuario';
+        this.router.navigateByUrl('/landing');
         this.cdr.detectChanges(); // Forzar verificación de cambios
         return;
 
@@ -60,7 +61,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     });
 
     // Asignar el nombre del usuario desde el servicio de autenticación
-    this.userName = this.authService.currentUser()?.name || 'Nombre del Usuario';
+    const currentUser = this.authService.currentUser();
+    this.userName = currentUser ? currentUser.name : 'Nombre del Usuario';
   }
 
   ngAfterViewInit() {
