@@ -10,9 +10,17 @@ export class ShopController {
   constructor(private readonly shopService: ShopService) {}
 
   @Post('/register')
-  register(@Body() registerDto: RegisterShopDto) {
-    return this.shopService.register(registerDto);
-  }
+    async register(@Body() registerDto: RegisterShopDto) {
+        // Aquí podrías manejar la carga del logo en base64 si lo deseas
+        const logoBase64 = registerDto.logo; // Suponiendo que el logo viene como base64 en el DTO
+        const shop = await this.shopService.create(registerDto, logoBase64);
+
+        return {
+            shop,
+            message: 'Tienda registrada exitosamente',
+        };
+    }
+
 
   @Post('/login')
   login(@Body() loginDto: LoginDto) {

@@ -19,27 +19,27 @@ export class ShopService {
 
   async create(createShopDto: RegisterShopDto, logoBase64: string): Promise<Shop> {
     try {
-      const { password, ...shopData } = createShopDto;
+        const { password, ...shopData } = createShopDto;
 
-      const newShop = new this.shopModel({
-        password: bcryptjs.hashSync(password, 10),
-        ...shopData,
-        logo: logoBase64 // Guarda el logo como una cadena base64 en la base de datos
-      });
-      
-      await newShop.save();
-      
-      const { password: _, ...shop } = newShop.toJSON();
+        const logoBuffer = Buffer.from(logoBase64, 'base64'); // Convierte de base64 a buffer
 
-      return shop;
+        const newShop = new this.shopModel({
+            password: bcryptjs.hashSync(password, 10),
+            ...shopData,
+            logo: logoBuffer, // Guarda el logo como un buffer en MongoDB
+        });
 
+        await newShop.save();
+
+        const { password: _, ...shop } = newShop.toJSON();
+        return shop as Shop;
     } catch (error) {
-      if (error.code === 11000) {
-        throw new BadRequestException(`${createShopDto.email} Ya Existe!`);
-      }
-      throw new InternalServerErrorException('Algo terrible está sucediendo!!!!');
+        if (error.code === 11000) {
+            throw new BadRequestException(`${createShopDto.email} Ya Existe!`);
+        }
+        throw new InternalServerErrorException('Algo terrible está sucediendo!!!!');
     }
-  }
+}
 
   async login(loginDto: LoginDto): Promise<LoginResponce> {
     const { email, password } = loginDto;
