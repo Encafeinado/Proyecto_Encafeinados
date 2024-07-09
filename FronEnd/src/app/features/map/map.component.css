@@ -257,3 +257,81 @@
 .album img.colored {
   filter: grayscale(0%);
 }
+
+.album-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 3px 0; /* Agrega espacio arriba y abajo */
+}
+
+.obtained-stamps, .missing-stamps {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0 20px; /* Agrega espacio a los lados */
+}
+
+/* ------------------------------------------------------------------------------------------ */
+
+.modal-coffee {
+  background-color: #fffaf0;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  font-family: "Georgia", serif;
+  overflow: hidden;
+}
+
+.modal-header-coffee {
+  background-color: #6f4e37;
+  color: #f7f3e9;
+  padding: 15px;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-title-coffee {
+  font-size: 1.5em;
+  margin: 0;
+}
+
+.modal-body-coffee {
+  padding: 20px;
+  background-color: #fdf5e6;
+  border-radius: 0 0 10px 10px;
+}
+
+.image-gallery-coffee {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.gallery-image {
+  width: 30%;
+  border-radius: 5px;
+}
+
+.description-coffee {
+  padding-top: 10px;
+}
+
+.modal-footer-coffee {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  border-top: none;
+}
+
+.modal-footer-coffee .btn {
+  background-color: #6f4e37;
+  color: #f7f3e9;
+  border: none;
+}
+
+.modal-footer-coffee .btn:hover {
+  background-color: #5a3927;
+}

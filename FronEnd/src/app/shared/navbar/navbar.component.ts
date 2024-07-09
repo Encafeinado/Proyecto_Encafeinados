@@ -15,6 +15,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef); // Inyecta ChangeDetectorRef
   public navbarText: string = 'Descubre el mejor café cerca de ti';
+  userName: string = 'Nombre del Usuario';
   @ViewChild('sesionModal', { static: true }) sesionModal: any;
   modalRef!: NgbModalRef;
   openedModal = false;

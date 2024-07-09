@@ -12,11 +12,6 @@
       <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid">
       <p>Explora nuestras mejores recomendaciones para los amantes del café.</p>
       <br>
-      <h1>Mapa de la Tienda</h1>
-      <p [ngClass]="{ 'active': isStoreOpen, 'inactive': !isStoreOpen }">
-        {{ isStoreOpen ? 'La tienda está activa en el mapa.' : 'La tienda no está activa en el mapa.' }}
-      </p>
-
       <!-- Información adicional -->
       <div style="margin-top: 20px; background-color: #f8f9fa; padding: 10px; border-radius: 5px;">
         <h3 style="margin-bottom: 10px;">Información adicional</h3>
@@ -121,6 +116,14 @@
       <h5 class="modal-title">Álbum</h5>
     </div>
     <div class="modal-body">
+      <div class="album-info">
+        <div class="obtained-stamps">
+          Estampitas obtenidas: {{ obtainedStamps }}
+        </div>
+        <div class="missing-stamps">
+          Estampitas faltantes: {{ obtainedStamps }}/{{ totalStamps }}
+        </div>
+      </div>
       <div class="album">
         <div class="album-page" *ngFor="let image of albumImages">
           <img [src]="image.src" [alt]="image.alt" class="img-fluid" [class.colored]="image.colored">
@@ -132,3 +135,26 @@
     </div>
   </div>
 </ng-template>
+
+<!-- Modal de llegada al café -->
+<ng-template #arriveModal let-modal>
+  <div class="modal-content-coffee modal-coffee">
+    <div class="modal-header-coffee">
+      <h4 class="modal-title-coffee" id="modal-title-coffee">¡¡Llegaste a {{ destinationName }}!!</h4>
+    </div>
+    <div class="modal-body-coffee">
+      <div class="image-gallery-coffee">
+        <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
+        <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
+        <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
+      </div>
+      <p class="description-coffee">
+        Información sobre el café...
+      </p>
+    </div>
+    <div class="modal-footer-coffee">
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancelar</button>
+    </div>
+  </div>
+</ng-template>
+
