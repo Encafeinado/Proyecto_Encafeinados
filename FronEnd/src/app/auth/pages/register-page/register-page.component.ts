@@ -28,7 +28,8 @@ export class RegisterPageComponent {
     password: ['', [ Validators.required, Validators.minLength(6) ]],
     phone: ['', [ Validators.required, Validators.pattern('^[0-9]+$') ]],
     specialties: [''], // Campo adicional para tienda
-    address: ['']    // Campo adicional para tienda
+    address: [''], // Campo adicional para tienda
+    logo: ['', Validators.required] // Agrega validador para logo
   });
 
   public isUser: boolean = true;
@@ -64,6 +65,7 @@ export class RegisterPageComponent {
           filetype: file.type,
           value: reader.result // El resultado del FileReader ya es un string o ArrayBuffer
         };
+        this.myForm.patchValue({ logo: reader.result }); // Actualiza el valor del campo logo en el formulario
       };
       reader.readAsDataURL(file);
     }
@@ -105,4 +107,4 @@ export class RegisterPageComponent {
         });
     }
   }
-}  
+}
