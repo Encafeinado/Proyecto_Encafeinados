@@ -390,7 +390,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         console.error('Error al obtener la ruta desde OSRM:', error);
       });
   }
-
+  
   selectTransportMode(mode: string) {
     this.selectedTransport = mode;
   }
