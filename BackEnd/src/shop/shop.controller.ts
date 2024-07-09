@@ -1,25 +1,31 @@
 import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { ShopService } from './shop.service';
-import { RegisterShopDto,LoginDto } from './dto';
+import { RegisterShopDto, LoginDto } from './dto';
 import { Shop } from './entities/shop.entity';
 import { LoginResponce } from './interfaces/login-responce';
 import { AuthGuard } from './guards/shop.guard';
 
-
 @Controller('shop')
-export class ShopController {  // Cambié el nombre a ShopController
+export class ShopController {
   constructor(private readonly shopService: ShopService) {}
 
-
   @Post('/register')
-  register(@Body() registerDto: RegisterShopDto) {
-    return this.shopService.register(registerDto);
-  }
+    async register(@Body() registerDto: RegisterShopDto) {
+        // Aquí podrías manejar la carga del logo en base64 si lo deseas
+        const logoBase64 = registerDto.logo; // Suponiendo que el logo viene como base64 en el DTO
+        const shop = await this.shopService.create(registerDto, logoBase64);
+
+        return {
+            shop,
+            message: 'Tienda registrada exitosamente',
+        };
+    }
+
+
   @Post('/login')
   login(@Body() loginDto: LoginDto) {
     return this.shopService.login(loginDto);
   }
-
 
   @UseGuards(AuthGuard)
   @Get()
@@ -36,20 +42,4 @@ export class ShopController {  // Cambié el nombre a ShopController
       token: this.shopService.getJwtToken({ id: shop._id }),
     };
   }
-
-
-  //@Get(':id')
-  //findOne(@Param('id') id: string) {
-   // return this.authService.findOne(+id);
-  //}
-
-  //@Patch(':id')
-  //update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    //return this.authService.update(+id, updateAuthDto);
-  //}
-
-  //@Delete(':id')
-  //remove(@Param('id') id: string) {
-    //return this.authService.remove(+id);
-  //}
 }

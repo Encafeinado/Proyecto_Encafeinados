@@ -5,6 +5,12 @@ import { ToastrService } from 'ngx-toastr';
 
 import { AuthService } from '../../services/auth.service';
 
+interface CustomFile {
+  filename: string;
+  filetype: string;
+  value: string | ArrayBuffer | null; // Cambiado a solo aceptar string o ArrayBuffer
+}
+
 @Component({
   templateUrl: './register-page.component.html',
   styleUrls: ['./register-page.component.css']
@@ -28,6 +34,7 @@ export class RegisterPageComponent {
   public isUser: boolean = true;
   public isStore: boolean = false;
   public formTitle: string = 'Registro de Usuario';
+  logoFile: CustomFile | null = null;
 
   onUserTypeChange(type: string) {
     if (type === 'user') {
@@ -47,22 +54,41 @@ export class RegisterPageComponent {
     this.myForm.get('address')?.updateValueAndValidity();
   }
 
+  onFileChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.logoFile = {
+          filename: file.name,
+          filetype: file.type,
+          value: reader.result // El resultado del FileReader ya es un string o ArrayBuffer
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   register() {
     if (this.myForm.invalid) {
       return;
     }
-
-    const { name, email, password, phone, specialties, address } = this.myForm.value;
-
+  
+    const { name, email, password, phone, specialties, address, logo } = this.myForm.value;
+  
+    // Verifica que logo tenga datos antes de enviar la solicitud
+    console.log('Logo base64:', logo);
+  
     if (this.isStore) {
-      this.authService.registerStore(name, email, password, phone, specialties, address)
+      this.authService.registerStore(name, email, password, phone, specialties, address, logo)
         .subscribe({
           next: () => {
             this.toastr.success('¡Registro de tienda exitoso!', 'Éxito');
             this.router.navigateByUrl('/auth/login');
           },
-          error: (message) => {
-            this.toastr.error(message, 'Error al registrar tienda');
+          error: (err) => {
+            console.error('Error al registrar tienda:', err);
+            this.toastr.error('Error al registrar tienda', 'Error');
           }
         });
     } else {
@@ -72,10 +98,11 @@ export class RegisterPageComponent {
             this.toastr.success('¡Registro de usuario exitoso!', 'Éxito');
             this.router.navigateByUrl('/auth/login');
           },
-          error: (message) => {
-            this.toastr.error(message, 'Error al registrar usuario');
+          error: (err) => {
+            console.error('Error al registrar usuario:', err);
+            this.toastr.error('Error al registrar usuario', 'Error');
           }
         });
     }
   }
-}
+}  

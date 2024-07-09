@@ -56,9 +56,9 @@ export class AuthService {
     );
   }
 
-  registerStore(name: string, email: string, password: string, phone: string, specialties: string, address: string): Observable<boolean> {
+  registerStore(name: string, email: string, password: string, phone: string, specialties: string, address: string, logo: string): Observable<boolean> {
     const url = `${this.baseUrl}/shop/register`;
-    const body = { name, email, password, phone, specialties, address };
+    const body = { name, email, password, phone, specialties, address,logo };
 
     return this.http.post<LoginResponse>(url, body).pipe(
       map(({ user, token }) => this.setAuthentication(user, token)),
