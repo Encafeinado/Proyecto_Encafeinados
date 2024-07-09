@@ -42,6 +42,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   @ViewChild('codeModal', { static: true }) codeModal: any;
   @ViewChild('modalBook', { static: true }) modalBook: any;
   @ViewChild('codeInput', { static: false }) codeInput!: ElementRef;
+  @ViewChild('arriveModal', { static: true }) arriveModal: any;
+
 
   constructor(
     private modalService: NgbModal,
@@ -72,6 +74,15 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
     }).addTo(map);
+
+    const casaMarker = L.marker([6.34147392395257, -75.51329608725513],{
+      icon: this.createStoreIcon(
+        'assets/IconsMarker/cafeteria.png',
+        this.isStoreOpen,
+        'grayscale-icon'
+      ),
+    }).addTo(map)
+    .bindPopup('Casa');
 
     const aromaMarker = L.marker([6.15150999618405, -75.61369180892304], {
       icon: this.createStoreIcon(
@@ -107,6 +118,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
       [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
       [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
+      [casaMarker.getLatLng().lat, casaMarker.getLatLng().lng]
     ]);
 
     const userLocationMarker = L.marker([0, 0], { icon: this.userLocationIcon })
@@ -129,6 +141,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
             [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
             [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
             [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
+            [casaMarker.getLatLng().lat, casaMarker.getLatLng().lng],
             [
               userLocationMarker.getLatLng().lat,
               userLocationMarker.getLatLng().lng,
@@ -140,7 +153,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
             userLng,
             aromaMarker,
             baulMarker,
-            lealMarker
+            lealMarker,
+            casaMarker
           );
 
           console.log(
@@ -194,11 +208,11 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     userLng: number,
     aromaMarker: L.Marker,
     baulMarker: L.Marker,
-    lealMarker: L.Marker
+    lealMarker: L.Marker,
+    casaMarker: L.Marker
   ) {
     const proximityThreshold = 0.1; // Ajusta este valor según tus necesidades (en grados de latitud/longitud)
-
-    // Calcula la distancia entre el usuario y cada tienda
+  
     const distanceToAroma = this.calculateDistance(
       userLat,
       userLng,
@@ -217,8 +231,13 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       lealMarker.getLatLng().lat,
       lealMarker.getLatLng().lng
     );
-
-    // Verifica si el usuario está cerca de alguna tienda y cambia el estado del ícono
+    const distanceToCasa = this.calculateDistance(
+      userLat,
+      userLng,
+      casaMarker.getLatLng().lat,
+      casaMarker.getLatLng().lng
+    );
+  
     if (distanceToAroma <= proximityThreshold) {
       aromaMarker.setIcon(
         this.createStoreIcon(
@@ -227,7 +246,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         )
       );
       console.log('Estás cerca de Aroma Café Sabaneta');
-      this.openModal(this.createModal); // Abre el modal correspondiente
+      this.openModal(this.arriveModal, 'Aroma Café Sabaneta'); // Pasa el nombre de la cafetería
     } else {
       aromaMarker.setIcon(
         this.createStoreIcon(
@@ -237,7 +256,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         )
       );
     }
-
+  
     if (distanceToBaul <= proximityThreshold) {
       baulMarker.setIcon(
         this.createStoreIcon(
@@ -246,7 +265,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         )
       );
       console.log('Estás cerca de Viejo Baul');
-      this.openModal(this.createModal); // Abre el modal correspondiente
+      this.openModal(this.arriveModal, 'Viejo Baul'); // Pasa el nombre de la cafetería
     } else {
       baulMarker.setIcon(
         this.createStoreIcon(
@@ -256,7 +275,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         )
       );
     }
-
+  
     if (distanceToLeal <= proximityThreshold) {
       lealMarker.setIcon(
         this.createStoreIcon(
@@ -265,7 +284,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         )
       );
       console.log('Estás cerca de Leal Coffee');
-      this.openModal(this.createModal); // Abre el modal correspondiente
+      this.openModal(this.arriveModal, 'Leal Coffee'); // Pasa el nombre de la cafetería
     } else {
       lealMarker.setIcon(
         this.createStoreIcon(
@@ -275,7 +294,27 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         )
       );
     }
+  
+    if (distanceToCasa <= proximityThreshold) {
+      casaMarker.setIcon(
+        this.createStoreIcon(
+          'assets/IconsMarker/cafeteria.png',
+          this.isStoreOpen
+        )
+      );
+      console.log('Estás cerca de Casa');
+      this.openModal(this.arriveModal, 'Casa'); // Pasa el nombre de la cafetería
+    } else {
+      casaMarker.setIcon(
+        this.createStoreIcon(
+          'assets/IconsMarker/cafeteria.png',
+          this.isStoreOpen,
+          'grayscale-icon'
+        )
+      );
+    }
   }
+  
 
   calculateDistance(
     userLat: number,
@@ -313,7 +352,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.targetMarker = targetMarker;
     this.userLocationMarker = userLocationMarker;
     this.map = map;
-    this.openModal(this.createModal);
+    this.openModal(this.createModal, '');
   }
 
   showRouteGuia(): void {
@@ -410,7 +449,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   cancelRoute(): void {
-    this.openModal(this.cancelModal);
+    this.openModal(this.cancelModal, '');
   }
 
   confirmCancelRoute(): void {
@@ -421,8 +460,9 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.modalRef.close();
   }
 
-  openModal(content: any): void {
+  openModal(content: any, destinationName: string): void {
     if (!this.openedModal) {
+      this.destinationName = destinationName;
       this.openedModal = true;
       this.modalRef = this.modalService.open(content, {
         centered: true,
@@ -467,11 +507,11 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   openModalWithCodigo(): void {
-    this.openModal(this.codeModal);
+    this.openModal(this.codeModal, '');
   }
 
   openModalAlbum(): void {
-    this.openModal(this.modalBook);
+    this.openModal(this.modalBook, '');
   }
 
   verifyCode() {
@@ -499,5 +539,13 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     } else {
       console.log('Todas las imágenes ya están coloreadas');
     }
+  }
+
+  get obtainedStamps(): number {
+    return this.albumImages.filter(image => image.colored).length;
+  }
+
+  get totalStamps(): number {
+    return this.albumImages.length;
   }
 }

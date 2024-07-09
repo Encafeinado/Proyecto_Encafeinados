@@ -82,4 +82,23 @@
   .modal-base .modal-footer .btn:hover {
     background-color: #5a3927;
   }
+
+  
+  .navbar .dropdown-toggle {
+    display: flex;
+    align-items: center;
+  }
+  
+  .navbar .dropdown-toggle img {
+    margin-right: 8px;
+  }
+  
+  .navbar .dropdown-menu {
+    right: 0;
+    left: auto;
+  }
+
+  .dropdown-toggle::after {
+    display: none !important;
+  }
   
