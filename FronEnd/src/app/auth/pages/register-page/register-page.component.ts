@@ -73,18 +73,22 @@ export class RegisterPageComponent {
     if (this.myForm.invalid) {
       return;
     }
-
-    const { name, email, password, phone, specialties, address,logo } = this.myForm.value;
-
+  
+    const { name, email, password, phone, specialties, address, logo } = this.myForm.value;
+  
+    // Verifica que logo tenga datos antes de enviar la solicitud
+    console.log('Logo base64:', logo);
+  
     if (this.isStore) {
-      this.authService.registerStore(name, email, password, phone, specialties, address,logo)
+      this.authService.registerStore(name, email, password, phone, specialties, address, logo)
         .subscribe({
           next: () => {
             this.toastr.success('¡Registro de tienda exitoso!', 'Éxito');
             this.router.navigateByUrl('/auth/login');
           },
-          error: (message) => {
-            this.toastr.error(message, 'Error al registrar tienda');
+          error: (err) => {
+            console.error('Error al registrar tienda:', err);
+            this.toastr.error('Error al registrar tienda', 'Error');
           }
         });
     } else {
@@ -94,10 +98,11 @@ export class RegisterPageComponent {
             this.toastr.success('¡Registro de usuario exitoso!', 'Éxito');
             this.router.navigateByUrl('/auth/login');
           },
-          error: (message) => {
-            this.toastr.error(message, 'Error al registrar usuario');
+          error: (err) => {
+            console.error('Error al registrar usuario:', err);
+            this.toastr.error('Error al registrar usuario', 'Error');
           }
         });
     }
   }
-}
+}  

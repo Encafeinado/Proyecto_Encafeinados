@@ -19,27 +19,27 @@ export class ShopService {
 
   async create(createShopDto: RegisterShopDto, logoBase64: string): Promise<Shop> {
     try {
-        const { password, ...shopData } = createShopDto;
+      const { password, ...shopData } = createShopDto;
 
-        const logoBuffer = Buffer.from(logoBase64, 'base64'); // Convierte de base64 a buffer
+      const logoBuffer = Buffer.from(logoBase64, 'base64'); // Convierte de base64 a buffer
 
-        const newShop = new this.shopModel({
-            password: bcryptjs.hashSync(password, 10),
-            ...shopData,
-            logo: logoBuffer, // Guarda el logo como un buffer en MongoDB
-        });
+      const newShop = new this.shopModel({
+        password: bcryptjs.hashSync(password, 10),
+        ...shopData,
+        logo: logoBuffer, // Guarda el logo como un buffer en MongoDB
+      });
 
-        await newShop.save();
+      await newShop.save();
 
-        const { password: _, ...shop } = newShop.toJSON();
-        return shop as Shop;
+      const { password: _, ...shop } = newShop.toJSON();
+      return shop as Shop;
     } catch (error) {
-        if (error.code === 11000) {
-            throw new BadRequestException(`${createShopDto.email} Ya Existe!`);
-        }
-        throw new InternalServerErrorException('Algo terrible está sucediendo!!!!');
+      if (error.code === 11000) {
+        throw new BadRequestException(`${createShopDto.email} Ya Existe!`);
+      }
+      throw new InternalServerErrorException('Algo terrible está sucediendo!!!!');
     }
-}
+  }
 
   async login(loginDto: LoginDto): Promise<LoginResponce> {
     const { email, password } = loginDto;
@@ -60,15 +60,17 @@ export class ShopService {
     };
   }
 
-  async register(registerDto: RegisterShopDto): Promise<LoginResponce> {
-    // Aquí podrías manejar la carga del logo y convertirlo a base64 si lo deseas
-    const logoBase64 = ''; // Aquí iría la lógica para convertir el logo a base64
-    const shop = await this.create(registerDto, logoBase64);
+  async register(registerDto: RegisterShopDto, logoBase64: string): Promise<LoginResponce> {
+    try {
+      const shop = await this.create(registerDto, logoBase64);
 
-    return {
-      shop: shop,
-      token: this.getJwtToken({ id: shop._id })
-    };
+      return {
+        shop: shop,
+        token: this.getJwtToken({ id: shop._id })
+      };
+    } catch (error) {
+      throw new InternalServerErrorException('Error al registrar tienda');
+    }
   }
 
   findAll(): Promise<Shop[]> {
