@@ -6,7 +6,6 @@
           {{ formTitle }}
         </span>
 
-        <!-- Espacio para los checkboxes -->
         <div class="wrap-input100 m-b-23" style="margin-bottom: 20px;">
           <span class="label-input100">Tipo de Registro</span>
           <div style="margin-top: 10px;">
@@ -39,7 +38,6 @@
           <span class="focus-input100"></span>
         </div>
 
-        <!-- Campos adicionales para Tienda -->
         <div *ngIf="isStore">
           <div class="wrap-input100 m-b-23">
             <span class="label-input100">Especialidad</span>
@@ -51,6 +49,11 @@
             <span class="label-input100">Dirección</span>
             <input class="input100 small-placeholder" type="text" formControlName="address" placeholder="Dirección">
             <span class="focus-input100"></span>
+          </div>
+
+          <div class="wrap-input100 m-b-23">
+            <span class="label-input100">Logo</span>
+            <input type="file" (change)="onFileChange($event)">
           </div>
         </div>
 
@@ -74,8 +77,8 @@
     </div>
 
     <div class="icon-container2">
-      <div [ngClass]="{'company-icon2': isUser, 'company-icon3': isStore, 'coffee-background': true}">
-        <img [src]="isUser ? '../../../../assets/images/logodescafeinados.jpg' : '../../../../assets/images/logodescafeinados.jpg'" alt="Icono de la empresa">
+      <div class="company-icon2 coffee-background">
+        <img src="../../../../assets/images/logodescafeinados.jpg" alt="Icono de la empresa">
       </div>
     </div>
   </div>

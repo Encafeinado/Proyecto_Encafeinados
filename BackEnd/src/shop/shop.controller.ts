@@ -1,25 +1,23 @@
 import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { ShopService } from './shop.service';
-import { RegisterShopDto,LoginDto } from './dto';
+import { RegisterShopDto, LoginDto } from './dto';
 import { Shop } from './entities/shop.entity';
 import { LoginResponce } from './interfaces/login-responce';
 import { AuthGuard } from './guards/shop.guard';
 
-
 @Controller('shop')
-export class ShopController {  // Cambié el nombre a ShopController
+export class ShopController {
   constructor(private readonly shopService: ShopService) {}
-
 
   @Post('/register')
   register(@Body() registerDto: RegisterShopDto) {
     return this.shopService.register(registerDto);
   }
+
   @Post('/login')
   login(@Body() loginDto: LoginDto) {
     return this.shopService.login(loginDto);
   }
-
 
   @UseGuards(AuthGuard)
   @Get()
@@ -36,20 +34,4 @@ export class ShopController {  // Cambié el nombre a ShopController
       token: this.shopService.getJwtToken({ id: shop._id }),
     };
   }
-
-
-  //@Get(':id')
-  //findOne(@Param('id') id: string) {
-   // return this.authService.findOne(+id);
-  //}
-
-  //@Patch(':id')
-  //update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    //return this.authService.update(+id, updateAuthDto);
-  //}
-
-  //@Delete(':id')
-  //remove(@Param('id') id: string) {
-    //return this.authService.remove(+id);
-  //}
 }
