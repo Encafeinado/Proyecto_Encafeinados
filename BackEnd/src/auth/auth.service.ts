@@ -11,7 +11,6 @@ import { User } from './entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
 import { LoginResponce } from './interfaces/login-responce';
-import { BookService } from '../book/book.service';
 
 
 
@@ -23,8 +22,7 @@ export class AuthService {
     @InjectModel(User.name)
     
     private userModel: Model<User>,
-    private jwtService: JwtService,
-    private readonly bookService: BookService,
+    private jwtService: JwtService
   ){
 }
 
@@ -39,7 +37,7 @@ export class AuthService {
       });
        await newUser.save();
       const {password:_,... user} = newUser.toJSON();
-      await this.bookService.registerInBook(user.name);
+
       return user;
 
       } catch (error) {
