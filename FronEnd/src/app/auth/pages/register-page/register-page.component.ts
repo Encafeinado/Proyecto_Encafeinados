@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
 interface CustomFile {
   filename: string;
   filetype: string;
-  value: string | ArrayBuffer | null; // Cambiado a solo aceptar string o ArrayBuffer
+  value: string | ArrayBuffer | null;
 }
 
 @Component({
@@ -26,18 +26,21 @@ export class RegisterPageComponent {
     name: ['', [ Validators.required ]],
     email: ['', [ Validators.required, Validators.email ]],
     password: ['', [ Validators.required, Validators.minLength(6) ]],
+    confirmPassword: ['', [ Validators.required ]],
     phone: ['', [ Validators.required, Validators.pattern('^[0-9]+$') ]],
-    specialties: [''], // Campo adicional para tienda
-    address: [''], // Campo adicional para tienda
-    logo: [''] // Agrega validador para logo
+    specialties: [''],
+    address: [''],
+    logo: ['']
+  }, {
+    validators: this.passwordMatchValidator // Validador personalizado para la coincidencia de contraseñas
   });
 
   public isUser: boolean = true;
   public isStore: boolean = false;
   public formTitle: string = 'Registro de Usuario';
   logoFile: CustomFile | null = null;
-  hidePassword: boolean = true; // Variable para controlar la visibilidad de la contraseña
-
+  hidePassword: boolean = true;
+  hidePasswordconfirm: boolean = true;
 
   onUserTypeChange(type: string) {
     if (type === 'user') {
@@ -57,11 +60,6 @@ export class RegisterPageComponent {
     this.myForm.get('address')?.updateValueAndValidity();
   }
 
-  togglePasswordVisibility(): void {
-    this.hidePassword = !this.hidePassword;
-  }
-
-
   onFileChange(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -70,24 +68,34 @@ export class RegisterPageComponent {
         this.logoFile = {
           filename: file.name,
           filetype: file.type,
-          value: reader.result // El resultado del FileReader ya es un string o ArrayBuffer
+          value: reader.result
         };
-        this.myForm.patchValue({ logo: reader.result }); // Actualiza el valor del campo logo en el formulario
+        this.myForm.patchValue({ logo: reader.result });
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
+  }
+  togglePasswordVisibilityconfirm() {
+    this.hidePasswordconfirm = !this.hidePasswordconfirm;
+  }
+
+  passwordMatchValidator(group: FormGroup) {
+    const password = group.get('password')?.value;
+    const confirmPassword = group.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { mismatch: true };
   }
 
   register() {
     if (this.myForm.invalid) {
       return;
     }
-  
+
     const { name, email, password, phone, specialties, address, logo } = this.myForm.value;
-  
-    // Verifica que logo tenga datos antes de enviar la solicitud
-    console.log('Logo base64:', logo);
-  
+
     if (this.isStore) {
       this.authService.registerStore(name, email, password, phone, specialties, address, logo)
         .subscribe({
@@ -114,4 +122,4 @@ export class RegisterPageComponent {
         });
     }
   }
-}  
+}

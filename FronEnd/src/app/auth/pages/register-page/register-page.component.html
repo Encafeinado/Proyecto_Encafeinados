@@ -40,6 +40,20 @@
         </div>
 
         <div class="wrap-input100 m-b-23">
+          <span class="label-input100">Confirmar Contraseña</span>
+          <div class="input-with-eye">
+            <input class="input100 small-placeholder" type="{{ hidePasswordconfirm ? 'password' : 'text' }}" formControlName="confirmPassword" placeholder="Confirmar contraseña">
+            <span class="focus-input100"></span>
+            <div class="eye-icon" (click)="togglePasswordVisibilityconfirm()">
+              <i class="fa" [ngClass]="{'fa-eye': hidePasswordconfirm, 'fa-eye-slash': !hidePasswordconfirm}"></i>
+            </div>
+          </div>
+          <div *ngIf="myForm.get('confirmPassword')?.dirty && myForm.hasError('mismatch', 'confirmPassword')">
+            <p class="error-message">Las contraseñas no coinciden.</p>
+          </div>
+        </div>
+
+        <div class="wrap-input100 m-b-23">
           <span class="label-input100">Celular</span>
           <input class="input100 small-placeholder" type="text" formControlName="phone" placeholder="Celular">
           <span class="focus-input100"></span>
