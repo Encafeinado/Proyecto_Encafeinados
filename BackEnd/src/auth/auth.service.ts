@@ -11,7 +11,6 @@ import { User } from './entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
 import { LoginResponce } from './interfaces/login-responce';
-import { Book } from '../book/entities/book.entity';
 
 
 
@@ -23,7 +22,6 @@ export class AuthService {
     @InjectModel(User.name)
     
     private userModel: Model<User>,
-    @InjectModel(Book.name) private bookModel: Model<Book>,
     private jwtService: JwtService
   ){
 }
