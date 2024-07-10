@@ -107,8 +107,4 @@ export class RegisterPageComponent {
         });
     }
   }
-} 
-
-
-
-
+}  
