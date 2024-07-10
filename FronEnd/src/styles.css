@@ -225,13 +225,13 @@ button:hover {
 .company-icon2 img {
   max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
   height: auto;
-  max-height: 600px; /* Limita la altura máxima de la imagen */
+  max-height: 670px; /* Limita la altura máxima de la imagen */
 }
 
 .company-icon3 img {
   max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
   height: auto;
-  max-height:750px; /* Limita la altura máxima de la imagen */
+  max-height:920px; /* Limita la altura máxima de la imagen */
 }
 
 
