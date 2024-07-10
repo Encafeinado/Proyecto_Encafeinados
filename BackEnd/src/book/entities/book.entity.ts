@@ -4,10 +4,10 @@ import { Image, ImageSchema } from './image.entity'; // Importamos el esquema de
 
 @Schema()
 export class Book {
-  @Prop({ required: true })
+  @Prop()
   nameShop: string;
 
-  @Prop()
+  @Prop({ required: true })
   nameUser: string;
 
   @Prop()
