@@ -65,7 +65,6 @@ export class BookService {
     return book;
   }
 
-
   getJwtToken(payload: JwtPayload): string {
     return this.jwtService.sign(payload);
   }
