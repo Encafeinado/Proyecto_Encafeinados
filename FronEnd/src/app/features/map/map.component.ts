@@ -12,6 +12,10 @@ import 'leaflet-routing-machine';
 import * as toastr from 'toastr';
 import { AlbumService, Image } from '../../service/album.service';
 import { StoreStatusService } from '../../service/store-status.service';
+import { UserService } from '../../service/user.service';
+import { ShopService } from '../../service/shop.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-map',
@@ -36,6 +40,9 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   albumImages: Image[] = [];
   currentImageIndex: number = 0; // Índice de la imagen actual para colorear
   isStoreOpen: boolean = false;
+  private apiUrl = 'https://encafeinados-backend.up.railway.app'; // Ajusta según sea necesario
+  userData: any;
+  shopData: any;
 
   @ViewChild('createModal', { static: true }) createModal: any;
   @ViewChild('cancelModal', { static: true }) cancelModal: any;
@@ -48,7 +55,10 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   constructor(
     private modalService: NgbModal,
     private albumService: AlbumService,
-    private storeStatusService: StoreStatusService
+    private storeStatusService: StoreStatusService,
+    private userService: UserService,
+    private shopService: ShopService,
+    private http: HttpClient
   ) {
     this.userLocationIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cosechaUser.png',
@@ -62,6 +72,45 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   ngOnInit(): void {
     this.albumImages = this.albumService.getAlbumImages();
     this.isStoreOpen = this.storeStatusService.isStoreActivated();
+    this.fetchUserData();
+    this.fetchShopData();
+  }
+
+
+  fetchUserData(): void {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token no encontrado en el almacenamiento local.');
+      return;
+    }
+
+    this.userService.fetchUserData(token).subscribe(
+      (data: any) => {
+        this.userData = data;
+        console.log('Datos del usuario:', this.userData);
+      },
+      error => {
+        console.error('Error al obtener los datos del usuario:', error);
+      }
+    );
+  }
+
+  fetchShopData(): void {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token no encontrado en el almacenamiento local.');
+      return;
+    }
+
+    this.shopService.fetchShopData(token).subscribe(
+      (data: any) => {
+        this.shopData = data;
+        console.log('Datos de la tienda:', this.shopData);
+      },
+      error => {
+        console.error('Error al obtener los datos de la tienda:', error);
+      }
+    );
   }
 
   ngAfterViewInit(): void {
