@@ -1,3 +1,4 @@
+// auth.service.ts
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environments';
@@ -17,6 +18,7 @@ export class AuthService {
 
   public currentUser = computed(() => this._currentUser());
   public authStatus = computed(() => this._authStatus());
+  public userRole = computed(() => this._currentUser()?.roles || null);
 
   constructor() {
     this.checkAuthStatus().subscribe();
@@ -29,22 +31,40 @@ export class AuthService {
     return true;
   }
 
-  login(email: string, password: string): Observable<boolean> {
-    const urlUser = `${this.baseUrl}/auth/login`;
-    const urlStore = `${this.baseUrl}/shop/login`; // Asumiendo que existe una ruta para login de tiendas
-    const body = { email, password };
+// auth.service.ts
+login(email: string, password: string): Observable<User> {
+  const urlUser = `${this.baseUrl}/auth/login`;
+  const urlStore = `${this.baseUrl}/shop/login`;
+  const body = { email, password };
 
-    return this.http.post<LoginResponse>(urlUser, body).pipe(
-      map(({ user, token }) => this.setAuthentication(user, token)),
-      catchError(err => {
-        // Intentar el login de tienda si falla el login de usuario
-        return this.http.post<LoginResponse>(urlStore, body).pipe(
-          map(({ user, token }) => this.setAuthentication(user, token)),
-          catchError(err => throwError(() => err.error.message))
-        );
-      })
-    );
-  }
+  return this.http.post<LoginResponse>(urlUser, body).pipe(
+    map(({ user, token }) => {
+      console.log('Login success for user:', user);  // <-- Log del usuario
+      this.setAuthentication(user, token);
+      return user;
+    }),
+    catchError(err => {
+      console.log('Login failed for user, trying shop login', err);
+      return this.http.post<LoginResponse>(urlStore, body).pipe(
+        map(({ user, token }) => {
+          console.log('Shop login success:', user);  // <-- Log del usuario de la tienda
+          this.setAuthentication(user, token);
+          return user;
+        }),
+        catchError(err => {
+          console.error('Login failed:', err);
+          return throwError(() => new Error('Login failed: ' + err.error.message));
+        })
+      );
+    })
+  );
+}
+
+
+
+
+
+
 
   register(name: string, email: string, password: string, phone: string): Observable<boolean> {
     const url = `${this.baseUrl}/auth/register`;

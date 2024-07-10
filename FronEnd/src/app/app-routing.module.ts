@@ -5,14 +5,14 @@ import { IsAuthenticatedGuard } from './auth/guards/is-authenticated.guard';
 
 const routes: Routes = [
   { path: 'auth', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule), canActivate: [IsNotAuthenticatedGuard] },
-  { path: 'store', loadChildren: () => import('./features/store/store.module').then(m => m.StoreModule), canActivate: [IsAuthenticatedGuard] },
-  { path: 'map', loadChildren: () => import('./features/map/map.module').then(m => m.MapModule), canActivate: [IsAuthenticatedGuard] },
+  { path: 'store', loadChildren: () => import('./features/store/store.module').then(m => m.StoreModule), canActivate: [IsAuthenticatedGuard], data: { role: 'shop' } },
+  { path: 'map', loadChildren: () => import('./features/map/map.module').then(m => m.MapModule), canActivate: [IsAuthenticatedGuard], data: { role: 'user' } },
   
   { path: '**', redirectTo: '/auth/login' } // Redirige a login si la ruta no coincide
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes,{ useHash: true})],
+  imports: [RouterModule.forRoot(routes, { useHash: true })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
