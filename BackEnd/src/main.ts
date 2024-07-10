@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as bodyParser from 'body-parser';
+import * as fileUpload from 'express-fileupload';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +12,8 @@ async function bootstrap() {
   // Configuración de body parser para manejar tamaños de solicitud más grandes
   app.use(bodyParser.json({ limit: '50mb' })); // Ajusta el límite según tus necesidades
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true })); // Ajusta el límite según tus necesidades
+
+  app.use(fileUpload());
 
   app.useGlobalPipes(
     new ValidationPipe({

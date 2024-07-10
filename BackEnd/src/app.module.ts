@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ShopModule } from './shop/shop.module';
 import { AuthModule } from './auth/auth.module';
 import { BookModule } from './book/book.module';
+import { UploadController } from './upload/upload.controller';
 
 @Module({
   imports: [
@@ -15,6 +16,6 @@ import { BookModule } from './book/book.module';
     ShopModule,
     AuthModule,
   ],
+  controllers: [UploadController],
 })
 export class AppModule {}
-
