@@ -56,9 +56,14 @@ export class AuthService {
       });
       await newBook.save();
     } catch (error) {
+      // Captura y maneja errores específicos de Mongoose
+      if (error.name === 'ValidationError') {
+        throw new BadRequestException('Error de validación al crear el libro');
+      }
       throw new InternalServerErrorException('Error creando el libro');
     }
   }
+  
 
   async login(loginDto: LoginDto): Promise<LoginResponce> {
     const { email, password } = loginDto;
