@@ -46,35 +46,16 @@ export class AuthService {
     );
   }
 
-  register(name: string, email: string, password: string, phone: string) {
+  register(name: string, email: string, password: string, phone: string): Observable<boolean> {
     const url = `${this.baseUrl}/auth/register`;
     const body = { name, email, password, phone };
 
     return this.http.post<LoginResponse>(url, body).pipe(
-      map(({ user, token }) => {
-        // After registering user, register in the 'book' table
-        this.registerInBook(name); // Assuming 'name' is used as identifier in 'book' table
-        return this.setAuthentication(user, token);
-      }),
+      map(({ user, token }) => this.setAuthentication(user, token)),
       catchError(err => throwError(() => err.error.message))
     );
   }
 
-  public registerInBook(userName: string): Observable<boolean> {
-    const url = `${this.baseUrl}/book/register`;
-    const body = {
-      nameShop: '', // Ajusta según la lógica de tu aplicación
-      nameUser: userName, // Utiliza el nombre de usuario registrado
-      code: '', // Ajusta según tu lógica
-      images: [] // Ejemplo: suponiendo que las imágenes son un array vacío
-    };
-  
-    return this.http.post(url, body).pipe(
-      map(response => true), // Devuelve true si el registro fue exitoso
-      catchError(err => throwError(() => err.error.message))
-    );
-  }
-  
   registerStore(name: string, email: string, password: string, phone: string, specialties: string, address: string, logo: string): Observable<boolean> {
     const url = `${this.baseUrl}/shop/register`;
     const body = { name, email, password, phone, specialties, address,logo };
