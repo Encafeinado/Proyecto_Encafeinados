@@ -11,6 +11,7 @@ import { User } from './entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
 import { LoginResponce } from './interfaces/login-responce';
+import { Book } from '../book/entities/book.entity';
 
 
 
@@ -22,6 +23,7 @@ export class AuthService {
     @InjectModel(User.name)
     
     private userModel: Model<User>,
+    @InjectModel(Book.name) private bookModel: Model<Book>,
     private jwtService: JwtService
   ){
 }
@@ -37,16 +39,24 @@ export class AuthService {
       });
        await newUser.save();
       const {password:_,... user} = newUser.toJSON();
+      const newBook = new this.bookModel({
+        nameUser: user.name,
+        nameShop: '', // Este campo queda vacío
+        code: '', // Este campo queda vacío
+        status: true, // Ajustar según sea necesario
+        images: [] // Inicializa el array de imágenes vacío
+      });
+
+      await newBook.save();
 
       return user;
 
-      } catch (error) {
-       if(error.code === 11000){
-        throw new BadRequestException(`${createUserDto.email} Ya Existe!`)
-       }
-        throw new InternalServerErrorException('Algo terrible esta sucediendo!!!!')
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new BadRequestException(`${createUserDto.email} Ya Existe!`);
       }
-
+      throw new InternalServerErrorException('Algo terrible está sucediendo!!!!');
+    }
   }
 
   async register(registerDto: RegisterUserDto): Promise<LoginResponce>{
