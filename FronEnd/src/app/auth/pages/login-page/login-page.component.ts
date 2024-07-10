@@ -10,28 +10,37 @@ import { AuthService } from '../../services/auth.service';
 })
 export class LoginPageComponent {
 
-  private fb = inject(FormBuilder);
-  private authService = inject(AuthService);
-  private router = inject(Router);
-  private toastr = inject(ToastrService); // Inyecta ToastrService
-  token: string = ''; // Inicializar con una cadena vacía
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+    private toastr: ToastrService // Inyecta ToastrService
+  ) {}
 
   public myForm: FormGroup = this.fb.group({
-    email: ['', [ Validators.required, Validators.email ]],
-    password: ['', [ Validators.required, Validators.minLength(6) ]],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  login() {
+  hidePassword: boolean = true; // Variable para controlar la visibilidad de la contraseña
+
+  togglePasswordVisibility(): void {
+    this.hidePassword = !this.hidePassword;
+  }
+
+  login(): void {
     const { email, password } = this.myForm.value;
 
     this.authService.login(email, password).subscribe({
       next: (response) => {
         if (response) {
-          this.token = localStorage.getItem('token') || '';
-          console.log('Token almacenado:', this.token);
+          // Guardar el token en localStorage (suponiendo que tu AuthService maneja esto)
+          const token = localStorage.getItem('token') || '';
+          console.log('Token almacenado:', token);
 
           // Mostrar Toastr con mensaje de éxito
           this.toastr.success('¡Inicio de sesión exitoso!', 'Éxito');
+          
           // Redirigir al usuario a la página de la tienda
           this.router.navigateByUrl('/store');
         } else {

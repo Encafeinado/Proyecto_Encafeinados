@@ -36,6 +36,8 @@ export class RegisterPageComponent {
   public isStore: boolean = false;
   public formTitle: string = 'Registro de Usuario';
   logoFile: CustomFile | null = null;
+  hidePassword: boolean = true; // Variable para controlar la visibilidad de la contraseña
+
 
   onUserTypeChange(type: string) {
     if (type === 'user') {
@@ -54,6 +56,11 @@ export class RegisterPageComponent {
     this.myForm.get('specialties')?.updateValueAndValidity();
     this.myForm.get('address')?.updateValueAndValidity();
   }
+
+  togglePasswordVisibility(): void {
+    this.hidePassword = !this.hidePassword;
+  }
+
 
   onFileChange(event: any) {
     const file = event.target.files[0];

@@ -278,6 +278,23 @@ button:hover {
 
 }
 
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  top: 70%;
+  transform: translateY(-30%);
+  cursor: pointer;
+}
+
+.eye-icon i {
+  color: #888;
+}
+
+.eye-icon i.fa-eye-slash {
+  color: #333;
+}
+
+
 .file-input-label::-webkit-file-upload-button {
   font-size: 12px; /* Tamaño de fuente más pequeño */
 }
