@@ -7,10 +7,10 @@ export class Book {
   @Prop({ required: true })
   nameShop: string;
 
-  @Prop({ required: true })
+  @Prop()
   nameUser: string;
 
-  @Prop({ required: true })
+  @Prop()
   code: string;
 
   @Prop({ default: true })
