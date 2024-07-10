@@ -1,61 +1,65 @@
 import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+
 import * as bcryptjs from 'bcryptjs';
-import { CreateUserDto, RegisterUserDto, LoginDto, UpdateAuthDto } from './dto';
+
+import { RegisterUserDto,CreateUserDto,UpdateAuthDto,LoginDto } from './dto';
+
+
 import { User } from './entities/user.entity';
-import { Book } from '../book/entities/book.entity'; // Asegúrate de que la ruta sea correcta
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
 import { LoginResponce } from './interfaces/login-responce';
 
+
+
+
 @Injectable()
 export class AuthService {
+
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Book.name) private bookModel: Model<Book>,
+    @InjectModel(User.name)
+    
+    private userModel: Model<User>,
     private jwtService: JwtService
-  ) {}
+  ){
+}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    try {
-      const { password, ...userData } = createUserDto;
+  async create(createUserDto: CreateUserDto): Promise<User>{
 
-      const newUser = new this.userModel({
-        password: bcryptjs.hashSync(password, 10),
-        ...userData
+      try {
+        const { password, ...userData} = createUserDto;
+
+        const newUser = new this.userModel( {
+          password: bcryptjs.hashSync(password, 10),
+          ...userData
       });
-      await newUser.save();
-      const { password: _, ...user } = newUser.toJSON();
-
-      // Crear un nuevo libro con el nombre del usuario y los demás campos vacíos
-      const newBook = new this.bookModel({
-        nameUser: user.name,
-        nameShop: '', // Este campo queda vacío
-        code: '', // Este campo queda vacío
-        status: true, // Ajustar según sea necesario
-        images: [] // Inicializa el array de imágenes vacío
-      });
-
-      await newBook.save();
+       await newUser.save();
+      const {password:_,... user} = newUser.toJSON();
 
       return user;
 
-    } catch (error) {
-      if (error.code === 11000) {
-        throw new BadRequestException(`${createUserDto.email} Ya Existe!`);
+      } catch (error) {
+       if(error.code === 11000){
+        throw new BadRequestException(`${createUserDto.email} Ya Existe!`)
+       }
+        throw new InternalServerErrorException('Algo terrible esta sucediendo!!!!')
       }
-      throw new InternalServerErrorException('Algo terrible está sucediendo!!!!');
-    }
+
   }
 
-  async register(registerDto: RegisterUserDto): Promise<LoginResponce> {
-    const user = await this.create(registerDto);
-    return {
+  async register(registerDto: RegisterUserDto): Promise<LoginResponce>{
+    
+    const user = await this.create(registerDto)
+    console.log({user});
+    return{
       user: user,
-      token: this.getJwtToken({ id: user._id })
-    };
+      token: this.getJwtToken({id: user._id})
+    }
+
   }
+
 
   async login(loginDto: LoginDto):Promise<LoginResponce>{
 
