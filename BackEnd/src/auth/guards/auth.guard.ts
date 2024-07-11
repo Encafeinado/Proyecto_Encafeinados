@@ -2,15 +2,12 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from '../interfaces/jwt-payload';
 import { AuthService } from '../auth.service';
-import { ShopService } from 'src/shop/shop.service';
-
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private authService: AuthService,
-    private shopService: ShopService, // Agrega el ShopService
   ) {}
 
   async canActivate(
@@ -27,19 +24,11 @@ export class AuthGuard implements CanActivate {
         token, { secret: process.env.JWT_SEED }
       );
       
-      // Intenta encontrar primero como usuario
-      let user = await this.authService.findUserById(payload.id);
-      if (!user) {
-        // Si no es usuario, intenta como tienda
-        const shop = await this.shopService.findShopById(payload.id);
-        if (!shop) throw new UnauthorizedException('El usuario/tienda no existe');
-        if (!shop.isActive) throw new UnauthorizedException('El usuario/tienda no está activo');
+      const user = await this.authService.findUserById(payload.id);
+      if (!user) throw new UnauthorizedException('El usuario no existe');
+      if (!user.isActive) throw new UnauthorizedException('El usuario no está activo');
 
-        request['shop'] = shop;
-      } else {
-        if (!user.isActive) throw new UnauthorizedException('El usuario no está activo');
-        request['user'] = user;
-      }
+      request['user'] = user;
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         throw error;
