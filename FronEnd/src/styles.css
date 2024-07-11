@@ -190,7 +190,7 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #D2B48C; /* Café claro */
+  background: #d2b48c; /* Café claro */
   padding: 20px;
   border-radius: 20px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -200,7 +200,7 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #D2B48C; /* Café claro */
+  background: #03AED2; /* Café claro */
   padding: 20px;
   border-radius: 20px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -210,7 +210,7 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #D2B48C; /* Café claro */
+  background: #03AED2; /* Café claro */
   padding: 20px;
   border-radius: 20px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -224,13 +224,13 @@ button:hover {
 
 .company-icon2 img {
   max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
-  height: auto;
+  height: 670px;
   max-height: 670px; /* Limita la altura máxima de la imagen */
 }
 
 .company-icon3 img {
   max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
-  height: auto;
+  height: 920px;
   max-height:920px; /* Limita la altura máxima de la imagen */
 }
 
