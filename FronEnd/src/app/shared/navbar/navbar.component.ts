@@ -32,14 +32,25 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     switch (this.authService.authStatus()) {
       case AuthStatus.checking:
         return;
-
+  
       case AuthStatus.authenticated:
         const currentUser = this.authService.currentUser();
-        this.userName = currentUser ? currentUser.name : 'Nombre del Usuario';
-        this.router.navigateByUrl('/landing');
+        if (currentUser) {
+          if (currentUser.roles.includes('user')) {
+            // Usuario normal autenticado
+            this.userName = currentUser.name || 'Nombre del Usuario';
+            console.log('Nombre del usuario:', this.userName);
+            this.router.navigateByUrl('/landing');
+          } else if (currentUser.roles.includes('shop')) {
+            // Tienda autenticada
+            this.userName = currentUser.name || 'Nombre del Usuario';
+            console.log('Nombre del usuario:', this.userName);
+            this.router.navigateByUrl('/shop');
+          }
+        }
         this.cdr.detectChanges(); // Forzar verificación de cambios
         return;
-
+  
       case AuthStatus.notAuthenticated:
         const currentUrl = this.router.url;
         if (currentUrl !== '/auth/register') {
@@ -48,7 +59,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         }
         return;
     }
-  });
+  });   
 
   constructor(private modalService: NgbModal) {}
 
@@ -63,6 +74,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     // Asignar el nombre del usuario desde el servicio de autenticación
     const currentUser = this.authService.currentUser();
     this.userName = currentUser ? currentUser.name : 'Nombre del Usuario';
+    console.log('Nombre del usuario inicial:', this.userName);
   }
 
   ngAfterViewInit() {
