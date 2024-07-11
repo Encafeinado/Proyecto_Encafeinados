@@ -28,6 +28,9 @@ export class Shop {
 
     @Prop({required: true})
     address: string;
+
+    @Prop()
+    logo: Buffer;
 }
 
 export const ShopSchema = SchemaFactory.createForClass(Shop);

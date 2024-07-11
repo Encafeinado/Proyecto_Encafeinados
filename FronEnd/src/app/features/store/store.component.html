@@ -12,11 +12,11 @@
   <div class="activation-section">
     <h2>Activar Tienda en el Mapa</h2>
     <button class="btn" (click)="openModal()">
-      {{ isStoreOpen ? 'Desactivar Tienda' : 'Activar Tienda' }}
+      {{ isStoreOpen ? 'Cerrar Tienda' : 'Abrir Tienda' }}
     </button>
     <div class="status">
       <p [ngClass]="{ 'active': isStoreOpen, 'inactive': !isStoreOpen }">
-        {{ isStoreOpen ? 'La tienda está encendida.' : 'La tienda está apagada.' }}
+        {{ isStoreOpen ? 'La tienda está abierta.' : 'La tienda está cerrada.' }}
       </p>
     </div>
   </div>
@@ -24,7 +24,7 @@
   <!-- Modal -->
   <div class="modal" [ngClass]="{ 'show': showModal }">
     <div class="modal-content">
-      <p>¿Deseas {{ isStoreOpen ? 'desactivar' : 'activar' }} la tienda en el mapa?</p>
+      <p>¿Deseas {{ isStoreOpen ? 'cerrar' : 'abrir' }} la tienda en el mapa?</p>
       <div class="modal-actions">
         <button class="btn confirm" (click)="confirmToggleStoreActivation()">Sí</button>
         <button class="btn cancel" (click)="closeModal()">No</button>

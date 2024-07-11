@@ -6,7 +6,7 @@
           {{ formTitle }}
         </span>
 
-        <!-- Espacio para los checkboxes -->
+        <!-- Opciones de tipo de registro -->
         <div class="wrap-input100 m-b-23" style="margin-bottom: 20px;">
           <span class="label-input100">Tipo de Registro</span>
           <div style="margin-top: 10px;">
@@ -15,6 +15,7 @@
           </div>
         </div>
 
+        <!-- Campos comunes -->
         <div class="wrap-input100 m-b-23">
           <span class="label-input100">Nombre</span>
           <input class="input100 small-placeholder" type="text" formControlName="name" placeholder="Nombre completo">
@@ -29,8 +30,27 @@
 
         <div class="wrap-input100 m-b-23">
           <span class="label-input100">Contraseña</span>
-          <input class="input100 small-placeholder" type="password" formControlName="password" placeholder="Contraseña">
-          <span class="focus-input100"></span>
+          <div class="input-with-eye">
+            <input class="input100 small-placeholder" type="{{ hidePassword ? 'password' : 'text' }}" formControlName="password" placeholder="Contraseña">
+            <span class="focus-input100"></span>
+            <div class="eye-icon" (click)="togglePasswordVisibility()">
+              <i class="fa" [ngClass]="{'fa-eye': hidePassword, 'fa-eye-slash': !hidePassword}"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="wrap-input100 m-b-23">
+          <span class="label-input100">Confirmar Contraseña</span>
+          <div class="input-with-eye">
+            <input class="input100 small-placeholder" type="{{ hidePasswordconfirm ? 'password' : 'text' }}" formControlName="confirmPassword" placeholder="Confirmar contraseña">
+            <span class="focus-input100"></span>
+            <div class="eye-icon" (click)="togglePasswordVisibilityconfirm()">
+              <i class="fa" [ngClass]="{'fa-eye': hidePasswordconfirm, 'fa-eye-slash': !hidePasswordconfirm}"></i>
+            </div>
+          </div>
+          <div *ngIf="myForm.get('confirmPassword')?.dirty && myForm.hasError('mismatch', 'confirmPassword')">
+            <p class="error-message">Las contraseñas no coinciden.</p>
+          </div>
         </div>
 
         <div class="wrap-input100 m-b-23">
@@ -39,7 +59,7 @@
           <span class="focus-input100"></span>
         </div>
 
-        <!-- Campos adicionales para Tienda -->
+        <!-- Campos específicos para tiendas -->
         <div *ngIf="isStore">
           <div class="wrap-input100 m-b-23">
             <span class="label-input100">Especialidad</span>
@@ -51,6 +71,11 @@
             <span class="label-input100">Dirección</span>
             <input class="input100 small-placeholder" type="text" formControlName="address" placeholder="Dirección">
             <span class="focus-input100"></span>
+          </div>
+
+          <div class="wrap-input100 m-b-23">
+            <span class="label-input100">Logo</span>
+            <input class="file-input-label" type="file" (change)="onFileChange($event)">
           </div>
         </div>
 
@@ -75,7 +100,7 @@
 
     <div class="icon-container2">
       <div [ngClass]="{'company-icon2': isUser, 'company-icon3': isStore, 'coffee-background': true}">
-        <img [src]="isUser ? '../../../../assets/images/logodescafeinados.jpg' : '../../../../assets/images/logodescafeinados.jpg'" alt="Icono de la empresa">
+        <img [src]="isUser ? '../../../../assets/images/encafeinadologo2.jpg' : '../../../../assets/images/encafeinadologo2.jpg'" alt="Icono de la empresa">
       </div>
     </div>
   </div>

@@ -1,4 +1,3 @@
-// auth.service.ts
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environments';
@@ -18,7 +17,8 @@ export class AuthService {
 
   public currentUser = computed(() => this._currentUser());
   public authStatus = computed(() => this._authStatus());
-  public userRole = computed(() => this._currentUser()?.roles || null);
+
+  public rolUser? : string 
 
   constructor() {
     this.checkAuthStatus().subscribe();
@@ -31,40 +31,25 @@ export class AuthService {
     return true;
   }
 
-// auth.service.ts
-login(email: string, password: string): Observable<User> {
-  const urlUser = `${this.baseUrl}/auth/login`;
-  const urlStore = `${this.baseUrl}/shop/login`;
-  const body = { email, password };
+  login(email: string, password: string): Observable<boolean> {
+    const urlUser = `${this.baseUrl}/auth/login`;
+    const urlStore = `${this.baseUrl}/shop/login`;
+    const body = { email, password };
 
-  return this.http.post<LoginResponse>(urlUser, body).pipe(
-    map(({ user, token }) => {
-      console.log('Login success for user:', user);  // <-- Log del usuario
-      this.setAuthentication(user, token);
-      return user;
-    }),
-    catchError(err => {
-      console.log('Login failed for user, trying shop login', err);
-      return this.http.post<LoginResponse>(urlStore, body).pipe(
-        map(({ user, token }) => {
-          console.log('Shop login success:', user);  // <-- Log del usuario de la tienda
-          this.setAuthentication(user, token);
-          return user;
-        }),
-        catchError(err => {
-          console.error('Login failed:', err);
-          return throwError(() => new Error('Login failed: ' + err.error.message));
-        })
-      );
-    })
-  );
-}
-
-
-
-
-
-
+    this.rolUser = "user"
+    console.log(this.rolUser)
+    return this.http.post<LoginResponse>(urlUser, body).pipe(
+      map(({ user, token }) => this.setAuthentication(user, token)),
+      catchError(err => {
+        this.rolUser = "shop"
+        console.log(this.rolUser)
+        return this.http.post<LoginResponse>(urlStore, body).pipe(
+          map(({ user, token }) => this.setAuthentication(user, token)),
+          catchError(err => throwError(() => err.error.message))
+        );
+      })
+    );
+  }
 
   register(name: string, email: string, password: string, phone: string): Observable<boolean> {
     const url = `${this.baseUrl}/auth/register`;
@@ -76,18 +61,9 @@ login(email: string, password: string): Observable<User> {
     );
   }
 
-  registerStore(name: string, email: string, password: string, phone: string, specialties: string, address: string): Observable<boolean> {
+  registerStore(name: string, email: string, password: string, phone: string, specialties: string, address: string, logo: string): Observable<boolean> {
     const url = `${this.baseUrl}/shop/register`;
-    const body = { name, email, password, phone, specialties, address };
-
-    return this.http.post<LoginResponse>(url, body).pipe(
-      map(({ user, token }) => this.setAuthentication(user, token)),
-      catchError(err => throwError(() => err.error.message))
-    );
-  }
-  registerShop(name: string, email: string, password: string, phone: string, specialties: string, address: string): Observable<boolean> {
-    const url = `${this.baseUrl}/shop/register`;
-    const body = { name, email, password, phone,specialties, address };
+    const body = { name, email, password, phone, specialties, address,logo };
 
     return this.http.post<LoginResponse>(url, body).pipe(
       map(({ user, token }) => this.setAuthentication(user, token)),
