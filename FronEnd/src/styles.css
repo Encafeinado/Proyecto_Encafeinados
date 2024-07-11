@@ -190,7 +190,7 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #D2B48C; /* Café claro */
+  background: #d2b48c; /* Café claro */
   padding: 20px;
   border-radius: 20px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -200,7 +200,7 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #D2B48C; /* Café claro */
+  background: #03AED2; /* Café claro */
   padding: 20px;
   border-radius: 20px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -210,7 +210,7 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #D2B48C; /* Café claro */
+  background: #03AED2; /* Café claro */
   padding: 20px;
   border-radius: 20px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -224,13 +224,13 @@ button:hover {
 
 .company-icon2 img {
   max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
-  height: auto;
+  height: 670px;
   max-height: 670px; /* Limita la altura máxima de la imagen */
 }
 
 .company-icon3 img {
   max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
-  height: auto;
+  height: 920px;
   max-height:920px; /* Limita la altura máxima de la imagen */
 }
 
@@ -3112,6 +3112,4 @@ body {
   background-image: url('data:image/svg+xml;charset=utf8,%3Csvg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath stroke="rgba%28100, 100, 100, 0.5%29" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M4 7h22M4 15h22M4 23h22"/%3E%3C/svg%3E');
 }
 
-.leaflet-routing-container {
-  display: none;
-}
+.leaflet-routing-container {display: none;}
