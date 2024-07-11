@@ -18,6 +18,8 @@ export class AuthService {
   public currentUser = computed(() => this._currentUser());
   public authStatus = computed(() => this._authStatus());
 
+  public rolUser? : string 
+
   constructor() {
     this.checkAuthStatus().subscribe();
   }
@@ -34,9 +36,13 @@ export class AuthService {
     const urlStore = `${this.baseUrl}/shop/login`;
     const body = { email, password };
 
+    this.rolUser = "user"
+    console.log(this.rolUser)
     return this.http.post<LoginResponse>(urlUser, body).pipe(
       map(({ user, token }) => this.setAuthentication(user, token)),
       catchError(err => {
+        this.rolUser = "shop"
+        console.log(this.rolUser)
         return this.http.post<LoginResponse>(urlStore, body).pipe(
           map(({ user, token }) => this.setAuthentication(user, token)),
           catchError(err => throwError(() => err.error.message))

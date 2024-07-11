@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr'; // Importa ToastrService
+import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../services/auth.service';
+import { User } from '../../interfaces'; // Asegúrate de importar la interfaz User
 
 @Component({
   templateUrl: './login-page.component.html',
