@@ -31,13 +31,12 @@ export class AuthService {
 
   login(email: string, password: string): Observable<boolean> {
     const urlUser = `${this.baseUrl}/auth/login`;
-    const urlStore = `${this.baseUrl}/shop/login`; // Asumiendo que existe una ruta para login de tiendas
+    const urlStore = `${this.baseUrl}/shop/login`;
     const body = { email, password };
 
     return this.http.post<LoginResponse>(urlUser, body).pipe(
       map(({ user, token }) => this.setAuthentication(user, token)),
       catchError(err => {
-        // Intentar el login de tienda si falla el login de usuario
         return this.http.post<LoginResponse>(urlStore, body).pipe(
           map(({ user, token }) => this.setAuthentication(user, token)),
           catchError(err => throwError(() => err.error.message))

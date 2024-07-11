@@ -4,7 +4,7 @@ import { JwtPayload } from '../interfaces/jwt-payload';
 import { ShopService } from '../shop.service';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class ShopGuard  implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private shopService: ShopService,
