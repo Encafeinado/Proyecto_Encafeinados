@@ -15,7 +15,7 @@ import { StoreStatusService } from '../../service/store-status.service';
 import { UserService } from '../../service/user.service';
 import { ShopService } from '../../service/shop.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
+import { AuthService } from 'src/app/auth/services/auth.service';
 
 @Component({
   selector: 'app-map',
@@ -43,6 +43,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   private apiUrl = 'https://encafeinados-backend.up.railway.app'; // Ajusta según sea necesario
   userData: any;
   shopData: any;
+  userName: string = 'Nombre del Usuario';
 
   @ViewChild('createModal', { static: true }) createModal: any;
   @ViewChild('cancelModal', { static: true }) cancelModal: any;
@@ -58,7 +59,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     private storeStatusService: StoreStatusService,
     private userService: UserService,
     private shopService: ShopService,
-    private http: HttpClient
+    private http: HttpClient,
+    private authService: AuthService
   ) {
     this.userLocationIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cosechaUser.png',
@@ -363,7 +365,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       );
     }
   }
-  
 
   calculateDistance(
     userLat: number,
@@ -563,15 +564,50 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.openModal(this.modalBook, '');
   }
 
+  saveVerifiedCode(storeName: string) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token no encontrado en el almacenamiento local.');
+      return;
+    }
+  
+    const requestBody = {
+      storeName: storeName,
+      userName: this.userName,  // Asegúrate de que se use this.userName aquí
+      codeVerified: true,
+    };
+  
+    // Envía la solicitud POST al backend para guardar los datos
+    this.http.post(`${this.apiUrl}/book/verify-code`, requestBody, {
+      headers: new HttpHeaders().set('Authorization', `Bearer ${token}`),
+    }).subscribe(
+      (response: any) => {
+        console.log('Respuesta del servidor:', response);
+        toastr.success('Código verificado guardado exitosamente');
+        // Actualiza las imágenes del álbum para marcarlas como guardadas
+      },
+      error => {
+        console.error('Error al guardar el código verificado:', error);
+        toastr.error('Error al guardar el código verificado');
+      }
+    );
+  } 
+
   verifyCode() {
     const storeCode = localStorage.getItem('storeCode');
+    if (!storeCode) {
+      toastr.error('No se encontró un código de tienda en el almacenamiento local.');
+      return;
+    }
+  
     if (this.enteredCode === storeCode) {
       this.verified = true;
-      toastr.success(
-        'Código verificado exitosamente',
-        '¡OBTUVISTE UNA ESTAMPITA!'
-      );
+      toastr.success('Código verificado exitosamente', '¡OBTUVISTE UNA ESTAMPITA!');
       this.coloredImage();
+  
+      // Llamar a la función para guardar el código verificado
+      this.saveVerifiedCode('Aroma Café'); // Nombre de la tienda como 'Aroma Café'
+  
       setTimeout(() => {
         this.modalRef.close(); // Método para cerrar el modal
       }, 2000);
@@ -579,7 +615,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       this.verified = false;
       toastr.error('Error al verificar el código');
     }
-  }
+  }  
 
   coloredImage(): void {
     if (this.currentImageIndex < this.albumImages.length) {

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcryptjs from 'bcryptjs';
@@ -66,7 +66,7 @@ export class ShopService {
 
       return {
         shop: shop,
-        token: this.getJwtToken({ id: shop._id })
+        token: this.getJwtToken({ id: shop._id }),
       };
     } catch (error) {
       throw new InternalServerErrorException('Error al registrar tienda');
@@ -94,5 +94,28 @@ export class ShopService {
   getJwtToken(payload: JwtPayload): string {
     const token = this.jwtService.sign(payload);
     return token;
+  }
+
+  private generateVerificationCode(): string {
+    // Genera un código aleatorio efímero (ejemplo)
+    const randomCode = Math.random().toString(36).substr(2, 8);
+    return randomCode;
+  }
+
+  async verifyVerificationCode(shopId: string, code: string): Promise<boolean> {
+    const shop = await this.shopModel.findById(shopId);
+
+    if (!shop) {
+      throw new NotFoundException('Tienda no encontrada');
+    }
+
+    if (shop.verificationCode === code) {
+      // Si el código es válido, borramos el código de verificación para hacerlo efímero
+      shop.verificationCode = undefined;
+      await shop.save();
+      return true;
+    }
+
+    return false;
   }
 }

@@ -31,6 +31,10 @@ export class Shop {
 
     @Prop()
     logo: Buffer;
+
+    @Prop()
+    verificationCode: string; // Nuevo campo para el código de verificación  
 }
 
 export const ShopSchema = SchemaFactory.createForClass(Shop);
+export type ShopDocument = Shop & Document; 

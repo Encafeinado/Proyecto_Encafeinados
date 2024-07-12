@@ -1,6 +1,5 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { Image, ImageSchema } from './image.entity'; // Importamos el esquema de Image
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from "mongoose";
 
 @Schema()
 export class Book {
@@ -17,13 +16,12 @@ export class Book {
   status: boolean;
 
   @Prop({
-    type: [ImageSchema],
+    type: [{ url: String }],
     default: [],
-    validate: [(val: Image[]) => val.length <= 30, 'Se permite un máximo de 30 imágenes'],
+    validate: [(val) => val.length <= 30, 'Se permite un máximo de 30 imágenes'],
   })
-  images: Image[];
+  images: { url: string }[];
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);
-
 export type BookDocument = Book & Document;
