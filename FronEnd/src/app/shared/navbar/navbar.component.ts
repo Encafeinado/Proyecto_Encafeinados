@@ -116,13 +116,14 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     this.modalRef.close();
   }
 
-  // Método para verificar si el usuario es de tipo "shop"
-  isUserShop(): boolean {
-    return this.authService.rolUser === 'user';
-  }
 
-  // Método para verificar si el usuario es de tipo "user"
-  isUserUser(): boolean {
-    return this.authService.rolUser === 'shop';
-  }
+  // Método para verificar si el usuario es de tipo "shop"
+  // isUserShop(): boolean {
+  //   return this.authService.rolUser === 'user';
+  // }
+
+  // // Método para verificar si el usuario es de tipo "user"
+  // isUserUser(): boolean {
+  //   return this.authService.rolUser === 'shop';
+  // }
 }
