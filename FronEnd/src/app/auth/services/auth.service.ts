@@ -35,32 +35,21 @@ export class AuthService {
     const urlUser = `${this.baseUrl}/auth/login`;
     const urlStore = `${this.baseUrl}/shop/login`;
     const body = { email, password };
-  
-    return this.loginAsUser(urlUser, body).pipe(
+
+   // this.rolUser = "user"
+    //console.log(this.rolUser)
+    return this.http.post<LoginResponse>(urlUser, body).pipe(
+      map(({ user, token }) => this.setAuthentication(user, token)),
       catchError(err => {
-        console.log('User login failed, trying shop login', err);
-        return this.loginAsShop(urlStore, body);
+      //  this.rolUser = "shop"
+        //console.log(this.rolUser)
+        return this.http.post<LoginResponse>(urlStore, body).pipe(
+          map(({ user, token }) => this.setAuthentication(user, token)),
+          catchError(err => throwError(() => err.error.message))
+        );
       })
     );
   }
-  
-  private loginAsUser(url: string, body: any): Observable<boolean> {
-    this.rolUser = "user";
-    console.log(this.rolUser);
-    return this.http.post<LoginResponse>(url, body).pipe(
-      map(({ user, token }) => this.setAuthentication(user, token))
-    );
-  }
-  
-  private loginAsShop(url: string, body: any): Observable<boolean> {
-    this.rolUser = "shop";
-    console.log(this.rolUser);
-    return this.http.post<LoginResponse>(url, body).pipe(
-      map(({ user, token }) => this.setAuthentication(user, token)),
-      catchError(err => throwError(() => new Error('Shop login failed')))
-    );
-  }
-  
 
   register(name: string, email: string, password: string, phone: string): Observable<boolean> {
     const url = `${this.baseUrl}/auth/register`;
