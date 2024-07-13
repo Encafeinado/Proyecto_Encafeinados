@@ -36,15 +36,15 @@ export class AuthService {
     const urlStore = `${this.baseUrl}/shop/login`;
     const body = { email, password };
 
-   // this.rolUser = "user"
-    //console.log(this.rolUser)
+    this.rolUser = "user"
+    console.log(this.rolUser)
     return this.http.post<LoginResponse>(urlUser, body).pipe(
       map(({ user, token }) => this.setAuthentication(user, token)),
       catchError(err => {
-      //  this.rolUser = "shop"
-        //console.log(this.rolUser)
+        this.rolUser = "shop"
+        console.log(this.rolUser)
         return this.http.post<LoginResponse>(urlStore, body).pipe(
-          map(({ user, token }) => this.setAuthentication(user, token)),
+          map(({ shop, token }) => this.setAuthentication(shop, token)),
           catchError(err => throwError(() => err.error.message))
         );
       })
