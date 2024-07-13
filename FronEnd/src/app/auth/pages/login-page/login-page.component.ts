@@ -31,28 +31,24 @@ export class LoginPageComponent {
 
   login(): void {
     const { email, password } = this.myForm.value;
-
+  
     this.authService.login(email, password).subscribe({
-      next: (response) => {
-        if (response) {
-          // Guardar el token en localStorage (suponiendo que tu AuthService maneja esto)
-          const token = localStorage.getItem('token') || '';
-          console.log('Token almacenado:', token);
-
+      next: (authenticated) => {
+        if (authenticated) {
           // Mostrar Toastr con mensaje de éxito
           this.toastr.success('¡Inicio de sesión exitoso!', 'Éxito');
-          
+  
           // Redirigir al usuario a la página de la tienda
           this.router.navigateByUrl('/store');
         } else {
-          console.error('Respuesta inválida del servidor:', response);
-          this.toastr.error('Respuesta inválida del servidor', 'Error');
+          // Si no se autentica correctamente, probablemente debido a credenciales incorrectas
+          this.toastr.error('Credenciales incorrectas', 'Error de inicio de sesión');
         }
       },
       error: (error) => {
         console.error('Error al iniciar sesión:', error);
         // Mostrar Toastr con mensaje de error en caso de fallo en el inicio de sesión
-        this.toastr.error('Error al iniciar sesión: ' + error, 'Error');
+        this.toastr.error('Error al iniciar sesión: ' + error.message, 'Error');
       }
     });
   }
