@@ -1,8 +1,8 @@
-import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef, ViewChild, computed, effect } from '@angular/core';
+import { Component, ChangeDetectorRef, ViewChild, OnInit, AfterViewInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { AuthStatus } from 'src/app/auth/interfaces';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { AuthStatus } from 'src/app/auth/interfaces';
 
 @Component({
   selector: 'app-navbar',
@@ -12,66 +12,33 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 export class NavbarComponent implements OnInit, AfterViewInit {
   
   isLoading = true;
-  private authService = inject(AuthService);
-  private router = inject(Router);
-  private cdr = inject(ChangeDetectorRef);
-  public navbarText: string = 'Descubre el mejor café cerca de ti';
-  userName: string = 'Nombre del Usuario';
-  @ViewChild('sesionModal', { static: true }) sesionModal: any;
+  userName = 'Nombre del Usuario';
+  navbarText = 'Descubre el mejor café cerca de ti';
   modalRef!: NgbModalRef;
   openedModal = false;
-  showCancelButton: boolean = false;
 
-  public finishedAuthCheck = computed<boolean>(() => {
-    if (this.authService.authStatus() === AuthStatus.checking) {
-      return false;
-    }
-    return true;
-  });
+  @ViewChild('sesionModal', { static: true }) sesionModal: any;
 
-  public authStatusChangedEffect = effect(() => {
-    switch (this.authService.authStatus()) {
-      case AuthStatus.checking:
-        return;
-
-      case AuthStatus.authenticated:
-        const currentUser = this.authService.currentUser();
-        if (currentUser) {
-          this.userName = currentUser.name || 'Nombre del Usuario';
-          console.log('Nombre del usuario:', this.userName);
-          this.updateNavbarText(this.router.url); // Actualizar el texto del navbar basado en la URL
-          
-        }
-        this.cdr.detectChanges();
-        this.router.navigateByUrl('/landing');
-        return;
-
-      case AuthStatus.notAuthenticated:
-        const currentUrl = this.router.url;
-        if (currentUrl !== '/auth/register') {
-          this.router.navigateByUrl('/auth/login');
-          this.cdr.detectChanges();
-        }
-        return;
-    }
-  });
-
-  constructor(private modalService: NgbModal) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+    private modalService: NgbModal
+  ) {}
 
   ngOnInit(): void {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.updateNavbarText(event.url);
-        this.cdr.detectChanges();
       }
     });
 
     const currentUser = this.authService.currentUser();
-    this.userName = currentUser ? currentUser.name : 'Nombre del Usuario';
+    this.userName = currentUser ? currentUser.name || 'Nombre del Usuario' : 'Nombre del Usuario';
     console.log('Nombre del usuario inicial:', this.userName);
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.cdr.detectChanges();
   }
 
@@ -91,14 +58,11 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         this.navbarText = 'Descubre el mejor café cerca de ti';
       }
     }
+    this.cdr.detectChanges(); // Detecta los cambios después de actualizar el texto del navbar
   }
 
-  onLogout() {
+  onLogout(): void {
     this.authService.logout();
-  }
-
-  isStoreOrMapRoute(): boolean {
-    return this.router.url === '/store' || this.router.url === '/map' || this.router.url === '/landing';
   }
 
   openModal(content: any): void {
@@ -134,5 +98,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   isUserUser(): boolean {
     return this.authService.rolUser === 'user';
+  }
+
+  isStoreOrMapRoute(): boolean {
+    return this.router.url === '/store' || this.router.url === '/map' || this.router.url === '/landing';
   }
 }
