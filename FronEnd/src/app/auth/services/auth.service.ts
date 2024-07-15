@@ -24,10 +24,11 @@ export class AuthService {
     this.checkAuthStatus().subscribe();
   }
 
-  private setAuthentication(user: User, token: string): boolean {
+  private setAuthentication(user: User, token: string, role: string): boolean {
     this._currentUser.set(user);
     this._authStatus.set(AuthStatus.authenticated);
     localStorage.setItem('token', token);
+    this.rolUser = role;
     return true;
   }
 
@@ -36,15 +37,11 @@ export class AuthService {
     const urlStore = `${this.baseUrl}/shop/login`;
     const body = { email, password };
 
-    this.rolUser = "user"
-    console.log(this.rolUser)
     return this.http.post<LoginResponse>(urlUser, body).pipe(
-      map(({ user, token }) => this.setAuthentication(user, token)),
+      map(({ user, token }) => this.setAuthentication(user, token, 'user')),
       catchError(err => {
-        this.rolUser = "shop"
-        console.log(this.rolUser)
         return this.http.post<LoginResponse>(urlStore, body).pipe(
-          map(({ shop, token }) => this.setAuthentication(shop, token)),
+          map(({ shop, token }) => this.setAuthentication(shop, token, 'shop')),
           catchError(err => throwError(() => err.error.message))
         );
       })
@@ -56,17 +53,17 @@ export class AuthService {
     const body = { name, email, password, phone };
 
     return this.http.post<LoginResponse>(url, body).pipe(
-      map(({ user, token }) => this.setAuthentication(user, token)),
+      map(({ user, token }) => this.setAuthentication(user, token, 'user')),
       catchError(err => throwError(() => err.error.message))
     );
   }
 
   registerStore(name: string, email: string, password: string, phone: string, specialties: string, address: string, logo: string): Observable<boolean> {
     const url = `${this.baseUrl}/shop/register`;
-    const body = { name, email, password, phone, specialties, address,logo };
+    const body = { name, email, password, phone, specialties, address, logo };
 
     return this.http.post<LoginResponse>(url, body).pipe(
-      map(({ user, token }) => this.setAuthentication(user, token)),
+      map(({ user, token }) => this.setAuthentication(user, token, 'shop')),
       catchError(err => throwError(() => err.error.message))
     );
   }
@@ -83,7 +80,7 @@ export class AuthService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     return this.http.get<CheckTokenResponse>(url, { headers }).pipe(
-      map(({ user, token }) => this.setAuthentication(user, token)),
+      map(({ user, token }) => this.setAuthentication(user, token, user.roles.includes('shop') ? 'shop' : 'user')),
       catchError(err => {
         console.error('Error al verificar el token', err);
         this._authStatus.set(AuthStatus.notAuthenticated);

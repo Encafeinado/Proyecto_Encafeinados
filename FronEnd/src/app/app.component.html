@@ -35,7 +35,8 @@
 <router-outlet *ngIf="finishedAuthCheck() && !isLoading"></router-outlet> -->
 
 <app-navbar *ngIf="showNavbar"></app-navbar>
-
+<h1 *ngIf="!finishedAuthCheck()">
+</h1>
 <div *ngIf="isLoading" class="loading-container">
   <div class="loading-content">
     <app-loading></app-loading>
@@ -43,7 +44,7 @@
 </div>
 
 <div *ngIf="!isLoading">
-  <router-outlet></router-outlet>
+  <router-outlet *ngIf="finishedAuthCheck() && !isLoading"></router-outlet>
 </div>
 
 

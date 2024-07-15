@@ -1,3 +1,4 @@
+
 <nav class="navbar navbar-expand-lg bg-coffee">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Encafeinados</a>
@@ -9,16 +10,17 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/landing">Inicio</a>
         </li>
-        <li class="nav-item" *ngIf="!isUserShop()">
-          <a class="nav-link" routerLink="/store">Tienda</a>
+        <li class="nav-item" *ngIf="isUserUser()">
+          <a class="nav-link" routerLink="/map">Mapa</a>
         </li>
         <li class="nav-item" *ngIf="isUserShop()">
-          <a class="nav-link" routerLink="/map">Mapa</a>
+          <a class="nav-link" routerLink="/store">Tienda</a>
         </li>
       </ul>
       <span class="navbar-text me-2">
         {{ navbarText }}
       </span>
+      
       <div *ngIf="userName" class="dropdown">
         <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
           <span class="me-2">{{ userName }}</span>
@@ -32,6 +34,8 @@
     </div>
   </div>
 </nav>
+
+
 
 <!-- Modal para confirmar el cierre de sesión -->
 <ng-template #sesionModal let-modal>

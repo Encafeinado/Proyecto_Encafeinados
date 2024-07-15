@@ -39,7 +39,7 @@ export class LoginPageComponent {
           this.toastr.success('¡Inicio de sesión exitoso!', 'Éxito');
   
           // Redirigir al usuario a la página de la tienda
-          this.router.navigateByUrl('/store');
+          this.router.navigateByUrl('/landing');
         } else {
           // Si no se autentica correctamente, probablemente debido a credenciales incorrectas
           this.toastr.error('Credenciales incorrectas', 'Error de inicio de sesión');
