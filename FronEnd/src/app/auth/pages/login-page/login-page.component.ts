@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -10,46 +10,50 @@ import { User } from '../../interfaces'; // Asegúrate de importar la interfaz U
   styleUrls: ['./login-page.component.css']
 })
 export class LoginPageComponent {
+  public myForm: FormGroup;
+  public userRole: string = 'user'; // Valor predeterminado
+  hidePassword: boolean = true;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private toastr: ToastrService // Inyecta ToastrService
-  ) {}
-
-  public myForm: FormGroup = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
-  });
-
-  hidePassword: boolean = true; // Variable para controlar la visibilidad de la contraseña
+    private toastr: ToastrService
+  ) {
+    this.myForm = this.fb.group({
+      email: ['julian@gmail.com', [Validators.required, Validators.email]],
+      password: ['123456', [Validators.required, Validators.minLength(6)]],
+      role: ['user', Validators.required] // Campo para seleccionar el rol (predeterminado es 'user')
+    });
+  }
 
   togglePasswordVisibility(): void {
     this.hidePassword = !this.hidePassword;
   }
 
   login(): void {
-    const { email, password } = this.myForm.value;
-  
-    this.authService.login(email, password).subscribe({
-      next: (authenticated) => {
-        if (authenticated) {
-          // Mostrar Toastr con mensaje de éxito
-          this.toastr.success('¡Inicio de sesión exitoso!', 'Éxito');
-  
-          // Redirigir al usuario a la página de la tienda
-          this.router.navigateByUrl('/landing');
+    if (this.myForm.invalid) {
+      this.toastr.error('Por favor, completa el formulario correctamente');
+      return;
+    }
+
+    const { email, password, role } = this.myForm.value;
+
+    this.authService.login(email, password, role).subscribe(
+      (response) => {
+        console.log('Login successful', response);
+        if (role === 'user') {
+          this.router.navigate(['/user-landing']);
+        } else if (role === 'shop') {
+          this.router.navigate(['/shop-landing']);
         } else {
-          // Si no se autentica correctamente, probablemente debido a credenciales incorrectas
-          this.toastr.error('Credenciales incorrectas', 'Error de inicio de sesión');
+          this.toastr.error('Rol no reconocido');
         }
       },
-      error: (error) => {
-        console.error('Error al iniciar sesión:', error);
-        // Mostrar Toastr con mensaje de error en caso de fallo en el inicio de sesión
-        this.toastr.error('Error al iniciar sesión: ' + error.message, 'Error');
+      (error) => {
+        console.error('Error logging in', error);
+        this.toastr.error('Error al iniciar sesión');
       }
-    });
+    );
   }
 }
