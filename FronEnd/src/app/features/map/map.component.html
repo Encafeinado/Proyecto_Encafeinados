@@ -50,63 +50,62 @@
 
 <!-- Modal para confirmar la ruta -->
 <ng-template #createModal let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title" id="modal-title">{{ destinationName }}</h4>
-  </div>
-  <div class="modal-body">
-    <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid" style="width: 100%;">
-    <p style="padding-top: 3%;"
-      *ngIf="destinationName === 'Aroma Café Sabaneta' || destinationName === 'Viejo Baul' || destinationName === 'Leal Coffee'">
-      Información sobre el café...</p>
-    <div class="transport-selection">
-      <label>
-        <input type="radio" name="transport" value="car" (change)="selectTransportMode('car')" checked> A Vehículo
-      </label>
-      <label>
-        <input type="radio" name="transport" value="foot" (change)="selectTransportMode('foot')"> A Pie
-      </label>
-      <label>
-        <input type="radio" name="transport" value="bike" (change)="selectTransportMode('bike')"> En bicicleta
-      </label>
+  <div class="modal-content-create">
+    <div class="modal-header-create">
+      <h4 class="modal-title-create">{{ destinationName }}</h4>
     </div>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="showRouteGuia()">Guiame</button>
-    <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancelar</button>
+    <div class="modal-body-create">
+      <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid" style="width: 100%;">
+      <p style="padding-top: 3%;">Información sobre el café...</p>
+      <div class="transport-selection" style="margin-top: 15px;">
+        <label style="display: inline-block; margin-right: 15px;">
+          <input type="radio" name="transport" value="car" [(ngModel)]="selectedTransport" (change)="selectTransportMode('car')" [checked]="selectedTransport === 'car'"> A Vehículo
+        </label>
+        <label style="display: inline-block; margin-right: 15px;">
+          <input type="radio" name="transport" value="foot" [(ngModel)]="selectedTransport" (change)="selectTransportMode('foot')" [checked]="selectedTransport === 'foot'"> A Pie
+        </label>
+        <label style="display: inline-block; margin-right: 15px;">
+          <input type="radio" name="transport" value="bike" [(ngModel)]="selectedTransport" (change)="selectTransportMode('bike')" [checked]="selectedTransport === 'bike'"> En bicicleta
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer-create">
+      <button type="button" class="btn btn-primary" (click)="showRouteGuia()">Guíame</button>
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancelar</button>
+    </div>
   </div>
 </ng-template>
 
 <!-- Modal para cancelar la ruta -->
 <ng-template #cancelModal let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title">Cancelar Rutas</h4>
-  </div>
-  <div class="modal-body">
-    <p>¿Estás seguro de que quieres cancelar las rutas?</p>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">No</button>
-    <button type="button" class="btn btn-primary" (click)="confirmCancelRoute()">Sí</button>
+  <div class="modal-content-cancelR">
+    <div class="modal-header-cancelR">
+      <h4 class="modal-title-cancelR">Cancelar Rutas</h4>
+    </div>
+    <div class="modal-body-cancelR">
+      <p>¿Estás seguro de que quieres cancelar las rutas?</p>
+    </div>
+    <div class="modal-footer-cancelR">
+      <button type="button" class="btn" (click)="confirmCancelRoute()">Confirmar</button>
+      <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
+    </div>
   </div>
 </ng-template>
-<button *ngIf="showCancelButton" class="floating-button" (click)="cancelRoute()">
-  <i class="fas fa-times text-white"></i>
-</button>
 
 <!-- Modal para ingresar el código -->
 <ng-template #codeModal let-modal>
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title">Ingresa tu código:</h5>
+  <div class="modal-content-code">
+    <div class="modal-header-code">
+      <h5 class="modal-title-code">Ingresa tu código:</h5>
     </div>
-    <div class="modal-body">
+    <div class="modal-body-code">
       <label for="code">Código:</label>
       <input #codeInput type="text" id="code" class="form-control" [(ngModel)]="enteredCode"
         placeholder="Ingresa tu código">
     </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-primary" (click)="verifyCode()">Verificar</button>
-      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancelar</button>
+    <div class="modal-footer-code">
+      <button type="button" class="btn" (click)="verifyCode()">Verificar</button>
+      <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
     </div>
   </div>
 </ng-template>
@@ -155,7 +154,7 @@
       </p>
     </div>
     <div class="modal-footer-coffee">
-      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancelar</button>
+      <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
     </div>
   </div>
 </ng-template>

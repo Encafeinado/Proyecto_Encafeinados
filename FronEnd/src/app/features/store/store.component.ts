@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StoreService } from '../../service/store.service';
 import { StoreStatusService } from '../../service/store-status.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-store',
@@ -13,7 +14,11 @@ export class StoreComponent implements OnInit {
   isStoreOpen: boolean = false;
   showModal: boolean = false;
 
-  constructor(private storeService: StoreService, private storeStatusService: StoreStatusService) {}
+  constructor(
+    private storeService: StoreService, 
+    private storeStatusService: StoreStatusService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit() {
     this.generateCode();
@@ -45,6 +50,12 @@ export class StoreComponent implements OnInit {
     const newStatus = !this.isStoreOpen;
     this.storeStatusService.setStoreActivation(newStatus);
     this.isStoreOpen = this.storeStatusService.isStoreActivated();
-    this.closeModal();
+    this.showModal = false;
+
+    if (this.isStoreOpen) {
+      this.toastr.success('Abriste tu tienda en el mapa', 'Tienda Abierta');
+    } else {
+      this.toastr.success('Cerraste tu tienda en el mapa', 'Tienda Cerrada');
+    }
   }
 }
