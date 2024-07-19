@@ -39,12 +39,19 @@ export class LoginPageComponent {
 
     this.authService.login(email, password).subscribe(
       (response) => {
-      
+        if (response) {
+          // Maneja la respuesta exitosa
+          this.toastr.success('Inicio de sesión exitoso');
+          // Redirigir o hacer algo según la respuesta
+        } else {
+          // Maneja caso de respuesta no exitosa, pero sin error de red
+          this.toastr.error('Credenciales incorrectas');
+        }
       },
       (error) => {
-        console.error('Error logging in', error);
-        this.toastr.error('Error al iniciar sesión');
-      }
-    );
-  }
+        console.error('Error al iniciar sesión', error);
+        this.toastr.error('Error al iniciar sesión. Por favor, intenta de nuevo más tarde.');
+      }
+    );
+  }
 }
