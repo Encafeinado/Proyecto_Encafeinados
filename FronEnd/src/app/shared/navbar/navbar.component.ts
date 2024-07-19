@@ -1,4 +1,13 @@
-import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef, ViewChild, computed, effect } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  AfterViewInit,
+  ChangeDetectorRef,
+  ViewChild,
+  computed,
+  effect,
+} from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { AuthStatus } from 'src/app/auth/interfaces';
@@ -7,10 +16,9 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+  styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit, AfterViewInit {
-
   private authService = inject(AuthService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef); // Inyecta ChangeDetectorRef
@@ -32,7 +40,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     switch (this.authService.authStatus()) {
       case AuthStatus.checking:
         return;
-  
+
       case AuthStatus.authenticated:
         const currentUser = this.authService.currentUser();
         if (currentUser) {
@@ -50,7 +58,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         }
         this.cdr.detectChanges(); // Forzar verificación de cambios
         return;
-  
+
       case AuthStatus.notAuthenticated:
         const currentUrl = this.router.url;
         if (currentUrl !== '/auth/register') {
@@ -59,12 +67,12 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         }
         return;
     }
-  });   
+  });
 
   constructor(private modalService: NgbModal) {}
 
   ngOnInit(): void {
-    this.router.events.subscribe(event => {
+    this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.updateNavbarText(event.url);
         this.cdr.detectChanges(); // Forzar verificación de cambios
@@ -98,7 +106,11 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   isStoreOrMapRoute(): boolean {
     // Verifica si estamos en la ruta de /store o /map
-    return this.router.url === '/store' || this.router.url === '/map' || this.router.url === '/landing';
+    return (
+      this.router.url === '/store' ||
+      this.router.url === '/map' ||
+      this.router.url === '/landing'
+    );
   }
 
   openModal(content: any): void {
