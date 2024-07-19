@@ -44,8 +44,10 @@ export class AuthService {
   
         // Determina el tipo de autenticación basado en la respuesta
         if (user) {
+          
           return this.setAuthentication(user, token, 'user');
         } else if (shop) {
+      
           return this.setAuthentication(shop, token, 'shop');
         } else {
           throw new Error('Respuesta inesperada del servidor.');

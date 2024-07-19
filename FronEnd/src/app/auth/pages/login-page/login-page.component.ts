@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../services/auth.service';
-import { User } from '../../interfaces'; // Asegúrate de importar la interfaz User
 
 @Component({
   templateUrl: './login-page.component.html',
@@ -11,8 +10,8 @@ import { User } from '../../interfaces'; // Asegúrate de importar la interfaz U
 })
 export class LoginPageComponent {
   public myForm: FormGroup;
-  public userRole: string = 'user'; // Valor predeterminado
   hidePassword: boolean = true;
+  public userRole: string = 'user'; 
 
   constructor(
     private fb: FormBuilder,
@@ -21,9 +20,9 @@ export class LoginPageComponent {
     private toastr: ToastrService
   ) {
     this.myForm = this.fb.group({
-      email: ['julian@gmail.com', [Validators.required, Validators.email]],
-      password: ['123456', [Validators.required, Validators.minLength(6)]],
-      role: ['user', Validators.required] // Campo para seleccionar el rol (predeterminado es 'user')
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      role: ['user'] // Campo para seleccionar el rol (predeterminado es 'user')
     });
   }
 
@@ -42,18 +41,19 @@ export class LoginPageComponent {
     this.authService.login(email, password, role).subscribe(
       (response) => {
         console.log('Login successful', response);
-        if (role === 'user') {
-          this.router.navigate(['/user-landing']);
-        } else if (role === 'shop') {
-          this.router.navigate(['/shop-landing']);
+        
+        if (role === 'shop') {
+          
+          this.router.navigate(['/shop']);
         } else {
-          this.toastr.error('Rol no reconocido');
+     
+          this.router.navigate(['/auth']);
         }
       },
       (error) => {
         console.error('Error logging in', error);
         this.toastr.error('Error al iniciar sesión');
-      }
-    );
-  }
+      }
+    );
+  }
 }
