@@ -1,22 +1,23 @@
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Observable, catchError, map, of, throwError } from 'rxjs';
-import { AuthStatus, CheckTokenResponse, LoginResponse, User } from '../interfaces';
-import { environment } from 'src/environments/environments';
 import { Shop } from 'src/app/features/store/interfaces/shop.interface';
+import { environment } from 'src/environments/environments';
+import { AuthStatus, CheckTokenResponse, LoginResponse, User } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly baseUrl: string = environment.baseUrl;
 
+  private readonly baseUrl: string = environment.baseUrl;
+  
   private http = inject(HttpClient);
 
   private _currentUser = signal<User | Shop | null>(null);
   private _authStatus = signal<AuthStatus>(AuthStatus.checking);
-  public rolUser: string | null = null;
+  public rolUser = signal<string | null>(null);
 
   public currentUser = computed(() => this._currentUser());
   public authStatus = computed(() => this._authStatus());
@@ -30,37 +31,29 @@ export class AuthService {
     this._currentUser.set(userOrShop);
     this._authStatus.set(AuthStatus.authenticated);
     localStorage.setItem('token', token);
-    this.rolUser = role;
+    this.rolUser.set(role);
+
+    
     return true;
   }
 
-  login(email: string, password: string, isShop: boolean): Observable<any> {
-    const url = isShop ? `${this.baseUrl}/shop/login` : `${this.baseUrl}/auth/login`;
+  login(email: string, password: string): Observable<boolean> {
+    const urlStore = `${this.baseUrl}/shop/login`;
+    const urlUser = `${this.baseUrl}/auth/login`;
+    
     const body = { email, password };
-  
-    return this.http.post<any>(url, body).pipe(
-      map(response => {
-        const { user, shop, token } = response;
-  
-        // Determina el tipo de autenticación basado en la respuesta
-        if (user) {
-          
-          return this.setAuthentication(user, token, 'user');
-        } else if (shop) {
-      
-          return this.setAuthentication(shop, token, 'shop');
-        } else {
-          throw new Error('Respuesta inesperada del servidor.');
-        }
-      }),
-      catchError(err => {
-        console.error('Error al iniciar sesión:', err);
-        return throwError(() => new Error(err.error.message));
+    return this.http.post<LoginResponse>(urlUser, { email, password }).pipe(
+      map(({ user, token }) => this.setAuthentication(user, token, 'user')),
+      catchError((error: HttpErrorResponse) => {
+        return this.http.post<LoginResponse>(urlStore, { email, password }).pipe(
+          map(({ shop, token }) => this.setAuthentication(shop, token, 'shop')),
+          catchError((err: HttpErrorResponse) => {
+            return of(false);
+          })
+        );
       })
     );
   }
-  
-  
 
   register(name: string, email: string, password: string, phone: string): Observable<boolean> {
     const url = `${this.baseUrl}/auth/register`;
@@ -94,31 +87,15 @@ export class AuthService {
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    // Primero intenta verificar como user
     return this.http.get<CheckTokenResponse>(url, { headers }).pipe(
-      map(({ user, token }) => {
-        if (user) {
-          this.setAuthentication(user, token, 'user');
-          return true;
-        } else {
-          throw new Error('Token de usuario no válido.');
-        }
-      }),
-      catchError(() => {
-        // Si falla como user, intenta como shop
+      map(({ user, token }) => this.setAuthentication(user!, token, 'user')),
+      catchError(err => {
         return this.http.get<CheckTokenResponse>(url2, { headers }).pipe(
-          map(({ shop, token }) => {
-            if (shop) {
-              this.setAuthentication(shop, token, 'shop');
-              return true;
-            } else {
-              throw new Error('Token de tienda no válido.');
-            }
-          }),
+          map(({ shop, token }) => this.setAuthentication(shop!, token, 'shop')),
           catchError(innerErr => {
             console.error('Error al verificar el token', innerErr);
             this._authStatus.set(AuthStatus.notAuthenticated);
-            this.logout();
+            this.logout();  // Asegura que se desloguee si el token no es válido
             return of(false);
           })
         );
@@ -130,6 +107,6 @@ export class AuthService {
     localStorage.removeItem('token');
     this._currentUser.set(null);
     this._authStatus.set(AuthStatus.notAuthenticated);
-    this.rolUser = null;
+    this.rolUser.set(null);
   }
 }

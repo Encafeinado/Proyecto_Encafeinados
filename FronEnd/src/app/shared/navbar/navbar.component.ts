@@ -1,5 +1,5 @@
-import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef, ViewChild, computed, effect } from '@angular/core';
-import { Router, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
+import { AfterViewInit, ChangeDetectorRef, Component, computed, effect, inject, OnInit, ViewChild } from '@angular/core';
+import { NavigationCancel, NavigationEnd, NavigationError, Router } from '@angular/router';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { AuthStatus } from 'src/app/auth/interfaces';
 import { AuthService } from 'src/app/auth/services/auth.service';
@@ -142,13 +142,12 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   }
 
 
- 
-  isUserShop(): boolean {
-     return this.authService.rolUser === 'shop';
-   }
 
- 
-   isUserUser(): boolean {
-     return this.authService.rolUser === 'user';
-   }
+   isUserShop(): boolean {
+    return this.authService.rolUser() === 'shop';
+  }
+
+  isUserUser(): boolean {
+    return this.authService.rolUser() === 'user';
+  }
 }

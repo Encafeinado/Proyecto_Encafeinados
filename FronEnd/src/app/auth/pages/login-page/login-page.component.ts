@@ -20,9 +20,9 @@ export class LoginPageComponent {
     private toastr: ToastrService
   ) {
     this.myForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      role: ['user'] // Campo para seleccionar el rol (predeterminado es 'user')
+      email: ['julian@gmail.com', [Validators.required, Validators.email]],
+      password: ['123456', [Validators.required, Validators.minLength(6)]],
+      role: ['user']
     });
   }
 
@@ -35,20 +35,11 @@ export class LoginPageComponent {
       this.toastr.error('Por favor, completa el formulario correctamente');
       return;
     }
-
     const { email, password, role } = this.myForm.value;
 
-    this.authService.login(email, password, role).subscribe(
+    this.authService.login(email, password).subscribe(
       (response) => {
-        console.log('Login successful', response);
-        
-        if (role === 'shop') {
-          
-          this.router.navigate(['/shop']);
-        } else {
-     
-          this.router.navigate(['/auth']);
-        }
+      
       },
       (error) => {
         console.error('Error logging in', error);
