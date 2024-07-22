@@ -91,6 +91,12 @@ export class AuthService {
     return rest;
   }
 
+  async findShopById(id: string) {
+    const shop = await this.userModel.findById(id);
+    const { password, ...rest } = shop.toJSON();
+    return rest;
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} auth`;
   }
