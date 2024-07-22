@@ -190,7 +190,7 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #D2B48C; /* Café claro */
+  background: #03AED2; /* Café claro */
   padding: 20px;
   border-radius: 20px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -200,7 +200,7 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #D2B48C; /* Café claro */
+  background: #03AED2; /* Café claro */
   padding: 20px;
   border-radius: 20px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -210,7 +210,7 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #D2B48C; /* Café claro */
+  background: #03AED2; /* Café claro */
   padding: 20px;
   border-radius: 20px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -224,15 +224,85 @@ button:hover {
 
 .company-icon2 img {
   max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
-  height: auto;
-  max-height: 600px; /* Limita la altura máxima de la imagen */
+  height: 670px;
+  max-height: 670px; /* Limita la altura máxima de la imagen */
 }
 
 .company-icon3 img {
   max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
-  height: auto;
-  max-height:750px; /* Limita la altura máxima de la imagen */
+  height: 920px;
+  max-height:920px; /* Limita la altura máxima de la imagen */
 }
+
+
+
+/* Estilo para el contenedor del input file */
+.file-input-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  width: auto;
+  height: 40px; /* Ajusta la altura según tus necesidades */
+}
+
+/* Estilo para el input de texto */
+.input100 {
+  /* Estilos de tu input de texto actual */
+  width: 100%; /* Ajusta el ancho según tus necesidades */
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Estilo para el input file oculto */
+.input100[type="file"] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Estilo para la etiqueta del archivo seleccionado */
+.file-input-label {
+  display: block;
+  padding: 10px;
+  background-color: #ffffff; /* Color de fondo */
+  border: 1px solid #ffffff; /* Borde */
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  
+
+}
+
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  top: 70%;
+  transform: translateY(-30%);
+  cursor: pointer;
+}
+
+.eye-icon i {
+  color: #888;
+}
+
+.eye-icon i.fa-eye-slash {
+  color: #333;
+}
+
+
+.file-input-label::-webkit-file-upload-button {
+  font-size: 12px; /* Tamaño de fuente más pequeño */
+}
+/* Estilo para el botón cuando se pasa el mouse */
+.file-input-label:hover {
+  background-color: #ffffff; /* Color de fondo al pasar el mouse */
+}
+
 
 
 .small-placeholder::placeholder {
@@ -3042,6 +3112,4 @@ body {
   background-image: url('data:image/svg+xml;charset=utf8,%3Csvg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath stroke="rgba%28100, 100, 100, 0.5%29" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M4 7h22M4 15h22M4 23h22"/%3E%3C/svg%3E');
 }
 
-.leaflet-routing-container {
-  display: none;
-}
+.leaflet-routing-container {display: none;}

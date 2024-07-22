@@ -28,6 +28,13 @@ export class Shop {
 
     @Prop({required: true})
     address: string;
+
+    @Prop()
+    logo: Buffer;
+
+    @Prop()
+    verificationCode: string; // Nuevo campo para el código de verificación  
 }
 
 export const ShopSchema = SchemaFactory.createForClass(Shop);
+export type ShopDocument = Shop & Document; 

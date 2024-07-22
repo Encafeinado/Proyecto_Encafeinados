@@ -23,5 +23,9 @@ export class RegisterShopDto {
   @IsNotEmpty()
   @IsString()
   address: string;
+  
+  @IsNotEmpty()
+  @IsString()
+  logo: string; 
 }
 

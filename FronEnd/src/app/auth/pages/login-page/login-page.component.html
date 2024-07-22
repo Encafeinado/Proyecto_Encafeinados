@@ -16,9 +16,15 @@
   
             <div class="wrap-input100">
               <span class="label-input100">Contraseña</span>
-              <input class="input100 small-placeholder" type="password" formControlName="password" placeholder="Ingrese su contraseña">
-              <span class="focus-input100"></span>
+              <div class="input-with-eye">
+                <input class="input100 small-placeholder" type="{{ hidePassword ? 'password' : 'text' }}" formControlName="password" placeholder="Ingrese su contraseña">
+                <span class="focus-input100"></span>
+                <div class="eye-icon" (click)="togglePasswordVisibility()">
+                  <i class="fa" [ngClass]="{'fa-eye': hidePassword, 'fa-eye-slash': !hidePassword}"></i>
+                </div>
+              </div>
             </div>
+            
   
             <div class="text-right p-t-8 p-b-31"></div>
   
@@ -46,7 +52,7 @@
         <!-- Contenedor del icono de la empresa -->
         <div class="icon-container">
           <div class="company-icon coffee-background">
-            <img src="../../../../assets/images/logodescafeinados.jpg" alt="Icono de la empresa">
+            <img src="../../../../assets/images/encafeinadologo2.png" alt="Icono de la empresa">
           </div>
         </div>
       </div>
