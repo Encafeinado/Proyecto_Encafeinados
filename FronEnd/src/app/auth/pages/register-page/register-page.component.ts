@@ -32,7 +32,7 @@ export class RegisterPageComponent {
     address: [''],
     logo: ['']
   }, {
-    validators: this.passwordMatchValidator // Validador personalizado para la coincidencia de contraseñas
+    validators: this.passwordMatchValidator 
   });
 
   public isUser: boolean = true;

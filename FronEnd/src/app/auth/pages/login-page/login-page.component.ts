@@ -20,8 +20,8 @@ export class LoginPageComponent {
     private toastr: ToastrService
   ) {
     this.myForm = this.fb.group({
-      email: ['julian@gmail.com', [Validators.required, Validators.email]],
-      password: ['123456', [Validators.required, Validators.minLength(6)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
       role: ['user']
     });
   }
@@ -40,11 +40,11 @@ export class LoginPageComponent {
     this.authService.login(email, password).subscribe(
       (response) => {
         if (response) {
-          // Maneja la respuesta exitosa
+         
           this.toastr.success('Inicio de sesión exitoso');
-          // Redirigir o hacer algo según la respuesta
+         
         } else {
-          // Maneja caso de respuesta no exitosa, pero sin error de red
+       
           this.toastr.error('Credenciales incorrectas');
         }
       },

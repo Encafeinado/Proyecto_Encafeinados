@@ -95,7 +95,7 @@ export class AuthService {
           catchError(innerErr => {
             console.error('Error al verificar el token', innerErr);
             this._authStatus.set(AuthStatus.notAuthenticated);
-            this.logout();  // Asegura que se desloguee si el token no es válido
+            this.logout();
             return of(false);
           })
         );
