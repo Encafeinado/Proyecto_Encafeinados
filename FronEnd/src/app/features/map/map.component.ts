@@ -301,6 +301,15 @@ convertBufferToDataUrl(buffer: any,mimeType: string): Promise<string> {
         'Leal Coffee'
       );
     });
+
+    casaMarker.on('click', () => {
+      this.showRouteConfirmation(
+        map,
+        casaMarker,
+        userLocationMarker,
+        'Casa'
+      );
+    });
   }
 
   checkProximityToStores(
