@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import * as bcryptjs from 'bcryptjs';
 import { RegisterUserDto, CreateUserDto, UpdateAuthDto, LoginDto } from './dto';
 import { User } from './entities/user.entity';
-import { Book } from '../book/entities/book.entity'; // Importa el Book entity
+import { Book } from '../book/entities/book.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
 import { LoginResponce } from './interfaces/login-responce';
@@ -13,7 +13,7 @@ import { LoginResponce } from './interfaces/login-responce';
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Book.name) private bookModel: Model<Book>, // Inyecta el modelo de Book
+    @InjectModel(Book.name) private bookModel: Model<Book>,
     private jwtService: JwtService,
   ) {}
 
@@ -37,7 +37,7 @@ export class AuthService {
 
   async register(registerDto: RegisterUserDto): Promise<LoginResponce> {
     const user = await this.create(registerDto);
-    await this.createBookForUser(user); // Crea el registro en la colección Book
+    await this.createBookForUser(user);
     console.log({ user });
     return {
       user: user,
@@ -48,7 +48,7 @@ export class AuthService {
   async createBookForUser(user: User): Promise<void> {
     try {
       const newBook = new this.bookModel({
-        nameShop: '', // Deja los campos vacíos
+        nameShop: '', 
         nameUser: user.name,
         code: '',
         status: true,
@@ -56,7 +56,7 @@ export class AuthService {
       });
       await newBook.save();
     } catch (error) {
-      // Captura y maneja errores específicos de Mongoose
+
       if (error.name === 'ValidationError') {
         throw new BadRequestException('Error de validación al crear el libro');
       }
