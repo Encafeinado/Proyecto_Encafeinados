@@ -44,14 +44,15 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   userData: any;
   shopData: any;
   userName: string = 'Nombre del Usuario';
-
+  hasArrived: boolean = false;  // Nuevo estado para verificar si ya ha llegado
+  shopLogos: { name: string; logoUrl: string }[] = [];
+  
   @ViewChild('createModal', { static: true }) createModal: any;
   @ViewChild('cancelModal', { static: true }) cancelModal: any;
   @ViewChild('codeModal', { static: true }) codeModal: any;
   @ViewChild('modalBook', { static: true }) modalBook: any;
   @ViewChild('codeInput', { static: false }) codeInput!: ElementRef;
   @ViewChild('arriveModal', { static: true }) arriveModal: any;
-
 
   constructor(
     private modalService: NgbModal,
@@ -60,8 +61,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     private userService: UserService,
     private shopService: ShopService,
     private http: HttpClient,
-    private authService: AuthService
-  ) {
+    ) {
     this.userLocationIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cosechaUser.png',
       iconSize: [25, 41],
@@ -74,7 +74,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   ngOnInit(): void {
     this.albumImages = this.albumService.getAlbumImages();
     this.isStoreOpen = this.storeStatusService.isStoreActivated();
- //   this.fetchUserData();
+    this.fetchUserData();
     this.fetchShopData();
   }
 
@@ -88,9 +88,9 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.userService.fetchUserData(token).subscribe(
       (data: any) => {
         this.userData = data;
-        console.log('Datos del usuario:', this.userData);
+        // console.log('Datos del usuario:', this.userData);
       },
-      error => {
+      (error) => {
         console.error('Error al obtener los datos del usuario:', error);
       }
     );
@@ -98,7 +98,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
   fetchShopData(): void {
     const token = localStorage.getItem('token');
-    console.log('TOKEN  ', token)
     if (!token) {
       console.error('Token no encontrado en el almacenamiento local.');
       return;
@@ -106,15 +105,48 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
     this.shopService.fetchShopData(token).subscribe(
       (data: any) => {
+        console.log('Datos obtenidos de la tienda:', data); // Mensaje en español
         this.shopData = data;
-        console.log('Datos de la tienda:', this.shopData);
+        this.populateShopLogos();
       },
-      error => {
-        console.error('Error al obtener los datos de la tienda:', error);
+      (error) => {
+        console.error('Error al obtener los datos de la tienda:', error); // Mensaje en español
       }
     );
   }
 
+  populateShopLogos(): void {
+    console.log('Datos de la tienda antes de mapear:', this.shopData); // Mensaje en español
+
+    if (Array.isArray(this.shopData)) {
+      this.shopLogos = this.shopData.map((shop: any) => {
+        console.log('Procesando tienda:', shop); // Mensaje en español
+
+        // Verifica si shop.logo es un objeto y convierte a cadena si es necesario
+        const logoBase64 = typeof shop.logo === 'object' ? (shop.logo as any).data : shop.logo;
+        
+        // Asegúrate de que logoBase64 sea una cadena
+        if (typeof logoBase64 === 'string') {
+          return {
+            name: shop.name,
+            logoUrl: `data:image/png;base64,${logoBase64}` // Ajusta el tipo de imagen si es necesario
+          };
+        } else {
+          console.error('El logo no está en el formato esperado:', shop.logo); // Mensaje en español
+          return {
+            name: shop.name,
+            logoUrl: '' // O proporciona una imagen predeterminada
+          };
+        }
+      });
+      console.log('Logos de tiendas procesados:', this.shopLogos); // Mensaje en español
+    } else {
+      console.error('Los datos de la tienda no son una matriz:', this.shopData); // Mensaje en español
+    }
+  }
+
+
+ 
   ngAfterViewInit(): void {
     const map = new L.Map('map', {
       center: [6.150155571503784, -75.61905204382627],
@@ -126,14 +158,15 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       maxZoom: 19,
     }).addTo(map);
 
-    const casaMarker = L.marker([6.34147392395257, -75.51329608725513],{
+    const casaMarker = L.marker([6.34147392395257, -75.51329608725513], {
       icon: this.createStoreIcon(
         'assets/IconsMarker/cafeteria.png',
         this.isStoreOpen,
         'grayscale-icon'
       ),
-    }).addTo(map)
-    .bindPopup('Casa');
+    })
+      .addTo(map)
+      .bindPopup('Casa');
 
     const aromaMarker = L.marker([6.15150999618405, -75.61369180892304], {
       icon: this.createStoreIcon(
@@ -169,7 +202,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
       [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
       [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
-      [casaMarker.getLatLng().lat, casaMarker.getLatLng().lng]
+      [casaMarker.getLatLng().lat, casaMarker.getLatLng().lng],
     ]);
 
     const userLocationMarker = L.marker([0, 0], { icon: this.userLocationIcon })
@@ -182,7 +215,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         const userLng = position.coords.longitude;
         const accuracy = position.coords.accuracy;
 
-        console.log('Posición obtenida:', position);
+        // console.log('Posición obtenida:', position);
 
         if (accuracy < 50) {
           userLocationMarker.setLatLng([userLat, userLng]);
@@ -202,18 +235,21 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
           this.checkProximityToStores(
             userLat,
             userLng,
-            aromaMarker,
-            baulMarker,
-            lealMarker,
-            casaMarker
+            [
+              { marker: aromaMarker, name: 'Aroma Café Sabaneta', iconPath: 'assets/IconsMarker/cafeteriaAroma.png' },
+              { marker: baulMarker, name: 'Viejo Baul', iconPath: 'assets/IconsMarker/cafeteriaCoffe.png' },
+              { marker: lealMarker, name: 'Leal Coffee', iconPath: 'assets/IconsMarker/cafeteriaLeal.png' },
+              { marker: casaMarker, name: 'Casa', iconPath: 'assets/IconsMarker/cafeteria.png' }
+            ]
           );
+          
 
           console.log(
             userLocationMarker.getLatLng().lat,
             userLocationMarker.getLatLng().lng
           );
         } else {
-          console.log('Precisión no aceptable:', accuracy);
+          // console.log('Precisión no aceptable:', accuracy);
         }
       },
       (error) => {
@@ -257,140 +293,46 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   checkProximityToStores(
     userLat: number,
     userLng: number,
-    aromaMarker: L.Marker,
-    baulMarker: L.Marker,
-    lealMarker: L.Marker,
-    casaMarker: L.Marker
+    markers: { marker: L.Marker, name: string, iconPath: string }[] // Define claramente el tipo aquí
   ) {
-    const proximityThreshold = 0.1; // Ajusta este valor según tus necesidades (en grados de latitud/longitud)
+    const proximityThreshold = 8; // 8 metros
+    
+    markers.forEach(({ marker, name, iconPath }) => {
+      const { lat, lng } = marker.getLatLng();
+      const distance = this.calculateDistance(userLat, userLng, lat, lng);
+    
+      if (distance <= proximityThreshold) {
+        marker.setIcon(
+          this.createStoreIcon(iconPath, this.isStoreOpen)
+        );
+        console.log(`Estás cerca de ${name}`);
+        this.openModal(this.arriveModal, name); // Pasa el nombre de la cafetería
+      } else {
+        marker.setIcon(
+          this.createStoreIcon(iconPath, this.isStoreOpen, 'grayscale-icon')
+        );
+      }
+    });
+  }  
   
-    const distanceToAroma = this.calculateDistance(
-      userLat,
-      userLng,
-      aromaMarker.getLatLng().lat,
-      aromaMarker.getLatLng().lng
-    );
-    const distanceToBaul = this.calculateDistance(
-      userLat,
-      userLng,
-      baulMarker.getLatLng().lat,
-      baulMarker.getLatLng().lng
-    );
-    const distanceToLeal = this.calculateDistance(
-      userLat,
-      userLng,
-      lealMarker.getLatLng().lat,
-      lealMarker.getLatLng().lng
-    );
-    const distanceToCasa = this.calculateDistance(
-      userLat,
-      userLng,
-      casaMarker.getLatLng().lat,
-      casaMarker.getLatLng().lng
-    );
-
-    console.log('distance to aroma', distanceToAroma);
-    console.log('proximity', proximityThreshold);
+  // Método para calcular la distancia
+  calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const R = 6371e3; // Radio de la Tierra en metros
+    const φ1 = this.degreesToRadians(lat1);
+    const φ2 = this.degreesToRadians(lat2);
+    const Δφ = this.degreesToRadians(lat2 - lat1);
+    const Δλ = this.degreesToRadians(lng2 - lng1);
   
-    if (distanceToAroma <= proximityThreshold) {
-      aromaMarker.setIcon(
-        this.createStoreIcon(
-          'assets/IconsMarker/cafeteriaAroma.png',
-          this.isStoreOpen
-        )
-      );
-      console.log('Estás cerca de Aroma Café Sabaneta');
-      this.openModal(this.arriveModal, 'Aroma Café Sabaneta'); // Pasa el nombre de la cafetería
-    } else {
-      aromaMarker.setIcon(
-        this.createStoreIcon(
-          'assets/IconsMarker/cafeteriaAroma.png',
-          this.isStoreOpen,
-          'grayscale-icon'
-        )
-      );
-    }
-  
-    if (distanceToBaul <= proximityThreshold) {
-      baulMarker.setIcon(
-        this.createStoreIcon(
-          'assets/IconsMarker/cafeteriaCoffe.png',
-          this.isStoreOpen
-        )
-      );
-      console.log('Estás cerca de Viejo Baul');
-      this.openModal(this.arriveModal, 'Viejo Baul'); // Pasa el nombre de la cafetería
-    } else {
-      baulMarker.setIcon(
-        this.createStoreIcon(
-          'assets/IconsMarker/cafeteriaCoffe.png',
-          this.isStoreOpen,
-          'grayscale-icon'
-        )
-      );
-    }
-  
-    if (distanceToLeal <= proximityThreshold) {
-      lealMarker.setIcon(
-        this.createStoreIcon(
-          'assets/IconsMarker/cafeteriaLeal.png',
-          this.isStoreOpen
-        )
-      );
-      console.log('Estás cerca de Leal Coffee');
-      this.openModal(this.arriveModal, 'Leal Coffee'); // Pasa el nombre de la cafetería
-    } else {
-      lealMarker.setIcon(
-        this.createStoreIcon(
-          'assets/IconsMarker/cafeteriaLeal.png',
-          this.isStoreOpen,
-          'grayscale-icon'
-        )
-      );
-    }
-  
-    if (distanceToCasa <= proximityThreshold) {
-      casaMarker.setIcon(
-        this.createStoreIcon(
-          'assets/IconsMarker/cafeteria.png',
-          this.isStoreOpen
-        )
-      );
-      console.log('Estás cerca de Casa');
-      this.openModal(this.arriveModal, 'Casa'); // Pasa el nombre de la cafetería
-    } else {
-      casaMarker.setIcon(
-        this.createStoreIcon(
-          'assets/IconsMarker/cafeteria.png',
-          this.isStoreOpen,
-          'grayscale-icon'
-        )
-      );
-    }
-  }
-
-  calculateDistance(
-    userLat: number,
-    userLng: number,
-    markerLat: number,
-    markerLng: number
-  ): number {
-    const earthRadius = 6371; // Radio de la Tierra en kilómetros
-    const latDistance = this.degreesToRadians(markerLat - userLat);
-    const lngDistance = this.degreesToRadians(markerLng - userLng);
-
-    const a =
-      Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
-      Math.cos(this.degreesToRadians(userLat)) *
-        Math.cos(this.degreesToRadians(markerLat)) *
-        Math.sin(lngDistance / 2) *
-        Math.sin(lngDistance / 2);
-
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return earthRadius * c; // Distancia en kilómetros
+  
+    const distance = R * c; // Distancia en metros
+    return distance;
   }
-
+  
+  // Método para convertir grados a radianes
   degreesToRadians(degrees: number): number {
     return degrees * (Math.PI / 180);
   }
@@ -407,7 +349,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.map = map;
     this.openModal(this.createModal, this.destinationName); // Asegúrate de pasar el nombre aquí
   }
-  
+
   showRouteGuia(): void {
     if (
       this.map &&
@@ -443,7 +385,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     let profile: string;
     let routed: string;
     let url: any;
-  
+
     if (transport === 'foot') {
       profile = 'foot';
       routed = 'routed-foot';
@@ -454,13 +396,13 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       profile = 'bike';
       routed = 'routed-bike';
     }
-  
+
     if (transport === 'foot' || transport === 'bike') {
       url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
     } else {
       url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
     }
-  
+
     fetch(url)
       .then((response) => {
         if (!response.ok) {
@@ -472,40 +414,44 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         if (!data || !data.routes || data.routes.length === 0) {
           throw new Error('No se encontraron rutas válidas');
         }
-  
+
         const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
         const routeCoordinates = route.geometry.coordinates.map(
           (coord: [number, number]) => [coord[1], coord[0]]
         );
-  
+
         // Dibujar la ruta en el mapa usando Leaflet
         let color = 'blue'; // Default color for foot transport
-  
+
         if (transport === 'car') {
           color = 'red';
         } else if (transport === 'bike') {
           color = 'green';
         }
-  
+
         if (this.routingControl) {
           this.routingControl.remove();
         }
-  
+
         this.routingControl = L.polyline(routeCoordinates, {
           color: color,
         }).addTo(map);
-  
+
         // Mostrar la distancia y tiempo estimado
         const distance = route.distance / 1000; // Distancia en kilómetros
         const duration = route.duration / 60; // Duración en minutos
-  
-        toastr.info(`Ruta hacia ${this.destinationName} es de ${distance.toFixed(2)} km y tomará aproximadamente ${duration.toFixed(0)} minutos.`);
+
+        toastr.info(
+          `Ruta hacia ${this.destinationName} es de ${distance.toFixed(
+            2
+          )} km y tomará aproximadamente ${duration.toFixed(0)} minutos.`
+        );
       })
       .catch((error) => {
         console.error('Error al obtener la ruta desde OSRM:', error);
         toastr.error('Error al obtener la ruta');
       });
-  } 
+  }
 
   selectTransportMode(mode: string) {
     this.selectedTransport = mode;
@@ -523,22 +469,22 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.modalRef.close();
   }
 
+  confirmArrive(): void {
+    this.hasArrived = true;  // Marca que el usuario ya ha llegado
+    this.modalRef.close();   // Cierra el modal
+  }
+
   openModal(content: any, destinationName: string): void {
-    if (!this.openedModal) {
+    if (!this.openedModal && !this.hasArrived) { // Verifica que no se haya confirmado la llegada
       this.destinationName = destinationName;
       this.openedModal = true;
       this.modalRef = this.modalService.open(content, {
         centered: true,
         backdrop: 'static',
       });
-      this.modalRef.result.then(
-        () => {
-          this.openedModal = false;
-        },
-        () => {
-          this.openedModal = false;
-        }
-      );
+      this.modalRef.result.finally(() => {
+        this.openedModal = false;
+      });
     }
   }
 
@@ -583,44 +529,51 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       console.error('Token no encontrado en el almacenamiento local.');
       return;
     }
-  
+
     const requestBody = {
       storeName: storeName,
-      userName: this.userName,  // Asegúrate de que se use this.userName aquí
+      userName: this.userName, // Asegúrate de que se use this.userName aquí
       codeVerified: true,
     };
-  
+
     // Envía la solicitud POST al backend para guardar los datos
-    this.http.post(`${this.apiUrl}/book/verify-code`, requestBody, {
-      headers: new HttpHeaders().set('Authorization', `Bearer ${token}`),
-    }).subscribe(
-      (response: any) => {
-        console.log('Respuesta del servidor:', response);
-        toastr.success('Código verificado guardado exitosamente');
-        // Actualiza las imágenes del álbum para marcarlas como guardadas
-      },
-      error => {
-        console.error('Error al guardar el código verificado:', error);
-        toastr.error('Error al guardar el código verificado');
-      }
-    );
-  } 
+    this.http
+      .post(`${this.apiUrl}/book/verify-code`, requestBody, {
+        headers: new HttpHeaders().set('Authorization', `Bearer ${token}`),
+      })
+      .subscribe(
+        (response: any) => {
+          // console.log('Respuesta del servidor:', response);
+          toastr.success('Código verificado guardado exitosamente');
+          // Actualiza las imágenes del álbum para marcarlas como guardadas
+        },
+        (error) => {
+          console.error('Error al guardar el código verificado:', error);
+          toastr.error('Error al guardar el código verificado');
+        }
+      );
+  }
 
   verifyCode() {
     const storeCode = localStorage.getItem('storeCode');
     if (!storeCode) {
-      toastr.error('No se encontró un código de tienda en el almacenamiento local.');
+      toastr.error(
+        'No se encontró un código de tienda en el almacenamiento local.'
+      );
       return;
     }
-  
+
     if (this.enteredCode === storeCode) {
       this.verified = true;
-      toastr.success('Código verificado exitosamente', '¡OBTUVISTE UNA ESTAMPITA!');
+      toastr.success(
+        'Código verificado exitosamente',
+        '¡OBTUVISTE UNA ESTAMPITA!'
+      );
       this.coloredImage();
-  
+
       // Llamar a la función para guardar el código verificado
       this.saveVerifiedCode('Aroma Café'); // Nombre de la tienda como 'Aroma Café'
-  
+
       setTimeout(() => {
         this.modalRef.close(); // Método para cerrar el modal
       }, 2000);
@@ -628,22 +581,27 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       this.verified = false;
       toastr.error('Error al verificar el código');
     }
-  }  
+  }
 
   coloredImage(): void {
     if (this.currentImageIndex < this.albumImages.length) {
       this.albumImages[this.currentImageIndex].colored = true;
       this.currentImageIndex++;
     } else {
-      console.log('Todas las imágenes ya están coloreadas');
+      // console.log('Todas las imágenes ya están coloreadas');
     }
   }
 
   get obtainedStamps(): number {
-    return this.albumImages.filter(image => image.colored).length;
+    return this.albumImages.filter((image) => image.colored).length;
   }
 
   get totalStamps(): number {
-    return this.albumImages.length;
+    // La cantidad total de estampas es igual a la cantidad total de tiendas
+    if (!this.shopData) {
+      return 0;
+    }
+
+    return this.shopData.length;
   }
 }

@@ -266,6 +266,7 @@
   transition: filter 0.5s ease-in-out;
 }
 
+
 .album img.colored {
   filter: grayscale(0%);
 }
@@ -342,6 +343,7 @@
   background-color: #FDDE55;
   color: #03AED2;
   border: none;
+  margin: 0 10px;
 }
 
 .modal-footer-coffee .btn:hover {
