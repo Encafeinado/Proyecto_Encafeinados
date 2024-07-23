@@ -16,21 +16,22 @@ export class ShopService {
     private shopModel: Model<Shop>,
     private jwtService: JwtService
   ) {}
-
   async create(createShopDto: RegisterShopDto, logoBase64: string): Promise<Shop> {
     try {
       const { password, ...shopData } = createShopDto;
-
-      const logoBuffer = Buffer.from(logoBase64, 'base64'); // Convierte de base64 a buffer
-
+  
+      // Elimina el prefijo de base64 si está presente
+      const base64Data = logoBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+      const logoBuffer = Buffer.from(base64Data, 'base64'); // Convierte de base64 a Buffer
+  
       const newShop = new this.shopModel({
         password: bcryptjs.hashSync(password, 10),
         ...shopData,
         logo: logoBuffer, // Guarda el logo como un buffer en MongoDB
       });
-
+  
       await newShop.save();
-
+  
       const { password: _, ...shop } = newShop.toJSON();
       return shop as Shop;
     } catch (error) {
@@ -40,7 +41,7 @@ export class ShopService {
       throw new InternalServerErrorException('Algo terrible está sucediendo!!!!');
     }
   }
-
+  
   async login(loginDto: LoginDto): Promise<LoginResponce> {
     const { email, password } = loginDto;
     const shop = await this.shopModel.findOne({ email });

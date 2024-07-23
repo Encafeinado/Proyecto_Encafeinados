@@ -42,7 +42,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   isStoreOpen: boolean = false;
   private apiUrl = 'https://encafeinados-backend.up.railway.app'; // Ajusta según sea necesario
   userData: any;
-  shopData: any;
+  shopData: any[] = [];
   userName: string = 'Nombre del Usuario';
   hasArrived: boolean = false;  // Nuevo estado para verificar si ya ha llegado
   shopLogos: { name: string; logoUrl: string }[] = [];
@@ -76,6 +76,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.isStoreOpen = this.storeStatusService.isStoreActivated();
     this.fetchUserData();
     this.fetchShopData();
+    this.populateShopLogos();
   }
 
   fetchUserData(): void {
@@ -105,46 +106,58 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
     this.shopService.fetchShopData(token).subscribe(
       (data: any) => {
-        console.log('Datos obtenidos de la tienda:', data); // Mensaje en español
         this.shopData = data;
         this.populateShopLogos();
+        console.log('Datos de la tienda:', this.shopData);
       },
       (error) => {
-        console.error('Error al obtener los datos de la tienda:', error); // Mensaje en español
-      }
-    );
+        console.error('Error al obtener los datos de la tienda:', error);
+      }
+    );
+  }
+
+async populateShopLogos(): Promise<void> {
+  this.shopLogos = await Promise.all(this.shopData.map(async (shop: any) => {
+    // Asume que 'format' es un campo en tus datos de shop que indica el tipo de imagen
+    const mimeType = this.getMimeType(shop.logo.format); 
+    const logoUrl = await this.convertBufferToDataUrl(shop.logo, mimeType);
+    return {
+      name: shop.name,
+      logoUrl: logoUrl
+    };
+  }));
+  console.log('Logos de la tienda: ', this.shopLogos);
+}
+
+getMimeType(format: string): string {
+  switch (format) {
+    case 'jpeg':
+    case 'jpg':
+      return 'image/jpeg';
+    case 'png':
+      return 'image/png';
+    case 'gif':
+      return 'image/gif';
+    default:
+      return 'application/octet-stream'; // Tipo MIME genérico
   }
+}
 
-  populateShopLogos(): void {
-    console.log('Datos de la tienda antes de mapear:', this.shopData); // Mensaje en español
 
-    if (Array.isArray(this.shopData)) {
-      this.shopLogos = this.shopData.map((shop: any) => {
-        console.log('Procesando tienda:', shop); // Mensaje en español
-
-        // Verifica si shop.logo es un objeto y convierte a cadena si es necesario
-        const logoBase64 = typeof shop.logo === 'object' ? (shop.logo as any).data : shop.logo;
-        
-        // Asegúrate de que logoBase64 sea una cadena
-        if (typeof logoBase64 === 'string') {
-          return {
-            name: shop.name,
-            logoUrl: `data:image/png;base64,${logoBase64}` // Ajusta el tipo de imagen si es necesario
-          };
-        } else {
-          console.error('El logo no está en el formato esperado:', shop.logo); // Mensaje en español
-          return {
-            name: shop.name,
-            logoUrl: '' // O proporciona una imagen predeterminada
-          };
-        }
-      });
-      console.log('Logos de tiendas procesados:', this.shopLogos); // Mensaje en español
-    } else {
-      console.error('Los datos de la tienda no son una matriz:', this.shopData); // Mensaje en español
+convertBufferToDataUrl(buffer: any,mimeType: string): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    try {
+      const arrayBuffer = new Uint8Array(buffer.data).buffer;
+      const blob = new Blob([arrayBuffer], { type: mimeType }); // Ajusta el tipo MIME según corresponda
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = () => reject('Error al leer el archivo');
+      reader.readAsDataURL(blob);
+    } catch (error) {
+      reject(error);
     }
-  }
-
+  });
+}
 
  
   ngAfterViewInit(): void {
