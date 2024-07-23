@@ -44,9 +44,9 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   userData: any;
   shopData: any[] = [];
   userName: string = 'Nombre del Usuario';
-  hasArrived: boolean = false;  // Nuevo estado para verificar si ya ha llegado
+  hasArrived: boolean = false; // Nuevo estado para verificar si ya ha llegado
   shopLogos: { name: string; logoUrl: string }[] = [];
-  
+
   @ViewChild('createModal', { static: true }) createModal: any;
   @ViewChild('cancelModal', { static: true }) cancelModal: any;
   @ViewChild('codeModal', { static: true }) codeModal: any;
@@ -60,8 +60,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     private storeStatusService: StoreStatusService,
     private userService: UserService,
     private shopService: ShopService,
-    private http: HttpClient,
-    ) {
+    private http: HttpClient
+  ) {
     this.userLocationIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cosechaUser.png',
       iconSize: [25, 41],
@@ -112,57 +112,57 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       },
       (error) => {
         console.error('Error al obtener los datos de la tienda:', error);
-      }
-    );
-  }
-
-async populateShopLogos(): Promise<void> {
-  this.shopLogos = await Promise.all(this.shopData.map(async (shop: any) => {
-    // Asume que 'format' es un campo en tus datos de shop que indica el tipo de imagen
-    const mimeType = this.getMimeType(shop.logo.format); 
-    const logoUrl = await this.convertBufferToDataUrl(shop.logo, mimeType);
-    return {
-      name: shop.name,
-      logoUrl: logoUrl
-    };
-  }));
-  console.log('Logos de la tienda: ', this.shopLogos);
-}
-
-getMimeType(format: string): string {
-  switch (format) {
-    case 'jpeg':
-    case 'jpg':
-      return 'image/jpeg';
-    case 'png':
-      return 'image/png';
-    case 'gif':
-      return 'image/gif';
-    default:
-      return 'application/octet-stream'; // Tipo MIME genérico
+      }
+    );
   }
-}
 
+  async populateShopLogos(): Promise<void> {
+    this.shopLogos = await Promise.all(
+      this.shopData.map(async (shop: any) => {
+        // Asume que 'format' es un campo en tus datos de shop que indica el tipo de imagen
+        const mimeType = this.getMimeType(shop.logo.format);
+        const logoUrl = await this.convertBufferToDataUrl(shop.logo, mimeType);
+        return {
+          name: shop.name,
+          logoUrl: logoUrl,
+        };
+      })
+    );
+    console.log('Logos de la tienda: ', this.shopLogos);
+  }
 
-convertBufferToDataUrl(buffer: any,mimeType: string): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    try {
-      const arrayBuffer = new Uint8Array(buffer.data).buffer;
-      const blob = new Blob([arrayBuffer], { type: mimeType }); // Ajusta el tipo MIME según corresponda
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = () => reject('Error al leer el archivo');
-      reader.readAsDataURL(blob);
-    } catch (error) {
-      reject(error);
+  getMimeType(format: string): string {
+    switch (format) {
+      case 'jpeg':
+      case 'jpg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      case 'gif':
+        return 'image/gif';
+      default:
+        return 'application/octet-stream'; // Tipo MIME genérico
     }
-  });
-}
+  }
 
- 
+  convertBufferToDataUrl(buffer: any, mimeType: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      try {
+        const arrayBuffer = new Uint8Array(buffer.data).buffer;
+        const blob = new Blob([arrayBuffer], { type: mimeType }); // Ajusta el tipo MIME según corresponda
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = () => reject('Error al leer el archivo');
+        reader.readAsDataURL(blob);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
   ngAfterViewInit(): void {
     const map = new L.Map('map', {
-      center: [6.150155571503784, -75.61905204382627],
+      center: [6.150155571503784, -75.61905204382627], // Vista inicial predeterminada
       zoom: 13,
       attributionControl: false,
     });
@@ -171,6 +171,7 @@ convertBufferToDataUrl(buffer: any,mimeType: string): Promise<string> {
       maxZoom: 19,
     }).addTo(map);
 
+    // Marcadores de las tiendas
     const casaMarker = L.marker([6.34147392395257, -75.51329608725513], {
       icon: this.createStoreIcon(
         'assets/IconsMarker/cafeteria.png',
@@ -211,6 +212,7 @@ convertBufferToDataUrl(buffer: any,mimeType: string): Promise<string> {
       .addTo(map)
       .bindPopup('Leal Coffee');
 
+    // Ajustar la vista del mapa para incluir los marcadores de las tiendas
     map.fitBounds([
       [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
       [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
@@ -222,17 +224,16 @@ convertBufferToDataUrl(buffer: any,mimeType: string): Promise<string> {
       .addTo(map)
       .bindPopup('Tu ubicación actual');
 
+    // Obtener la ubicación del usuario
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
         const accuracy = position.coords.accuracy;
 
-        // console.log('Posición obtenida:', position);
-
         if (accuracy < 50) {
           userLocationMarker.setLatLng([userLat, userLng]);
-          map.setView([userLat, userLng], map.getZoom());
+          map.setView([userLat, userLng], map.getZoom()); // Centra el mapa en la ubicación del usuario
 
           map.fitBounds([
             [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
@@ -245,22 +246,28 @@ convertBufferToDataUrl(buffer: any,mimeType: string): Promise<string> {
             ],
           ]);
 
-          this.checkProximityToStores(
-            userLat,
-            userLng,
-            [
-              { marker: aromaMarker, name: 'Aroma Café Sabaneta', iconPath: 'assets/IconsMarker/cafeteriaAroma.png' },
-              { marker: baulMarker, name: 'Viejo Baul', iconPath: 'assets/IconsMarker/cafeteriaCoffe.png' },
-              { marker: lealMarker, name: 'Leal Coffee', iconPath: 'assets/IconsMarker/cafeteriaLeal.png' },
-              { marker: casaMarker, name: 'Casa', iconPath: 'assets/IconsMarker/cafeteria.png' }
-            ]
-          );
-          
-
-          console.log(
-            userLocationMarker.getLatLng().lat,
-            userLocationMarker.getLatLng().lng
-          );
+          this.checkProximityToStores(userLat, userLng, [
+            {
+              marker: aromaMarker,
+              name: 'Aroma Café Sabaneta',
+              iconPath: 'assets/IconsMarker/cafeteriaAroma.png',
+            },
+            {
+              marker: baulMarker,
+              name: 'Viejo Baul',
+              iconPath: 'assets/IconsMarker/cafeteriaCoffe.png',
+            },
+            {
+              marker: lealMarker,
+              name: 'Leal Coffee',
+              iconPath: 'assets/IconsMarker/cafeteriaLeal.png',
+            },
+            {
+              marker: casaMarker,
+              name: 'Casa',
+              iconPath: 'assets/IconsMarker/cafeteria.png',
+            },
+          ]);
         } else {
           // console.log('Precisión no aceptable:', accuracy);
         }
@@ -275,6 +282,7 @@ convertBufferToDataUrl(buffer: any,mimeType: string): Promise<string> {
       }
     );
 
+    // Configuración de eventos para los marcadores de las tiendas
     aromaMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -303,30 +311,23 @@ convertBufferToDataUrl(buffer: any,mimeType: string): Promise<string> {
     });
 
     casaMarker.on('click', () => {
-      this.showRouteConfirmation(
-        map,
-        casaMarker,
-        userLocationMarker,
-        'Casa'
-      );
-    });
+      this.showRouteConfirmation(map, casaMarker, userLocationMarker, 'Casa');
+    });
   }
 
   checkProximityToStores(
     userLat: number,
     userLng: number,
-    markers: { marker: L.Marker, name: string, iconPath: string }[] // Define claramente el tipo aquí
+    markers: { marker: L.Marker; name: string; iconPath: string }[] // Define claramente el tipo aquí
   ) {
     const proximityThreshold = 8; // 8 metros
-    
+
     markers.forEach(({ marker, name, iconPath }) => {
       const { lat, lng } = marker.getLatLng();
       const distance = this.calculateDistance(userLat, userLng, lat, lng);
-    
+
       if (distance <= proximityThreshold) {
-        marker.setIcon(
-          this.createStoreIcon(iconPath, this.isStoreOpen)
-        );
+        marker.setIcon(this.createStoreIcon(iconPath, this.isStoreOpen));
         console.log(`Estás cerca de ${name}`);
         this.openModal(this.arriveModal, name); // Pasa el nombre de la cafetería
       } else {
@@ -335,25 +336,30 @@ convertBufferToDataUrl(buffer: any,mimeType: string): Promise<string> {
         );
       }
     });
-  }  
-  
+  }
+
   // Método para calcular la distancia
-  calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  calculateDistance(
+    lat1: number,
+    lng1: number,
+    lat2: number,
+    lng2: number
+  ): number {
     const R = 6371e3; // Radio de la Tierra en metros
     const φ1 = this.degreesToRadians(lat1);
     const φ2 = this.degreesToRadians(lat2);
     const Δφ = this.degreesToRadians(lat2 - lat1);
     const Δλ = this.degreesToRadians(lng2 - lng1);
-  
-    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  
+
     const distance = R * c; // Distancia en metros
     return distance;
   }
-  
+
   // Método para convertir grados a radianes
   degreesToRadians(degrees: number): number {
     return degrees * (Math.PI / 180);
@@ -492,12 +498,13 @@ convertBufferToDataUrl(buffer: any,mimeType: string): Promise<string> {
   }
 
   confirmArrive(): void {
-    this.hasArrived = true;  // Marca que el usuario ya ha llegado
-    this.modalRef.close();   // Cierra el modal
+    this.hasArrived = true; // Marca que el usuario ya ha llegado
+    this.modalRef.close(); // Cierra el modal
   }
 
   openModal(content: any, destinationName: string): void {
-    if (!this.openedModal && !this.hasArrived) { // Verifica que no se haya confirmado la llegada
+    if (!this.openedModal && !this.hasArrived) {
+      // Verifica que no se haya confirmado la llegada
       this.destinationName = destinationName;
       this.openedModal = true;
       this.modalRef = this.modalService.open(content, {
