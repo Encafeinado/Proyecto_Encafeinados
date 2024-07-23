@@ -37,7 +37,7 @@ export class AuthService {
     return true;
   }
 
-  logine(email: string, password: string): Observable<boolean> {
+  login(email: string, password: string): Observable<boolean> {
     const urlStore = `${this.baseUrl}/shop/login`;
     const urlUser = `${this.baseUrl}/auth/login`;
     
