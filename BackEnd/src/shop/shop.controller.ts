@@ -4,6 +4,7 @@ import { RegisterShopDto, LoginDto } from './dto';
 import { Shop } from './entities/shop.entity';
 import { LoginResponce } from './interfaces/login-responce';
 import { ShopGuard } from './guards/shop.guard';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @Controller('shop')
 export class ShopController {
@@ -27,14 +28,14 @@ export class ShopController {
     return this.shopService.login(loginDto);
   }
 
-  @UseGuards(ShopGuard)
+  @UseGuards(AuthGuard)
   @Get()
   findAll(@Request() req: Request) {
     return this.shopService.findAll();
   }
 
-  @UseGuards(ShopGuard)
-  @Get('check-token')
+ @UseGuards(ShopGuard)
+ @Get('check-token')
   checkToken(@Request() req: Request): LoginResponce {
     const shop = req['shop'] as Shop;
     return {

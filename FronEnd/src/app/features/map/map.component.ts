@@ -74,7 +74,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   ngOnInit(): void {
     this.albumImages = this.albumService.getAlbumImages();
     this.isStoreOpen = this.storeStatusService.isStoreActivated();
-    this.fetchUserData();
+ //   this.fetchUserData();
     this.fetchShopData();
   }
 
@@ -98,6 +98,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
   fetchShopData(): void {
     const token = localStorage.getItem('token');
+    console.log('TOKEN  ', token)
     if (!token) {
       console.error('Token no encontrado en el almacenamiento local.');
       return;
@@ -287,6 +288,9 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       casaMarker.getLatLng().lat,
       casaMarker.getLatLng().lng
     );
+
+    console.log('distance to aroma', distanceToAroma);
+    console.log('proximity', proximityThreshold);
   
     if (distanceToAroma <= proximityThreshold) {
       aromaMarker.setIcon(

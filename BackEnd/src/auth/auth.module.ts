@@ -26,7 +26,8 @@ import { Book, BookSchema } from '../book/entities/book.entity';
       secret: process.env.JWT_SEED,
       signOptions: { expiresIn: '6h' },
     }),
-  ]
+  ],
+  exports: [AuthService],
   
 })
 export class AuthModule {}
