@@ -37,7 +37,7 @@ export class AuthService {
     return true;
   }
 
-  loginju(email: string, password: string): Observable<boolean> {
+  login(email: string, password: string): Observable<boolean> {
     const urlStore = `${this.baseUrl}/shop/login`;
     const urlUser = `${this.baseUrl}/auth/login`;
     
@@ -65,9 +65,11 @@ export class AuthService {
     );
   }
 
-  registerStore(name: string, email: string, password: string, phone: string, specialties: string, address: string, logo: string): Observable<boolean> {
+  
+
+  registerStore(name: string, email: string, password: string, phone: string, specialties1: string,specialties2: string, address: string, logo: string): Observable<boolean> {
     const url = `${this.baseUrl}/shop/register`;
-    const body = { name, email, password, phone, specialties, address, logo };
+    const body = { name, email, password, phone, specialties1,specialties2, address, logo };
 
     return this.http.post<LoginResponse>(url, body).pipe(
       map(({ shop, token }) => this.setAuthentication(shop!, token, 'shop')),

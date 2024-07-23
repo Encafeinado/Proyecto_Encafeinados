@@ -31,39 +31,40 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   public authStatusChangedEffect = effect(() => {
     switch (this.authService.authStatus()) {
       case AuthStatus.checking:
+        // El estado de autenticación está siendo verificado
         return;
-
+  
       case AuthStatus.authenticated:
         const currentUser = this.authService.currentUser();
         if (currentUser) {
+          this.userName = currentUser.name || 'Nombre del Usuario';
+          console.log('Nombre del usuario:', this.userName);
+  
           if (currentUser.roles.includes('user')) {
             // Usuario normal autenticado
-            this.userName = currentUser.name || 'Nombre del Usuario';
-            console.log('Nombre del usuario:', this.userName);
             if (this.router.url === '/shop') {
-              this.router.navigateByUrl('/landing'); 
+              this.router.navigateByUrl('/landing');
             }
           } else if (currentUser.roles.includes('shop')) {
             // Tienda autenticada
-            this.userName = currentUser.name || 'Nombre del Usuario';
-            console.log('Nombre del usuario:', this.userName);
             if (this.router.url === '/landing') {
-              this.router.navigateByUrl('/shop'); 
+              this.router.navigateByUrl('/shop');
             }
           }
         }
-        this.cdr.detectChanges(); 
+        this.cdr.detectChanges();
         return;
-
+  
       case AuthStatus.notAuthenticated:
         const currentUrl = this.router.url;
         if (currentUrl !== '/auth/register') {
           this.router.navigateByUrl('/auth/login');
-          this.cdr.detectChanges(); 
+          this.cdr.detectChanges();
         }
         return;
     }
   });
+  
   
   constructor(private modalService: NgbModal) {}
 

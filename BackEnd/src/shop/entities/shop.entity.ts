@@ -24,7 +24,10 @@ export class Shop {
     roles: string[];
 
     @Prop({required: true})
-    specialties: string;
+    specialties1: string;
+    
+    @Prop({required: true})
+    specialties2: string;
 
     @Prop({required: true})
     address: string;
