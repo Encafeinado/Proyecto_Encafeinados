@@ -37,7 +37,7 @@ export class LoginPageComponent {
     }
     const { email, password, role } = this.myForm.value;
 
-    this.authService.login(email, password).subscribe(
+    this.authService.loginju(email, password).subscribe(
       (response) => {
         if (response) {
          
