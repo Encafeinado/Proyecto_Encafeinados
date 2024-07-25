@@ -90,8 +90,6 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     this.cdr.detectChanges();
   }
 
-  
-
   updateNavbarText(url: string): void {
     if (url === '/store' || url === '/landing') {
       this.navbarText = 'Descubre el mejor café cerca de ti';
@@ -141,8 +139,6 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     this.authService.logout();
     this.modalRef.close();
   }
-
-
 
    isUserShop(): boolean {
     return this.authService.rolUser() === 'shop';
