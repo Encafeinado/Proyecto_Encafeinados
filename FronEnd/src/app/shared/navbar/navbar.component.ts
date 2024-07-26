@@ -55,13 +55,15 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         this.cdr.detectChanges();
         return;
   
-      case AuthStatus.notAuthenticated:
-        const currentUrl = this.router.url;
-        if (currentUrl !== '/auth/register') {
-          this.router.navigateByUrl('/auth/login');
-          this.cdr.detectChanges();
-        }
-        return;
+        case AuthStatus.notAuthenticated:
+          const currentUrl = this.router.url;
+          // Permite acceso a las rutas de registro, inicio de sesión y restablecimiento de contraseña
+          if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' ) {
+            this.router.navigateByUrl('/auth/login');
+            this.cdr.detectChanges();
+          }
+          return;
+        
     }
   });
   
@@ -89,6 +91,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
    
     this.cdr.detectChanges();
   }
+
+  
 
   updateNavbarText(url: string): void {
     if (url === '/store' || url === '/landing') {
@@ -139,6 +143,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     this.authService.logout();
     this.modalRef.close();
   }
+
+
 
    isUserShop(): boolean {
     return this.authService.rolUser() === 'shop';

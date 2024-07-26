@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcryptjs from 'bcryptjs';
@@ -8,13 +8,17 @@ import { Book } from '../book/entities/book.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
 import { LoginResponce } from './interfaces/login-responce';
+import { MailService } from './mail/mail.service';
+import { Shop } from 'src/shop/entities/shop.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Book.name) private bookModel: Model<Book>,
+    @InjectModel(Shop.name) private shopModel: Model<Shop>,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -79,6 +83,53 @@ export class AuthService {
       user: rest,
       token: this.getJwtToken({ id: user.id }),
     };
+  }
+
+
+  async sendPasswordResetToken(email: string): Promise<void> {
+
+    const user = await this.userModel.findOne({ email });
+
+
+    const shop = !user ? await this.shopModel.findOne({ email }) : null;
+
+    if (!user && !shop) {
+      throw new NotFoundException('Correo electrónico no registrado en ninguna de las colecciones');
+    }
+
+    const entity = user || shop;
+    const token = this.jwtService.sign({ id: entity._id }, { expiresIn: '1h' });
+
+    console.log('Generated token:', token);
+
+    await this.mailService.sendPasswordResetMail(email, token);
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    try {
+     
+      const payload = this.jwtService.verify(token);
+      
+  
+      const user = await this.userModel.findById(payload.id);
+      const shop = !user ? await this.shopModel.findById(payload.id) : null;
+
+      if (!user && !shop) {
+        throw new NotFoundException('Usuario o tienda no encontrado');
+      }
+
+  
+      if (user) {
+        user.password = bcryptjs.hashSync(newPassword, 10);
+        await user.save();
+      }
+
+
+
+    } catch (error) {
+     
+      throw new UnauthorizedException('Token no válido o expirado');
+    }
   }
 
   findAll(): Promise<User[]> {

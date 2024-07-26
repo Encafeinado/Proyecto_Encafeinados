@@ -1,26 +1,24 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
+import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { User, UserSchema } from './entities/user.entity';
 import { Book, BookSchema } from '../book/entities/book.entity';
-
+import { MailModule } from './mail/mail.module';
+import { Shop, ShopSchema } from 'src/shop/entities/shop.entity';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService],
-  imports:[
+  imports: [
+    
+    MailModule, 
     ConfigModule.forRoot(),
     MongooseModule.forFeature([{ name: Book.name, schema: BookSchema }]),
-    MongooseModule.forFeature([
-      {
-        name: User.name,
-        schema: UserSchema
-      }
-    ]),
-
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: Shop.name, schema: ShopSchema }]),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SEED,
@@ -28,6 +26,5 @@ import { Book, BookSchema } from '../book/entities/book.entity';
     }),
   ],
   exports: [AuthService],
-  
 })
 export class AuthModule {}

@@ -23,7 +23,7 @@ export class AppComponent {
         this.isLoading = true;
       } else if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
         this.isLoading = false;
-        this.showNavbar = !event.url.includes('/auth/login') && !event.url.includes('/auth/register');
+        this.showNavbar = !event.url.includes('/auth/login') && !event.url.includes('/auth/register') && !event.url.includes('/auth/forgot-password'  ) ;
         this.cdr.detectChanges(); 
       }
     });
@@ -65,7 +65,8 @@ export class AppComponent {
   
       case AuthStatus.notAuthenticated:
         const currentUrl = this.router.url;
-        if (currentUrl !== '/auth/register') {
+        if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' ) {
+          
           this.router.navigateByUrl('/auth/login');
           this.cdr.detectChanges();
         }

@@ -55,6 +55,23 @@ export class AuthService {
     );
   }
 
+  forgotPassword(email: string) {
+    return this.http.post(`${this.baseUrl}/auth/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, password: string) {
+    return this.http.post(`${this.baseUrl}/auth/reset-password`, { token, password }).pipe(
+      map(response => {
+      
+        return true;
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al restablecer la contraseña:', error);
+        return throwError(() => new Error('Error al restablecer la contraseña. Por favor, inténtelo de nuevo.'));
+      })
+    );
+  }
+
   register(name: string, email: string, password: string, phone: string): Observable<boolean> {
     const url = `${this.baseUrl}/auth/register`;
     const body = { name, email, password, phone };
