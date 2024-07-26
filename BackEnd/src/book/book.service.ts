@@ -37,9 +37,7 @@ export class BookService {
       const newBook = new this.bookModel(createBookDto);
       return newBook.save();
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Error creando el libro',
-      );
+      throw new InternalServerErrorException('Error creando el libro');
     }
   }
 
@@ -87,7 +85,7 @@ export class BookService {
       nameShop: nameShop,
       nameUser: nameUser,
       code: code,
-      images: [{ url: 'Imagen guardada' }]
+      images: [{ url: imageUrl }]
     };
 
     try {

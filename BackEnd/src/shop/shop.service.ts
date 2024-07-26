@@ -3,37 +3,42 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcryptjs from 'bcryptjs';
 import { RegisterShopDto, LoginDto } from './dto';
-import { Shop } from './entities/shop.entity';
+import { Shop, ShopDocument } from './entities/shop.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
 import { LoginResponce } from './interfaces/login-responce';
 
 @Injectable()
 export class ShopService {
-
   constructor(
     @InjectModel(Shop.name)
-    private shopModel: Model<Shop>,
+    private shopModel: Model<ShopDocument>, // Usa ShopDocument aquí
     private jwtService: JwtService
   ) {}
-  async create(createShopDto: RegisterShopDto, logoBase64: string): Promise<Shop> {
+
+  async create(createShopDto: RegisterShopDto, logoBase64: string): Promise<ShopDocument> {
     try {
       const { password, ...shopData } = createShopDto;
-  
-      // Elimina el prefijo de base64 si está presente
+
       const base64Data = logoBase64.replace(/^data:image\/[a-z]+;base64,/, '');
-      const logoBuffer = Buffer.from(base64Data, 'base64'); // Convierte de base64 a Buffer
-  
+      const logoBuffer = Buffer.from(base64Data, 'base64');
+
+      const verificationCode = await this.generateUniqueVerificationCode();
+      console.log('Generated verification code:', verificationCode);
+
       const newShop = new this.shopModel({
         password: bcryptjs.hashSync(password, 10),
         ...shopData,
-        logo: logoBuffer, // Guarda el logo como un buffer en MongoDB
+        logo: logoBuffer,
+        verificationCode,
+        codeUsage: 0
       });
-  
+
       await newShop.save();
-  
+      console.log('New shop saved:', newShop);
+
       const { password: _, ...shop } = newShop.toJSON();
-      return shop as Shop;
+      return shop as ShopDocument;
     } catch (error) {
       if (error.code === 11000) {
         throw new BadRequestException(`${createShopDto.email} Ya Existe!`);
@@ -41,7 +46,52 @@ export class ShopService {
       throw new InternalServerErrorException('Algo terrible está sucediendo!!!!');
     }
   }
-  
+//verificar  librerias para generar código aleatorio
+  async generateUniqueVerificationCode(): Promise<string> {
+    let code: string;
+    let codeExists: boolean;
+
+    do {
+      code = Math.random().toString(36).substring(2, 8);
+      codeExists = await this.shopModel.exists({ verificationCode: code }) !== null;
+      console.log('Checking if code exists:', code, codeExists);
+    } while (codeExists);
+
+    return code;
+  }
+
+  async verifyVerificationCode(shopId: string, code: string): Promise<boolean> {
+    const shop = await this.shopModel.findById(shopId);
+
+    if (!shop) {
+      throw new NotFoundException('Tienda no encontrada');
+    }
+
+    if (shop.verificationCode === code) {
+      shop.codeUsage = (shop.codeUsage || 0) + 1;
+      shop.verificationCode = await this.generateUniqueVerificationCode();
+      await shop.save();
+      console.log('Updated shop with new code and usage:', shop);
+      return true;
+    }
+
+    return false;
+  }
+
+  async verifyVerificationCodeByCode(code: string): Promise<ShopDocument | null> {
+    const shop = await this.shopModel.findOne({ verificationCode: code });
+
+    if (!shop) {
+      return null;
+    }
+
+    shop.codeUsage = (shop.codeUsage || 0) + 1;
+    shop.verificationCode = await this.generateUniqueVerificationCode();
+    await shop.save();
+    console.log('Updated shop with new code and usage:', shop);
+    return shop;
+  }
+
   async login(loginDto: LoginDto): Promise<LoginResponce> {
     const { email, password } = loginDto;
     const shop = await this.shopModel.findOne({ email });
@@ -57,7 +107,7 @@ export class ShopService {
     const { password: _, ...rest } = shop.toJSON();
     return {
       shop: rest,
-      token: this.getJwtToken({ id: shop.id }),
+      token: this.getJwtToken({ id: shop._id.toString() }), // Asegúrate de que el ID es una cadena
     };
   }
 
@@ -67,21 +117,15 @@ export class ShopService {
 
       return {
         shop: shop,
-        token: this.getJwtToken({ id: shop._id }),
+        token: this.getJwtToken({ id: shop._id.toString() }), // Asegúrate de que el ID es una cadena
       };
     } catch (error) {
       throw new InternalServerErrorException('Error al registrar tienda');
     }
   }
 
-  findAll(): Promise<Shop[]> {
-    return this.shopModel.find();
-  }
-
-  async findShopById(id: string): Promise<any> {
-    const shop = await this.shopModel.findById(id);
-    const { password, ...rest } = shop.toJSON();
-    return rest;
+  findAll(): Promise<ShopDocument[]> {
+    return this.shopModel.find().exec();
   }
 
   findOne(id: number) {
@@ -92,31 +136,16 @@ export class ShopService {
     return `This action removes a #${id} auth`;
   }
 
-  getJwtToken(payload: JwtPayload): string {
-    const token = this.jwtService.sign(payload);
-    return token;
-  }
-
-  private generateVerificationCode(): string {
-    // Genera un código aleatorio efímero (ejemplo)
-    const randomCode = Math.random().toString(36).substr(2, 8);
-    return randomCode;
-  }
-
-  async verifyVerificationCode(shopId: string, code: string): Promise<boolean> {
-    const shop = await this.shopModel.findById(shopId);
-
+  async findShopById(id: string): Promise<ShopDocument> {
+    const shop = await this.shopModel.findById(id).exec();
     if (!shop) {
       throw new NotFoundException('Tienda no encontrada');
     }
+    return shop;
+  }
 
-    if (shop.verificationCode === code) {
-      // Si el código es válido, borramos el código de verificación para hacerlo efímero
-      shop.verificationCode = undefined;
-      await shop.save();
-      return true;
-    }
-
-    return false;
+  getJwtToken(payload: JwtPayload): string {
+    const token = this.jwtService.sign(payload);
+    return token;
   }
 }
