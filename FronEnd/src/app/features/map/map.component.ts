@@ -1,11 +1,4 @@
-import {
-  Component,
-  OnDestroy,
-  AfterViewInit,
-  ViewChild,
-  ElementRef,
-  OnInit,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import * as L from 'leaflet';
 import 'leaflet-routing-machine';
@@ -13,14 +6,14 @@ import * as toastr from 'toastr';
 import { AlbumService, Image } from '../../service/album.service';
 import { StoreStatusService } from '../../service/store-status.service';
 import { UserService } from '../../service/user.service';
+import { StoreService } from '../../service/store.service';
 import { ShopService } from '../../service/shop.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthService } from 'src/app/auth/services/auth.service';
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.css'],
+  styleUrls: ['./map.component.css']
 })
 export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   modalRef!: NgbModalRef;
@@ -59,6 +52,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     private albumService: AlbumService,
     private storeStatusService: StoreStatusService,
     private userService: UserService,
+    private storeService: StoreService,
     private shopService: ShopService,
     private http: HttpClient
   ) {
@@ -584,32 +578,24 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   verifyCode() {
-    const storeCode = localStorage.getItem('storeCode');
-    if (!storeCode) {
-      toastr.error(
-        'No se encontró un código de tienda en el almacenamiento local.'
-      );
-      return;
-    }
-
-    if (this.enteredCode === storeCode) {
-      this.verified = true;
-      toastr.success(
-        'Código verificado exitosamente',
-        '¡OBTUVISTE UNA ESTAMPITA!'
-      );
-      this.coloredImage();
-
-      // Llamar a la función para guardar el código verificado
-      this.saveVerifiedCode('Aroma Café'); // Nombre de la tienda como 'Aroma Café'
-
-      setTimeout(() => {
-        this.modalRef.close(); // Método para cerrar el modal
-      }, 2000);
-    } else {
-      this.verified = false;
-      toastr.error('Error al verificar el código');
-    }
+    this.storeService.verifyCodeCode(this.enteredCode).subscribe(
+      (response) => {
+        this.message = response.message;
+        if (response.shop) {
+          this.verified = true;
+          this.saveVerifiedCode(response.shop.name);
+          toastr.success('Código verificado exitosamente');
+          this.modalRef.close();
+        } else {
+          this.verified = false;
+          toastr.error('Código de verificación no válido');
+        }
+      },
+      (error) => {
+        this.message = 'Error al verificar el código';
+        toastr.error('Error al verificar el código');
+      }
+    );
   }
 
   coloredImage(): void {

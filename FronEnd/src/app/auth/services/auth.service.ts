@@ -1,6 +1,5 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-
 import { Observable, catchError, map, of, throwError } from 'rxjs';
 import { Shop } from 'src/app/features/store/interfaces/shop.interface';
 import { environment } from 'src/environments/environments';
@@ -31,9 +30,10 @@ export class AuthService {
     this._currentUser.set(userOrShop);
     this._authStatus.set(AuthStatus.authenticated);
     localStorage.setItem('token', token);
+    localStorage.setItem('shopId', role === 'shop' ? (userOrShop as Shop)._id : '');
+    localStorage.setItem('userId', role === 'user' ? (userOrShop as User)._id : '');
     this.rolUser.set(role);
 
-    
     return true;
   }
 
@@ -65,11 +65,9 @@ export class AuthService {
     );
   }
 
-  
-
-  registerStore(name: string, email: string, password: string, phone: string, specialties1: string,specialties2: string, address: string, logo: string): Observable<boolean> {
+  registerStore(name: string, email: string, password: string, phone: string, specialties1: string, specialties2: string, address: string, logo: string): Observable<boolean> {
     const url = `${this.baseUrl}/shop/register`;
-    const body = { name, email, password, phone, specialties1,specialties2, address, logo };
+    const body = { name, email, password, phone, specialties1, specialties2, address, logo };
 
     return this.http.post<LoginResponse>(url, body).pipe(
       map(({ shop, token }) => this.setAuthentication(shop!, token, 'shop')),
@@ -107,8 +105,20 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('shopId');
+    localStorage.removeItem('userId');
     this._currentUser.set(null);
     this._authStatus.set(AuthStatus.notAuthenticated);
     this.rolUser.set(null);
+  }
+
+  getShopId(): string | null {
+    console.log(localStorage.getItem('shopId'))
+    return localStorage.getItem('shopId');
+  }
+
+  getUserId(): string | null {
+    console.log(localStorage.getItem('userId'))
+    return localStorage.getItem('userId');
   }
 }
