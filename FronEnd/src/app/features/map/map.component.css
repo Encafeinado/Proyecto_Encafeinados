@@ -132,28 +132,29 @@
 }
 
 .album-page img {
-  width: 100%;
-  height: auto;
+  width: 100px; /* Ajusta este valor según el tamaño que prefieras */
+  height: 100px; /* Ajusta este valor según el tamaño que prefieras */
+  object-fit: cover; /* Hace que la imagen cubra el contenedor sin distorsionarse */
   margin-bottom: 10px;
+}
 
-  .button-container {
-    display: flex;
-    gap: 10px; /* Espacio entre los botones */
-  }
+.button-container {
+  display: flex;
+  gap: 10px; /* Espacio entre los botones */
+}
 
-  .floating-button {
-    background-color: #03AED2;
-    border: none;
-    color: white;
-    padding: 10px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-  }
+.floating-button {
+  background-color: #03AED2;
+  border: none;
+  color: white;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
 }
 
 .modal-book {
@@ -237,8 +238,9 @@
 }
 
 .modal-book .album-page img {
-  width: 100%;
-  height: auto;
+  width: 75px; /* Ajusta este valor según el tamaño que prefieras */
+  height: 75px; /* Ajusta este valor según el tamaño que prefieras */
+  object-fit: cover; /* Hace que la imagen cubra el contenedor sin distorsionarse */
   margin-bottom: 10px;
 }
 
@@ -266,7 +268,6 @@
   transition: filter 0.5s ease-in-out;
 }
 
-
 .album img.colored {
   filter: grayscale(0%);
 }
@@ -282,7 +283,7 @@
 .obtained-stamps, .missing-stamps {
   font-size: 1rem;
   font-weight: bold;
-  margin: 0 20px; /* Agrega espacio a los lados */
+  margin: 0 10px; /* Agrega espacio a los lados */
 }
 
 /* ------------------------------------------------------------------------------------------ */

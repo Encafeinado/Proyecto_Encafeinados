@@ -131,7 +131,7 @@
       <div class="album">
         <div class="album-page" *ngFor="let shop of shopLogos">
           <img *ngIf="shop.logoUrl" [src]="shop.logoUrl" alt="{{ shop.name }}">
-          <p>{{ shop.name }}</p>
+          <!-- <p>{{ shop.name }}</p> -->
         </div>
       </div>
     </div>
@@ -159,7 +159,7 @@
     </div>
     <div class="modal-footer-coffee">
       <button type="button" class="btn" (click)="confirmArrive()">Si, he llegado</button>
-      <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
+      <button type="button" class="btn" (click)="cancelArrive(modal)">Cancelar</button>
     </div>
   </div>
 </ng-template>

@@ -156,16 +156,15 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
   ngAfterViewInit(): void {
     const map = new L.Map('map', {
-      center: [6.150155571503784, -75.61905204382627], // Vista inicial predeterminada
+      center: [6.150155571503784, -75.61905204382627],
       zoom: 13,
       attributionControl: false,
     });
-
+  
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
     }).addTo(map);
-
-    // Marcadores de las tiendas
+  
     const casaMarker = L.marker([6.34147392395257, -75.51329608725513], {
       icon: this.createStoreIcon(
         'assets/IconsMarker/cafeteria.png',
@@ -175,7 +174,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     })
       .addTo(map)
       .bindPopup('Casa');
-
+  
     const aromaMarker = L.marker([6.15150999618405, -75.61369180892304], {
       icon: this.createStoreIcon(
         'assets/IconsMarker/cafeteriaAroma.png',
@@ -185,7 +184,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     })
       .addTo(map)
       .bindPopup('Aroma Café Sabaneta');
-
+  
     const baulMarker = L.marker([6.149950147326389, -75.61758096298057], {
       icon: this.createStoreIcon(
         'assets/IconsMarker/cafeteriaCoffe.png',
@@ -195,7 +194,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     })
       .addTo(map)
       .bindPopup('Viejo Baul');
-
+  
     const lealMarker = L.marker([6.150555615946403, -75.61797956390538], {
       icon: this.createStoreIcon(
         'assets/IconsMarker/cafeteriaLeal.png',
@@ -205,63 +204,48 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     })
       .addTo(map)
       .bindPopup('Leal Coffee');
-
-    // Ajustar la vista del mapa para incluir los marcadores de las tiendas
+  
+    // Ajusta la vista del mapa para incluir todos los marcadores de las tiendas
     map.fitBounds([
       [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
       [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
       [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
       [casaMarker.getLatLng().lat, casaMarker.getLatLng().lng],
     ]);
-
+  
     const userLocationMarker = L.marker([0, 0], { icon: this.userLocationIcon })
       .addTo(map)
       .bindPopup('Tu ubicación actual');
-
-    // Obtener la ubicación del usuario
+  
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
         const accuracy = position.coords.accuracy;
-
+  
+        // console.log('Posición obtenida:', position);
+  
         if (accuracy < 50) {
           userLocationMarker.setLatLng([userLat, userLng]);
-          map.setView([userLat, userLng], map.getZoom()); // Centra el mapa en la ubicación del usuario
-
-          map.fitBounds([
-            [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
-            [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
-            [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
-            [casaMarker.getLatLng().lat, casaMarker.getLatLng().lng],
+  
+          // Hace zoom a la ubicación del usuario
+          map.setView([userLat, userLng], 15);  // Ajusta el nivel de zoom a 15 (puedes cambiarlo según tus necesidades)
+  
+          this.checkProximityToStores(
+            userLat,
+            userLng,
             [
-              userLocationMarker.getLatLng().lat,
-              userLocationMarker.getLatLng().lng,
-            ],
-          ]);
-
-          this.checkProximityToStores(userLat, userLng, [
-            {
-              marker: aromaMarker,
-              name: 'Aroma Café Sabaneta',
-              iconPath: 'assets/IconsMarker/cafeteriaAroma.png',
-            },
-            {
-              marker: baulMarker,
-              name: 'Viejo Baul',
-              iconPath: 'assets/IconsMarker/cafeteriaCoffe.png',
-            },
-            {
-              marker: lealMarker,
-              name: 'Leal Coffee',
-              iconPath: 'assets/IconsMarker/cafeteriaLeal.png',
-            },
-            {
-              marker: casaMarker,
-              name: 'Casa',
-              iconPath: 'assets/IconsMarker/cafeteria.png',
-            },
-          ]);
+              { marker: aromaMarker, name: 'Aroma Café Sabaneta', iconPath: 'assets/IconsMarker/cafeteriaAroma.png' },
+              { marker: baulMarker, name: 'Viejo Baul', iconPath: 'assets/IconsMarker/cafeteriaCoffe.png' },
+              { marker: lealMarker, name: 'Leal Coffee', iconPath: 'assets/IconsMarker/cafeteriaLeal.png' },
+              { marker: casaMarker, name: 'Casa', iconPath: 'assets/IconsMarker/cafeteria.png' }
+            ]
+          );
+  
+          console.log(
+            userLocationMarker.getLatLng().lat,
+            userLocationMarker.getLatLng().lng
+          );
         } else {
           // console.log('Precisión no aceptable:', accuracy);
         }
@@ -275,8 +259,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         timeout: 30000,
       }
     );
-
-    // Configuración de eventos para los marcadores de las tiendas
+  
     aromaMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -285,7 +268,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         'Aroma Café Sabaneta'
       );
     });
-
+  
     baulMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -294,7 +277,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         'Viejo Baul'
       );
     });
-
+  
     lealMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -303,11 +286,17 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         'Leal Coffee'
       );
     });
-
+  
     casaMarker.on('click', () => {
-      this.showRouteConfirmation(map, casaMarker, userLocationMarker, 'Casa');
+      this.showRouteConfirmation(
+        map,
+        casaMarker,
+        userLocationMarker,
+        'Casa'
+      );
     });
   }
+  
 
   checkProximityToStores(
     userLat: number,
@@ -494,6 +483,13 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   confirmArrive(): void {
     this.hasArrived = true; // Marca que el usuario ya ha llegado
     this.modalRef.close(); // Cierra el modal
+  }
+
+  cancelArrive(modal: any): void {
+    modal.dismiss('cancel');
+    setTimeout(() => {
+      this.openModal(this.arriveModal, this.destinationName);
+    }, 10000); // 10 segundos
   }
 
   openModal(content: any, destinationName: string): void {
