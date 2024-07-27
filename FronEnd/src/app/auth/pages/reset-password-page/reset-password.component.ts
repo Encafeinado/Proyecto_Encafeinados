@@ -30,7 +30,7 @@ export class ResetPasswordComponent implements OnInit {
 
       if (!this.token) {
         console.log('Token no proporcionado, redirigiendo a login.');
-        this.router.navigateByUrl('/auth/login');
+        this.router.navigateByUrl('/landing');
       }
     });
   }
