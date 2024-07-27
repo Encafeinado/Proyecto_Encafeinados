@@ -1,22 +1,20 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import * as bcryptjs from 'bcryptjs';
-import { Book, BookDocument } from './entities/book.entity';
-import { JwtService } from '@nestjs/jwt';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { VerifyCodeDto } from './dto/verify-code.dto';
 import { JwtPayload } from 'src/shop/interfaces/jwt-payload';
+import { Book, BookDocument } from './entities/book.entity';
 import { CreateBookDto } from './dto/create-book.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { JwtService } from '@nestjs/jwt';
+import { User, UserDocument } from 'src/auth/entities/user.entity';
+import { Model } from 'mongoose';
+import { Shop, ShopDocument } from 'src/shop/entities/shop.entity';
 
 @Injectable()
 export class BookService {
   constructor(
     @InjectModel(Book.name) private bookModel: Model<BookDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Shop.name) private shopModel: Model<ShopDocument>,
     private jwtService: JwtService,
   ) {}
 
@@ -39,9 +37,7 @@ export class BookService {
       const newBook = new this.bookModel(createBookDto);
       return newBook.save();
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Error creando el libro',
-      );
+      throw new InternalServerErrorException('Error creando el libro');
     }
   }
 
@@ -67,5 +63,36 @@ export class BookService {
 
   getJwtToken(payload: JwtPayload): string {
     return this.jwtService.sign(payload);
+  }
+
+  async verifyAndAddCode(verifyCodeDto: VerifyCodeDto): Promise<Book> {
+    const { nameShop, nameUser, code, imageUrl } = verifyCodeDto;
+
+    // Busca al usuario por su nombre
+    const user = await this.userModel.findOne({ name: nameUser });
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    // Busca la tienda por su nombre
+    const shop = await this.shopModel.findOne({ name: nameShop });
+    if (!shop) {
+      throw new NotFoundException('Tienda no encontrada');
+    }
+
+    // Crea un nuevo libro con los datos proporcionados
+    const newBookDto: CreateBookDto = {
+      nameShop: nameShop,
+      nameUser: nameUser,
+      code: code,
+      images: [{ url: imageUrl }]
+    };
+
+    try {
+      const newBook = new this.bookModel(newBookDto);
+      return newBook.save();
+    } catch (error) {
+      throw new InternalServerErrorException('Error guardando el libro');
+    }
   }
 }

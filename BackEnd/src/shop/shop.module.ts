@@ -5,12 +5,14 @@ import { ConfigModule } from '@nestjs/config';
 import { ShopService } from './shop.service';
 import { ShopController } from './shop.controller';
 import { Shop , ShopSchema } from './entities/shop.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 
 @Module({
   controllers: [ShopController],
   providers: [ShopService],
   imports:[
+    AuthModule,
     ConfigModule.forRoot(),
 
     MongooseModule.forFeature([

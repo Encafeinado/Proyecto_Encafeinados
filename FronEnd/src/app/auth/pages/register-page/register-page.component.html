@@ -1,61 +1,186 @@
-<div class="limiter">
-  <div class="main-container">
-    <!-- Contenedor del formulario -->
-    <div class="form-container">
-      <form class="login100-form" autocomplete="off" [formGroup]="myForm" (ngSubmit)="register()">
-        <span class="login100-form-title-1 p-b-35">
-          Registro de Usuario
-        </span>
+<!-- Section: Design Block -->
+<section class="background-radial-gradient overflow-hidden">
+  <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
+    <div class="row gx-lg-5 align-items-center mb-5">
+      <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
+        <h1 class="my-5 display-5 fw-bold ls-tight" style="color: hsl(218, 81%, 95%)">
+          Encafeinados <br />
+          <span style="color: hsl(218, 81%, 75%)">Beneficios</span>
+        </h1>
+        <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+          Temporibus, expedita iusto veniam atque, magni tempora mollitia
+          dolorum consequatur nulla, neque debitis eos reprehenderit quasi
+          ab ipsum nisi dolorem modi. Quos?
+        </p>
+      </div>
 
-        <div class="wrap-input100 m-b-23">
-          <span class="label-input100">Nombre</span>
-          <input class="input100 small-placeholder" type="text" formControlName="name" placeholder="Nombre completo">
-          <span class="focus-input100"></span>
-        </div>
+      <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
+        <div id="radius-shape-1" class="position-absolute rounded-circle shadow-5-strong"></div>
+        <div id="radius-shape-2" class="position-absolute shadow-5-strong"></div>
 
-        <div class="wrap-input100 m-b-23">
-          <span class="label-input100">Correo</span>
-          <input class="input100 small-placeholder" type="email" formControlName="email" placeholder="Correo electrónico">
-          <span class="focus-input100"></span>
-        </div>
+        <div class="card bg-glass mx-auto" style="max-width: 400px;">
+          <div class="card-body px-4 py-5 px-md-5">
+            <form class="login100-form" [formGroup]="myForm" (ngSubmit)="register()">
+              <div class="text-center mb-4">
+                <img src="../../../../assets/images/logosinfondo.png" alt="Logo" style="width: 100px; height: auto;">
+              </div>
+              <p class="h5 mb-4 text-center">Registrar</p>
 
-        <div class="wrap-input100 m-b-23">
-          <span class="label-input100">Contraseña</span>
-          <input class="input100 small-placeholder" type="password" formControlName="password" placeholder="Contraseña">
-          <span class="focus-input100"></span>
-        </div>
+              <!-- Opciones de tipo de registro -->
+              <div class="wrap-input100 m-b-23 form-outline mb-4">
+                <span class="label-input100">Tipo de Registro</span>
+                <div class="d-flex justify-content-around mt-2">
+                  <div>
+                    <input type="radio" id="user" (change)="onUserTypeChange('user')" [checked]="isUser">
+                    <label for="user">Usuario</label>
+                  </div>
+                  <div>
+                    <input type="radio" id="store" (change)="onUserTypeChange('store')" [checked]="isStore">
+                    <label for="store">Tienda</label>
+                  </div>
+                </div>
+              </div>
 
-        <div class="wrap-input100 m-b-23">
-          <span class="label-input100">Celular</span>
-          <input class="input100 small-placeholder" type="text" formControlName="phone" placeholder="Celular">
-          <span class="focus-input100"></span>
-        </div>
+              <!-- Campos comunes -->
+              <div class="wrap-input100 m-b-23 form-outline mb-4">
+                <span class="label-input100">Nombre</span>
+                <input 
+                  class="input100 small-placeholder form-control" 
+                  type="text" 
+                  formControlName="name" 
+                  placeholder="Nombre completo"
+                  autocomplete="name"
+                >
+                <span class="focus-input100"></span>
+              </div>
 
-        <div class="text-right p-t-8 p-b-31"></div>
+              <div class="wrap-input100 m-b-23 form-outline mb-4">
+                <span class="label-input100">Correo</span>
+                <input 
+                  class="input100 small-placeholder form-control" 
+                  type="email" 
+                  formControlName="email" 
+                  placeholder="Correo electrónico"
+                  autocomplete="email"
+                >
+                <span class="focus-input100"></span>
+              </div>
 
-        <div class="container-login100-form-btn">
-          <div class="wrap-login100-form-btn">
-            <div class="login100-form-bgbtn"></div>
-            <button class="login100-form-btn" [disabled]="myForm.invalid" type="submit">
-              Registrar
-            </button>
+              <div class="wrap-input100 m-b-23 form-outline mb-4">
+                <span class="label-input100">Contraseña</span>
+                <div class="input-with-eye">
+                  <input 
+                    class="input100 small-placeholder form-control" 
+                    type="{{ hidePassword ? 'password' : 'text' }}" 
+                    formControlName="password" 
+                    placeholder="Contraseña"
+                    autocomplete="new-password"
+                  >
+                  <span class="focus-input100"></span>
+                  <div class="eye-icon" (click)="togglePasswordVisibility()">
+                    <i class="fa" [ngClass]="{'fa-eye': hidePassword, 'fa-eye-slash': !hidePassword}"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div class="wrap-input100 m-b-23 form-outline mb-4">
+                <span class="label-input100">Confirmar Contraseña</span>
+                <div class="input-with-eye">
+                  <input 
+                    class="input100 small-placeholder form-control" 
+                    type="{{ hidePasswordconfirm ? 'password' : 'text' }}" 
+                    formControlName="confirmPassword" 
+                    placeholder="Confirmar contraseña"
+                    autocomplete="new-password"
+                  >
+                  <span class="focus-input100"></span>
+                  <div class="eye-icon" (click)="togglePasswordVisibilityconfirm()">
+                    <i class="fa" [ngClass]="{'fa-eye': hidePasswordconfirm, 'fa-eye-slash': !hidePasswordconfirm}"></i>
+                  </div>
+                </div>
+                <div *ngIf="myForm.get('confirmPassword')?.touched && myForm.hasError('mismatch', 'confirmPassword')">
+                  <p class="error-message">Las contraseñas no coinciden.</p>
+                </div>
+              </div>
+
+              <div class="wrap-input100 m-b-23 form-outline mb-4">
+                <span class="label-input100">Celular</span>
+                <input 
+                  class="input100 small-placeholder form-control" 
+                  type="text" 
+                  formControlName="phone" 
+                  placeholder="Celular"
+                  autocomplete="tel"
+                >
+                <span class="focus-input100"></span>
+              </div>
+
+              <!-- Campos específicos para tiendas -->
+              <div *ngIf="isStore">
+                <div class="wrap-input100 m-b-23 form-outline mb-4">
+                  <span class="label-input100">Especialidad 1</span>
+                  <input 
+                    class="input100 small-placeholder form-control" 
+                    type="text" 
+                    formControlName="specialties1" 
+                    placeholder="Especialidad 1"
+                  >
+                  <span class="focus-input100"></span>
+                </div>
+                <div class="wrap-input100 m-b-23 form-outline mb-4">
+                  <span class="label-input100">Especialidad 2</span>
+                  <input 
+                    class="input100 small-placeholder form-control" 
+                    type="text" 
+                    formControlName="specialties2" 
+                    placeholder="Especialidad 2"
+                  >
+                  <span class="focus-input100"></span>
+                </div>
+                <div class="wrap-input100 m-b-23 form-outline mb-4">
+                  <span class="label-input100">Dirección</span>
+                  <input 
+                    class="input100 small-placeholder form-control" 
+                    type="text" 
+                    formControlName="address" 
+                    placeholder="Dirección"
+                  >
+                  <span class="focus-input100"></span>
+                </div>
+
+                <div class="wrap-input100 m-b-23 form-outline mb-4">
+                  <span class="label-input100">Logo</span>
+                  <input 
+                    class="file-input-label form-control" 
+                    type="file" 
+                    (change)="onFileChange($event)"
+                  >
+                </div>
+              </div>
+
+              <div class="text-center pt-1 mb-5 pb-1">
+                <button 
+                  data-mdb-button-init 
+                  data-mdb-ripple-init 
+                  class="btn btn-primary btn-block mb-4" 
+                  [disabled]="myForm.invalid" 
+                  type="submit"
+                >
+                  Registrar
+                </button>
+
+                <div class="flex-col-c p-t-3 mt-3">
+                  <a routerLink="/auth/login" >
+                    Volver
+                  </a>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
-
-        <div class="flex-col-c p-t-30">
-          <a routerLink="/auth/login" class="txt2">
-            Volver
-          </a>
-        </div>
-        
-      </form>
-    </div>
-
-    <!-- Contenedor del icono de la empresa -->
-    <div class="icon-container2">
-      <div class="company-icon2 coffee-background">
-        <img src="../../../../assets/images/logodescafeinados.jpg" alt="Icono de la empresa">
       </div>
     </div>
   </div>
-</div>
+</section>
+<!-- Section: Design Block -->

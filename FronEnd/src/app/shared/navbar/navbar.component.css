@@ -1,0 +1,171 @@
+/* Navbar Styles */
+.navbar {
+  background-color: #03AED2; /* Color de fondo principal del navbar */
+  padding: 10px 20px;
+  font-family: 'Poppins', sans-serif;
+  border-bottom: 3px solid #FDDE55; /* Añadimos un borde inferior */
+}
+
+.navbar .navbar-brand {
+  color: #FFFFFF; /* Color del texto de la marca */
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.navbar .navbar-nav .nav-link {
+  color: #FFFFFF; /* Color de los enlaces de navegación */
+  margin: 0 10px;
+  font-size: 1rem;
+}
+
+.navbar .navbar-nav .nav-link:hover {
+  color: #FEEFAD; /* Color de los enlaces al pasar el cursor */
+}
+
+.navbar .dropdown-menu {
+  background-color: #68D2E8; /* Color de fondo del menú desplegable */
+  border: 1px solid #FDDE55;
+}
+
+.navbar .dropdown-menu .dropdown-item {
+  color: #FFFFFF; /* Color de los elementos del menú desplegable */
+}
+
+.navbar .dropdown-menu .dropdown-item:hover {
+  background-color: #FDDE55; /* Color de fondo al pasar el cursor sobre los elementos */
+  color: #03AED2; /* Color del texto al pasar el cursor */
+}
+
+/* Imagen del usuario en el dropdown */
+.navbar .dropdown-toggle {
+  display: flex;
+  align-items: center;
+  color: #FFFFFF; /* Color del texto del dropdown */
+}
+
+.navbar .dropdown-toggle img {
+  margin-right: 8px;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+}
+
+/* Ajustar color del texto en estado hover */
+.navbar .dropdown-toggle:hover {
+  color: #9e9469; /* Color del texto al pasar el cursor */
+}
+
+/* Eliminamos la flecha del dropdown */
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+/* Menu dropdown alineado a la derecha */
+.navbar .dropdown-menu {
+  right: 0;
+  left: auto;
+}
+
+/* Modal Styles */
+.modal-base {
+  background-color: #FFFFFF; /* Color de fondo más claro */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  font-family: 'Poppins', sans-serif; /* Fuente estilo libro */
+  position: relative; /* Para las decoraciones */
+  overflow: hidden; /* Evitar que se muestren elementos que sobresalen */
+}
+
+.modal-base::before,
+.modal-base::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  width: 20px;
+  background: linear-gradient(to bottom, #68D2E8, #03AED2);
+  z-index: -1;
+  border-radius: 10px;
+}
+
+.modal-base::before {
+  left: -25px;
+  transform: rotate(2deg);
+}
+
+.modal-base::after {
+  right: -25px;
+  transform: rotate(-2deg);
+}
+
+.modal-base .modal-header {
+  background-color: #03AED2;
+  color: #FFFFFF;
+  border: none; /* Eliminamos el borde */
+  padding: 15px;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.modal-base .modal-header::after {
+  content: "Pasaporte";
+  position: absolute;
+  bottom: -20px;
+  right: 20px;
+  font-size: 0.8rem;
+  color: #03AED2;
+}
+
+.modal-base .modal-header .close {
+  color: #FFFFFF;
+  opacity: 1;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.modal-base .modal-body {
+  padding: 20px;
+  background-color: #FEEFAD;
+  border-radius: 0 0 10px 10px;
+}
+
+.modal-base .modal-footer {
+  border-top: none;
+  display: flex;
+  justify-content: center;
+  padding-top: 20px; /* Aumentamos el espacio en la parte superior del footer */
+  padding-bottom: 20px;
+}
+
+.modal-base .modal-footer .btn {
+  margin: 0 10px;
+  background-color: #FDDE55;
+  color: #03AED2;
+  border: none;
+}
+
+.modal-base .modal-footer .btn:hover {
+  background-color: #FEEFAD;
+}
+
+/* Navbar Dropdown Styles */
+.navbar .dropdown-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.navbar .dropdown-toggle img {
+  margin-right: 8px;
+}
+
+.navbar .dropdown-menu {
+  right: 0;
+  left: auto;
+}
+
+.dropdown-toggle::after {
+  display: none !important;
+}

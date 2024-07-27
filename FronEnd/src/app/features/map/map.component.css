@@ -4,7 +4,11 @@
   height: 70vh;
   width: 100%;
   background-image: url("https://www.transparenttextures.com/patterns/wood-pattern.png"); /* Texture for the map */
-  border-top: 2px solid #6f4e37;
+  border-top: 2px solid #FDDE55;
+}
+
+.grayscale-icon {
+  filter: grayscale(100%);
 }
 
 .container-fluid {
@@ -12,18 +16,17 @@
 }
 
 .sidebar {
-  background-color: #f7f3e9;
+  background-color: #FEEFAD;
   padding: 20px;
-  border-left: 2px solid #6f4e37;
+  border-left: 2px solid #FDDE55;
 }
 
 .sidebar h2 {
   font-size: 1.8rem;
-  color: #6f4e37;
 }
 
 .sidebar p {
-  color: #4b3832;
+  font-size: 0.8rem;
 }
 
 .sidebar img {
@@ -34,8 +37,8 @@
   position: absolute;
   bottom: 20px;
   left: 20px;
-  background-color: #6f4e37;
-  color: #f7f3e9;
+  background-color: #03AED2;
+  color: #FEEFAD;
   border: none;
   border-radius: 50%;
   width: 50px;
@@ -50,7 +53,7 @@
 }
 
 .floating-button:hover {
-  background-color: #4b3832;
+  background-color: #68D2E8;
 }
 
 .floating-button i {
@@ -74,34 +77,47 @@
   margin-left: 60px; /* Espacio entre los botones */
 }
 
-.modal-content {
-  background-color: #f7f7f7;
+.modal-content-code, .modal-content-create , .modal-content-cancelR{
+  background-color: #FFFFFF;
   border-radius: 10px;
   padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
 }
 
-.modal-header {
-  border-bottom: none;
+.modal-header-code ,.modal-header-create ,.modal-header-cancelR {
+  background-color: #03AED2;
+  color: #FFFFFF;
+  padding: 15px;
+  border-radius: 10px 10px 0 0;
   display: flex;
   justify-content: center;
-  padding-bottom: 0;
+
 }
 
-.modal-body {
+.modal-body-code, .modal-body-create ,.modal-body-cancelR{
+  padding: 20px;
+  background-color: #FEEFAD;
+  border-radius: 0 0 10px 10px;
+}
+
+.modal-footer-code, .modal-footer-create, .modal-footer-cancelR {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.modal-footer {
+  justify-content: center;
+  padding: 20px;
   border-top: none;
-  display: flex;
-  justify-content: center;
-  padding-top: 0;
 }
 
-.modal-footer .btn {
+.modal-footer-code .btn , .modal-footer-create .btn , .modal-footer-cancelR .btn{
   margin: 0 10px;
+  background-color: #FDDE55;
+  color: #03AED2;
+  border: none;
+}
+
+.modal-footer-code .btn:hover , .modal-footer-create .btn:hover , .modal-footer-cancelR .btn:hover{
+  background-color: #FEEFAD;
 }
 /* ------------------------------------------------------------------------------------------------- */
 .album {
@@ -116,28 +132,29 @@
 }
 
 .album-page img {
-  width: 100%;
-  height: auto;
+  width: 100px; /* Ajusta este valor según el tamaño que prefieras */
+  height: 100px; /* Ajusta este valor según el tamaño que prefieras */
+  object-fit: cover; /* Hace que la imagen cubra el contenedor sin distorsionarse */
   margin-bottom: 10px;
+}
 
-  .button-container {
-    display: flex;
-    gap: 10px; /* Espacio entre los botones */
-  }
+.button-container {
+  display: flex;
+  gap: 10px; /* Espacio entre los botones */
+}
 
-  .floating-button {
-    background-color: #007bff;
-    border: none;
-    color: white;
-    padding: 10px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-  }
+.floating-button {
+  background-color: #03AED2;
+  border: none;
+  color: white;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
 }
 
 .modal-book {
@@ -145,7 +162,7 @@
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  font-family: "Georgia", serif; /* Fuente estilo libro */
+  font-family: "Poppins", sans-serif;
   position: relative; /* Para las decoraciones */
   overflow: hidden; /* Evitar que se muestren elementos que sobresalen */
 }
@@ -157,7 +174,7 @@
   top: 10px;
   bottom: 10px;
   width: 20px;
-  background: linear-gradient(to bottom, #f5dcb7, #d1b5a1);
+  background: linear-gradient(to bottom, #68D2E8, #03AED2);
   z-index: -1;
   border-radius: 10px;
 }
@@ -173,8 +190,8 @@
 }
 
 .modal-book .modal-header {
-  background-color: #6f4e37;
-  color: #f7f3e9;
+  background-color: #03AED2;
+  color: #FFFFFF;
   border: none; /* Eliminamos el borde */
   padding: 15px;
   border-radius: 10px 10px 0 0;
@@ -189,11 +206,11 @@
   bottom: -20px;
   right: 20px;
   font-size: 0.8rem;
-  color: #6f4e37;
+  color: #03AED2;
 }
 
 .modal-book .modal-header .close {
-  color: #f7f3e9;
+  color: #FFFFFF;
   opacity: 1;
   position: absolute;
   right: 10px;
@@ -202,7 +219,7 @@
 
 .modal-book .modal-body {
   padding: 20px;
-  background-color: #fdf5e6;
+  background-color: #FEEFAD;
   border-radius: 0 0 10px 10px;
 }
 
@@ -214,15 +231,16 @@
 
 .modal-book .album-page {
   text-align: center;
-  background: #f8f9fa;
+  background: #FFFFFF;
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .modal-book .album-page img {
-  width: 100%;
-  height: auto;
+  width: 75px; /* Ajusta este valor según el tamaño que prefieras */
+  height: 75px; /* Ajusta este valor según el tamaño que prefieras */
+  object-fit: cover; /* Hace que la imagen cubra el contenedor sin distorsionarse */
   margin-bottom: 10px;
 }
 
@@ -236,13 +254,13 @@
 
 .modal-book .modal-footer .btn {
   margin: 0 10px;
-  background-color: #6f4e37;
-  color: #f7f3e9;
+  background-color: #FDDE55;
+  color: #03AED2;
   border: none;
 }
 
 .modal-book .modal-footer .btn:hover {
-  background-color: #5a3927;
+  background-color: #FEEFAD;
 }
 
 .album img {
@@ -252,4 +270,83 @@
 
 .album img.colored {
   filter: grayscale(0%);
+}
+
+.album-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 3px 0; /* Agrega espacio arriba y abajo */
+}
+
+.obtained-stamps, .missing-stamps {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0 10px; /* Agrega espacio a los lados */
+}
+
+/* ------------------------------------------------------------------------------------------ */
+
+.modal-coffee {
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
+}
+
+.modal-header-coffee {
+  background-color: #03AED2;
+  color: #FFFFFF;
+  padding: 15px;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-title-coffee {
+  font-size: 1.5em;
+  margin: 0;
+}
+
+.modal-body-coffee {
+  padding: 20px;
+  background-color: #FEEFAD;
+  border-radius: 0 0 10px 10px;
+}
+
+.image-gallery-coffee {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.gallery-image {
+  width: 30%;
+  border-radius: 5px;
+}
+
+.description-coffee {
+  padding-top: 10px;
+}
+
+.modal-footer-coffee {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  border-top: none;
+}
+
+.modal-footer-coffee .btn {
+  background-color: #FDDE55;
+  color: #03AED2;
+  border: none;
+  margin: 0 10px;
+}
+
+.modal-footer-coffee .btn:hover {
+  background-color: #FEEFAD;
 }

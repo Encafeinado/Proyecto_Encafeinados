@@ -1,81 +1,134 @@
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-
 import * as bcryptjs from 'bcryptjs';
-
-import { RegisterUserDto,CreateUserDto,UpdateAuthDto,LoginDto } from './dto';
-
-
+import { RegisterUserDto, CreateUserDto, UpdateAuthDto, LoginDto } from './dto';
 import { User } from './entities/user.entity';
+import { Book } from '../book/entities/book.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
 import { LoginResponce } from './interfaces/login-responce';
-
-
-
+import { MailService } from './mail/mail.service';
+import { Shop } from 'src/shop/entities/shop.entity';
 
 @Injectable()
 export class AuthService {
-
   constructor(
-    @InjectModel(User.name)
-    
-    private userModel: Model<User>,
-    private jwtService: JwtService
-  ){
-}
+    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Book.name) private bookModel: Model<Book>,
+    @InjectModel(Shop.name) private shopModel: Model<Shop>,
+    private jwtService: JwtService,
+    private mailService: MailService,
+  ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User>{
-
-      try {
-        const { password, ...userData} = createUserDto;
-
-        const newUser = new this.userModel( {
-          password: bcryptjs.hashSync(password, 10),
-          ...userData
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    try {
+      const { password, ...userData } = createUserDto;
+      const newUser = new this.userModel({
+        password: bcryptjs.hashSync(password, 10),
+        ...userData,
       });
-       await newUser.save();
-      const {password:_,... user} = newUser.toJSON();
-
+      await newUser.save();
+      const { password: _, ...user } = newUser.toJSON();
       return user;
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new BadRequestException(`${createUserDto.email} Ya Existe!`);
+      }
+      throw new InternalServerErrorException('Algo terrible esta sucediendo!!!!');
+    }
+  }
 
-      } catch (error) {
-       if(error.code === 11000){
-        throw new BadRequestException(`${createUserDto.email} Ya Existe!`)
-       }
-        throw new InternalServerErrorException('Algo terrible esta sucediendo!!!!')
+  async register(registerDto: RegisterUserDto): Promise<LoginResponce> {
+    const user = await this.create(registerDto);
+    await this.createBookForUser(user);
+    console.log({ user });
+    return {
+      user: user,
+      token: this.getJwtToken({ id: user._id }),
+    };
+  }
+
+  async createBookForUser(user: User): Promise<void> {
+    try {
+      const newBook = new this.bookModel({
+        nameShop: '', 
+        nameUser: user.name,
+        code: '',
+        status: true,
+        images: [],
+      });
+      await newBook.save();
+    } catch (error) {
+
+      if (error.name === 'ValidationError') {
+        throw new BadRequestException('Error de validación al crear el libro');
+      }
+      throw new InternalServerErrorException('Error creando el libro');
+    }
+  }
+  
+
+  async login(loginDto: LoginDto): Promise<LoginResponce> {
+    const { email, password } = loginDto;
+    const user = await this.userModel.findOne({ email });
+    if (!user) {
+      throw new UnauthorizedException('Credenciales del correo no validas');
+    }
+    if (!bcryptjs.compareSync(password, user.password)) {
+      throw new UnauthorizedException('Credenciales de la contraseña no validas');
+    }
+    const { password: _, ...rest } = user.toJSON();
+    return {
+      user: rest,
+      token: this.getJwtToken({ id: user.id }),
+    };
+  }
+
+
+  async sendPasswordResetToken(email: string): Promise<void> {
+
+    const user = await this.userModel.findOne({ email });
+
+
+    const shop = !user ? await this.shopModel.findOne({ email }) : null;
+
+    if (!user && !shop) {
+      throw new NotFoundException('Correo electrónico no registrado en ninguna de las colecciones');
+    }
+
+    const entity = user || shop;
+    const token = this.jwtService.sign({ id: entity._id }, { expiresIn: '1h' });
+
+    console.log('Generated token:', token);
+
+    await this.mailService.sendPasswordResetMail(email, token);
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    try {
+     
+      const payload = this.jwtService.verify(token);
+      
+  
+      const user = await this.userModel.findById(payload.id);
+      const shop = !user ? await this.shopModel.findById(payload.id) : null;
+
+      if (!user && !shop) {
+        throw new NotFoundException('Usuario o tienda no encontrado');
       }
 
-  }
-
-  async register(registerDto: RegisterUserDto): Promise<LoginResponce>{
-    
-    const user = await this.create(registerDto)
-    console.log({user});
-    return{
-      user: user,
-      token: this.getJwtToken({id: user._id})
-    }
-
-  }
+  
+      if (user) {
+        user.password = bcryptjs.hashSync(newPassword, 10);
+        await user.save();
+      }
 
 
-  async login(loginDto: LoginDto):Promise<LoginResponce>{
 
-    const {email, password} = loginDto
-    const user = await this.userModel.findOne({ email});
-    if (!user){
-      throw new UnauthorizedException('Credenciales del correo no validas')
-    }
-    if (!bcryptjs.compareSync( password, user.password)){
-      throw new UnauthorizedException('Credenciales de la contraseña no validas')
-    }
-
-    const { password:_,...rest }= user.toJSON();
-    return {
-      user:rest,
-      token: this.getJwtToken({id: user.id}),
+    } catch (error) {
+     
+      throw new UnauthorizedException('Token no válido o expirado');
     }
   }
 
@@ -83,11 +136,17 @@ export class AuthService {
     return this.userModel.find();
   }
 
- async findUserById(id: string){
-  const user = await this.userModel.findById(id);
-  const { password, ...rest} = user.toJSON();
-  return rest;
-}
+  async findUserById(id: string) {
+    const user = await this.userModel.findById(id);
+    const { password, ...rest } = user.toJSON();
+    return rest;
+  }
+
+  async findShopById(id: string) {
+    const shop = await this.userModel.findById(id);
+    const { password, ...rest } = shop.toJSON();
+    return rest;
+  }
 
   findOne(id: number) {
     return `This action returns a #${id} auth`;
@@ -104,6 +163,5 @@ export class AuthService {
   getJwtToken(payload: JwtPayload) {
     const token = this.jwtService.sign(payload);
     return token;
-
   }
 }

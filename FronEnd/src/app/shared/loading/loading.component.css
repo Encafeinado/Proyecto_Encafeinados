@@ -1,86 +1,97 @@
 body {
-    background-size: 40%;
-    background-position: bottom center;
-  }
-  .smoke-loader {
-    width: 100px;
-    height: 100px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 40px;
-    top: 50%;
-  }
-  .coffee-cup {
-    height: 80px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .smoke-wave {
-    width: 50px;
-    height: 50px;
-    margin-left: auto;
-    margin-right: auto;
-    position: relative;
-    top: 0px;
-    left: 0px;
-  }
-  .smoke1 {
-    width: 6px;
-    height: 30px;
-    float: left;
-    margin-right: 6px;
-    margin-left: 4px;
-    border-radius: 3px;
-    background-color: #8B4513;
-  }
-  .smoke1:before, .smoke1:after {
-    content: "";
-    background: #8B4513;
-    position: absolute;
-    animation: load .9s infinite reverse ease-in-out;
-    border-radius: 3px;
-  }
-  .smoke2 {
-    width: 6px;
-    height: 15px;
-    float: left;
-    margin-right: 6px;
-    margin-left: 4px;
-    border-radius: 3px;
-    background-color: #8B4513;
-  }
-  .smoke2:before, .smoke2:after {
-    content: "";
-    background: #8B4513;
-    position: absolute;
-    animation: load .6s infinite reverse ease-in-out;
-    border-radius: 3px;
-    margin-top: 5px;
-  }
-  .smoke3 {
-    width: 6px;
-    height: 30px;
-    float: left;
-    margin-right: 6px;
-    margin-left: 4px;
-    border-radius: 3px;
-    background-color: #8B4513;
-  }
-  .smoke3:before, .smoke3:after {
-    content: "";
-    background: #8B4513;
-    position: absolute;
-    animation: load .9s infinite .5s reverse ease-in-out;
-    border-radius: 3px;
-  }
-  @keyframes load {
-    0% { top: 0; height: 30px; width: 6px; opacity: 0; }
-    50% { opacity: 1; }
-    100% { top: 29px; height: 15px; width: 6px; opacity: 0; }
-  }
-  .loading-text {
-    color: #8B4513;
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;
-  }  
+  background-size: 40%;
+  background-position: bottom center;
+}
+
+.smoke-loader {
+  width: 100px;
+  height: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40px;
+  top: 50%;
+}
+
+.coffee-cup {
+  height: 80px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.smoke-wave {
+  width: 50px;
+  height: 50px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  top: 0px;
+  left: 0px;
+}
+
+.smoke1 {
+  width: 6px;
+  height: 30px;
+  float: left;
+  margin-right: 6px;
+  margin-left: 4px;
+  border-radius: 3px;
+  background-color: #03AED2; /* Color principal */
+}
+
+.smoke1:before, .smoke1:after {
+  content: "";
+  background: #03AED2; /* Color principal */
+  position: absolute;
+  animation: load .9s infinite reverse ease-in-out;
+  border-radius: 3px;
+}
+
+.smoke2 {
+  width: 6px;
+  height: 15px;
+  float: left;
+  margin-right: 6px;
+  margin-left: 4px;
+  border-radius: 3px;
+  background-color: #03AED2; /* Color principal */
+}
+
+.smoke2:before, .smoke2:after {
+  content: "";
+  background: #03AED2; /* Color principal */
+  position: absolute;
+  animation: load .6s infinite reverse ease-in-out;
+  border-radius: 3px;
+  margin-top: 5px;
+}
+
+.smoke3 {
+  width: 6px;
+  height: 30px;
+  float: left;
+  margin-right: 6px;
+  margin-left: 4px;
+  border-radius: 3px;
+  background-color: #03AED2; /* Color principal */
+}
+
+.smoke3:before, .smoke3:after {
+  content: "";
+  background: #03AED2; /* Color principal */
+  position: absolute;
+  animation: load .9s infinite .5s reverse ease-in-out;
+  border-radius: 3px;
+}
+
+@keyframes load {
+  0% { top: 0; height: 30px; width: 6px; opacity: 0; }
+  50% { opacity: 1; }
+  100% { top: 29px; height: 15px; width: 6px; opacity: 0; }
+}
+
+.loading-text {
+  color: #03AED2; /* Color principal */
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+}

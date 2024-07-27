@@ -21,6 +21,39 @@
   src: url('./assets/fonts/poppins/Poppins-SemiBold.ttf');
 }
 
+.background-radial-gradient {
+  background: linear-gradient(to right, #03AED2 50%, #FDDE55 50%);
+}
+
+#radius-shape-1 {
+  height: 220px;
+  width: 220px;
+  top: -60px;
+  left: -130px;
+  background: radial-gradient(#68D2E8, #03AED2); /* Azul degradado */
+  overflow: hidden;
+}
+
+#radius-shape-2 {
+  border-radius: 38% 62% 63% 37% / 70% 33% 67% 30%;
+  bottom: -60px;
+  right: -110px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(#FEEFAD, #FDDE55); /* Amarillo degradado */
+  overflow: hidden;
+}
+
+.bg-glass {
+  background-color: hsla(0, 0%, 100%, 0.9) !important;
+  backdrop-filter: saturate(200%) blur(25px);
+}
+
+/* navbar.component.css */
+.navbar-logo {
+  height: 70px; /* Ajusta la altura según sea necesario */
+  width: auto; /* Mantiene la proporción original */
+}
 
 /*//////////////////////////////////////////////////////////////////
 [ RESTYLE TAG ]*/
@@ -190,7 +223,7 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #D2B48C; /* Café claro */
+  background: #03AED2; /* Café claro */
   padding: 20px;
   border-radius: 20px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -200,7 +233,17 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #D2B48C; /* Café claro */
+  background: #03AED2; /* Café claro */
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+}
+
+.company-icon3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #03AED2; /* Café claro */
   padding: 20px;
   border-radius: 20px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -214,9 +257,85 @@ button:hover {
 
 .company-icon2 img {
   max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
-  height: auto;
-  max-height: 511px; /* Limita la altura máxima de la imagen */
+  height: 670px;
+  max-height: 670px; /* Limita la altura máxima de la imagen */
 }
+
+.company-icon3 img {
+  max-width: 600px; /* Ajusta el tamaño del icono según sea necesario */
+  height: 920px;
+  max-height:920px; /* Limita la altura máxima de la imagen */
+}
+
+
+
+/* Estilo para el contenedor del input file */
+.file-input-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  width: auto;
+  height: 40px; /* Ajusta la altura según tus necesidades */
+}
+
+/* Estilo para el input de texto */
+.input100 {
+  /* Estilos de tu input de texto actual */
+  width: 100%; /* Ajusta el ancho según tus necesidades */
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Estilo para el input file oculto */
+.input100[type="file"] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Estilo para la etiqueta del archivo seleccionado */
+.file-input-label {
+  display: block;
+  padding: 10px;
+  background-color: #ffffff; /* Color de fondo */
+  border: 1px solid #ffffff; /* Borde */
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  
+
+}
+
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  top: 70%;
+  transform: translateY(-30%);
+  cursor: pointer;
+}
+
+.eye-icon i {
+  color: #888;
+}
+
+.eye-icon i.fa-eye-slash {
+  color: #333;
+}
+
+
+.file-input-label::-webkit-file-upload-button {
+  font-size: 12px; /* Tamaño de fuente más pequeño */
+}
+/* Estilo para el botón cuando se pasa el mouse */
+.file-input-label:hover {
+  background-color: #ffffff; /* Color de fondo al pasar el mouse */
+}
+
 
 
 .small-placeholder::placeholder {
@@ -225,7 +344,13 @@ button:hover {
 }
 
 
+.input100::placeholder {
+  transition: opacity 0.3s ease;
+}
 
+.input100:focus::placeholder {
+  opacity: 0;
+}
 /*------------------------------------------------------------------
 [ Form ]*/
 
@@ -330,7 +455,7 @@ button:hover {
   left: 0;
   width: 0;
   height: 2px;
-  background: #7f7f7f;
+  background: #22b4c7;
   -webkit-transition: all 0.4s;
   -o-transition: all 0.4s;
   -moz-transition: all 0.4s;
@@ -423,7 +548,7 @@ button:hover {
 }
 
 .login100-form-btn:disabled {
-  background-color: rgb(158, 154, 154);
+  background-color: rgb(158, 158, 154);
 }
 
 
@@ -3022,10 +3147,6 @@ body {
   border-color: #f7f3e9;
 }
 
-.navbar-toggler-icon {
-  background-image: url('data:image/svg+xml;charset=utf8,%3Csvg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath stroke="rgba%28100, 100, 100, 0.5%29" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M4 7h22M4 15h22M4 23h22"/%3E%3C/svg%3E');
-}
 
-.leaflet-routing-container {
-  display: none;
-}
+
+.leaflet-routing-container {display: none;}
