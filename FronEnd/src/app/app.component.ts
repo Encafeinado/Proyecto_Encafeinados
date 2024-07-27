@@ -23,11 +23,16 @@ export class AppComponent {
         this.isLoading = true;
       } else if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
         this.isLoading = false;
-        this.showNavbar = !event.url.includes('/auth/login') && !event.url.includes('/auth/register') && !event.url.includes('/auth/forgot-password')/* && !event.url.includes('/landing' )*/ ;
+        // Ajuste aquí para no ocultar la barra de navegación en la ruta de restablecimiento de contraseña
+        this.showNavbar = !event.url.includes('/auth/login') && 
+                          !event.url.includes('/auth/register') && 
+                          !event.url.includes('/auth/forgot-password') &&
+                          !event.url.includes('/auth/reset-password');
         this.cdr.detectChanges(); 
       }
     });
   }
+  
   public finishedAuthCheck = computed<boolean>( () => {
     console.log(this.authService.authStatus() )
     if ( this.authService.authStatus() === AuthStatus.checking ) {
@@ -74,7 +79,7 @@ export class AppComponent {
   
       case AuthStatus.notAuthenticated:
         const currentUrl = this.router.url;
-        if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' && currentUrl !== '/auth/login' && currentUrl !== '/landing'){
+        if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' && currentUrl !== '/auth/login' && currentUrl !== '/landing' ){
           
           this.router.navigateByUrl('/landing');
           this.cdr.detectChanges();
