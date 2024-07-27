@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { IsNotAuthenticatedGuard } from './auth/guards/is-not-authenticated.guard';
-import { RoleGuard } from './auth/guards/role-guard';
+
 import { IsAuthenticatedGuard } from './auth/guards';
 
 
