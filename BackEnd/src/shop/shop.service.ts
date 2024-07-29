@@ -136,12 +136,22 @@ export class ShopService {
     return `This action removes a #${id} auth`;
   }
 
-  async findShopById(id: string): Promise<ShopDocument> {
+  async findShopById(id: string): Promise<any> {
     const shop = await this.shopModel.findById(id).exec();
     if (!shop) {
       throw new NotFoundException('Tienda no encontrada');
     }
-    return shop;
+
+    // Convierte el logo a base64 si está presente
+    let logoBase64 = null;
+    if (shop.logo) {
+      logoBase64 = `data:image/png;base64,${shop.logo.toString('base64')}`;
+    }
+
+    return {
+      ...shop.toJSON(),
+      logo: logoBase64
+    };
   }
 
   getJwtToken(payload: JwtPayload): string {
