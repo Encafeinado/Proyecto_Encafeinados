@@ -19,6 +19,9 @@ async function bootstrap() {
     }),
   );
 
+  // Establecer el prefijo global para todas las rutas
+  app.setGlobalPrefix('api');
+
   console.log("Escuchando en puerto", process.env.PORT ?? 3000);
   await app.listen(process.env.PORT ?? 3000);
 }
