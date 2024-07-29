@@ -59,7 +59,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         const currentUrl = this.router.url;
         // Permite acceso a las rutas de registro, inicio de sesión y restablecimiento de contraseña
         if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' && currentUrl !== '/landing' && currentUrl !== '/auth/login' ) {
-          this.router.navigateByUrl('/landing');
+         this.router.navigateByUrl('/landing');
           this.cdr.detectChanges();
         }
         return;

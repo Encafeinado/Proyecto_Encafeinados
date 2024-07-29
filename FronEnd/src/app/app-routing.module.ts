@@ -1,9 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { IsNotAuthenticatedGuard } from './auth/guards/is-not-authenticated.guard';
-
 import { IsAuthenticatedGuard } from './auth/guards';
-
 
 const routes: Routes = [
   { path: 'auth', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule), canActivate: [IsNotAuthenticatedGuard] },
@@ -13,8 +11,6 @@ const routes: Routes = [
   { path: 'perfil', loadChildren: () => import('./features/mi-perfil/mi-perfil.module').then(m => m.MiPerfilModule), canActivate: [IsAuthenticatedGuard] },
   { path: '**', redirectTo: '/landing' }
 ];
-
-
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, { useHash: true })],

@@ -62,16 +62,14 @@ export class AppComponent {
           if (currentUser) {
             this.userName = currentUser.name || 'Nombre del Usuario';
             console.log('Nombre del usuario:', this.userName);
-           // this.updateNavbarText(this.router.url); // Actualizar el texto del navbar basado en la URL
   
-            // Redirigir basado en el rol del usuario
             if (currentUser.roles.includes('user')) {
               this.router.navigateByUrl('/map');
             } else if (currentUser.roles.includes('shop')) {
               this.router.navigateByUrl('/store');
             } else {
               // Manejo de rol desconocido si es necesario
-              this.router.navigateByUrl('/landing');
+             this.router.navigateByUrl('/landing');
             }
             this.cdr.detectChanges();
           }
@@ -79,7 +77,7 @@ export class AppComponent {
   
       case AuthStatus.notAuthenticated:
         const currentUrl = this.router.url;
-        if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' && currentUrl !== '/auth/login' && currentUrl !== '/landing' ){
+        if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' && currentUrl !== '/auth/login' && currentUrl !== '/landing' && currentUrl !== '/auth/reset-password' ){
           
           this.router.navigateByUrl('/landing');
           this.cdr.detectChanges();
