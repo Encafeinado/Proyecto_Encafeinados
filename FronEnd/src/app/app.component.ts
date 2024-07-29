@@ -27,7 +27,7 @@ export class AppComponent {
         this.showNavbar = !event.url.includes('/auth/login') && 
                           !event.url.includes('/auth/register') && 
                           !event.url.includes('/auth/forgot-password') &&
-                          !event.url.includes('/auth/reset-password');
+                          !event.url.includes('/auth/reset-password') ;
         this.cdr.detectChanges(); 
       }
     });
@@ -41,50 +41,48 @@ export class AppComponent {
 
     return true;
   });
-/*
-  updateNavbarText(url: string): void {
-    if (url === '/store' ) {
-      this.navbarText = 'Descubre el mejor café cerca de ti';
-    } else if (url === '/map') {
-      this.navbarText = 'Explora las ubicaciones en el mapa';
-    } else if (url === '/landing'){
-      this.navbarText = 'Bienvenidos a encafeinados';
-    }
-  }
-*/
+
   public authStatusChangedEffect = effect(() => {
-    switch (this.authService.authStatus()) {
+    const authStatus = this.authService.authStatus();
+    console.log('Estado de autenticación:', authStatus);
+  
+    switch (authStatus) {
       case AuthStatus.checking:
         return;
   
-        case AuthStatus.authenticated:
-          const currentUser = this.authService.currentUser();
-          if (currentUser) {
-            this.userName = currentUser.name || 'Nombre del Usuario';
-            console.log('Nombre del usuario:', this.userName);
+      case AuthStatus.authenticated:
+        const currentUser = this.authService.currentUser();
+        if (currentUser) {
+          this.userName = currentUser.name || 'Nombre del Usuario';
+          console.log('Nombre del usuario:', this.userName);
   
-            if (currentUser.roles.includes('user')) {
-              this.router.navigateByUrl('/map');
-            } else if (currentUser.roles.includes('shop')) {
-              this.router.navigateByUrl('/store');
-            } else {
-              // Manejo de rol desconocido si es necesario
-             this.router.navigateByUrl('/landing');
-            }
-            this.cdr.detectChanges();
+          if (currentUser.roles.includes('user')) {
+            this.router.navigateByUrl('/map');
+          } else if (currentUser.roles.includes('shop')) {
+            this.router.navigateByUrl('/store');
+          } else {
+            this.router.navigateByUrl('/landing');
           }
-          return;
+        }
+        return;
   
       case AuthStatus.notAuthenticated:
         const currentUrl = this.router.url;
-        if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' && currentUrl !== '/auth/login' && currentUrl !== '/landing' && currentUrl !== '/auth/reset-password' ){
-          
+        console.log('URL actual:', currentUrl);
+  
+        // Redirigir a la página de inicio si la URL actual no es pública
+        if (currentUrl !== '/auth/login' && currentUrl !== '/landing' && currentUrl !== '/auth/reset-password') {
           this.router.navigateByUrl('/landing');
-          this.cdr.detectChanges();
         }
+        return;
+  
+      default:
+        console.warn('Estado de autenticación no reconocido:', authStatus);
         return;
     }
   });
+  
+  
 
 
 

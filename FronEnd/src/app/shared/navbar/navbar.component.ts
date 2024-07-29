@@ -21,50 +21,6 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   showCancelButton: boolean = false;
   isLoading = true;
   
-  public finishedAuthCheck = computed<boolean>(() => {
-    if (this.authService.authStatus() === AuthStatus.checking) {
-      return false;
-    }
-    return true;
-  });
-
-  public authStatusChangedEffect = effect(() => {
-    switch (this.authService.authStatus()) {
-      case AuthStatus.checking:
-        // El estado de autenticación está siendo verificado
-        return;
-  
-      case AuthStatus.authenticated:
-        const currentUser = this.authService.currentUser();
-        if (currentUser) {
-          this.userName = currentUser.name || 'Nombre del Usuario';
-          console.log('Nombre del usuario:', this.userName);
-  
-          if (currentUser.roles.includes('user')) {
-            // Usuario normal autenticado
-            if (this.router.url === '/map') {
-              this.router.navigateByUrl('/map');
-            }
-          } else if (currentUser.roles.includes('shop')) {
-            // Tienda autenticada
-            if (this.router.url === '/store') {
-              this.router.navigateByUrl('/store');
-            }
-          }
-        }
-        this.cdr.detectChanges();
-        return;
-  
-      case AuthStatus.notAuthenticated:
-        const currentUrl = this.router.url;
-        // Permite acceso a las rutas de registro, inicio de sesión y restablecimiento de contraseña
-        if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' && currentUrl !== '/landing' && currentUrl !== '/auth/login' ) {
-         this.router.navigateByUrl('/landing');
-          this.cdr.detectChanges();
-        }
-        return;
-    }
-  });
   
   constructor(private modalService: NgbModal) {}
 
