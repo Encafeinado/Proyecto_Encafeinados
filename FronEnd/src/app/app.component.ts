@@ -76,9 +76,6 @@ export class AppComponent {
         }
         return;
   
-      default:
-        console.warn('Estado de autenticación no reconocido:', authStatus);
-        return;
     }
   });
   
