@@ -7,9 +7,11 @@ export class VerifyCodeDto {
   @IsString()
   nameUser: string;
 
+  
+  @IsString()
+  imageUrl: string;
+
   @IsString()
   code: string;
 
-  @IsString()
-  imageUrl: string;
 }

@@ -18,7 +18,11 @@ export class RegisterShopDto {
 
   @IsNotEmpty()
   @IsString()
-  specialties: string;
+  specialties1: string;
+
+  @IsNotEmpty()
+  @IsString()
+  specialties2: string;
 
   @IsNotEmpty()
   @IsString()

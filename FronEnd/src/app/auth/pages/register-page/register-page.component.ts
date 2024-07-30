@@ -28,11 +28,12 @@ export class RegisterPageComponent {
     password: ['', [ Validators.required, Validators.minLength(6) ]],
     confirmPassword: ['', [ Validators.required ]],
     phone: ['', [ Validators.required, Validators.pattern('^[0-9]+$') ]],
-    specialties: [''],
+    specialties1: [''],
+    specialties2: [''],
     address: [''],
     logo: ['']
   }, {
-    validators: this.passwordMatchValidator // Validador personalizado para la coincidencia de contraseñas
+    validators: this.passwordMatchValidator 
   });
 
   public isUser: boolean = true;
@@ -47,16 +48,19 @@ export class RegisterPageComponent {
       this.isUser = true;
       this.isStore = false;
       this.formTitle = 'Registro de Usuario';
-      this.myForm.get('specialties')?.clearValidators();
+      this.myForm.get('specialties1')?.clearValidators();
+      this.myForm.get('specialties2')?.clearValidators();
       this.myForm.get('address')?.clearValidators();
     } else if (type === 'store') {
       this.isUser = false;
       this.isStore = true;
       this.formTitle = 'Registro de Tienda';
-      this.myForm.get('specialties')?.setValidators([Validators.required]);
+      this.myForm.get('specialties1')?.setValidators([Validators.required]);
+      this.myForm.get('specialties2')?.setValidators([Validators.required]);
       this.myForm.get('address')?.setValidators([Validators.required]);
     }
-    this.myForm.get('specialties')?.updateValueAndValidity();
+    this.myForm.get('specialties1')?.updateValueAndValidity();
+    this.myForm.get('specialties2')?.updateValueAndValidity();
     this.myForm.get('address')?.updateValueAndValidity();
   }
 
@@ -94,10 +98,10 @@ export class RegisterPageComponent {
       return;
     }
 
-    const { name, email, password, phone, specialties, address, logo } = this.myForm.value;
+    const { name, email, password, phone, specialties1,specialties2, address, logo } = this.myForm.value;
 
     if (this.isStore) {
-      this.authService.registerStore(name, email, password, phone, specialties, address, logo)
+      this.authService.registerStore(name, email, password, phone, specialties1,specialties2, address, logo)
         .subscribe({
           next: () => {
             this.toastr.success('¡Registro de tienda exitoso!', 'Éxito');

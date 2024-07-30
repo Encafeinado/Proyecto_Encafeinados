@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { environment } from 'src/environments/environments';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShopService {
-  private apiUrl = 'https://encafeinados-backend.up.railway.app'; // Ajusta según sea necesario
+  private readonly apiUrl: string = environment.baseUrl;
 
   constructor(private http: HttpClient) {}
 

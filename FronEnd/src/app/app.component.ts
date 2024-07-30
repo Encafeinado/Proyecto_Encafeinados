@@ -12,6 +12,8 @@ export class AppComponent {
   private authService = inject( AuthService );
   isLoading = true;
   showNavbar = true;
+  userName: string = 'Nombre del Usuario';
+  public navbarText: string = 'Descubre el mejor café cerca de ti';
 
   constructor(private router: Router, private cdr: ChangeDetectorRef) {}
 
@@ -21,7 +23,7 @@ export class AppComponent {
         this.isLoading = true;
       } else if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
         this.isLoading = false;
-        this.showNavbar = !event.url.includes('/auth/login') && !event.url.includes('/auth/register');
+        this.showNavbar = !event.url.includes('/auth/login') && !event.url.includes('/auth/register') && !event.url.includes('/auth/forgot-password'  ) ;
         this.cdr.detectChanges(); 
       }
     });
@@ -35,28 +37,43 @@ export class AppComponent {
     return true;
   });
 
+  updateNavbarText(url: string): void {
+    if (url === '/store' || url === '/landing') {
+      this.navbarText = 'Descubre el mejor café cerca de ti';
+    } else if (url === '/map') {
+      this.navbarText = 'Explora las ubicaciones en el mapa';
+    } else {
+      this.navbarText = 'Descubre el mejor café cerca de ti';
+    }
+  }
 
   public authStatusChangedEffect = effect(() => {
-
-    switch( this.authService.authStatus() ) {
-
+    switch (this.authService.authStatus()) {
       case AuthStatus.checking:
         return;
-
+  
       case AuthStatus.authenticated:
+        const currentUser = this.authService.currentUser();
+        if (currentUser) {
+          this.userName = currentUser.name || 'Nombre del Usuario';
+          console.log('Nombre del usuario:', this.userName);
+          this.updateNavbarText(this.router.url); // Actualizar el texto del navbar basado en la URL
+        }
         this.router.navigateByUrl('/landing');
+        this.cdr.detectChanges();
         return;
-
+  
       case AuthStatus.notAuthenticated:
-        this.router.navigateByUrl('/auth/login');
+        const currentUrl = this.router.url;
+        if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' ) {
+          
+          this.router.navigateByUrl('/auth/login');
+          this.cdr.detectChanges();
+        }
         return;
-
     }
-
-
-
-
   });
+
 
 
 }

@@ -21,11 +21,11 @@ export class BookController {
     return this.bookService.addImage(bookId, addImageDto.url);
   }
 
-  @Post('verify-code')
+  @Post('/verify-code')
   async verifyCode(@Body() verifyCodeDto: VerifyCodeDto) {
-    return this.bookService.verifyAndAddCode(verifyCodeDto);
+    const result = await this.bookService.verifyAndAddCode(verifyCodeDto);
+    return { message: 'Código verificado guardado exitosamente', result };
   }
-
   @Get()
   async findAll() {
     return this.bookService.findAll();

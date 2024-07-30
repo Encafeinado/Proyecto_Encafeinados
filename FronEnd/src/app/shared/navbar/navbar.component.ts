@@ -12,7 +12,7 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 export class NavbarComponent implements OnInit, AfterViewInit {
   private authService = inject(AuthService);
   private router = inject(Router);
-  private cdr = inject(ChangeDetectorRef); // Inyecta ChangeDetectorRef
+  private cdr = inject(ChangeDetectorRef); 
   public navbarText: string = 'Descubre el mejor café cerca de ti';
   userName: string = 'Nombre del Usuario';
   @ViewChild('sesionModal', { static: true }) sesionModal: any;
@@ -31,39 +31,42 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   public authStatusChangedEffect = effect(() => {
     switch (this.authService.authStatus()) {
       case AuthStatus.checking:
+        // El estado de autenticación está siendo verificado
         return;
-
+  
       case AuthStatus.authenticated:
         const currentUser = this.authService.currentUser();
         if (currentUser) {
+          this.userName = currentUser.name || 'Nombre del Usuario';
+          console.log('Nombre del usuario:', this.userName);
+  
           if (currentUser.roles.includes('user')) {
             // Usuario normal autenticado
-            this.userName = currentUser.name || 'Nombre del Usuario';
-            console.log('Nombre del usuario:', this.userName);
             if (this.router.url === '/shop') {
-              this.router.navigateByUrl('/landing'); // Redirigir a la página de usuario normal
+              this.router.navigateByUrl('/landing');
             }
           } else if (currentUser.roles.includes('shop')) {
             // Tienda autenticada
-            this.userName = currentUser.name || 'Nombre del Usuario';
-            console.log('Nombre del usuario:', this.userName);
             if (this.router.url === '/landing') {
-              this.router.navigateByUrl('/shop'); // Redirigir a la página de tienda
+              this.router.navigateByUrl('/shop');
             }
           }
         }
-        this.cdr.detectChanges(); // Forzar verificación de cambios
+        this.cdr.detectChanges();
         return;
-
-      case AuthStatus.notAuthenticated:
-        const currentUrl = this.router.url;
-        if (currentUrl !== '/auth/register') {
-          this.router.navigateByUrl('/auth/login');
-          this.cdr.detectChanges(); // Forzar verificación de cambios
-        }
-        return;
+  
+        case AuthStatus.notAuthenticated:
+          const currentUrl = this.router.url;
+          // Permite acceso a las rutas de registro, inicio de sesión y restablecimiento de contraseña
+          if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' ) {
+            this.router.navigateByUrl('/auth/login');
+            this.cdr.detectChanges();
+          }
+          return;
+        
     }
   });
+  
   
   constructor(private modalService: NgbModal) {}
 
@@ -74,18 +77,18 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       } else if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
         this.isLoading = false;
         this.updateNavbarText(event.url);
-        this.cdr.detectChanges(); // Forzar verificación de cambios
+        this.cdr.detectChanges(); 
       }
     });
 
-    // Asignar el nombre del usuario desde el servicio de autenticación
+   
     const currentUser = this.authService.currentUser();
     this.userName = currentUser ? currentUser.name : 'Nombre del Usuario';
     console.log('Nombre del usuario inicial:', this.userName);
   }
 
   ngAfterViewInit() {
-    // Forzar la detección de cambios después de la inicialización de la vista
+   
     this.cdr.detectChanges();
   }
 
@@ -97,7 +100,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     } else if (url === '/map') {
       this.navbarText = 'Explora las ubicaciones en el mapa';
     } else {
-      this.navbarText = 'Descubre el mejor café cerca de ti'; // Texto por defecto
+      this.navbarText = 'Descubre el mejor café cerca de ti';
     }
   }
 
@@ -106,7 +109,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   }
 
   isStoreOrMapRoute(): boolean {
-    // Verifica si estamos en la ruta de /store o /map
+ 
     return (
       this.router.url === '/store' ||
       this.router.url === '/map' ||

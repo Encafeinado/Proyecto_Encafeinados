@@ -1,61 +1,87 @@
-<div class="limiter">
-    
-      <div class="main-container">
-        <!-- Contenedor del formulario -->
-        <div class="form-container">
-          <form class="login100-form" autocomplete="off" [formGroup]="myForm" (ngSubmit)="login()">
-            <span class="login100-form-title-1 p-b-35">
-              Iniciar Sesión
-            </span>
-  
-            <div class="wrap-input100 m-b-23">
-              <span class="label-input100">Correo</span>
-              <input class="input100 small-placeholder" type="email" formControlName="email" placeholder="Correo electrónico">
-              <span class="focus-input100"></span>
-            </div>
-  
-            <div class="wrap-input100">
-              <span class="label-input100">Contraseña</span>
-              <div class="input-with-eye">
-                <input class="input100 small-placeholder" type="{{ hidePassword ? 'password' : 'text' }}" formControlName="password" placeholder="Ingrese su contraseña">
+<!-- Section: Design Block -->
+<section class="background-radial-gradient overflow-hidden">
+  <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
+    <div class="row gx-lg-5 align-items-center mb-5">
+      <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
+        <h1 class="my-5 display-5 fw-bold ls-tight" style="color: hsl(218, 81%, 95%)">
+         Encafeinados <br />
+          <span style="color: hsl(218, 81%, 75%)">Beneficios</span>
+        </h1>
+        <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+          Temporibus, expedita iusto veniam atque, magni tempora mollitia
+          dolorum consequatur nulla, neque debitis eos reprehenderit quasi
+          ab ipsum nisi dolorem modi. Quos?
+        </p>
+      </div>
+
+      <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
+        <div id="radius-shape-1" class="position-absolute rounded-circle shadow-5-strong"></div>
+        <div id="radius-shape-2" class="position-absolute shadow-5-strong"></div>
+
+        <div class="card bg-glass mx-auto" style="max-width: 400px;">
+          <div class="card-body px-4 py-5 px-md-5">
+            <form class="login100-form" autocomplete="off" [formGroup]="myForm" (ngSubmit)="login()">
+              <div class="text-center mb-4">
+                <img src="../../../../assets/images/logosinfondo.png" alt="Logo" style="width: 100px; height: auto;">
+              </div>
+              <p class="h5 mb-4 text-center">Iniciar Sesión</p>
+
+              <div class="wrap-input100 m-b-23 form-outline mb-4">
+                <span class="label-input100">Correo</span>
+                <input 
+                  class="input100 small-placeholder form-control" 
+                  type="email" 
+                  formControlName="email" 
+                  placeholder="Correo electrónico"
+                  autocomplete="email"
+                >
                 <span class="focus-input100"></span>
-                <div class="eye-icon" (click)="togglePasswordVisibility()">
-                  <i class="fa" [ngClass]="{'fa-eye': hidePassword, 'fa-eye-slash': !hidePassword}"></i>
+              </div>
+
+              <div class="wrap-input100 form-outline mb-4">
+                <span class="label-input100">Contraseña</span>
+                <div class="input-with-eye">
+                  <input 
+                    class="input100 small-placeholder form-control" 
+                    type="{{ hidePassword ? 'password' : 'text' }}" 
+                    formControlName="password"
+                    placeholder="Ingrese su contraseña"
+                    autocomplete="current-password"
+                  >
+                  <span class="focus-input100"></span>
+                  <div class="eye-icon" (click)="togglePasswordVisibility()">
+                    <i class="fa" [ngClass]="{'fa-eye': hidePassword, 'fa-eye-slash': !hidePassword}"></i>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-  
-            <div class="text-right p-t-8 p-b-31"></div>
-  
-            <div class="container-login100-form-btn">
-              <div class="wrap-login100-form-btn">
-                <div class="login100-form-bgbtn"></div>
-                <button class="login100-form-btn" [disabled]="myForm.invalid" type="submit">
-                  Iniciar
+
+              <div class="text-center pt-1 mb-5 pb-1">
+                <button 
+                  data-mdb-button-init 
+                  data-mdb-ripple-init 
+                  class="btn btn-primary btn-block mb-4" 
+                  [disabled]="myForm.invalid" 
+                  type="submit"
+                >
+                  Iniciar Sesión
                 </button>
+                <a class="text-muted mt-3 d-block" routerLink="/auth/forgot-password">Olvidaste tu contraseña?</a>
+
+                <div class="flex-col-c p-t-3 mt-3">
+                  <span class="txt1 p-b-2">
+                    ¿No tienes cuenta?
+                  </span>
+                  <a routerLink="/auth/register" >
+                    Crear una aquí
+                  </a>
+                </div>
               </div>
-            </div>
-  
-            <div class="flex-col-c p-t-30">
-              <span class="txt1 p-b-17">
-                ¿No tienes cuenta?
-              </span>
-              <a routerLink="/auth/register" class="txt2">
-                Crear una aquí
-              </a>
-            </div>
-            
-          </form>
-        </div>
-  
-        <!-- Contenedor del icono de la empresa -->
-        <div class="icon-container">
-          <div class="company-icon coffee-background">
-            <img src="../../../../assets/images/encafeinadologo2.png" alt="Icono de la empresa">
+            </form>
           </div>
         </div>
       </div>
     </div>
-
-  
+  </div>
+</section>
+<!-- Section: Design Block -->

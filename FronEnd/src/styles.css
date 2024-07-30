@@ -21,6 +21,34 @@
   src: url('./assets/fonts/poppins/Poppins-SemiBold.ttf');
 }
 
+.background-radial-gradient {
+  background: linear-gradient(to right, #03AED2 50%, #FDDE55 50%);
+}
+
+#radius-shape-1 {
+  height: 220px;
+  width: 220px;
+  top: -60px;
+  left: -130px;
+  background: radial-gradient(#68D2E8, #03AED2); /* Azul degradado */
+  overflow: hidden;
+}
+
+#radius-shape-2 {
+  border-radius: 38% 62% 63% 37% / 70% 33% 67% 30%;
+  bottom: -60px;
+  right: -110px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(#FEEFAD, #FDDE55); /* Amarillo degradado */
+  overflow: hidden;
+}
+
+.bg-glass {
+  background-color: hsla(0, 0%, 100%, 0.9) !important;
+  backdrop-filter: saturate(200%) blur(25px);
+}
+
 
 /*//////////////////////////////////////////////////////////////////
 [ RESTYLE TAG ]*/
@@ -311,7 +339,13 @@ button:hover {
 }
 
 
+.input100::placeholder {
+  transition: opacity 0.3s ease;
+}
 
+.input100:focus::placeholder {
+  opacity: 0;
+}
 /*------------------------------------------------------------------
 [ Form ]*/
 
@@ -416,7 +450,7 @@ button:hover {
   left: 0;
   width: 0;
   height: 2px;
-  background: #7f7f7f;
+  background: #22b4c7;
   -webkit-transition: all 0.4s;
   -o-transition: all 0.4s;
   -moz-transition: all 0.4s;
@@ -509,7 +543,7 @@ button:hover {
 }
 
 .login100-form-btn:disabled {
-  background-color: rgb(158, 154, 154);
+  background-color: rgb(158, 158, 154);
 }
 
 
