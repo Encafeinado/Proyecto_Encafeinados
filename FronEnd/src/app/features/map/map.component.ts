@@ -33,7 +33,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   albumImages: Image[] = [];
   currentImageIndex: number = 0; // Índice de la imagen actual para colorear
   isStoreOpen: boolean = false;
-  private apiUrl = 'https://encafeinados-backend.up.railway.app'; // Ajusta según sea necesario
+  private apiUrl = 'http://localhost:3000'; // Ajusta según sea necesario
   userData: any;
   shopData: any[] = [];
   userName: string = 'Nombre del Usuario';
@@ -542,46 +542,23 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.openModal(this.modalBook, '');
   }
 
-  saveVerifiedCode(storeName: string) {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('Token no encontrado en el almacenamiento local.');
-      return;
-    }
 
-    const requestBody = {
-      storeName: storeName,
-      userName: this.userName, // Asegúrate de que se use this.userName aquí
-      codeVerified: true,
-    };
-
-    // Envía la solicitud POST al backend para guardar los datos
-    this.http
-      .post(`${this.apiUrl}/book/verify-code`, requestBody, {
-        headers: new HttpHeaders().set('Authorization', `Bearer ${token}`),
-      })
-      .subscribe(
-        (response: any) => {
-          // console.log('Respuesta del servidor:', response);
-          toastr.success('Código verificado guardado exitosamente');
-          // Actualiza las imágenes del álbum para marcarlas como guardadas
-        },
-        (error) => {
-          console.error('Error al guardar el código verificado:', error);
-          toastr.error('Error al guardar el código verificado');
-        }
-      );
-  }
 
   verifyCode() {
     this.storeService.verifyCodeCode(this.enteredCode).subscribe(
       (response) => {
         this.message = response.message;
         if (response.shop) {
-          this.verified = true;
-          this.saveVerifiedCode(response.shop.name);
-          toastr.success('Código verificado exitosamente');
-          this.modalRef.close();
+          // Llamar a verifyCodeOnce con el shopId y el código
+          this.storeService.verifyCode(response.shop._id, this.enteredCode).subscribe(
+            (res) => {
+              toastr.success('Código verificado y CoffeeCoins añadidos exitosamente');
+              this.modalRef.close();
+            },
+            (err) => {
+              toastr.error('Error al añadir CoffeeCoins');
+            }
+          );
         } else {
           this.verified = false;
           toastr.error('Código de verificación no válido');
@@ -593,6 +570,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       }
     );
   }
+  
 
   coloredImage(): void {
     if (this.currentImageIndex < this.albumImages.length) {

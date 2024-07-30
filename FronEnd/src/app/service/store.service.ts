@@ -1,6 +1,8 @@
+// store.service.ts
+
 import { Injectable } from '@angular/core';
 import { Shop } from '../features/store/interfaces/shop.interface';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http'; // Importa HttpHeaders
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -31,13 +33,17 @@ export class StoreService {
   }
 
   verifyCode(shopId: string, code: string): Observable<{ message: string }> {
+    const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`); // Configurar la cabecera con el token
     const url = `${this.baseUrl}/verify/${shopId}`;
-    return this.http.post<{ message: string }>(url, { code });
+    return this.http.post<{ message: string }>(url, { code }, { headers });
   }
 
   verifyCodeCode(code: string): Observable<{ message: string, shop: Shop }> {
+    const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`); // Configurar la cabecera con el token
     const url = `${this.baseUrl}/verify-code`;
-    return this.http.post<{ message: string, shop: Shop }>(url, { code });
+    return this.http.post<{ message: string, shop: Shop }>(url, { code }, { headers });
   }
 
   setStoreActivation(status: boolean): void {
