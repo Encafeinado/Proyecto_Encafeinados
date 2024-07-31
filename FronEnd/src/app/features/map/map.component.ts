@@ -18,6 +18,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   modalRef!: NgbModalRef;
   openedModal = false;
+  verifiedcode: boolean = false;
   selectedTransport: string = 'car';
   watchId: number | undefined;
   routingControl: any;
@@ -545,31 +546,51 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
 
   verifyCode() {
+    console.log("Primer bloque)");
     this.storeService.verifyCodeCode(this.enteredCode).subscribe(
       (response) => {
+        console.log(response);
         this.message = response.message;
-        if (response.shop) {
-          // Llamar a verifyCodeOnce con el shopId y el código
-          this.storeService.verifyCode(response.shop._id, this.enteredCode).subscribe(
-            (res) => {
-              toastr.success('Código verificado y CoffeeCoins añadidos exitosamente');
-              this.modalRef.close();
-            },
-            (err) => {
-              toastr.error('Error al añadir CoffeeCoins');
-            }
-          );
+        console.log(this.message);
+  
+        if (this.message === "Código de verificación guardado exitosamente") {
+          this.verifiedcode = true;
+          if (response.shop) {
+            console.log("2 bloque)");
+            // Llamar a verifyCodeOnce con el shopId y el código
+            this.storeService.verifyCode(response.shop._id, this.enteredCode).subscribe(
+              (res) => {
+                console.log("3 bloque)");
+                console.log(res);
+                toastr.success('Código verificado y CoffeeCoins añadidos exitosamente');
+                this.modalRef.close();
+              },
+              (err) => {
+                console.log("4 bloque)");
+                toastr.error('Error al añadir CoffeeCoins');
+                this.modalRef.close();
+              }
+            );
+          } else {
+            toastr.success('Código verificado y CoffeeCoins añadidos exitosamente');
+          }
         } else {
-          this.verified = false;
+          this.verifiedcode = false;
           toastr.error('Código de verificación no válido');
         }
+        console.log("5 bloque)");
+        this.verified = false;
+        this.modalRef.close();
       },
       (error) => {
+        console.log("6 bloque)");
         this.message = 'Error al verificar el código';
         toastr.error('Error al verificar el código');
       }
     );
   }
+  
+  
   
 
   coloredImage(): void {
