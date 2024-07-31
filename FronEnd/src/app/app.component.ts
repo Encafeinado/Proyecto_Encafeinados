@@ -71,7 +71,7 @@ export class AppComponent {
         console.log('URL actual:', currentUrl);
   
         // Redirigir a la página de inicio si la URL actual no es pública
-        if (currentUrl !== '/auth/login' && currentUrl !== '/landing' && currentUrl !== '/auth/reset-password') {
+        if (currentUrl !== '/auth/login' && currentUrl !== '/landing' ) {
           this.router.navigateByUrl('/landing');
         }
         return;

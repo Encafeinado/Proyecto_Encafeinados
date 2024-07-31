@@ -11,7 +11,7 @@ export const IsAuthenticatedGuard: CanActivateFn = (route, state) => {
   const currentUser = authService.currentUser();
 
   // Permitir acceso a las rutas '/profile' y '/reset-password'
-  if (state.url === '/perfil' || state.url.startsWith('/auth/reset-password')) {
+  if (state.url === '/perfil' ) {
     if (authStatus === AuthStatus.verify || authStatus === AuthStatus.authenticated) {
       return true;
     } else {

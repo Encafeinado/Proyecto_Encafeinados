@@ -311,20 +311,43 @@ button:hover {
 
 }
 
+.input-with-eye {
+  position: relative;
+}
+
+.input100 {
+  width: 100%; /* Ocupa el ancho completo del contenedor */
+  padding: 0.75rem; /* Espaciado interno */
+  border: 1px solid #ccc; /* Ejemplo de borde */
+  border-radius: 0.5rem; /* Bordes redondeados opcionales */
+  box-sizing: border-box; /* Incluye el borde en el cálculo del ancho */
+}
+
+.input-with-eye {
+  position: relative;
+}
+
+.input-with-eye input {
+  width: 100%;
+  padding-right: 2.5rem; /* Espacio para el ícono */
+}
+
 .eye-icon {
   position: absolute;
-  right: 10px;
-  top: 70%;
-  transform: translateY(-30%);
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
   cursor: pointer;
+  color: #000;
 }
 
-.eye-icon i {
-  color: #888;
-}
-
-.eye-icon i.fa-eye-slash {
-  color: #333;
+.error-message {
+  color: red;
+  font-size: 0.650rem;
+  font-weight: normal;
+  margin-top: 0.25rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 
@@ -386,9 +409,8 @@ button:hover {
 [ Input ]*/
 
 .wrap-input100 {
-  width: 100%;
   position: relative;
-  border-bottom: 2px solid #d9d9d9;
+  margin-bottom: 1rem; /* Espacio entre los campos */
 }
 
 .label-input100 {
