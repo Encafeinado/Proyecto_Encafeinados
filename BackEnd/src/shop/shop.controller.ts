@@ -41,7 +41,7 @@ export class ShopController {
     console.log('Request user:', req.user); // Añade esta línea
     const userId = req.user.id; // Obtén el ID del usuario desde el token JWT
     const result = await this.shopService.verifyVerificationCodeByCodeAndAddCoins(verifyCodeDto.code, userId);
-    return { message: 'Código de verificación guardado exitosamente', result };
+    return result; // Devuelve el resultado tal cual
   }
 
   @Post('/login')

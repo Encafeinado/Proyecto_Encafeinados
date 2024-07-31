@@ -18,26 +18,27 @@ export class ShopService {
     private userModel: Model<UserDocument>,
     private jwtService: JwtService
   ) {}
-  async verifyVerificationCodeByCodeAndAddCoins(code: string, userId: string): Promise<ShopDocument | null> {
+  async verifyVerificationCodeByCodeAndAddCoins(code: string, userId: string): Promise<{ message: string, shop?: ShopDocument }> {
     const shop = await this.shopModel.findOne({ verificationCode: code });
-
+  
     if (!shop) {
-      return null;
+      return { message: 'Código de verificación no válido' };
     }
-
+  
     // Actualizar los CoffeeCoins del usuario
     const user = await this.userModel.findById(userId);
     if (user) {
       user.cafecoin += 10; // Aumentar los CoffeeCoins
       await user.save();
     }
-
+  
     shop.codeUsage = (shop.codeUsage || 0) + 1;
     shop.verificationCode = await this.generateUniqueVerificationCode();
     await shop.save();
     console.log('Updated shop with new code and usage:', shop);
-    return shop.toObject() as ShopDocument; // Conviértelo a objeto
+    return { message: 'Código de verificación guardado exitosamente', shop: shop.toObject() as ShopDocument };
   }
+  
 
   async create(createShopDto: RegisterShopDto, logoBase64: string): Promise<ShopDocument> {
     try {
