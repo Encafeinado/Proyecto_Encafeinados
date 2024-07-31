@@ -4,7 +4,7 @@
       <div id="map" style="height: 600px;"></div>
       <button *ngIf="showCancelButton" class="floating-button" (click)="cancelRoute()">
         <i class="fas fa-times text-white"></i>
-      </button>
+      </button>      
     </div>
     <div class="col-md-4 sidebar">
       <h2>Bienvenido a Encafeinados</h2>
@@ -26,10 +26,10 @@
               style="width: 20px; height: 20px; margin-right: 10px;">
             <span style="font-size: 16px;">Tienda de café</span>
           </li>
-          <li style="margin-bottom: 10px;" [ngClass]="{ 'active': isStoreOpen, 'inactive': !isStoreOpen }">
+          <li style="margin-bottom: 10px;">
             <span style="color: green; font-size: 18px;">&#8226;</span> Tienda abierta
           </li>
-          <li style="margin-bottom: 10px;" [ngClass]="{ 'active': isStoreOpen, 'inactive': !isStoreOpen }">
+          <li style="margin-bottom: 10px;" >
             <span style="color: red; font-size: 18px;">&#8226;</span> Tienda cerrada
           </li>
         </ul>
@@ -121,17 +121,13 @@
     </div>
     <div class="modal-body">
       <div class="album-info">
-        <div class="obtained-stamps">
-          Estampitas obtenidas: {{ obtainedStamps }}
-        </div>
         <div class="missing-stamps">
-          Estampitas faltantes: {{ obtainedStamps }}/{{ totalStamps }}
+          Estampitas obtenidas: {{ obtainedStamps }}/{{ totalStamps }}
         </div>
       </div>
       <div class="album">
         <div class="album-page" *ngFor="let shop of shopLogos">
           <img *ngIf="shop.logoUrl" [src]="shop.logoUrl" alt="{{ shop.name }}">
-          <!-- <p>{{ shop.name }}</p> -->
         </div>
       </div>
     </div>

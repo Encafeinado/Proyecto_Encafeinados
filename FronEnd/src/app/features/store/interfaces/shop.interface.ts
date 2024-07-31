@@ -11,5 +11,6 @@ export interface Shop {
   address: string;
   verificationCode: string;
   codeUsage: number;
+  statusShop: boolean;
 }
 
