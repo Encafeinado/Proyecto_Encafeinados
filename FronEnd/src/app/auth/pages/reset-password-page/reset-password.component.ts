@@ -26,11 +26,10 @@ export class ResetPasswordComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.token = params['token'];
-      console.log('Token recibido:', this.token); 
+      console.log('Reset Password Token:', this.token);
 
       if (!this.token) {
-        console.log('Token no proporcionado, redirigiendo a login.');
-        this.router.navigateByUrl('/auth/login');
+        this.router.navigateByUrl('/landing');
       }
     });
   }
@@ -52,7 +51,7 @@ export class ResetPasswordComponent implements OnInit {
       this.authService.resetPassword(this.token, password).subscribe({
         next: () => {
           console.log('Contraseña restablecida con éxito, redirigiendo a login.');
-          this.router.navigateByUrl('/auth/login');
+          this.router.navigateByUrl('/landing');
         },
         error: (err) => {
           console.error('Error al restablecer la contraseña:', err);

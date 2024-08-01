@@ -160,12 +160,31 @@ export class ShopService {
     return `This action removes a #${id} auth`;
   }
 
+// <<<<<<< HEAD
   async findShopById(id: string): Promise<ShopDocument> {
     const shop = await this.shopModel.findById(id);
     if (!shop) {
       throw new NotFoundException('Tienda no encontrada');
     }
     return shop.toObject() as ShopDocument; // Conviértelo a objeto
+// =======
+//   async findShopById(id: string): Promise<any> {
+//     const shop = await this.shopModel.findById(id).exec();
+//     if (!shop) {
+//       throw new NotFoundException('Tienda no encontrada');
+//     }
+
+//     // Convierte el logo a base64 si está presente
+//     let logoBase64 = null;
+//     if (shop.logo) {
+//       logoBase64 = `data:image/png;base64,${shop.logo.toString('base64')}`;
+//     }
+
+//     return {
+//       ...shop.toJSON(),
+//       logo: logoBase64
+//     };
+// >>>>>>> 97129f26196d5ca8ba9dfb94447dc286ff2e3439
   }
 
   getJwtToken(payload: JwtPayload): string {

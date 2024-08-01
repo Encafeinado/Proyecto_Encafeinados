@@ -20,7 +20,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   openedModal = false;
   showCancelButton: boolean = false;
   isLoading = true;
-
+  
   public finishedAuthCheck = computed<boolean>(() => {
     if (this.authService.authStatus() === AuthStatus.checking) {
       return false;
@@ -42,65 +42,63 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   
           if (currentUser.roles.includes('user')) {
             // Usuario normal autenticado
-            if (this.router.url === '/shop') {
-              this.router.navigateByUrl('/landing');
+            if (this.router.url === '/map') {
+              this.router.navigateByUrl('/map');
             }
           } else if (currentUser.roles.includes('shop')) {
             // Tienda autenticada
-            if (this.router.url === '/landing') {
-              this.router.navigateByUrl('/shop');
+            if (this.router.url === '/store') {
+              this.router.navigateByUrl('/store');
             }
           }
         }
         this.cdr.detectChanges();
         return;
   
-        case AuthStatus.notAuthenticated:
-          const currentUrl = this.router.url;
-          // Permite acceso a las rutas de registro, inicio de sesión y restablecimiento de contraseña
-          if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' ) {
-            this.router.navigateByUrl('/auth/login');
-            this.cdr.detectChanges();
-          }
-          return;
-        
+      case AuthStatus.notAuthenticated:
+        const currentUrl = this.router.url;
+        // Permite acceso a las rutas de registro, inicio de sesión y restablecimiento de contraseña
+        if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' && currentUrl !== '/landing' && currentUrl !== '/auth/login') {
+          this.router.navigateByUrl('/landing');
+          this.cdr.detectChanges();
+        }
+        return;
     }
   });
-  
   
   constructor(private modalService: NgbModal) {}
 
   ngOnInit(): void {
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.isLoading = true;
-      } else if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
-        this.isLoading = false;
-        this.updateNavbarText(event.url);
-        this.cdr.detectChanges(); 
-      }
-    });
-
-   
+    // Inicializa el nombre del usuario
     const currentUser = this.authService.currentUser();
     this.userName = currentUser ? currentUser.name : 'Nombre del Usuario';
     console.log('Nombre del usuario inicial:', this.userName);
+    
+    // Actualiza el texto del navbar basado en la ruta actual al iniciar
+    this.updateNavbarText(this.router.url);
+
+    // Escucha los eventos de navegación para actualizar el texto del navbar
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.isLoading = false;
+        this.updateNavbarText(event.url);
+      } else if (event instanceof NavigationCancel || event instanceof NavigationError) {
+        this.isLoading = false;
+      }
+    });
   }
 
   ngAfterViewInit() {
-   
     this.cdr.detectChanges();
   }
 
-  
-
   updateNavbarText(url: string): void {
-    if (url === '/store' || url === '/landing') {
+    if (url === '/store') {
       this.navbarText = 'Descubre el mejor café cerca de ti';
     } else if (url === '/map') {
       this.navbarText = 'Explora las ubicaciones en el mapa';
-    } else {
-      this.navbarText = 'Descubre el mejor café cerca de ti';
+    } else if (url === '/landing') {
+      this.navbarText = 'Bienvenidos a encafeinados';
     }
   }
 
@@ -109,7 +107,6 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   }
 
   isStoreOrMapRoute(): boolean {
- 
     return (
       this.router.url === '/store' ||
       this.router.url === '/map' ||
@@ -144,13 +141,15 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     this.modalRef.close();
   }
 
-
-
-   isUserShop(): boolean {
+  isUserShop(): boolean {
     return this.authService.rolUser() === 'shop';
   }
 
   isUserUser(): boolean {
     return this.authService.rolUser() === 'user';
+  }
+
+  isUserLanding(): boolean {
+    return this.router.url === '/landing';
   }
 }

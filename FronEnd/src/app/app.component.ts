@@ -13,7 +13,7 @@ export class AppComponent {
   isLoading = true;
   showNavbar = true;
   userName: string = 'Nombre del Usuario';
-  public navbarText: string = 'Descubre el mejor café cerca de ti';
+  //public navbarText: string = 'Descubre el mejor café cerca de ti';
 
   constructor(private router: Router, private cdr: ChangeDetectorRef) {}
 
@@ -23,7 +23,7 @@ export class AppComponent {
         this.isLoading = true;
       } else if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
         this.isLoading = false;
-        this.showNavbar = !event.url.includes('/auth/login') && !event.url.includes('/auth/register') && !event.url.includes('/auth/forgot-password'  ) ;
+        this.showNavbar = !event.url.includes('/auth/login') && !event.url.includes('/auth/register') && !event.url.includes('/auth/forgot-password')/* && !event.url.includes('/landing' )*/ ;
         this.cdr.detectChanges(); 
       }
     });
@@ -36,38 +36,47 @@ export class AppComponent {
 
     return true;
   });
-
+/*
   updateNavbarText(url: string): void {
-    if (url === '/store' || url === '/landing') {
+    if (url === '/store' ) {
       this.navbarText = 'Descubre el mejor café cerca de ti';
     } else if (url === '/map') {
       this.navbarText = 'Explora las ubicaciones en el mapa';
-    } else {
-      this.navbarText = 'Descubre el mejor café cerca de ti';
+    } else if (url === '/landing'){
+      this.navbarText = 'Bienvenidos a encafeinados';
     }
   }
-
+*/
   public authStatusChangedEffect = effect(() => {
     switch (this.authService.authStatus()) {
       case AuthStatus.checking:
         return;
   
-      case AuthStatus.authenticated:
-        const currentUser = this.authService.currentUser();
-        if (currentUser) {
-          this.userName = currentUser.name || 'Nombre del Usuario';
-          console.log('Nombre del usuario:', this.userName);
-          this.updateNavbarText(this.router.url); // Actualizar el texto del navbar basado en la URL
-        }
-        this.router.navigateByUrl('/landing');
-        this.cdr.detectChanges();
-        return;
+        case AuthStatus.authenticated:
+          const currentUser = this.authService.currentUser();
+          if (currentUser) {
+            this.userName = currentUser.name || 'Nombre del Usuario';
+            console.log('Nombre del usuario:', this.userName);
+           // this.updateNavbarText(this.router.url); // Actualizar el texto del navbar basado en la URL
+  
+            // Redirigir basado en el rol del usuario
+            if (currentUser.roles.includes('user')) {
+              this.router.navigateByUrl('/map');
+            } else if (currentUser.roles.includes('shop')) {
+              this.router.navigateByUrl('/store');
+            } else {
+              // Manejo de rol desconocido si es necesario
+              this.router.navigateByUrl('/landing');
+            }
+            this.cdr.detectChanges();
+          }
+          return;
   
       case AuthStatus.notAuthenticated:
         const currentUrl = this.router.url;
-        if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' ) {
+        if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' && currentUrl !== '/auth/login' && currentUrl !== '/landing'){
           
-          this.router.navigateByUrl('/auth/login');
+          this.router.navigateByUrl('/landing');
           this.cdr.detectChanges();
         }
         return;

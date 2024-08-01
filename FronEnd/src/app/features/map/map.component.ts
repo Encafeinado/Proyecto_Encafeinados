@@ -161,7 +161,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       zoom: 13,
       attributionControl: false,
     });
-  
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
     }).addTo(map);
@@ -185,7 +185,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     })
       .addTo(map)
       .bindPopup('Aroma Café Sabaneta');
-  
+
     const baulMarker = L.marker([6.149950147326389, -75.61758096298057], {
       icon: this.createStoreIcon(
         'assets/IconsMarker/cafeteriaCoffe.png',
@@ -195,7 +195,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     })
       .addTo(map)
       .bindPopup('Viejo Baul');
-  
+
     const lealMarker = L.marker([6.150555615946403, -75.61797956390538], {
       icon: this.createStoreIcon(
         'assets/IconsMarker/cafeteriaLeal.png',
@@ -213,11 +213,11 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
       [casaMarker.getLatLng().lat, casaMarker.getLatLng().lng],
     ]);
-  
+
     const userLocationMarker = L.marker([0, 0], { icon: this.userLocationIcon })
       .addTo(map)
       .bindPopup('Tu ubicación actual');
-  
+
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         const userLat = position.coords.latitude;
@@ -260,7 +260,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         timeout: 30000,
       }
     );
-  
+
     aromaMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -269,7 +269,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         'Aroma Café Sabaneta'
       );
     });
-  
+
     baulMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
@@ -278,7 +278,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         'Viejo Baul'
       );
     });
-  
+
     lealMarker.on('click', () => {
       this.showRouteConfirmation(
         map,
