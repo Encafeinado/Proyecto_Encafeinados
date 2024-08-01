@@ -4,20 +4,20 @@
   height: 70vh;
   width: 100%;
   background-image: url("https://www.transparenttextures.com/patterns/wood-pattern.png"); /* Texture for the map */
-  border-top: 2px solid #FDDE55;
+  border-top: 2px solid #fdde55;
 }
 
-/* En tu hoja de estilos CSS */
+/* Estilos comunes para ambos botones */
+.floating-button-location,
 .floating-button-cancel {
   position: absolute;
-  bottom: 20px; /* Ajusta según sea necesario */
-  left: 20px;
-  background-color: #03AED2; /* Color de fondo rojo para cancelar */
-  color: #FFFFFF;
+  right: 20px; /* Coloca los botones en la misma posición lateral */
+  background-color: #03aed2; /* Color de fondo azul */
+  color: #ffffff;
   border: none;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  width: 40px; /* Tamaño más pequeño */
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -27,8 +27,19 @@
   z-index: 1000;
 }
 
+.floating-button-location:hover,
 .floating-button-cancel:hover {
-  background-color: #68D2E8; /* Color más claro al pasar el ratón */
+  background-color: #68d2e8; /* Color más claro al pasar el ratón */
+}
+
+/* Estilos específicos para el botón de cancelar */
+.floating-button-cancel {
+  bottom: 70px; /* Ajusta según sea necesario para que esté encima del otro botón */
+}
+
+/* Estilos específicos para el botón de ubicación */
+.floating-button-location {
+  bottom: 20px; /* Ajusta según sea necesario para que esté debajo del botón de cancelar */
 }
 
 .grayscale-icon {
@@ -40,9 +51,9 @@
 }
 
 .sidebar {
-  background-color: #FEEFAD;
+  background-color: #feefad;
   padding: 20px;
-  border-left: 2px solid #FDDE55;
+  border-left: 2px solid #fdde55;
 }
 
 .sidebar h2 {
@@ -58,7 +69,7 @@
 }
 
 .floating-button:hover {
-  background-color: #68D2E8;
+  background-color: #68d2e8;
 }
 
 .floating-button i {
@@ -82,8 +93,10 @@
   margin-left: 60px; /* Espacio entre los botones */
 }
 
-.modal-content-code, .modal-content-create , .modal-content-cancelR{
-  background-color: #FFFFFF;
+.modal-content-code,
+.modal-content-create,
+.modal-content-cancelR {
+  background-color: #ffffff;
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -91,38 +104,47 @@
   overflow: hidden;
 }
 
-.modal-header-code ,.modal-header-create ,.modal-header-cancelR {
-  background-color: #03AED2;
-  color: #FFFFFF;
+.modal-header-code,
+.modal-header-create,
+.modal-header-cancelR {
+  background-color: #03aed2;
+  color: #ffffff;
   padding: 15px;
   border-radius: 10px 10px 0 0;
   display: flex;
   justify-content: center;
-
 }
 
-.modal-body-code, .modal-body-create ,.modal-body-cancelR{
+.modal-body-code,
+.modal-body-create,
+.modal-body-cancelR {
   padding: 20px;
-  background-color: #FEEFAD;
+  background-color: #feefad;
   border-radius: 0 0 10px 10px;
 }
 
-.modal-footer-code, .modal-footer-create, .modal-footer-cancelR {
+.modal-footer-code,
+.modal-footer-create,
+.modal-footer-cancelR {
   display: flex;
   justify-content: center;
   padding: 20px;
   border-top: none;
 }
 
-.modal-footer-code .btn , .modal-footer-create .btn , .modal-footer-cancelR .btn{
+.modal-footer-code .btn,
+.modal-footer-create .btn,
+.modal-footer-cancelR .btn {
   margin: 0 10px;
-  background-color: #FDDE55;
-  color: #03AED2;
+  background-color: #fdde55;
+  color: #03aed2;
   border: none;
 }
 
-.modal-footer-code .btn:hover , .modal-footer-create .btn:hover , .modal-footer-cancelR .btn:hover{
-  background-color: #FEEFAD;
+.modal-footer-code .btn:hover,
+.modal-footer-create .btn:hover,
+.modal-footer-cancelR .btn:hover {
+  background-color: #feefad;
 }
 /* ------------------------------------------------------------------------------------------------- */
 .album {
@@ -152,8 +174,8 @@
   position: fixed; /* Cambia de absolute a fixed */
   bottom: 20px; /* Ajusta la distancia desde el fondo */
   left: 20px; /* Ajusta la distancia desde el borde izquierdo */
-  background-color: #03AED2;
-  color: #FEEFAD;
+  background-color: #03aed2;
+  color: #feefad;
   border: none;
   border-radius: 50%;
   width: 50px;
@@ -184,7 +206,7 @@
   top: 10px;
   bottom: 10px;
   width: 20px;
-  background: linear-gradient(to bottom, #68D2E8, #03AED2);
+  background: linear-gradient(to bottom, #68d2e8, #03aed2);
   z-index: -1;
   border-radius: 10px;
 }
@@ -200,8 +222,8 @@
 }
 
 .modal-book .modal-header {
-  background-color: #03AED2;
-  color: #FFFFFF;
+  background-color: #03aed2;
+  color: #ffffff;
   border: none; /* Eliminamos el borde */
   padding: 15px;
   border-radius: 10px 10px 0 0;
@@ -216,11 +238,11 @@
   bottom: -20px;
   right: 20px;
   font-size: 0.8rem;
-  color: #03AED2;
+  color: #03aed2;
 }
 
 .modal-book .modal-header .close {
-  color: #FFFFFF;
+  color: #ffffff;
   opacity: 1;
   position: absolute;
   right: 10px;
@@ -229,7 +251,7 @@
 
 .modal-book .modal-body {
   padding: 20px;
-  background-color: #FEEFAD;
+  background-color: #feefad;
   border-radius: 0 0 10px 10px;
 }
 
@@ -241,7 +263,7 @@
 
 .modal-book .album-page {
   text-align: center;
-  background: #FFFFFF;
+  background: #ffffff;
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -264,13 +286,13 @@
 
 .modal-book .modal-footer .btn {
   margin: 0 10px;
-  background-color: #FDDE55;
-  color: #03AED2;
+  background-color: #fdde55;
+  color: #03aed2;
   border: none;
 }
 
 .modal-book .modal-footer .btn:hover {
-  background-color: #FEEFAD;
+  background-color: #feefad;
 }
 
 .album img {
@@ -290,7 +312,8 @@
   padding: 3px 0; /* Agrega espacio arriba y abajo */
 }
 
-.obtained-stamps, .missing-stamps {
+.obtained-stamps,
+.missing-stamps {
   font-size: 1rem;
   font-weight: bold;
   margin: 0 10px; /* Agrega espacio a los lados */
@@ -299,7 +322,7 @@
 /* ------------------------------------------------------------------------------------------ */
 
 .modal-coffee {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -308,8 +331,8 @@
 }
 
 .modal-header-coffee {
-  background-color: #03AED2;
-  color: #FFFFFF;
+  background-color: #03aed2;
+  color: #ffffff;
   padding: 15px;
   border-radius: 10px 10px 0 0;
   display: flex;
@@ -323,7 +346,7 @@
 
 .modal-body-coffee {
   padding: 20px;
-  background-color: #FEEFAD;
+  background-color: #feefad;
   border-radius: 0 0 10px 10px;
 }
 
@@ -351,12 +374,51 @@
 }
 
 .modal-footer-coffee .btn {
-  background-color: #FDDE55;
-  color: #03AED2;
+  background-color: #fdde55;
+  color: #03aed2;
   border: none;
   margin: 0 10px;
 }
 
 .modal-footer-coffee .btn:hover {
-  background-color: #FEEFAD;
+  background-color: #feefad;
+}
+/* ------------------------------------------------------------------------------- */
+.transport-selection {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente los elementos */
+  gap: 15px; /* Espacio entre los elementos */
+}
+
+.transport-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.transport-label input[type="radio"] {
+  display: none;
+}
+
+.transport-label i {
+  font-size: 24px; /* Aumenta el tamaño del icono */
+  color: #343a40;
+}
+
+.transport-label:hover {
+  background-color: #e2e6ea;
+  transform: scale(1.1);
+}
+
+.transport-label input[type="radio"]:checked + i {
+  color: #007bff; /* Color del icono seleccionado */
+  background-color: #e2e6ea; /* Fondo más claro al pasar el ratón */
+  border-radius: 50%;
 }

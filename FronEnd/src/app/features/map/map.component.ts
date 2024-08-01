@@ -31,6 +31,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   routingControl: any;
   showCancelButton: boolean = false;
   destinationName!: string;
+  initialZoomDone: boolean = false; // Variable para controlar el zoom inicial
+  userLocation: { lat: number; lng: number } | null = null; // Variable para almacenar la ubicación del usuario
   userLocationIcon: L.Icon;
   map!: L.Map;
   targetMarker!: L.Marker;
@@ -162,33 +164,49 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     });
   }
 
+  goToUserLocation(): void {
+    if (this.userLocation) {
+      this.map.setView([this.userLocation.lat, this.userLocation.lng], 15, {
+        animate: true,
+        duration: 1.5, // Duración de la animación en segundos
+      });
+    } else {
+      console.error('La ubicación del usuario no está disponible.');
+    }
+  }
+
   addShopMarkersToMap(): void {
     if (!this.map) {
       console.error('El mapa no está inicializado.');
       return;
     }
-  
+
     this.shopMarkers = this.shopData
       .map((shop) => {
         const lat = shop.latitude;
         const lng = shop.longitude;
-  
+
         if (typeof lat !== 'number' || typeof lng !== 'number') {
           console.error('Coordenadas inválidas para la tienda:', shop);
           return null;
         }
-  
+
         const iconUrl = 'assets/IconsMarker/cafeteria.png'; // Usamos la misma imagen para todas las tiendas
         const marker = L.marker([lat, lng], {
           icon: this.createStoreIcon(iconUrl, shop.statusShop),
         })
           .addTo(this.map)
           .bindPopup(shop.name);
-  
+
         marker.on('click', () => {
-          this.showRouteConfirmation(this.map, marker, this.userLocationMarker, shop.name);
+          this.showRouteConfirmation(
+            this.map,
+            marker,
+            this.userLocationMarker,
+            shop.name
+          );
         });
-  
+
         return {
           marker,
           name: shop.name,
@@ -196,11 +214,16 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         };
       })
       .filter((markerData) => markerData !== null);
-  
+
     if (this.shopMarkers.length > 0) {
-      this.map.fitBounds(this.shopMarkers.map((data) => [data.marker.getLatLng().lat, data.marker.getLatLng().lng]));
+      this.map.fitBounds(
+        this.shopMarkers.map((data) => [
+          data.marker.getLatLng().lat,
+          data.marker.getLatLng().lng,
+        ])
+      );
     }
-  }  
+  }
 
   ngAfterViewInit(): void {
     this.map = new L.Map('map', {
@@ -231,10 +254,16 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
         if (accuracy < 50) {
           this.userLocationMarker.setLatLng([userLat, userLng]);
-          // Centra el mapa en la ubicación del usuario con un zoom de nivel 15
-          this.map.setView([userLat, userLng], 15, {
-            animate: true,
-          });
+          this.userLocation = { lat: userLat, lng: userLng };
+
+          if (!this.initialZoomDone) {
+            // Centra el mapa en la ubicación del usuario con un zoom de nivel 15
+            this.map.setView([userLat, userLng], 15, {
+              animate: true,
+            });
+            this.initialZoomDone = true;
+          }
+
           this.checkProximityToStores(userLat, userLng, this.shopMarkers);
         }
       },
@@ -255,15 +284,15 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     markers: { marker: L.Marker; name: string; iconUrl: string }[] // Define claramente el tipo aquí
   ) {
     const proximityThreshold = 10; // 10 metros
-  
+
     markers.forEach(({ marker, name, iconUrl }) => {
       const { lat, lng } = marker.getLatLng();
       const distance = this.calculateDistance(userLat, userLng, lat, lng);
-  
-      const shop = this.shopData.find(s => s.name === name); // Encuentra la tienda correspondiente
+
+      const shop = this.shopData.find((s) => s.name === name); // Encuentra la tienda correspondiente
       if (shop) {
         const statusShop = shop.statusShop; // Accede a statusShop de la tienda encontrada
-  
+
         if (distance <= proximityThreshold) {
           marker.setIcon(this.createStoreIcon(iconUrl, statusShop));
           console.log(`Estás cerca de ${name}`);
@@ -506,55 +535,56 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.openModal(this.modalBook, '');
   }
 
-
-
   verifyCode() {
-    console.log("Primer bloque)");
+    console.log('Primer bloque)');
     this.storeService.verifyCodeCode(this.enteredCode).subscribe(
       (response) => {
         console.log(response);
         this.message = response.message;
         console.log(this.message);
-  
-        if (this.message === "Código de verificación guardado exitosamente") {
+
+        if (this.message === 'Código de verificación guardado exitosamente') {
           this.verifiedcode = true;
           if (response.shop) {
-            console.log("2 bloque)");
+            console.log('2 bloque)');
             // Llamar a verifyCodeOnce con el shopId y el código
-            this.storeService.verifyCode(response.shop._id, this.enteredCode).subscribe(
-              (res) => {
-                console.log("3 bloque)");
-                console.log(res);
-                toastr.success('Código verificado y CoffeeCoins añadidos exitosamente');
-                this.modalRef.close();
-              },
-              (err) => {
-                console.log("4 bloque)");
-                toastr.error('Error al añadir CoffeeCoins');
-                this.modalRef.close();
-              }
-            );
+            this.storeService
+              .verifyCode(response.shop._id, this.enteredCode)
+              .subscribe(
+                (res) => {
+                  console.log('3 bloque)');
+                  console.log(res);
+                  toastr.success(
+                    'Código verificado y CoffeeCoins añadidos exitosamente'
+                  );
+                  this.modalRef.close();
+                },
+                (err) => {
+                  console.log('4 bloque)');
+                  toastr.error('Error al añadir CoffeeCoins');
+                  this.modalRef.close();
+                }
+              );
           } else {
-            toastr.success('Código verificado y CoffeeCoins añadidos exitosamente');
+            toastr.success(
+              'Código verificado y CoffeeCoins añadidos exitosamente'
+            );
           }
         } else {
           this.verifiedcode = false;
           toastr.error('Código de verificación no válido');
         }
-        console.log("5 bloque)");
+        console.log('5 bloque)');
         this.verified = false;
         this.modalRef.close();
       },
       (error) => {
-        console.log("6 bloque)");
+        console.log('6 bloque)');
         this.message = 'Error al verificar el código';
         toastr.error('Error al verificar el código');
       }
     );
   }
-  
-  
-  
 
   coloredImage(): void {
     if (this.currentImageIndex < this.albumImages.length) {
