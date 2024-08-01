@@ -211,7 +211,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       maxZoom: 19,
     }).addTo(this.map);
 
-    this.userLocationMarker = L.marker([6.34163708123742, -75.51340173094184], {
+    this.userLocationMarker = L.marker([0, 0], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
@@ -430,6 +430,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   cancelRoute(): void {
+    console.log('Ruta cancelada');
     this.openModal(this.cancelModal, '');
   }
 
