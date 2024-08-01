@@ -33,7 +33,7 @@ export class RegisterPageComponent {
     phone: ['', [ Validators.required, Validators.pattern('^[0-9]+$') ]],
     specialties1: [''],
     specialties2: [''],
-    address: ['', [ Validators.required ]],
+    address: [''],
     logo: [''],
     statusShop: [false]  // Campo oculto con valor predeterminado
   }, {
