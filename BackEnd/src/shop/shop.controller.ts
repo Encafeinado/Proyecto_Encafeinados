@@ -1,5 +1,4 @@
-// shop.controller.ts
-import { Controller, Get, Post, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Request, Patch } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { RegisterShopDto, LoginDto, VerifyCodeDto } from './dto';
 import { ShopDocument } from './entities/shop.entity'; // Importa ShopDocument
@@ -68,5 +67,13 @@ export class ShopController {
   @Get(':id')
   async getShopById(@Param('id') shopId: string): Promise<ShopDocument> {
     return this.shopService.findShopById(shopId);
+  }
+
+  @Patch(':id/status')
+  updateShopStatus(
+    @Param('id') id: string,
+    @Body('statusShop') statusShop: boolean
+  ) {
+    return this.shopService.updateShopStatus(id, statusShop);
   }
 }

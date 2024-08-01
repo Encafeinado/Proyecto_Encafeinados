@@ -1,0 +1,18 @@
+.address-suggestions {
+    max-height: 200px; /* Ajusta la altura máxima según sea necesario */
+    overflow-y: auto; /* Permite el desplazamiento vertical si el contenido es demasiado largo */
+    position: absolute; /* Asegura que el menú de sugerencias esté posicionado correctamente */
+    z-index: 1000; /* Asegura que el menú de sugerencias esté por encima de otros elementos */
+    background: white; /* Asegura que el fondo del menú sea blanco para que sea legible */
+    border: 1px solid #ccc; /* Agrega un borde sutil alrededor del menú */
+    border-radius: 4px; /* Agrega bordes redondeados */
+  }
+  
+  .list-group-item {
+    cursor: pointer; /* Cambia el cursor para indicar que el elemento es seleccionable */
+  }
+  
+  .list-group-item:hover {
+    background-color: #f0f0f0; /* Cambia el fondo cuando el usuario pasa el ratón por encima */
+  }
+  

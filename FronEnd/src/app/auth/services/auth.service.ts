@@ -11,7 +11,7 @@ import { AuthStatus, CheckTokenResponse, LoginResponse, User } from '../interfac
 export class AuthService {
 
   private readonly baseUrl: string = environment.baseUrl;
-  
+
   private http = inject(HttpClient);
 
   private _currentUser = signal<User | Shop | null>(null);
@@ -82,10 +82,22 @@ export class AuthService {
     );
   }
 
-  registerStore(name: string, email: string, password: string, phone: string, specialties1: string, specialties2: string, address: string, logo: string): Observable<boolean> {
+  registerStore(
+    name: string,
+    email: string,
+    password: string,
+    phone: string,
+    specialties1: string,
+    specialties2: string,
+    address: string,
+    logo: string,
+    latitude: number,
+    longitude: number,
+    statusShop: boolean
+    ): Observable<boolean> {
     const url = `${this.baseUrl}/shop/register`;
-    const body = { name, email, password, phone, specialties1, specialties2, address, logo };
-
+    const body = { name, email, password, phone, specialties1, specialties2, address, logo, latitude, longitude, statusShop };
+  
     return this.http.post<LoginResponse>(url, body).pipe(
       map(({ shop, token }) => this.setAuthentication(shop!, token, 'shop')),
       catchError(err => throwError(() => err.error.message))
@@ -96,14 +108,20 @@ export class AuthService {
     const url = `${this.baseUrl}/auth/check-token`;
     const url2 = `${this.baseUrl}/shop/check-token`;
     const token = localStorage.getItem('token');
-
+    const currentUrl = window.location.href; // Obtener la URL actual
+  
+    if (currentUrl.includes('/auth/reset-password')) {
+      this._authStatus.set(AuthStatus.verify);
+      return of(true); // Permitir el acceso si está en la página de restablecimiento de contraseña
+    }
+  
     if (!token) {
       this.logout();
       return of(false);
     }
-
+  
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
+  
     return this.http.get<CheckTokenResponse>(url, { headers }).pipe(
       map(({ user, token }) => this.setAuthentication(user!, token, 'user')),
       catchError(err => {
@@ -119,6 +137,7 @@ export class AuthService {
       })
     );
   }
+  
 
   logout() {
     localStorage.removeItem('token');

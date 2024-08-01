@@ -191,4 +191,8 @@ export class ShopService {
     const token = this.jwtService.sign(payload);
     return token;
   }
+
+  async updateShopStatus(id: string, statusShop: boolean): Promise<Shop> {
+    return this.shopModel.findByIdAndUpdate(id, { statusShop }, { new: true });
+  }
 }
