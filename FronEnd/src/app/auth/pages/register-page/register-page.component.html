@@ -145,10 +145,19 @@
                     type="text" 
                     formControlName="address" 
                     placeholder="Dirección"
-                  >
+                    (input)="onAddressChange($event)"  
+                  ><!-- Llama al método onAddressChange() -->
                   <span class="focus-input100"></span>
-                </div>
-
+                  
+                  <!-- Lista de direcciones sugeridas -->
+                  <div *ngIf="suggestedAddresses.length > 0" class="address-suggestions">
+                    <ul class="list-group">
+                      <li class="list-group-item" *ngFor="let address of suggestedAddresses" (click)="selectAddress(address)">
+                        {{ address }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>                               
                 <div class="wrap-input100 m-b-23 form-outline mb-4">
                   <span class="label-input100">Logo</span>
                   <input 

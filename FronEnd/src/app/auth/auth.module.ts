@@ -8,6 +8,7 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 import { RequestResetPasswordComponent } from './pages/request-reset-password-page/request-reset-password.component';
 import { ResetPasswordComponent } from './pages/reset-password-page/reset-password.component';
+import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -22,6 +23,7 @@ import { ResetPasswordComponent } from './pages/reset-password-page/reset-passwo
     CommonModule,
     AuthRoutingModule,
     ReactiveFormsModule,
+    HttpClientModule
   ]
 })
 export class AuthModule { }
