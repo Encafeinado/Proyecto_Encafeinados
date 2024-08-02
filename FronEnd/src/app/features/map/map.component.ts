@@ -347,85 +347,85 @@
 //     }
 //   }
 
-//   showRoute(
-//     map: L.Map,
-//     startLat: number,
-//     startLng: number,
-//     endLat: number,
-//     endLng: number,
-//     icon: L.Icon,
-//     transport: string
-//   ): void {
-//     let profile: string;
-//     let routed: string;
-//     let url: any;
+  // showRoute2(
+  //   map: L.Map,
+  //   startLat: number,
+  //   startLng: number,
+  //   endLat: number,
+  //   endLng: number,
+  //   icon: L.Icon,
+  //   transport: string
+  // ): void {
+  //   let profile: string;
+  //   let routed: string;
+  //   let url: any;
 
-//     if (transport === 'foot') {
-//       profile = 'foot';
-//       routed = 'routed-foot';
-//     } else if (transport === 'car') {
-//       profile = 'driving';
-//       routed = 'routed-driving';
-//     } else {
-//       profile = 'bike';
-//       routed = 'routed-bike';
-//     }
+  //   if (transport === 'foot') {
+  //     profile = 'foot';
+  //     routed = 'routed-foot';
+  //   } else if (transport === 'car') {
+  //     profile = 'driving';
+  //     routed = 'routed-driving';
+  //   } else {
+  //     profile = 'bike';
+  //     routed = 'routed-bike';
+  //   }
 
-//     if (transport === 'foot' || transport === 'bike') {
-//       url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-//     } else {
-//       url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-//     }
+  //   if (transport === 'foot' || transport === 'bike') {
+  //     url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
+  //   } else {
+  //     url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
+  //   }
 
-//     fetch(url)
-//       .then((response) => {
-//         if (!response.ok) {
-//           throw new Error('Error en la solicitud al servicio OSRM');
-//         }
-//         return response.json();
-//       })
-//       .then((data) => {
-//         if (!data || !data.routes || data.routes.length === 0) {
-//           throw new Error('No se encontraron rutas válidas');
-//         }
+  //   fetch(url)
+  //     .then((response) => {
+  //       if (!response.ok) {
+  //         throw new Error('Error en la solicitud al servicio OSRM');
+  //       }
+  //       return response.json();
+  //     })
+  //     .then((data) => {
+  //       if (!data || !data.routes || data.routes.length === 0) {
+  //         throw new Error('No se encontraron rutas válidas');
+  //       }
 
-//         const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
-//         const routeCoordinates = route.geometry.coordinates.map(
-//           (coord: [number, number]) => [coord[1], coord[0]]
-//         );
+  //       const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
+  //       const routeCoordinates = route.geometry.coordinates.map(
+  //         (coord: [number, number]) => [coord[1], coord[0]]
+  //       );
 
-//         // Dibujar la ruta en el mapa usando Leaflet
-//         let color = 'blue'; // Default color for foot transport
+  //       // Dibujar la ruta en el mapa usando Leaflet
+  //       let color = 'blue'; // Default color for foot transport
 
-//         if (transport === 'car') {
-//           color = 'red';
-//         } else if (transport === 'bike') {
-//           color = 'green';
-//         }
+  //       if (transport === 'car') {
+  //         color = 'red';
+  //       } else if (transport === 'bike') {
+  //         color = 'green';
+  //       }
 
-//         if (this.routingControl) {
-//           this.routingControl.remove();
-//         }
+  //       if (this.routingControl) {
+  //         this.routingControl.remove();
+  //       }
 
-//         this.routingControl = L.polyline(routeCoordinates, {
-//           color: color,
-//         }).addTo(map);
+  //       this.routingControl = L.polyline(routeCoordinates, {
+  //         color: color,
+  //       }).addTo(map);
 
-//         // Mostrar la distancia y tiempo estimado
-//         const distance = route.distance / 1000; // Distancia en kilómetros
-//         const duration = route.duration / 60; // Duración en minutos
+  //       // Mostrar la distancia y tiempo estimado
+  //       const distance = route.distance / 1000; // Distancia en kilómetros
+  //       const duration = route.duration / 60; // Duración en minutos
 
-//         toastr.info(
-//           `Ruta hacia ${this.destinationName} es de ${distance.toFixed(
-//             2
-//           )} km y tomará aproximadamente ${duration.toFixed(0)} minutos.`
-//         );
-//       })
-//       .catch((error) => {
-//         console.error('Error al obtener la ruta desde OSRM:', error);
-//         toastr.error('Error al obtener la ruta');
-//       });
-//   }
+  //       toastr.info(
+  //         `Ruta hacia ${this.destinationName} es de ${distance.toFixed(
+  //           2
+  //         )} km y tomará aproximadamente ${duration.toFixed(0)} minutos.`
+  //       );
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error al obtener la ruta desde OSRM:', error);
+  //       toastr.error('Error al obtener la ruta');
+  //     });
+  // }
 
 //   selectTransportMode(mode: string) {
 //     this.selectedTransport = mode;
@@ -942,7 +942,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         this.userLocationMarker.getLatLng().lng,
         this.targetMarker.getLatLng().lat,
         this.targetMarker.getLatLng().lng,
-        this.targetMarker.options.icon as L.Icon
+        this.targetMarker.options.icon as L.Icon,
+        this.selectedTransport
       );
       this.showCancelButton = true;
       console.log('showCancelButton después:', this.showCancelButton);
@@ -954,33 +955,104 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       console.error('Error: No se han inicializado los marcadores o el mapa.');
     }
   }
-
   showRoute(
     map: L.Map,
     startLat: number,
     startLng: number,
     endLat: number,
     endLng: number,
-    icon: L.Icon
+    icon: L.Icon,
+    transport: string
   ): void {
+    let profile: string;
+    let routed: string;
+    let url: any;
+
+    if (transport === 'foot') {
+      profile = 'foot';
+      routed = 'routed-foot';
+    } else if (transport === 'car') {
+      profile = 'driving';
+      routed = 'routed-driving';
+    } else {
+      profile = 'bike';
+      routed = 'routed-bike';
+    }
     if (this.routingControl) {
       this.map.removeControl(this.routingControl);
     }
 
-    this.routingControl = (L as any).Routing.control({
-      waypoints: [
-        L.latLng(startLat, startLng),
-        L.latLng(endLat, endLng)
-      ],
-      routeWhileDragging: true,
-      createMarker: (i: number, waypoint: any, n: number) => {
-        if (i === n - 1) {
-          return L.marker(waypoint.latLng, { icon: icon });
-        } else {
-          return L.marker(waypoint.latLng, { icon: this.userLocationIcon });
+    if (transport === 'foot' || transport === 'bike') {
+      url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
+    } else {
+      url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
+    }
+
+    if (transport != 'car') {
+      fetch(url)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Error en la solicitud al servicio OSRM');
         }
-      },
-    }).addTo(map);
+        return response.json();
+      })
+      .then((data) => {
+        if (!data || !data.routes || data.routes.length === 0) {
+          throw new Error('No se encontraron rutas válidas');
+        }
+
+        const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
+        const routeCoordinates = route.geometry.coordinates.map(
+          (coord: [number, number]) => [coord[1], coord[0]]
+        );
+
+        // Dibujar la ruta en el mapa usando Leaflet
+        let color = 'blue'; // Default color for foot transport
+
+        if (transport === 'car') {
+          color = 'red';
+        } else if (transport === 'bike') {
+          color = 'green';
+        }
+
+        if (this.routingControl) {
+          this.routingControl.remove();
+        }
+
+        this.routingControl = L.polyline(routeCoordinates, {
+          color: color,
+        }).addTo(map);
+
+        // Mostrar la distancia y tiempo estimado
+        const distance = route.distance / 1000; // Distancia en kilómetros
+        const duration = route.duration / 60; // Duración en minutos
+
+        toastr.info(
+          `Ruta hacia ${this.destinationName} es de ${distance.toFixed(
+            2
+          )} km y tomará aproximadamente ${duration.toFixed(0)} minutos.`
+        );
+      })
+      .catch((error) => {
+        console.error('Error al obtener la ruta desde OSRM:', error);
+        toastr.error('Error al obtener la ruta');
+      });
+    }else{
+      this.routingControl = (L as any).Routing.control({
+        waypoints: [
+          L.latLng(startLat, startLng),
+          L.latLng(endLat, endLng)
+        ],
+        routeWhileDragging: true,
+        createMarker: (i: number, waypoint: any, n: number) => {
+          if (i === n - 1) {
+            return L.marker(waypoint.latLng, { icon: icon });
+          } else {
+            return L.marker(waypoint.latLng, { icon: this.userLocationIcon });
+          }
+        },
+      }).addTo(map);
+    }
   }
 
   selectTransportMode(mode: string) {
