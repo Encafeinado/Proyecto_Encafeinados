@@ -236,7 +236,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       maxZoom: 19,
     }).addTo(this.map);
 
-    this.userLocationMarker = L.marker([0, 0], {
+    this.userLocationMarker = L.marker([0,0], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
@@ -375,7 +375,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       console.error('Error: No se han inicializado los marcadores o el mapa.');
     }
   }
-
   showRoute(
     map: L.Map,
     startLat: number,
@@ -399,6 +398,9 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       profile = 'bike';
       routed = 'routed-bike';
     }
+    if (this.routingControl) {
+      this.map.removeControl(this.routingControl);
+    }
 
     if (transport === 'foot' || transport === 'bike') {
       url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
@@ -406,7 +408,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
     }
 
-    fetch(url)
+    if (transport != 'car') {
+      fetch(url)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error en la solicitud al servicio OSRM');
@@ -454,6 +457,22 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         console.error('Error al obtener la ruta desde OSRM:', error);
         toastr.error('Error al obtener la ruta');
       });
+    }else{
+      this.routingControl = (L as any).Routing.control({
+        waypoints: [
+          L.latLng(startLat, startLng),
+          L.latLng(endLat, endLng)
+        ],
+        routeWhileDragging: true,
+        createMarker: (i: number, waypoint: any, n: number) => {
+          if (i === n - 1) {
+            return L.marker(waypoint.latLng, { icon: icon });
+          } else {
+            return L.marker(waypoint.latLng, { icon: this.userLocationIcon });
+          }
+        },
+      }).addTo(map);
+    }
   }
 
   selectTransportMode(mode: string) {
