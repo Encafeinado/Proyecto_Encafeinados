@@ -49,6 +49,10 @@
                 <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('invalidDomain')" class="error-message">
                   El dominio del correo electrónico no es válido.
                 </div>
+                <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('emailNotRegistered')" class="error-message">
+                  El correo electrónico no está registrado.
+                </div>
+                
               </div>
               
               

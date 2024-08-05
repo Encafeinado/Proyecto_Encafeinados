@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../services/auth.service';
-import { emailDomainValidator, passwordValidator } from '../../validators/custom-validators'; // Importa aquí
+import { emailDomainValidator, passwordValidator, validateEmailForLogin} from '../../validators/custom-validators'; // Importa aquí
 
 
 @Component({
@@ -29,10 +29,11 @@ export class LoginPageComponent {
       email: [
         '',
         [
-          Validators.required
+          Validators.required,
+          Validators.email
         ],
         [
-          emailDomainValidator(this.validDomains)
+          validateEmailForLogin(this.authService)
         ]
       ],
       password: [

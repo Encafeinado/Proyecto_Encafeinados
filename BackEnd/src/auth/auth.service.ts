@@ -165,6 +165,19 @@ export class AuthService {
     }
   }
 
+  async checkEmailExistence(email: string): Promise<boolean> {
+    try {
+      const existingEmail = await this.userModel.findOne({ email });
+      return !!existingEmail; // Retorna true si el email existe, false si no existe
+    } catch (error) {
+      console.error("Error al verificar el correo:", error);
+      throw new InternalServerErrorException('Error al verificar el correo.');
+    }
+  }
+  
+  
+  
+
 
   findOne(id: number) {
     return `This action returns a #${id} auth`;

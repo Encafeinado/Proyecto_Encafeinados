@@ -69,6 +69,11 @@ export class AuthService {
         catchError(() => of(false)) // En caso de error, devuelve false
       );
   }
+
+  checkEmailExistence(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.baseUrl}/auth/check-email-existence`, { email });
+  }
+  
   forgotPassword(email: string) {
     return this.http.post(`${this.baseUrl}/auth/forgot-password`, { email });
   }

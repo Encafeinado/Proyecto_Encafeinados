@@ -1,4 +1,4 @@
-import { AbstractControl, AsyncValidatorFn, ValidatorFn } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
@@ -45,8 +45,8 @@ export function validateEmail(authService: AuthService): AsyncValidatorFn {
     }
 
     return authService.checkEmailAvailability(email).pipe(
-      map(isAvailable => {
-        if (isAvailable) {
+      map(isRegistered  => {
+        if (isRegistered) {
           return null; // El correo está disponible
         } else {
           return { emailTaken: true }; // El correo ya está en uso
@@ -57,6 +57,27 @@ export function validateEmail(authService: AuthService): AsyncValidatorFn {
   };
 }
 
+
+
+export function validateEmailForLogin(authService: AuthService): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    const email = control.value ? control.value.toLowerCase() : '';
+
+    if (!email) {
+      return of(null); // Correo vacío es válido
+    }
+
+    return authService.checkEmailExistence(email).pipe(
+      map(response => {
+        // Retorna null si el correo está registrado, o un error si no está registrado
+        return response.message === 'Email is not registered' 
+          ? { emailNotRegistered: true } 
+          : null;
+      }),
+      catchError(() => of({ emailNotRegistered: true })) // Manejo de errores
+    );
+  };
+}
 
 // Validador de nombre con símbolos y números
 export function validateNameSimbolAndNumber(): AsyncValidatorFn {
@@ -81,9 +102,5 @@ export function validateNameSimbolAndNumber(): AsyncValidatorFn {
         observer.complete();
       }, 0);
     });
-  };
-
-
-
-  
+  };  
 }
