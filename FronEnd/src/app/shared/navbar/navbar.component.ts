@@ -55,6 +55,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       this.navbarText = 'Explora las ubicaciones en el mapa';
     } else if (url === '/landing') {
       this.navbarText = 'Bienvenidos a encafeinados';
+    } else if (url === '/landing-tienda') {
+      this.navbarText = 'Bienvenidos a encafeinados Tienda';
     }
   }
 
@@ -66,7 +68,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     return (
       this.router.url === '/store' ||
       this.router.url === '/map' ||
-      this.router.url === '/landing'
+      this.router.url === '/landing'||
+      this.router.url === '/landing-tienda'
     );
   }
 
@@ -88,6 +91,11 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     }
   }
 
+  isOnLandingPage(): boolean {
+    return this.isUserLanding() || this.isUserLandingTienda();
+  }
+  
+
   openLogoutModal(content: any): void {
     this.openModal(content);
   }
@@ -107,5 +115,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   isUserLanding(): boolean {
     return this.router.url === '/landing';
+  }
+
+  isUserLandingTienda(): boolean {
+    return this.router.url === '/landing-tienda';
   }
 }
