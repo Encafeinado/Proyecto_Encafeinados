@@ -25,13 +25,13 @@
               <div class="text-center mb-4">
                 <img src="../../../../assets/images/logosinfondo.png" alt="Logo" style="width: 100px; height: auto;">
               </div>
-              <p class="h5 mb-4 text-center">Registrar</p>
+              <p class="h5 mb-4 text-center">Registro de Usuario</p>
 
-              <!-- Opciones de tipo de registro -->
+               <!-- Opciones de tipo de registro 
               <div class="wrap-input100 m-b-23 form-outline mb-4">
                 <span class="label-input100">Tipo de Registro</span>
                 <div class="d-flex justify-content-around mt-2">
-                  <div>
+                 <div>
                     <input type="radio" id="user" (change)="onUserTypeChange('user')" [checked]="isUser">
                     <label for="user">Usuario</label>
                   </div>
@@ -40,11 +40,12 @@
                     <label for="store">Tienda</label>
                   </div>
                 </div>
-              </div>
+              </div>-->
 
               <!-- Campos comunes -->
               <div class="wrap-input100 m-b-23 form-outline mb-4">
                 <span class="label-input100">Nombre</span>
+                <div class="input-with-eye">
                 <input 
                   class="input100 small-placeholder form-control" 
                   type="text" 
@@ -54,9 +55,23 @@
                 >
                 <span class="focus-input100"></span>
               </div>
+                <div *ngIf="myForm.get('name')?.touched && myForm.get('name')?.hasError('required')" class="error-message">
+                  El campo nombre es obligatorio.
+                </div>
+                <div *ngIf="myForm.get('name')?.touched && myForm.get('name')?.hasError('invalidName')" class="error-message">
+                  El nombre no es válido. Debe contener solo letras y no permite caracteres especiales ni espacios.
+                </div>
+                <div *ngIf="myForm.get('name')?.touched && myForm.get('name')?.hasError('minlength')" class="error-message">
+                  Minimo debe ser 3 letras.
+                </div>
+                <div *ngIf="myForm.get('name')?.touched && myForm.get('name')?.hasError('maxlength')" class="error-message">
+                  El campo correo no puede superar los 30 caracteres.
+              </div>
+              </div>
 
               <div class="wrap-input100 m-b-23 form-outline mb-4">
                 <span class="label-input100">Correo</span>
+                <div class="input-with-eye">
                 <input 
                   class="input100 small-placeholder form-control" 
                   type="email" 
@@ -66,6 +81,13 @@
                 >
                 <span class="focus-input100"></span>
               </div>
+              <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('required')" class="error-message">
+                El campo correo es obligatorio.
+              </div>
+              <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('emailTaken')" class="error-message">
+                El correo electrónico ya está en uso.
+              </div>
+            </div>
 
               <div class="wrap-input100 m-b-23 form-outline mb-4">
                 <span class="label-input100">Contraseña</span>

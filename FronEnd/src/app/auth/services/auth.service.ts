@@ -37,24 +37,38 @@ export class AuthService {
     return true;
   }
 
+
+  
   login(email: string, password: string): Observable<boolean> {
     const urlStore = `${this.baseUrl}/shop/login`;
     const urlUser = `${this.baseUrl}/auth/login`;
-    
+  
     const body = { email, password };
-    return this.http.post<LoginResponse>(urlUser, { email, password }).pipe(
+    return this.http.post<LoginResponse>(urlUser, body).pipe(
       map(({ user, token }) => this.setAuthentication(user, token, 'user')),
       catchError((error: HttpErrorResponse) => {
-        return this.http.post<LoginResponse>(urlStore, { email, password }).pipe(
+        // Imprimir el error para depuración
+        console.log('Login error:', error);
+  
+        return this.http.post<LoginResponse>(urlStore, body).pipe(
           map(({ shop, token }) => this.setAuthentication(shop, token, 'shop')),
           catchError((err: HttpErrorResponse) => {
-            return of(false);
+            // Aquí debemos asegurarnos de lanzar un error con el mensaje adecuado
+            return throwError(() => new Error(err.error.message || 'Error desconocido'));
           })
         );
       })
     );
   }
-
+  
+  
+  checkEmailAvailability(email: string): Observable<boolean> {
+    return this.http.post<{ available: boolean }>(`${this.baseUrl}/auth/check-email-availability`, { email })
+      .pipe(
+        map(response => response.available),
+        catchError(() => of(false)) // En caso de error, devuelve false
+      );
+  }
   forgotPassword(email: string) {
     return this.http.post(`${this.baseUrl}/auth/forgot-password`, { email });
   }

@@ -121,7 +121,7 @@ export class ShopService {
     const shop = await this.shopModel.findOne({ email });
 
     if (!shop) {
-      throw new UnauthorizedException('Credenciales del correo no válidas');
+      throw new UnauthorizedException('Error credenciales incorrectas');
     }
 
     if (!bcryptjs.compareSync(password, shop.password)) {
@@ -131,7 +131,7 @@ export class ShopService {
     const { password: _, ...rest } = shop.toJSON();
     return {
       shop: rest,
-      token: this.getJwtToken({ id: shop._id.toString() }), // Asegúrate de que el ID es una cadena
+      token: this.getJwtToken({ id: shop._id.toString() }),
     };
   }
 

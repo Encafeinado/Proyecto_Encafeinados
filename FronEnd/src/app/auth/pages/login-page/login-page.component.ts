@@ -66,20 +66,21 @@ export class LoginPageComponent {
       return;
     }
     const { email, password } = this.myForm.value;
-
+  
     this.authService.login(email, password).subscribe(
       (response) => {
         if (response) {
           this.toastr.success('Inicio de sesión exitoso');
           // Redirige o maneja el éxito
+          this.router.navigate(['/dashboard']); // Ajusta la ruta según tu aplicación
         } else {
-          this.toastr.error('Credenciales incorrectas');
+          this.toastr.error('Correo o contraseña incorrectas');
         }
       },
       (error) => {
-        console.error('Error al iniciar sesión', error);
-        this.toastr.error('Error al iniciar sesión. Por favor, intenta de nuevo más tarde.');
+
+        this.toastr.error(error.message || 'Error al iniciar sesión. Por favor, intenta de nuevo más tarde.');
       }
     );
   }
-}
+}  

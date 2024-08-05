@@ -47,7 +47,15 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
-  
+  @Post('/check-email-availability')
+  async checkEmailAvailability(@Body('email') email: string): Promise<{ available: boolean }> {
+    try {
+      const available = await this.authService.checkEmailAvailability(email);
+      return { available };
+    } catch (error) {
+      throw new InternalServerErrorException('Error al verificar la disponibilidad del correo');
+    }
+  }
 
   @UseGuards(AuthGuard)
   @Get()

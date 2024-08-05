@@ -68,15 +68,16 @@ export class AuthService {
     }
   }
   
-
   async login(loginDto: LoginDto): Promise<LoginResponce> {
     const { email, password } = loginDto;
     const user = await this.userModel.findOne({ email });
     if (!user) {
-      throw new UnauthorizedException('Credenciales del correo no validas');
+      console.log('Email not found');
+      throw new UnauthorizedException('Error credenciales incorrectas ');
     }
     if (!bcryptjs.compareSync(password, user.password)) {
-      throw new UnauthorizedException('Credenciales de la contraseña no validas');
+      console.log('Password incorrect');
+      throw new UnauthorizedException('Credenciales de la contraseña no válidas');
     }
     const { password: _, ...rest } = user.toJSON();
     return {
@@ -86,6 +87,8 @@ export class AuthService {
   }
 
 
+
+  
   async sendPasswordResetToken(email: string): Promise<void> {
 
     const user = await this.userModel.findOne({ email });
@@ -150,6 +153,18 @@ export class AuthService {
     const { password, ...rest } = shop.toJSON();
     return rest;
   }
+
+
+  async checkEmailAvailability(email: string): Promise<boolean> {
+    try {
+      const existingEmail = await this.userModel.findOne({ email });
+      return !existingEmail; // Retorna true si el email no existe, false si existe
+    } catch (error) {
+      console.error("Error al verificar el correo:", error);
+      throw new InternalServerErrorException('Error al verificar el correo.');
+    }
+  }
+
 
   findOne(id: number) {
     return `This action returns a #${id} auth`;

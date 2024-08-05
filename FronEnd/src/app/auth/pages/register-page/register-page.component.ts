@@ -6,6 +6,8 @@ import { ToastrService } from 'ngx-toastr';
 
 import { AuthService } from '../../services/auth.service';
 import { GeocodingService } from 'src/app/service/geocoding.service';
+import { validateEmail, validateNameSimbolAndNumber } from '../../validators/custom-validators';
+
 
 interface CustomFile {
   filename: string;
@@ -26,16 +28,16 @@ export class RegisterPageComponent {
   private geocodingService = inject(GeocodingService); // Inyecta el servicio de geocodificación
 
   public myForm: FormGroup = this.fb.group({
-    name: ['', [ Validators.required ]],
-    email: ['', [ Validators.required, Validators.email ]],
-    password: ['', [ Validators.required, Validators.minLength(6) ]],
+    name: ['',[Validators.required, Validators.maxLength(30),Validators.minLength(3)],[validateNameSimbolAndNumber()]],
+    email: ['', [Validators.required, Validators.email], [validateEmail(this.authService)]],
+    password: ['', [ Validators.required, Validators.minLength(3) ]],
     confirmPassword: ['', [ Validators.required ]],
     phone: ['', [ Validators.required, Validators.pattern('^[0-9]+$') ]],
-    specialties1: [''],
-    specialties2: [''],
-    address: [''],
-    logo: [''],
-    statusShop: [false]  // Campo oculto con valor predeterminado
+   // specialties1: [''],
+    //specialties2: [''],
+    //address: [''],
+    //logo: [''],
+    //statusShop: [false]  // Campo oculto con valor predeterminado
   }, {
     validators: this.passwordMatchValidator 
   });
@@ -93,6 +95,7 @@ export class RegisterPageComponent {
     this.hidePasswordconfirm = !this.hidePasswordconfirm;
   }
 
+
   passwordMatchValidator(group: FormGroup) {
     const password = group.get('password')?.value;
     const confirmPassword = group.get('confirmPassword')?.value;
@@ -112,6 +115,8 @@ export class RegisterPageComponent {
     this.myForm.patchValue({ address });
     this.suggestedAddresses = [];
   }
+
+  
 
   register() {
     if (this.myForm.invalid) {
