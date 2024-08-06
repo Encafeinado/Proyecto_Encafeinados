@@ -1,16 +1,10 @@
-import { IsString, IsBoolean, IsArray, IsOptional } from 'class-validator';
+import { IsString, IsArray, IsOptional } from 'class-validator';
 
 export class CreateBookDto {
   @IsString()
-  nameShop: string;
-
-  @IsString()
-  nameUser: string;
-
-  @IsString()
-  code: string;
+  nameUser: string; // Nombre del usuario es obligatorio
 
   @IsArray()
   @IsOptional()
-  images?: { url: string }[];
+  images?: { code: string; name: string; image: string }[]; // Ajustado para contener código, nombre e imagen
 }

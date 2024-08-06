@@ -51,16 +51,17 @@ export class AuthService {
 
   async createBookForUser(user: User): Promise<void> {
     try {
+      // Crea un nuevo libro con los campos definidos en el esquema
       const newBook = new this.bookModel({
-        nameShop: '', 
-        nameUser: user.name,
-        code: '',
-        status: true,
-        images: [],
+        nameUser: user.name, // Nombre del usuario que creó el libro
+        userId: user._id.toString(), // ID del usuario, guardado como cadena
+        status: true, // Estado por defecto
+        images: [], // Lista de imágenes inicial, vacía por defecto
       });
+  
+      // Guarda el libro en la base de datos
       await newBook.save();
     } catch (error) {
-
       if (error.name === 'ValidationError') {
         throw new BadRequestException('Error de validación al crear el libro');
       }

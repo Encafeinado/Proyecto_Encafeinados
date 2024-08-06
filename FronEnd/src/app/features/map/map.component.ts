@@ -15,7 +15,7 @@ import { StoreStatusService } from '../../service/store-status.service';
 import { UserService } from '../../service/user.service';
 import { StoreService } from '../../service/store.service';
 import { ShopService } from '../../service/shop.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-map',
@@ -43,7 +43,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   albumImages: Image[] = [];
   currentImageIndex: number = 0; // Índice de la imagen actual para colorear
   isStoreOpen: boolean = false;
-  private apiUrl = 'http://localhost:3000'; // Ajusta según sea necesario
   userData: any;
   shopData: any[] = [];
   userName: string = 'Nombre del Usuario';
@@ -61,11 +60,9 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   constructor(
     private modalService: NgbModal,
     private albumService: AlbumService,
-    private storeStatusService: StoreStatusService,
     private userService: UserService,
     private storeService: StoreService,
     private shopService: ShopService,
-    private http: HttpClient
   ) {
     this.userLocationIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cosechaUser.png',
@@ -77,7 +74,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   ngOnInit(): void {
-    this.albumImages = this.albumService.getAlbumImages();
+    this.albumImages = this.albumService.getAlbumImages();    
     this.fetchUserData();
     this.fetchShopData();
     this.populateShopLogos();
@@ -375,6 +372,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       console.error('Error: No se han inicializado los marcadores o el mapa.');
     }
   }
+  
   showRoute(
     map: L.Map,
     startLat: number,
@@ -610,12 +608,23 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       this.albumImages[this.currentImageIndex].colored = true;
       this.currentImageIndex++;
     } else {
-      // console.log('Todas las imágenes ya están coloreadas');
+      console.log('Todas las imágenes ya están coloreadas');
     }
   }
 
+  updateImages(userId: string): void {
+    this.albumService.updateAlbumImages(userId).subscribe(
+      (images) => {
+        console.log('Datos del álbum obtenidos:', images);
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error al actualizar el álbum de imágenes:', error);
+      }
+    );
+  }
+
   get obtainedStamps(): number {
-    return this.albumImages.filter((image) => image.colored).length;
+    return this.albumService.getObtainedStamps();
   }
 
   get totalStamps(): number {
