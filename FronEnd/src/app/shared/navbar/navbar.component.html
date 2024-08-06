@@ -2,7 +2,7 @@
   <img src="../../../../assets/images/logosinfondo.png" alt="Logo de Encafeinados" class="navbar-logo">
   <div class="container-fluid">  
 
-    <a class="navbar-brand" href="/landing">Encafeinados</a>
+    <a class="navbar-brand" >Encafeinados</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -31,7 +31,8 @@
       </ng-container>
 
       <ng-container *ngIf="isUserLandingTienda()">
-        <a class="btn btn-outline-light" routerLink="/auth/login">Iniciar sesión Tienda</a>
+        <!--<a class="btn btn-outline-light" routerLink="/auth/login">Iniciar sesión Tienda</a>-->
+        <a class="btn btn-outline-light" >Iniciar sesión Tienda</a>
       </ng-container>
       <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda()">
          <div *ngIf="userName" class="dropdown">

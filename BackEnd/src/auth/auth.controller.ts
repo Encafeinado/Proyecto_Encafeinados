@@ -47,7 +47,28 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
+  @Post('/check-email-availability')
+  async checkEmailAvailability(@Body('email') email: string): Promise<{ available: boolean }> {
+    try {
+      const available = await this.authService.checkEmailAvailability(email);
+      return { available };
+    } catch (error) {
+      throw new InternalServerErrorException('Error al verificar la disponibilidad del correo');
+    }
+  }
+
+  @Post('/check-email-existence')
+  async checkEmailExistence(@Body('email') email: string): Promise<{ message: string }> {
+    try {
+      const exists = await this.authService.checkEmailExistence(email);
+      return { message: exists ? 'Email is registered' : 'Email is not registered' };
+    } catch (error) {
+      throw new InternalServerErrorException('Error al verificar el correo.');
+    }
+  }
   
+  
+
 
   @UseGuards(AuthGuard)
   @Get()

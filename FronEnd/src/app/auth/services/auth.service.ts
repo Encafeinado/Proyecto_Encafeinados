@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, catchError, map, of, throwError } from 'rxjs';
+import { Observable, catchError, forkJoin, map, of, throwError } from 'rxjs';
 import { Shop } from 'src/app/features/store/interfaces/shop.interface';
 import { environment } from 'src/environments/environments';
 import { AuthStatus, CheckTokenResponse, LoginResponse, User } from '../interfaces';
@@ -37,24 +37,54 @@ export class AuthService {
     return true;
   }
 
+
+  
   login(email: string, password: string): Observable<boolean> {
     const urlStore = `${this.baseUrl}/shop/login`;
     const urlUser = `${this.baseUrl}/auth/login`;
-    
+  
     const body = { email, password };
-    return this.http.post<LoginResponse>(urlUser, { email, password }).pipe(
+    return this.http.post<LoginResponse>(urlUser, body).pipe(
       map(({ user, token }) => this.setAuthentication(user, token, 'user')),
       catchError((error: HttpErrorResponse) => {
-        return this.http.post<LoginResponse>(urlStore, { email, password }).pipe(
+        // Imprimir el error para depuración
+        console.log('Login error:', error);
+  
+        return this.http.post<LoginResponse>(urlStore, body).pipe(
           map(({ shop, token }) => this.setAuthentication(shop, token, 'shop')),
           catchError((err: HttpErrorResponse) => {
-            return of(false);
+            // Aquí debemos asegurarnos de lanzar un error con el mensaje adecuado
+            return throwError(() => new Error(err.error.message || 'Error desconocido'));
           })
         );
       })
     );
   }
+  
+  
+  checkEmailAvailability(email: string): Observable<boolean> {
+    return this.http.post<{ available: boolean }>(`${this.baseUrl}/auth/check-email-availability`, { email })
+      .pipe(
+        map(response => response.available),
+        catchError(() => of(false)) // En caso de error, devuelve false
+      );
+  }
 
+  checkEmailExistence(email: string): Observable<{ emailNotRegistered: boolean } | null> {
+    const authCheck = this.http.post<{ message: string }>(`${this.baseUrl}/auth/check-email-existence`, { email });
+    const shopCheck = this.http.post<{ message: string }>(`${this.baseUrl}/shop/check-email-existence`, { email });
+
+    return forkJoin([authCheck, shopCheck]).pipe(
+      map(([authResponse, shopResponse]) => {
+        // Si ambos servicios dicen que el correo no está registrado, retornar el error
+        if (authResponse.message === 'Email is not registered' && shopResponse.message === 'Email is not registered') {
+          return { emailNotRegistered: true };
+        }
+        return null; // El correo está registrado en al menos una de las dos URL
+      }),
+      catchError(() => of(null)) // Manejo de errores
+    );
+  }
   forgotPassword(email: string) {
     return this.http.post(`${this.baseUrl}/auth/forgot-password`, { email });
   }

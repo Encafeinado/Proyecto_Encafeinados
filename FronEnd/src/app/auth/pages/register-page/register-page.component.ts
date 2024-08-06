@@ -1,11 +1,13 @@
 // register-page.component.ts
 import { Component, inject, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
 import { AuthService } from '../../services/auth.service';
 import { GeocodingService } from 'src/app/service/geocoding.service';
+import { emailDomainValidator, passwordValidator, phoneNumberValidator, validateEmail, validateNameSimbolAndNumber } from '../../validators/custom-validators';
+
 
 interface CustomFile {
   filename: string;
@@ -25,20 +27,51 @@ export class RegisterPageComponent {
   private toastr = inject(ToastrService);
   private geocodingService = inject(GeocodingService); // Inyecta el servicio de geocodificación
 
+  validDomains = ["gmail.com", "gmail.co", "gmail.es", "gmail.mx", "hotmail.com", "hotmail.co", "hotmail.es", "hotmail.mx", "outlook.com", "outlook.co", "outlook.es", "outlook.mx", "yahoo.com", "yahoo.co", "yahoo.es",
+    "yahoo.mx", "gmail.com.co", "hotmail.com.co", "outlook.com.co", "yahoo.com.co", "gmail.com.es", "hotmail.com.es", "outlook.com.es", "yahoo.com.es", "gmail.com.mx", "hotmail.com.mx", "outlook.com.mx",
+    "yahoo.com.mx","yopmail.com"];
+
   public myForm: FormGroup = this.fb.group({
-    name: ['', [ Validators.required ]],
-    email: ['', [ Validators.required, Validators.email ]],
-    password: ['', [ Validators.required, Validators.minLength(6) ]],
-    confirmPassword: ['', [ Validators.required ]],
-    phone: ['', [ Validators.required, Validators.pattern('^[0-9]+$') ]],
-    specialties1: [''],
-    specialties2: [''],
-    address: [''],
-    logo: [''],
-    statusShop: [false]  // Campo oculto con valor predeterminado
+    name: ['', [
+      Validators.required,
+      Validators.maxLength(30),
+      Validators.minLength(3)
+    ], [validateNameSimbolAndNumber()]],
+
+    email: ['', [
+      Validators.required,
+      Validators.email
+    ], [
+        Validators.composeAsync([
+          validateEmail(this.authService),
+          emailDomainValidator(this.validDomains)
+        ])
+      ]],
+
+    password: ['', [
+      Validators.required,
+      Validators.minLength(8),
+      passwordValidator()
+    ]],
+
+    confirmPassword: ['', [
+      Validators.required
+    ]],
+
+    phone: ['', [ // Cambia el nombre del campo a 'phone'
+      Validators.required,
+      phoneNumberValidator()
+    ]],
+
+    // specialties1: [''],
+    // specialties2: [''],
+    // address: [''],
+    // logo: [''],
+    // statusShop: [false]  // Campo oculto con valor predeterminado
   }, {
-    validators: this.passwordMatchValidator 
+    validators: this.passwordMatchValidator
   });
+
 
   public isUser: boolean = true;
   public isStore: boolean = false;
@@ -93,12 +126,12 @@ export class RegisterPageComponent {
     this.hidePasswordconfirm = !this.hidePasswordconfirm;
   }
 
-  passwordMatchValidator(group: FormGroup) {
+
+  passwordMatchValidator(group: FormGroup): ValidationErrors | null {
     const password = group.get('password')?.value;
     const confirmPassword = group.get('confirmPassword')?.value;
     return password === confirmPassword ? null : { mismatch: true };
   }
-
   onAddressChange(event: any) {
     const query = event.target.value;
     if (query.length > 2) {
@@ -112,6 +145,8 @@ export class RegisterPageComponent {
     this.myForm.patchValue({ address });
     this.suggestedAddresses = [];
   }
+
+
 
   register() {
     if (this.myForm.invalid) {
