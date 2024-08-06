@@ -29,7 +29,7 @@ export class RegisterPageComponent {
 
   validDomains = ["gmail.com", "gmail.co", "gmail.es", "gmail.mx", "hotmail.com", "hotmail.co", "hotmail.es", "hotmail.mx", "outlook.com", "outlook.co", "outlook.es", "outlook.mx", "yahoo.com", "yahoo.co", "yahoo.es",
     "yahoo.mx", "gmail.com.co", "hotmail.com.co", "outlook.com.co", "yahoo.com.co", "gmail.com.es", "hotmail.com.es", "outlook.com.es", "yahoo.com.es", "gmail.com.mx", "hotmail.com.mx", "outlook.com.mx",
-    "yahoo.com.mx"];
+    "yahoo.com.mx","yopmail.com"];
 
   public myForm: FormGroup = this.fb.group({
     name: ['', [
