@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Request, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Request, Patch, InternalServerErrorException } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { RegisterShopDto, LoginDto, VerifyCodeDto } from './dto';
 import { ShopDocument } from './entities/shop.entity'; // Importa ShopDocument
@@ -62,6 +62,16 @@ export class ShopController {
       shop,
       token: this.shopService.getJwtToken({ id: shop._id.toString() }), // Convierte _id a cadena
     };
+  }
+
+  @Post('/check-email-existence')
+  async checkEmailExistence(@Body('email') email: string): Promise<{ message: string }> {
+    try {
+      const exists = await this.shopService.checkEmailExistence(email);
+      return { message: exists ? 'Email is registered' : 'Email is not registered' };
+    } catch (error) {
+      throw new InternalServerErrorException('Error al verificar el correo.');
+    }
   }
 
   @Get(':id')

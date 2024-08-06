@@ -40,20 +40,21 @@
                   >
                   <span class="focus-input100"></span>
                 </div>
-                <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('required')" class="error-message">
+                <div *ngIf="isErrorVisible() && emailControl?.hasError('required')" class="error-message">
                   El campo correo es obligatorio.
                 </div>
-                <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('invalidEmailFormat')" class="error-message">
+                <div *ngIf="isErrorVisible() && emailControl?.hasError('invalidEmailFormat')" class="error-message">
                   El formato del correo electrónico es inválido.
                 </div>
-                <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('invalidDomain')" class="error-message">
+                <div *ngIf="isErrorVisible() && emailControl?.hasError('invalidDomain')" class="error-message">
                   El dominio del correo electrónico no es válido.
                 </div>
-                <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('emailNotRegistered')" class="error-message">
+                <div *ngIf="isErrorVisible() && emailControl?.hasError('emailNotRegistered')" class="error-message">
                   El correo electrónico no está registrado.
                 </div>
-                
               </div>
+              
+              
               
               
               <div class="form-outline mb-4">

@@ -14,28 +14,76 @@ export function passwordValidator(): ValidatorFn {
     return !isValid ? { 'passwordInvalid': true } : null;
   };
 }
-
-// Validador de dominio para correo
 export function emailDomainValidator(validDomains: string[]): AsyncValidatorFn {
-  return (control: AbstractControl): Observable<{ [key: string]: boolean } | null> => {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
     const email = control.value ? control.value.toLowerCase() : '';
 
     if (!email) {
-      return of(null); 
+      return of(null); // Correo vacío es válido
     }
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
-      return of({ invalidEmailFormat: true });
-    }
+
+    // Extraer el dominio del correo electrónico
     const domain = email.split('@')[1];
     if (!domain || !validDomains.some(validDomain => domain === validDomain)) {
-      return of({ invalidDomain: true }); 
+      return of({ invalidDomain: true });
     }
+
+    // Si el dominio es válido, no devolver errores
     return of(null);
   };
 }
 
 
+export function emailFormatValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const email = control.value ? control.value.toLowerCase() : '';
+
+    if (!email) {
+      return null; // Correo vacío es válido
+    }
+
+    // Validar el formato del correo electrónico
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email) ? null : { invalidEmailFormat: true };
+  };
+}
+
+// Validador asíncrono de formato de correo electrónico
+export function emailFormatAsyncValidator(): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    return of(emailFormatValidator()(control)); // Usar el validador síncrono dentro del asíncrono
+  };
+}
+
+
+export function matchPasswordValidator(): ValidatorFn {
+  return (formGroup: AbstractControl): { [key: string]: boolean } | null => {
+    const password = formGroup.get('password')?.value;
+    const confirmPassword = formGroup.get('confirmPassword')?.value;
+
+    return password && confirmPassword && password !== confirmPassword 
+      ? { 'mismatch': true } 
+      : null;
+  };
+}
+
+// Validador personalizado para números de teléfono móvil
+export function phoneNumberValidator(): ValidatorFn {
+  return (control: AbstractControl): { [key: string]: boolean } | null => {
+    const phoneNumber = control.value || '';
+    // Validar que el número de teléfono contenga solo dígitos
+    const isValidPhoneNumber = /^\d+$/.test(phoneNumber);
+    // Validar longitud mínima y máxima (ejemplo: entre 10 y 15 dígitos)
+    const isValidLength = phoneNumber.length >= 10 && phoneNumber.length < 11;
+
+    return !isValidPhoneNumber || !isValidLength
+      ? { 'invalidPhoneNumber': true }
+      : null;
+  };
+}
+
+
+//validacion de correo para registro
 export function validateEmail(authService: AuthService): AsyncValidatorFn {
   return (control: AbstractControl): Observable<{ [key: string]: boolean } | null> => {
     const email = control.value ? control.value.toLowerCase() : '';
@@ -58,7 +106,7 @@ export function validateEmail(authService: AuthService): AsyncValidatorFn {
 }
 
 
-
+// validacion de correo de login
 export function validateEmailForLogin(authService: AuthService): AsyncValidatorFn {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {
     const email = control.value ? control.value.toLowerCase() : '';
@@ -69,15 +117,16 @@ export function validateEmailForLogin(authService: AuthService): AsyncValidatorF
 
     return authService.checkEmailExistence(email).pipe(
       map(response => {
-        // Retorna null si el correo está registrado, o un error si no está registrado
-        return response.message === 'Email is not registered' 
-          ? { emailNotRegistered: true } 
-          : null;
+        if (response?.emailNotRegistered) {
+          return { emailNotRegistered: true };
+        }
+        return null;
       }),
       catchError(() => of({ emailNotRegistered: true })) // Manejo de errores
     );
   };
 }
+
 
 // Validador de nombre con símbolos y números
 export function validateNameSimbolAndNumber(): AsyncValidatorFn {

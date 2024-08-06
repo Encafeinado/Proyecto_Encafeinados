@@ -135,6 +135,17 @@ export class ShopService {
     };
   }
 
+  async checkEmailExistence(email: string): Promise<boolean> {
+    try {
+      const existingEmail = await this.shopModel.findOne({ email });
+      return !!existingEmail; // Retorna true si el email existe, false si no existe
+    } catch (error) {
+      console.error("Error al verificar el correo:", error);
+      throw new InternalServerErrorException('Error al verificar el correo.');
+    }
+  }
+  
+
   async register(registerDto: RegisterShopDto, logoBase64: string): Promise<LoginResponce> {
     try {
       const shop = await this.create(registerDto, logoBase64);

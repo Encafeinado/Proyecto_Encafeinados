@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../services/auth.service';
-import { emailDomainValidator, passwordValidator, validateEmailForLogin} from '../../validators/custom-validators'; // Importa aquí
+import { emailDomainValidator, emailFormatAsyncValidator, emailFormatValidator, passwordValidator, validateEmailForLogin} from '../../validators/custom-validators'; // Importa aquí
 
 
 @Component({
@@ -13,6 +13,7 @@ import { emailDomainValidator, passwordValidator, validateEmailForLogin} from '.
 })
 export class LoginPageComponent {
   public myForm: FormGroup;
+  emailTouched = false;
   hidePassword: boolean = true;
   validDomains = [ "gmail.com","gmail.co","gmail.es","gmail.mx","hotmail.com","hotmail.co","hotmail.es","hotmail.mx","outlook.com","outlook.co","outlook.es","outlook.mx","yahoo.com","yahoo.co","yahoo.es",
     "yahoo.mx","gmail.com.co","hotmail.com.co","outlook.com.co","yahoo.com.co","gmail.com.es","hotmail.com.es","outlook.com.es","yahoo.com.es","gmail.com.mx","hotmail.com.mx","outlook.com.mx",
@@ -24,19 +25,18 @@ export class LoginPageComponent {
     private authService: AuthService,
     private router: Router,
     private toastr: ToastrService
+    
   ) {
     this.myForm = this.fb.group({
       email: [
         '',
         [
-          Validators.required,
-          Validators.email
+          Validators.required
         ],
         [
-          Validators.composeAsync([
-            validateEmailForLogin(this.authService),
-            emailDomainValidator(this.validDomains)
-          ])
+          validateEmailForLogin(this.authService),
+          emailFormatAsyncValidator(), // Validador asíncrono para chequeo adicional
+          emailDomainValidator(this.validDomains) // Validador de dominio
         ]
       ],
       password: [
@@ -55,13 +55,20 @@ export class LoginPageComponent {
     this.hidePassword = !this.hidePassword;
   }
 
-  onEmailBlur(): void {
-    const emailControl = this.myForm.get('email');
-    if (emailControl) {
-      emailControl.markAsTouched();
-      emailControl.updateValueAndValidity();
-    }
+  get emailControl() {
+    return this.myForm.get('email');
   }
+
+  onEmailBlur() {
+    this.emailTouched = true;
+    this.emailControl?.markAsTouched();
+  }
+
+  isErrorVisible() {
+    return this.emailTouched || this.emailControl?.dirty;
+  }
+
+  
 
 
   login(): void {

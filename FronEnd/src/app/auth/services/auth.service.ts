@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, catchError, map, of, throwError } from 'rxjs';
+import { Observable, catchError, forkJoin, map, of, throwError } from 'rxjs';
 import { Shop } from 'src/app/features/store/interfaces/shop.interface';
 import { environment } from 'src/environments/environments';
 import { AuthStatus, CheckTokenResponse, LoginResponse, User } from '../interfaces';
@@ -70,10 +70,21 @@ export class AuthService {
       );
   }
 
-  checkEmailExistence(email: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.baseUrl}/auth/check-email-existence`, { email });
+  checkEmailExistence(email: string): Observable<{ emailNotRegistered: boolean } | null> {
+    const authCheck = this.http.post<{ message: string }>(`${this.baseUrl}/auth/check-email-existence`, { email });
+    const shopCheck = this.http.post<{ message: string }>(`${this.baseUrl}/shop/check-email-existence`, { email });
+
+    return forkJoin([authCheck, shopCheck]).pipe(
+      map(([authResponse, shopResponse]) => {
+        // Si ambos servicios dicen que el correo no está registrado, retornar el error
+        if (authResponse.message === 'Email is not registered' && shopResponse.message === 'Email is not registered') {
+          return { emailNotRegistered: true };
+        }
+        return null; // El correo está registrado en al menos una de las dos URL
+      }),
+      catchError(() => of(null)) // Manejo de errores
+    );
   }
-  
   forgotPassword(email: string) {
     return this.http.post(`${this.baseUrl}/auth/forgot-password`, { email });
   }
