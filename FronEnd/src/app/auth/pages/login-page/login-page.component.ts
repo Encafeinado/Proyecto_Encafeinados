@@ -33,7 +33,10 @@ export class LoginPageComponent {
           Validators.email
         ],
         [
-          validateEmailForLogin(this.authService)
+          Validators.composeAsync([
+            validateEmailForLogin(this.authService),
+            emailDomainValidator(this.validDomains)
+          ])
         ]
       ],
       password: [
@@ -55,8 +58,8 @@ export class LoginPageComponent {
   onEmailBlur(): void {
     const emailControl = this.myForm.get('email');
     if (emailControl) {
-      const trimmedEmail = emailControl.value.trim();
-      emailControl.setValue(trimmedEmail);
+      emailControl.markAsTouched();
+      emailControl.updateValueAndValidity();
     }
   }
 
@@ -73,7 +76,7 @@ export class LoginPageComponent {
         if (response) {
           this.toastr.success('Inicio de sesión exitoso');
           // Redirige o maneja el éxito
-          this.router.navigate(['/dashboard']); // Ajusta la ruta según tu aplicación
+          this.router.navigate(['/landing']); // Ajusta la ruta según tu aplicación
         } else {
           this.toastr.error('Correo o contraseña incorrectas');
         }
