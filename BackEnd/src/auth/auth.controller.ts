@@ -1,4 +1,4 @@
-import { Body, Controller, Get, InternalServerErrorException, NotFoundException, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, InternalServerErrorException, NotFoundException, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginDto, RegisterUserDto } from './dto';
 import { User } from './entities/user.entity';
@@ -91,10 +91,17 @@ export class AuthController {
 
   }
 
-  //@Get(':id')
-  //findOne(@Param('id') id: string) {
-   // return this.authService.findOne(+id);
-  //}
+  @UseGuards(AuthGuard)
+  @Get('user-id')
+  getUserId(@Request() req: Request): { userId: string } {
+    const user = req['user'] as User;
+    return { userId: user._id.toString() }; // Asegúrate de que _id sea convertido a string si es necesario
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+   return this.authService.findOne(+id);
+  }
 
   //@Patch(':id')
   //update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {

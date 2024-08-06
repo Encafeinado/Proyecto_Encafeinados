@@ -28,6 +28,6 @@ import { ShopModule } from 'src/shop/shop.module';
   ],
   controllers: [AuthController],
   providers: [AuthService],
-  exports: [AuthService],
+  exports: [AuthService, MongooseModule], // Exporta MongooseModule aquí
 })
 export class AuthModule {}

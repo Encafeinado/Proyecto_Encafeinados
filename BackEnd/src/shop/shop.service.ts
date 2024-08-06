@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
 import { LoginResponce } from './interfaces/login-responce';
 import { User, UserDocument } from '../auth/entities/user.entity';
+import { Book, BookDocument } from 'src/book/entities/book.entity';
 
 @Injectable()
 export class ShopService {
@@ -16,11 +17,14 @@ export class ShopService {
     private shopModel: Model<ShopDocument>, // Usa ShopDocument aquí
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
+    @InjectModel(Book.name) // Asegúrate de inyectar el modelo Book
+    private bookModel: Model<BookDocument>,
     private jwtService: JwtService
   ) {}
   async verifyVerificationCodeByCodeAndAddCoins(code: string, userId: string): Promise<{ message: string, shop?: ShopDocument }> {
+    // Buscar la tienda con el código de verificación
     const shop = await this.shopModel.findOne({ verificationCode: code });
-  
+    
     if (!shop) {
       return { message: 'Código de verificación no válido' };
     }
@@ -32,13 +36,36 @@ export class ShopService {
       await user.save();
     }
   
+    // Actualizar el uso del código y generar un nuevo código de verificación
     shop.codeUsage = (shop.codeUsage || 0) + 1;
     shop.verificationCode = await this.generateUniqueVerificationCode();
     await shop.save();
-    console.log('Updated shop with new code and usage:', shop);
+    console.log('Tienda actualizada con nuevo código y uso:', shop);
+  
+    // Actualizar el libro del usuario con los detalles de la tienda
+    await this.updateBookWithShopDetails(shop, userId);
+  
     return { message: 'Código de verificación guardado exitosamente', shop: shop.toObject() as ShopDocument };
   }
   
+  async updateBookWithShopDetails(shop: ShopDocument, userId: string): Promise<void> {
+    // Buscar el libro asociado al usuario
+    const book = await this.bookModel.findOne({ userId: userId });
+  
+    if (!book) {
+      throw new NotFoundException('Libro no encontrado para el usuario');
+    }
+  
+    // Agregar los detalles de la tienda al libro
+    book.images.push({
+      code: shop.verificationCode,
+      name: shop.name,
+      image: shop.logo // Asegúrate de que esto sea un Buffer o base64
+    });
+  
+    await book.save();
+    console.log('Libro actualizado con los detalles de la tienda:', book);
+  }  
 
   async create(createShopDto: RegisterShopDto, logoBase64: string): Promise<ShopDocument> {
     try {

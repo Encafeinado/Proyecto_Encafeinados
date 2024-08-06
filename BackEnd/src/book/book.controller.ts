@@ -1,8 +1,16 @@
-import { Controller, Post, Get, Param, Body, Delete } from '@nestjs/common';
+// book.controller.ts
+import {
+  Controller,
+  Post,
+  Get,
+  Param,
+  Body,
+  Delete,
+  NotFoundException,
+} from '@nestjs/common';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { AddImageDto } from './dto/add-image.dto';
-import { VerifyCodeDto } from './dto/verify-code.dto';
 
 @Controller('book')
 export class BookController {
@@ -18,14 +26,9 @@ export class BookController {
     @Param('id') bookId: string,
     @Body() addImageDto: AddImageDto,
   ) {
-    return this.bookService.addImage(bookId, addImageDto.url);
+    return this.bookService.addImage(bookId, addImageDto);
   }
 
-  @Post('/verify-code')
-  async verifyCode(@Body() verifyCodeDto: VerifyCodeDto) {
-    const result = await this.bookService.verifyAndAddCode(verifyCodeDto);
-    return { message: 'Código verificado guardado exitosamente', result };
-  }
   @Get()
   async findAll() {
     return this.bookService.findAll();
@@ -34,6 +37,11 @@ export class BookController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.bookService.findBookById(id);
+  }
+
+  @Get('user/:userId')
+  async findByUserId(@Param('userId') userId: string) {
+    return this.bookService.findBookByUserId(userId);
   }
 
   @Delete(':id')
