@@ -77,6 +77,9 @@
                 <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('passwordInvalid')" class="error-message">
                   La contraseña debe contener al menos una letra mayúscula, un número y un carácter especial.
                 </div>
+                <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('invalidPassword')" class="error-message">
+                  La contraseña es incorrecta.
+                </div>
               </div>
               
               

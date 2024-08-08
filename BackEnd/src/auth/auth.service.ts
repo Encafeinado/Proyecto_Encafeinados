@@ -88,6 +88,17 @@ export class AuthService {
   }
 
 
+ // auth.service.ts
+ async validatePassword(email: string, password: string): Promise<boolean> {
+  const user = await this.userModel.findOne({ email }); // Cambiado de findByEmail a findOne
+
+  if (!user) {
+    return false;
+  }
+
+  // Compara la contraseña proporcionada con la almacenada en la base de datos
+  return bcryptjs.compare(password, user.password);
+}
 
   
   async sendPasswordResetToken(email: string): Promise<void> {

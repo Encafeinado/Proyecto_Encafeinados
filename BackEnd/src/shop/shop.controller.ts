@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Request, Patch, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Request, Patch, InternalServerErrorException, HttpCode, HttpStatus } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { RegisterShopDto, LoginDto, VerifyCodeDto } from './dto';
 import { ShopDocument } from './entities/shop.entity'; // Importa ShopDocument
@@ -63,6 +63,17 @@ export class ShopController {
       token: this.shopService.getJwtToken({ id: shop._id.toString() }), // Convierte _id a cadena
     };
   }
+
+
+  
+  @Post('validate-password')
+  @HttpCode(HttpStatus.OK)
+  async validatePassword(@Body() body: { email: string; password: string }): Promise<{ valid: boolean }> {
+    const { email, password } = body;
+    const isValid = await this.shopService.validatePassword(email, password);
+    return { valid: isValid };
+  }
+  
 
   @Post('/check-email-existence')
   async checkEmailExistence(@Body('email') email: string): Promise<{ message: string }> {

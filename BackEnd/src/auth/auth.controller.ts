@@ -1,4 +1,4 @@
-import { Body, Controller, Get, InternalServerErrorException, NotFoundException, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, InternalServerErrorException, NotFoundException, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginDto, RegisterUserDto } from './dto';
 import { User } from './entities/user.entity';
@@ -56,6 +56,15 @@ export class AuthController {
       throw new InternalServerErrorException('Error al verificar la disponibilidad del correo');
     }
   }
+
+  @Post('validate-password')
+  @HttpCode(HttpStatus.OK)
+  async validatePassword(@Body() body: { email: string; password: string }): Promise<{ valid: boolean }> {
+    const { email, password } = body;
+    const isValid = await this.authService.validatePassword(email, password);
+    return { valid: isValid };
+  }
+
 
   @Post('/check-email-existence')
   async checkEmailExistence(@Body('email') email: string): Promise<{ message: string }> {

@@ -102,6 +102,26 @@ export class AuthService {
     );
   }
 
+  // auth.service.ts
+/// En AuthService
+validatePassword(email: string, password: string): Observable<{ valid: boolean }> {
+  const authCheck = this.http.post<{ valid: boolean }>(`${this.baseUrl}/auth/validate-password`, { email, password });
+  const shopCheck = this.http.post<{ valid: boolean }>(`${this.baseUrl}/shop/validate-password`, { email, password });
+
+  return forkJoin([authCheck, shopCheck]).pipe(
+    map(([authResponse, shopResponse]) => {
+      // Si al menos uno de los servicios dice que la contraseña es válida
+      if (authResponse.valid || shopResponse.valid) {
+        return { valid: true };
+      }
+      return { valid: false };
+    }),
+    catchError(() => of({ valid: false })) // Manejo de errores
+  );
+}
+
+
+
   register(name: string, email: string, password: string, phone: string): Observable<boolean> {
     const url = `${this.baseUrl}/auth/register`;
     const body = { name, email, password, phone };

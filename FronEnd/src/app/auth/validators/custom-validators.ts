@@ -14,6 +14,26 @@ export function passwordValidator(): ValidatorFn {
     return !isValid ? { 'passwordInvalid': true } : null;
   };
 }
+
+export function passwordAsyncValidator(authService: AuthService): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    const email = control.parent?.get('email')?.value;
+    const password = control.value;
+
+    if (!email || !password) {
+      return of(null); // No se puede validar sin email o password
+    }
+
+    return authService.validatePassword(email, password).pipe(
+      map(response => response.valid ? null : { invalidPassword: true }),
+      catchError(() => of({ invalidPassword: true })) // Manejo de errores
+    );
+  };
+}
+
+
+
+
 export function emailDomainValidator(validDomains: string[]): AsyncValidatorFn {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {
     const email = control.value ? control.value.toLowerCase() : '';

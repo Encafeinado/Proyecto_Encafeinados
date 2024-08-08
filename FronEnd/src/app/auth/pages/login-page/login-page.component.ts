@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../services/auth.service';
-import { emailDomainValidator, emailFormatAsyncValidator, emailFormatValidator, passwordValidator, validateEmailForLogin} from '../../validators/custom-validators'; // Importa aquí
+import { emailDomainValidator, emailFormatAsyncValidator, emailFormatValidator, passwordAsyncValidator, passwordValidator, validateEmailForLogin} from '../../validators/custom-validators'; // Importa aquí
 
 
 @Component({
@@ -13,6 +13,7 @@ import { emailDomainValidator, emailFormatAsyncValidator, emailFormatValidator, 
 })
 export class LoginPageComponent {
   public myForm: FormGroup;
+  public isShop: boolean = false;
   emailTouched = false;
   hidePassword: boolean = true;
   validDomains = [ "gmail.com","gmail.co","gmail.es","gmail.mx","hotmail.com","hotmail.co","hotmail.es","hotmail.mx","outlook.com","outlook.co","outlook.es","outlook.mx","yahoo.com","yahoo.co","yahoo.es",
@@ -28,32 +29,28 @@ export class LoginPageComponent {
     
   ) {
     this.myForm = this.fb.group({
-      email: [
-        '',
-        {
-          validators: [
-            Validators.required
-          ],
+      email: ['',{
+          validators: [Validators.required],
           asyncValidators: [
             validateEmailForLogin(this.authService),
-            //emailFormatAsyncValidator(), // Validador asíncrono para chequeo adicional
             emailDomainValidator(this.validDomains) // Validador de dominio
           ],
           updateOn: 'blur'
-        }
-      ],
-      password: [
-        '',
-        [
+        }],
+      password: ['',{
+          validators:[        
           Validators.required,
           Validators.minLength(6),
-          passwordValidator(),
-          
-        ]
-      ],
+          passwordValidator()
+        ],
+        asyncValidators: [
+        passwordAsyncValidator(this.authService) // Pasar `true` si es tienda, `false` si es usuario
+        ],
+        updateOn: 'blur'
+    }],
       role: ['user']
     });
-  }    
+  }
   togglePasswordVisibility(): void {
     this.hidePassword = !this.hidePassword;
   }

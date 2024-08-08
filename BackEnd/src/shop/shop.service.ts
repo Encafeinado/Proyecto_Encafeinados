@@ -171,6 +171,17 @@ export class ShopService {
       throw new InternalServerErrorException('Error al verificar el correo.');
     }
   }
+
+  async validatePassword(email: string, password: string): Promise<boolean> {
+    const shop = await this.shopModel.findOne({ email }); // Cambiado de findByEmail a findOne
+  
+    if (!shop) {
+      return false;
+    }
+  
+    // Compara la contraseña proporcionada con la almacenada en la base de datos
+    return bcryptjs.compare(password, shop.password);
+  }
   
 
   async register(registerDto: RegisterShopDto, logoBase64: string): Promise<LoginResponce> {
