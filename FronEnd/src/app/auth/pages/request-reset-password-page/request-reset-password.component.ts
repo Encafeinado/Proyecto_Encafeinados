@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { emailDomainValidator, validateEmailForLogin } from '../../validators/custom-validators';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-request-reset-password',
@@ -20,7 +21,8 @@ export class RequestResetPasswordComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private router: Router
   ) {
     this.requestResetForm = this.fb.group({
       email: ['', {
@@ -36,13 +38,13 @@ export class RequestResetPasswordComponent {
     });
   }
 
-
-  requestReset() {
+  requestReset(): void {
     if (this.requestResetForm.valid) {
       this.authService.forgotPassword(this.requestResetForm.value.email)
         .subscribe({
           next: () => {
             this.toastr.success('Correo de restablecimiento enviado');
+            this.router.navigate(['/landing']); // Redirige a la página de landing
           },
           error: (error) => {
             // Manejo de errores específicos basados en el código de estado

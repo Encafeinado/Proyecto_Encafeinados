@@ -38,13 +38,13 @@ export class RegisterPageComponent {
     "yahoo.com.mx","yopmail.com"];
 
   public myForm: FormGroup = this.fb.group({
-    name: ['', [
+    name: ['julian', [
       Validators.required,
       Validators.maxLength(30),
       Validators.minLength(3)
     ], [validateNameSimbolAndNumber()]],
 
-    email: ['', 
+    email: ['julian2@yopmail.com', 
       {
         validators: [
       Validators.required,
@@ -59,17 +59,17 @@ export class RegisterPageComponent {
       }
     ],
       
-    password: ['', [
+    password: ['Julian90*', [
       Validators.required,
       Validators.minLength(8),
       passwordValidator()
     ]],
 
-    confirmPassword: ['', [
+    confirmPassword: ['Julian90*', [
       Validators.required
     ]],
 
-    phone: ['', [ // Cambia el nombre del campo a 'phone'
+    phone: ['3156789949', [ // Cambia el nombre del campo a 'phone'
       Validators.required,
       phoneNumberValidator()
     ]],
@@ -143,6 +143,7 @@ export class RegisterPageComponent {
     const confirmPassword = group.get('confirmPassword')?.value;
     return password === confirmPassword ? null : { mismatch: true };
   }
+  
   onAddressChange(event: any) {
     const query = event.target.value;
     if (query.length > 2) {

@@ -47,7 +47,8 @@ export class LoginPageComponent {
         [
           Validators.required,
           Validators.minLength(6),
-          passwordValidator() 
+          passwordValidator(),
+          
         ]
       ],
       role: ['user']

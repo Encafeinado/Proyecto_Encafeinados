@@ -133,11 +133,13 @@ textarea:focus, input:focus {
 button {
     outline: none !important;
     border: none;
-    background: transparent;
-}
+    background: #ffffff;
+    margin-left: 8px;
+  }
+
 
 button:hover {
-    cursor: pointer;
+    cursor: pointer ;
 }
 
 
@@ -151,23 +153,25 @@ button:hover {
   background-color: #03AED2; /* Fondo blanco para el título */
   padding: 16px;
   font-size: 1.5em;
-  color: #000000; /* Texto negro */
+  color: #ffffff; /* Texto negro */
   border-bottom: 1px solid #03AED2;
 }
+
+
+
 
 .mdc-dialog-title {
 
   font-size: 1.5em;
-  color: #000000; /* Texto negro */
+  color: #ffffff; /* Texto negro */
   background-color: #03AED2;
 
 }
 
 .mat-mdc-dialog-container {
-  padding: 16px;
-  font-size: 1em;
-  color: #080808; /* Texto negro */
-  background-color: #ffffff; /* Fondo blanco para el contenido */
+  --mdc-dialog-container-color: #ffffff; /* Cambia el fondo a blanco */
+  --mdc-dialog-subhead-color: #ffffff; /* Cambia el color del encabezado del diálogo a negro */
+  --mdc-dialog-supporting-text-color: rgba(0, 0, 0, 0.6); /* Cambia el color del texto de apoyo a negro */
 }
 
 
@@ -175,7 +179,7 @@ button:hover {
   padding: 16px;
   display: flex;
   justify-content: flex-end;
-  background-color: #ffffff; /* Fondo blanco para las acciones */
+  background-color: #1104ca; /* Fondo blanco para las acciones */
   border-top: 1px solid #030303; /* Borde negro arriba del contenedor de acciones */
   border-bottom: 1px solid #030303; /* Borde negro debajo del contenedor de acciones */
 }
@@ -186,32 +190,32 @@ button:hover {
   padding: 16px;
   display: flex;
   justify-content: flex-end;
-  background-color: #ffffff; /* Fondo blanco para las acciones */
+  background-color: #ffffff; /* Fondo blanco para las acciones----------------------- */
   border-top: 1px solid #ffffff;
 }
 
-button {
+.button {
   margin-left: 8px;
 }
 
 .mat-button {
   font-size: 1em;
-  background-color: #ffffff; /* Fondo blanco para los botones */
-  color: #000000; /* Texto negro para los botones */
-  border: 1px solid #0a0a0a; /* Borde gris claro */
+  background-color: #007bff; /* Fondo blanco para los botones */
+  color: #e70a0a; /* Texto negro para los botones */
+  border: 1px solid #f70000; /* Borde gris claro */
 }
 
-button.mat-button:hover {
+.mat-button:hover {
   background-color: #f0f0f0; /* Fondo gris claro al pasar el ratón sobre los botones */
 }
 
-button.mat-button.mat-button-color-primary {
+.mat-button.mat-button-color-primary {
   background-color: #007bff; /* Fondo azul para el botón de Aceptar */
   color: #ffffff; /* Texto blanco para el botón de Aceptar */
   border: none; /* Sin borde para el botón primario */
 }
 
-button.mat-button.mat-button-color-warn {
+.mat-button.mat-button-color-warn {
   background-color: #dc3545; /* Fondo rojo para el botón de Cancelar */
   color: #ffffff; /* Texto blanco para el botón de Cancelar */
   border: none; /* Sin borde para el botón de advertencia */
@@ -635,7 +639,6 @@ button.mat-button.mat-button-color-warn {
   font-size: 16px;
   color: #fff;
   line-height: 1.2;
-  text-transform: uppercase;
   background-color: #03AED2; /* Color cuando está habilitado */
   display: flex;
   justify-content: center;

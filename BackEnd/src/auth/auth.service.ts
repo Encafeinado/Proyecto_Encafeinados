@@ -108,6 +108,7 @@ export class AuthService {
 
     await this.mailService.sendPasswordResetMail(email, token);
   }
+  
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
     try {
