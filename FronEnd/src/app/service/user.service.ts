@@ -25,4 +25,19 @@ export class UserService {
       })
     );
   }
+
+  fetchUserId(token: string) {
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`
+  });
+
+  return this.http.get<{ userId: string }>(`${this.apiUrl}/auth/user-id`, { headers }).pipe(
+    catchError(error => {
+      console.error('Error al obtener el userId del usuario:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
 }

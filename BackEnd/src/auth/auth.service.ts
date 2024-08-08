@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcryptjs from 'bcryptjs';
 import { RegisterUserDto, CreateUserDto, UpdateAuthDto, LoginDto } from './dto';
-import { User } from './entities/user.entity';
+import { User, UserDocument } from './entities/user.entity';
 import { Book } from '../book/entities/book.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
@@ -51,16 +51,17 @@ export class AuthService {
 
   async createBookForUser(user: User): Promise<void> {
     try {
+      // Crea un nuevo libro con los campos definidos en el esquema
       const newBook = new this.bookModel({
-        nameShop: '', 
-        nameUser: user.name,
-        code: '',
-        status: true,
-        images: [],
+        nameUser: user.name, // Nombre del usuario que creó el libro
+        userId: user._id.toString(), // ID del usuario, guardado como cadena
+        status: true, // Estado por defecto
+        images: [], // Lista de imágenes inicial, vacía por defecto
       });
+  
+      // Guarda el libro en la base de datos
       await newBook.save();
     } catch (error) {
-
       if (error.name === 'ValidationError') {
         throw new BadRequestException('Error de validación al crear el libro');
       }
@@ -68,15 +69,16 @@ export class AuthService {
     }
   }
   
-
   async login(loginDto: LoginDto): Promise<LoginResponce> {
     const { email, password } = loginDto;
     const user = await this.userModel.findOne({ email });
     if (!user) {
-      throw new UnauthorizedException('Credenciales del correo no validas');
+      console.log('Email not found');
+      throw new UnauthorizedException('Error credenciales incorrectas ');
     }
     if (!bcryptjs.compareSync(password, user.password)) {
-      throw new UnauthorizedException('Credenciales de la contraseña no validas');
+      console.log('Password incorrect');
+      throw new UnauthorizedException('Credenciales de la contraseña no válidas');
     }
     const { password: _, ...rest } = user.toJSON();
     return {
@@ -86,6 +88,8 @@ export class AuthService {
   }
 
 
+
+  
   async sendPasswordResetToken(email: string): Promise<void> {
 
     const user = await this.userModel.findOne({ email });
@@ -104,6 +108,7 @@ export class AuthService {
 
     await this.mailService.sendPasswordResetMail(email, token);
   }
+  
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
     try {
@@ -136,17 +141,45 @@ export class AuthService {
     return this.userModel.find();
   }
 
-  async findUserById(id: string) {
+  async findUserById(id: string): Promise<UserDocument> {
     const user = await this.userModel.findById(id);
-    const { password, ...rest } = user.toJSON();
-    return rest;
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+    return user.toObject() as UserDocument; // Conviértelo a objeto
   }
+
 
   async findShopById(id: string) {
     const shop = await this.userModel.findById(id);
     const { password, ...rest } = shop.toJSON();
     return rest;
   }
+
+
+  async checkEmailAvailability(email: string): Promise<boolean> {
+    try {
+      const existingEmail = await this.userModel.findOne({ email });
+      return !existingEmail; // Retorna true si el email no existe, false si existe
+    } catch (error) {
+      console.error("Error al verificar el correo:", error);
+      throw new InternalServerErrorException('Error al verificar el correo.');
+    }
+  }
+
+  async checkEmailExistence(email: string): Promise<boolean> {
+    try {
+      const existingEmail = await this.userModel.findOne({ email });
+      return !!existingEmail; // Retorna true si el email existe, false si no existe
+    } catch (error) {
+      console.error("Error al verificar el correo:", error);
+      throw new InternalServerErrorException('Error al verificar el correo.');
+    }
+  }
+  
+  
+  
+
 
   findOne(id: number) {
     return `This action returns a #${id} auth`;

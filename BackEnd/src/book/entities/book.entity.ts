@@ -3,24 +3,29 @@ import { Document } from "mongoose";
 
 @Schema()
 export class Book {
-  @Prop()
-  nameShop: string;
+  @Prop({ required: true })
+  nameUser: string; // Nombre del usuario que creó el libro
 
   @Prop({ required: true })
-  nameUser: string;
-
-  @Prop()
-  code: string;
-
+  userId: string; // ID del usuario
+  
   @Prop({ default: true })
-  status: boolean;
+  status: boolean; // Estado del libro
 
   @Prop({
-    type: [{ url: String }],
+    type: [{ 
+      code: String, 
+      name: String, 
+      image: Buffer // O string si usas base64
+    }],
     default: [],
     validate: [(val) => val.length <= 30, 'Se permite un máximo de 30 imágenes'],
   })
-  images: { url: string }[];
+  images: { 
+    code: string;
+    name: string;
+    image: Buffer; // O string si usas base64
+  }[];
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);

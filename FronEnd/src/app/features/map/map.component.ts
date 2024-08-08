@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  AfterViewInit,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import * as L from 'leaflet';
 import 'leaflet-routing-machine';
@@ -8,21 +15,24 @@ import { StoreStatusService } from '../../service/store-status.service';
 import { UserService } from '../../service/user.service';
 import { StoreService } from '../../service/store.service';
 import { ShopService } from '../../service/shop.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.css']
+  styleUrls: ['./map.component.css'],
 })
 export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   modalRef!: NgbModalRef;
   openedModal = false;
+  verifiedcode: boolean = false;
   selectedTransport: string = 'car';
   watchId: number | undefined;
   routingControl: any;
   showCancelButton: boolean = false;
   destinationName!: string;
+  initialZoomDone: boolean = false; // Variable para controlar el zoom inicial
+  userLocation: { lat: number; lng: number } | null = null; // Variable para almacenar la ubicación del usuario
   userLocationIcon: L.Icon;
   map!: L.Map;
   targetMarker!: L.Marker;
@@ -33,12 +43,12 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   albumImages: Image[] = [];
   currentImageIndex: number = 0; // Índice de la imagen actual para colorear
   isStoreOpen: boolean = false;
-  private apiUrl = 'https://encafeinados-backend.up.railway.app'; // Ajusta según sea necesario
   userData: any;
   shopData: any[] = [];
   userName: string = 'Nombre del Usuario';
   hasArrived: boolean = false; // Nuevo estado para verificar si ya ha llegado
   shopLogos: { name: string; logoUrl: string }[] = [];
+  shopMarkers: any[] = []; // Asegúrate de inicializar shopMarkers
 
   @ViewChild('createModal', { static: true }) createModal: any;
   @ViewChild('cancelModal', { static: true }) cancelModal: any;
@@ -50,11 +60,9 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   constructor(
     private modalService: NgbModal,
     private albumService: AlbumService,
-    private storeStatusService: StoreStatusService,
     private userService: UserService,
     private storeService: StoreService,
     private shopService: ShopService,
-    private http: HttpClient
   ) {
     this.userLocationIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cosechaUser.png',
@@ -66,8 +74,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   ngOnInit(): void {
-    this.albumImages = this.albumService.getAlbumImages();
-    this.isStoreOpen = this.storeStatusService.isStoreActivated();
+    this.albumImages = this.albumService.getAlbumImages();    
     this.fetchUserData();
     this.fetchShopData();
     this.populateShopLogos();
@@ -101,8 +108,9 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.shopService.fetchShopData(token).subscribe(
       (data: any) => {
         this.shopData = data;
+        console.log('Datos de la tienda:', this.shopData); // Agrega esta línea para verificar la estructura de los datos
         this.populateShopLogos();
-        console.log('Datos de la tienda:', this.shopData);
+        this.addShopMarkersToMap();
       },
       (error) => {
         console.error('Error al obtener los datos de la tienda:', error);
@@ -113,7 +121,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   async populateShopLogos(): Promise<void> {
     this.shopLogos = await Promise.all(
       this.shopData.map(async (shop: any) => {
-        // Asume que 'format' es un campo en tus datos de shop que indica el tipo de imagen
         const mimeType = this.getMimeType(shop.logo.format);
         const logoUrl = await this.convertBufferToDataUrl(shop.logo, mimeType);
         return {
@@ -143,7 +150,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     return new Promise<string>((resolve, reject) => {
       try {
         const arrayBuffer = new Uint8Array(buffer.data).buffer;
-        const blob = new Blob([arrayBuffer], { type: mimeType }); // Ajusta el tipo MIME según corresponda
+        const blob = new Blob([arrayBuffer], { type: mimeType });
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result as string);
         reader.onerror = () => reject('Error al leer el archivo');
@@ -154,100 +161,107 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     });
   }
 
+  goToUserLocation(): void {
+    if (this.userLocation) {
+      this.map.setView([this.userLocation.lat, this.userLocation.lng], 15, {
+        animate: true,
+        duration: 1.5, // Duración de la animación en segundos
+      });
+    } else {
+      console.error('La ubicación del usuario no está disponible.');
+    }
+  }
+
+  addShopMarkersToMap(): void {
+    if (!this.map) {
+      console.error('El mapa no está inicializado.');
+      return;
+    }
+
+    this.shopMarkers = this.shopData
+      .map((shop) => {
+        const lat = shop.latitude;
+        const lng = shop.longitude;
+
+        if (typeof lat !== 'number' || typeof lng !== 'number') {
+          console.error('Coordenadas inválidas para la tienda:', shop);
+          return null;
+        }
+
+        const iconUrl = 'assets/IconsMarker/cafeteria.png'; // Usamos la misma imagen para todas las tiendas
+        const marker = L.marker([lat, lng], {
+          icon: this.createStoreIcon(iconUrl, shop.statusShop),
+        })
+          .addTo(this.map)
+          .bindPopup(shop.name);
+
+        marker.on('click', () => {
+          this.showRouteConfirmation(
+            this.map,
+            marker,
+            this.userLocationMarker,
+            shop.name
+          );
+        });
+
+        return {
+          marker,
+          name: shop.name,
+          iconUrl: iconUrl,
+        };
+      })
+      .filter((markerData) => markerData !== null);
+
+    if (this.shopMarkers.length > 0) {
+      this.map.fitBounds(
+        this.shopMarkers.map((data) => [
+          data.marker.getLatLng().lat,
+          data.marker.getLatLng().lng,
+        ])
+      );
+    }
+  }
+
   ngAfterViewInit(): void {
-    const map = new L.Map('map', {
-      center: [6.150155571503784, -75.61905204382627],
+    this.map = new L.Map('map', {
+      center: [6.150155571503784, -75.61905204382627], // Coordenadas iniciales
       zoom: 13,
       attributionControl: false,
     });
-  
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-    }).addTo(map);
-  
-    const casaMarker = L.marker([6.34147392395257, -75.51329608725513], {
-      icon: this.createStoreIcon(
-        'assets/IconsMarker/cafeteria.png',
-        this.isStoreOpen,
-        'grayscale-icon'
-      ),
+    }).addTo(this.map);
+
+    this.userLocationMarker = L.marker([0,0], {
+      icon: this.userLocationIcon,
     })
-      .addTo(map)
-      .bindPopup('Casa');
-  
-    const aromaMarker = L.marker([6.15150999618405, -75.61369180892304], {
-      icon: this.createStoreIcon(
-        'assets/IconsMarker/cafeteriaAroma.png',
-        this.isStoreOpen,
-        'grayscale-icon'
-      ),
-    })
-      .addTo(map)
-      .bindPopup('Aroma Café Sabaneta');
-  
-    const baulMarker = L.marker([6.149950147326389, -75.61758096298057], {
-      icon: this.createStoreIcon(
-        'assets/IconsMarker/cafeteriaCoffe.png',
-        this.isStoreOpen,
-        'grayscale-icon'
-      ),
-    })
-      .addTo(map)
-      .bindPopup('Viejo Baul');
-  
-    const lealMarker = L.marker([6.150555615946403, -75.61797956390538], {
-      icon: this.createStoreIcon(
-        'assets/IconsMarker/cafeteriaLeal.png',
-        this.isStoreOpen,
-        'grayscale-icon'
-      ),
-    })
-      .addTo(map)
-      .bindPopup('Leal Coffee');
-  
-    // Ajusta la vista del mapa para incluir todos los marcadores de las tiendas
-    map.fitBounds([
-      [aromaMarker.getLatLng().lat, aromaMarker.getLatLng().lng],
-      [baulMarker.getLatLng().lat, baulMarker.getLatLng().lng],
-      [lealMarker.getLatLng().lat, lealMarker.getLatLng().lng],
-      [casaMarker.getLatLng().lat, casaMarker.getLatLng().lng],
-    ]);
-  
-    const userLocationMarker = L.marker([0, 0], { icon: this.userLocationIcon })
-      .addTo(map)
+      .addTo(this.map)
       .bindPopup('Tu ubicación actual');
-  
+
+    // Carga los datos de la tienda y los marcadores
+    this.fetchShopData();
+
+    // Observa la ubicación del usuario
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
         const accuracy = position.coords.accuracy;
-  
-        // console.log('Posición obtenida:', position);
-  
+
         if (accuracy < 50) {
-          userLocationMarker.setLatLng([userLat, userLng]);
-  
-          // Hace zoom a la ubicación del usuario
-          map.setView([userLat, userLng], 15);  // Ajusta el nivel de zoom a 15 (puedes cambiarlo según tus necesidades)
-  
-          this.checkProximityToStores(
-            userLat,
-            userLng,
-            [
-              { marker: aromaMarker, name: 'Aroma Café Sabaneta', iconPath: 'assets/IconsMarker/cafeteriaAroma.png' },
-              { marker: baulMarker, name: 'Viejo Baul', iconPath: 'assets/IconsMarker/cafeteriaCoffe.png' },
-              { marker: lealMarker, name: 'Leal Coffee', iconPath: 'assets/IconsMarker/cafeteriaLeal.png' },
-              { marker: casaMarker, name: 'Casa', iconPath: 'assets/IconsMarker/cafeteria.png' }
-            ]
-          );
-  
-          console.log(
-            userLocationMarker.getLatLng().lat,
-            userLocationMarker.getLatLng().lng
-          );
-        } else {
-          // console.log('Precisión no aceptable:', accuracy);
+          this.userLocationMarker.setLatLng([userLat, userLng]);
+          this.userLocation = { lat: userLat, lng: userLng };
+
+          if (!this.initialZoomDone) {
+            // Centra el mapa en la ubicación del usuario con un zoom de nivel 15
+            this.map.setView([userLat, userLng], 15, {
+              animate: true,
+            });
+            this.initialZoomDone = true;
+          }
+
+          this.checkProximityToStores(userLat, userLng, this.shopMarkers);
         }
       },
       (error) => {
@@ -259,64 +273,34 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         timeout: 30000,
       }
     );
-  
-    aromaMarker.on('click', () => {
-      this.showRouteConfirmation(
-        map,
-        aromaMarker,
-        userLocationMarker,
-        'Aroma Café Sabaneta'
-      );
-    });
-  
-    baulMarker.on('click', () => {
-      this.showRouteConfirmation(
-        map,
-        baulMarker,
-        userLocationMarker,
-        'Viejo Baul'
-      );
-    });
-  
-    lealMarker.on('click', () => {
-      this.showRouteConfirmation(
-        map,
-        lealMarker,
-        userLocationMarker,
-        'Leal Coffee'
-      );
-    });
-  
-    casaMarker.on('click', () => {
-      this.showRouteConfirmation(
-        map,
-        casaMarker,
-        userLocationMarker,
-        'Casa'
-      );
-    });
   }
-  
 
   checkProximityToStores(
     userLat: number,
     userLng: number,
-    markers: { marker: L.Marker; name: string; iconPath: string }[] // Define claramente el tipo aquí
+    markers: { marker: L.Marker; name: string; iconUrl: string }[] // Define claramente el tipo aquí
   ) {
-    const proximityThreshold = 8; // 8 metros
+    const proximityThreshold = 10; // 10 metros
 
-    markers.forEach(({ marker, name, iconPath }) => {
+    markers.forEach(({ marker, name, iconUrl }) => {
       const { lat, lng } = marker.getLatLng();
       const distance = this.calculateDistance(userLat, userLng, lat, lng);
 
-      if (distance <= proximityThreshold) {
-        marker.setIcon(this.createStoreIcon(iconPath, this.isStoreOpen));
-        console.log(`Estás cerca de ${name}`);
-        this.openModal(this.arriveModal, name); // Pasa el nombre de la cafetería
+      const shop = this.shopData.find((s) => s.name === name); // Encuentra la tienda correspondiente
+      if (shop) {
+        const statusShop = shop.statusShop; // Accede a statusShop de la tienda encontrada
+
+        if (distance <= proximityThreshold) {
+          marker.setIcon(this.createStoreIcon(iconUrl, statusShop));
+          console.log(`Estás cerca de ${name}`);
+          this.openModal(this.arriveModal, name); // Pasa el nombre de la cafetería
+        } else {
+          marker.setIcon(
+            this.createStoreIcon(iconUrl, statusShop, 'grayscale-icon')
+          );
+        }
       } else {
-        marker.setIcon(
-          this.createStoreIcon(iconPath, this.isStoreOpen, 'grayscale-icon')
-        );
+        console.error(`No se encontró la tienda con nombre ${name}`);
       }
     });
   }
@@ -362,6 +346,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   showRouteGuia(): void {
+    console.log('showCancelButton antes:', this.showCancelButton);
     if (
       this.map &&
       this.targetMarker &&
@@ -378,12 +363,16 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         this.selectedTransport
       );
       this.showCancelButton = true;
-      this.modalRef.close();
+      console.log('showCancelButton después:', this.showCancelButton);
+      // Asegúrate de que el modal se cierre correctamente
+      if (this.modalRef) {
+        this.modalRef.close();
+      }
     } else {
       console.error('Error: No se han inicializado los marcadores o el mapa.');
     }
   }
-
+  
   showRoute(
     map: L.Map,
     startLat: number,
@@ -407,6 +396,9 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       profile = 'bike';
       routed = 'routed-bike';
     }
+    if (this.routingControl) {
+      this.map.removeControl(this.routingControl);
+    }
 
     if (transport === 'foot' || transport === 'bike') {
       url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
@@ -414,7 +406,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
     }
 
-    fetch(url)
+    if (transport != 'car') {
+      fetch(url)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Error en la solicitud al servicio OSRM');
@@ -462,6 +455,22 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         console.error('Error al obtener la ruta desde OSRM:', error);
         toastr.error('Error al obtener la ruta');
       });
+    }else{
+      this.routingControl = (L as any).Routing.control({
+        waypoints: [
+          L.latLng(startLat, startLng),
+          L.latLng(endLat, endLng)
+        ],
+        routeWhileDragging: true,
+        createMarker: (i: number, waypoint: any, n: number) => {
+          if (i === n - 1) {
+            return L.marker(waypoint.latLng, { icon: icon });
+          } else {
+            return L.marker(waypoint.latLng, { icon: this.userLocationIcon });
+          }
+        },
+      }).addTo(map);
+    }
   }
 
   selectTransportMode(mode: string) {
@@ -469,6 +478,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   cancelRoute(): void {
+    console.log('Ruta cancelada');
     this.openModal(this.cancelModal, '');
   }
 
@@ -542,52 +552,51 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.openModal(this.modalBook, '');
   }
 
-  saveVerifiedCode(storeName: string) {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('Token no encontrado en el almacenamiento local.');
-      return;
-    }
-
-    const requestBody = {
-      storeName: storeName,
-      userName: this.userName, // Asegúrate de que se use this.userName aquí
-      codeVerified: true,
-    };
-
-    // Envía la solicitud POST al backend para guardar los datos
-    this.http
-      .post(`${this.apiUrl}/book/verify-code`, requestBody, {
-        headers: new HttpHeaders().set('Authorization', `Bearer ${token}`),
-      })
-      .subscribe(
-        (response: any) => {
-          // console.log('Respuesta del servidor:', response);
-          toastr.success('Código verificado guardado exitosamente');
-          // Actualiza las imágenes del álbum para marcarlas como guardadas
-        },
-        (error) => {
-          console.error('Error al guardar el código verificado:', error);
-          toastr.error('Error al guardar el código verificado');
-        }
-      );
-  }
-
   verifyCode() {
+    console.log('Primer bloque)');
     this.storeService.verifyCodeCode(this.enteredCode).subscribe(
       (response) => {
+        console.log(response);
         this.message = response.message;
-        if (response.shop) {
-          this.verified = true;
-          this.saveVerifiedCode(response.shop.name);
-          toastr.success('Código verificado exitosamente');
-          this.modalRef.close();
+        console.log(this.message);
+
+        if (this.message === 'Código de verificación guardado exitosamente') {
+          this.verifiedcode = true;
+          if (response.shop) {
+            console.log('2 bloque)');
+            // Llamar a verifyCodeOnce con el shopId y el código
+            this.storeService
+              .verifyCode(response.shop._id, this.enteredCode)
+              .subscribe(
+                (res) => {
+                  console.log('3 bloque)');
+                  console.log(res);
+                  toastr.success(
+                    'Código verificado y CoffeeCoins añadidos exitosamente'
+                  );
+                  this.modalRef.close();
+                },
+                (err) => {
+                  console.log('4 bloque)');
+                  toastr.error('Error al añadir CoffeeCoins');
+                  this.modalRef.close();
+                }
+              );
+          } else {
+            toastr.success(
+              'Código verificado y CoffeeCoins añadidos exitosamente'
+            );
+          }
         } else {
-          this.verified = false;
+          this.verifiedcode = false;
           toastr.error('Código de verificación no válido');
         }
+        console.log('5 bloque)');
+        this.verified = false;
+        this.modalRef.close();
       },
       (error) => {
+        console.log('6 bloque)');
         this.message = 'Error al verificar el código';
         toastr.error('Error al verificar el código');
       }
@@ -599,12 +608,23 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       this.albumImages[this.currentImageIndex].colored = true;
       this.currentImageIndex++;
     } else {
-      // console.log('Todas las imágenes ya están coloreadas');
+      console.log('Todas las imágenes ya están coloreadas');
     }
   }
 
+  updateImages(userId: string): void {
+    this.albumService.updateAlbumImages(userId).subscribe(
+      (images) => {
+        console.log('Datos del álbum obtenidos:', images);
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error al actualizar el álbum de imágenes:', error);
+      }
+    );
+  }
+
   get obtainedStamps(): number {
-    return this.albumImages.filter((image) => image.colored).length;
+    return this.albumService.getObtainedStamps();
   }
 
   get totalStamps(): number {

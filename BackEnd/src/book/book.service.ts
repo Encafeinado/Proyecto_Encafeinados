@@ -1,24 +1,17 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { VerifyCodeDto } from './dto/verify-code.dto';
-import { JwtPayload } from 'src/shop/interfaces/jwt-payload';
-import { Book, BookDocument } from './entities/book.entity';
 import { CreateBookDto } from './dto/create-book.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { JwtService } from '@nestjs/jwt';
-import { User, UserDocument } from 'src/auth/entities/user.entity';
 import { Model } from 'mongoose';
-import { Shop, ShopDocument } from 'src/shop/entities/shop.entity';
+import { Book, BookDocument } from './entities/book.entity';
+import { AddImageDto } from './dto/add-image.dto';
 
 @Injectable()
 export class BookService {
   constructor(
     @InjectModel(Book.name) private bookModel: Model<BookDocument>,
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(Shop.name) private shopModel: Model<ShopDocument>,
-    private jwtService: JwtService,
   ) {}
 
-  async addImage(bookId: string, imageUrl: string): Promise<Book> {
+  async addImage(bookId: string, addImageDto: AddImageDto): Promise<Book> {
     const book = await this.bookModel.findById(bookId);
     if (!book) {
       throw new NotFoundException('Libro no encontrado');
@@ -28,7 +21,13 @@ export class BookService {
       throw new Error('No se pueden agregar más de 30 imágenes');
     }
 
-    book.images.push({ url: imageUrl });
+    // Agrega la nueva imagen al array
+    book.images.push({
+      code: addImageDto.code,
+      name: addImageDto.name,
+      image: addImageDto.image
+    });
+
     return book.save();
   }
 
@@ -53,6 +52,14 @@ export class BookService {
     return book;
   }
 
+  async findBookByUserId(userId: string): Promise<Book> {
+    const book = await this.bookModel.findOne({ userId }).exec();
+    if (!book) {
+      throw new NotFoundException('Book not found');
+    }
+    return book;
+  }
+
   async remove(id: string): Promise<Book> {
     const book = await this.bookModel.findByIdAndDelete(id);
     if (!book) {
@@ -60,39 +67,5 @@ export class BookService {
     }
     return book;
   }
-
-  getJwtToken(payload: JwtPayload): string {
-    return this.jwtService.sign(payload);
-  }
-
-  async verifyAndAddCode(verifyCodeDto: VerifyCodeDto): Promise<Book> {
-    const { nameShop, nameUser, code, imageUrl } = verifyCodeDto;
-
-    // Busca al usuario por su nombre
-    const user = await this.userModel.findOne({ name: nameUser });
-    if (!user) {
-      throw new NotFoundException('Usuario no encontrado');
-    }
-
-    // Busca la tienda por su nombre
-    const shop = await this.shopModel.findOne({ name: nameShop });
-    if (!shop) {
-      throw new NotFoundException('Tienda no encontrada');
-    }
-
-    // Crea un nuevo libro con los datos proporcionados
-    const newBookDto: CreateBookDto = {
-      nameShop: nameShop,
-      nameUser: nameUser,
-      code: code,
-      images: [{ url: imageUrl }]
-    };
-
-    try {
-      const newBook = new this.bookModel(newBookDto);
-      return newBook.save();
-    } catch (error) {
-      throw new InternalServerErrorException('Error guardando el libro');
-    }
-  }
 }
+

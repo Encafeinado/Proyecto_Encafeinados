@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Request, Patch, InternalServerErrorException } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { RegisterShopDto, LoginDto, VerifyCodeDto } from './dto';
 import { ShopDocument } from './entities/shop.entity'; // Importa ShopDocument
 import { LoginResponce } from './interfaces/login-responce';
 import { ShopGuard } from './guards/shop.guard';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RequestWithUser } from 'src/auth/interfaces/request-with-user.interface';
 
 @Controller('shop')
 export class ShopController {
@@ -29,20 +30,17 @@ export class ShopController {
     if (isValid) {
       return { message: 'Código de verificación válido' };
     } else {
-      return { message: 'Código de verificación no válido' };
+      return { message: 'Código de verificación no aceptado' };
     }
   }
   
+  @UseGuards(AuthGuard)
   @Post('/verify-code')
-  async verifyCodeByUser(@Body() verifyCodeDto: VerifyCodeDto) {
-    const { code } = verifyCodeDto;
-    const shop = await this.shopService.verifyVerificationCodeByCode(code);
-
-    if (shop) {
-      return { message: 'Código de verificación válido', shop };
-    } else {
-      return { message: 'Código de verificación no válido' };
-    }
+  async verifyCodeByUser(@Body() verifyCodeDto: VerifyCodeDto, @Request() req: RequestWithUser) {
+    console.log('Request user:', req.user); // Añade esta línea
+    const userId = req.user.id; // Obtén el ID del usuario desde el token JWT
+    const result = await this.shopService.verifyVerificationCodeByCodeAndAddCoins(verifyCodeDto.code, userId);
+    return result; // Devuelve el resultado tal cual
   }
 
   @Post('/login')
@@ -66,8 +64,26 @@ export class ShopController {
     };
   }
 
+  @Post('/check-email-existence')
+  async checkEmailExistence(@Body('email') email: string): Promise<{ message: string }> {
+    try {
+      const exists = await this.shopService.checkEmailExistence(email);
+      return { message: exists ? 'Email is registered' : 'Email is not registered' };
+    } catch (error) {
+      throw new InternalServerErrorException('Error al verificar el correo.');
+    }
+  }
+
   @Get(':id')
   async getShopById(@Param('id') shopId: string): Promise<ShopDocument> {
     return this.shopService.findShopById(shopId);
+  }
+
+  @Patch(':id/status')
+  updateShopStatus(
+    @Param('id') id: string,
+    @Body('statusShop') statusShop: boolean
+  ) {
+    return this.shopService.updateShopStatus(id, statusShop);
   }
 }

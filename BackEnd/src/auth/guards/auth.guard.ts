@@ -1,21 +1,21 @@
+// auth.guard.ts
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from '../interfaces/jwt-payload';
 import { AuthService } from '../auth.service';
+import { ShopService } from 'src/shop/shop.service';
 import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  private readonly logger = new Logger(AuthGuard.name); 
+  private readonly logger = new Logger(AuthGuard.name);
 
   constructor(
     private jwtService: JwtService,
     private authService: AuthService,
+    private shopService: ShopService,
   ) {}
 
-  async canActivate(
-    context: ExecutionContext
-  ): Promise<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     this.logger.log(`Token recibido: ${token}`);
@@ -26,22 +26,19 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync<JwtPayload>(
-        token, { secret: process.env.JWT_SEED }
-      );
-      this.logger.log(`Payload decodificado: ${JSON.stringify(payload)}`);
+      const payload = await this.jwtService.verifyAsync(token, { secret: process.env.JWT_SEED });
+      let user = await this.authService.findUserById(payload.id);
 
-      const user = await this.authService.findUserById(payload.id);
       if (!user) {
-        this.logger.error('El usuario no existe');
-        throw new UnauthorizedException('El usuario no existe');
-      }
-      if (!user.isActive) {
-        this.logger.error('El usuario no está activo');
-        throw new UnauthorizedException('El usuario no está activo');
-      }
+        const shop = await this.shopService.findShopById(payload.id);
+        if (!shop) throw new UnauthorizedException('El usuario/tienda no existe');
+        if (!shop.isActive) throw new UnauthorizedException('El usuario/tienda no está activo');
 
-      request['user'] = user;
+        request.user = { ...shop, id: shop._id.toString() }; // Asegúrate de convertir _id a string
+      } else {
+        if (!user.isActive) throw new UnauthorizedException('El usuario no está activo');
+        request.user = { ...user, id: user._id.toString() }; // Asegúrate de convertir _id a string
+      }
     } catch (error) {
       this.logger.error('Error al verificar el token', error.message);
       throw new UnauthorizedException('Token no válido');

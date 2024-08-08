@@ -1,14 +1,13 @@
-<app-navbar *ngIf="showNavbar"></app-navbar>
-<h1 *ngIf="!finishedAuthCheck()">
-</h1>
+<app-navbar *ngIf="!isLoading && showNavbar"></app-navbar>
+
+<!-- Placeholder mientras se carga la página -->
 <div *ngIf="isLoading" class="loading-container">
   <div class="loading-content">
     <app-loading></app-loading>
   </div>
 </div>
 
+<!-- Contenido principal que se muestra cuando no se está cargando -->
 <div *ngIf="!isLoading">
   <router-outlet *ngIf="finishedAuthCheck() && !isLoading"></router-outlet>
 </div>
-
-

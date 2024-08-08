@@ -1,3 +1,4 @@
+// store.component.ts
 import { Component, OnInit } from '@angular/core';
 import { StoreService } from '../../service/store.service';
 import { StoreStatusService } from '../../service/store-status.service';
@@ -24,7 +25,6 @@ export class StoreComponent implements OnInit {
     private authService: AuthService
   ) {}
 
- 
   ngOnInit() {
     this.shopId = this.authService.getShopId() || '';
     if (this.shopId) {
@@ -39,12 +39,14 @@ export class StoreComponent implements OnInit {
         console.log('Shop info:', shop);
         this.codigo = shop.verificationCode;
         this.codeEntries = shop.codeUsage;
+        this.isStoreOpen = shop.statusShop; // Actualiza el estado de la tienda
       },
       (error) => {
         console.error('Error fetching shop info:', error);
       }
     );
   }
+
   generateCode() {
     this.codigo = Math.random().toString(36).substring(2, 8).toUpperCase();
     localStorage.setItem('storeCode', this.codigo);
@@ -68,14 +70,25 @@ export class StoreComponent implements OnInit {
 
   confirmToggleStoreActivation() {
     const newStatus = !this.isStoreOpen;
-    this.storeStatusService.setStoreActivation(newStatus);
-    this.isStoreOpen = this.storeStatusService.isStoreActivated();
-    this.showModal = false;
+    this.storeService.updateShopStatus(this.shopId, newStatus).subscribe({
+      next: (shop: Shop) => {
+        this.isStoreOpen = newStatus; // Actualiza el estado en la vista
+        this.storeStatusService.setStoreActivation(newStatus); // Actualiza el estado en el servicio
+        this.showModal = false;
 
-    if (this.isStoreOpen) {
-      this.toastr.success('Abriste tu tienda en el mapa', 'Tienda Abierta');
-    } else {
-      this.toastr.success('Cerraste tu tienda en el mapa', 'Tienda Cerrada');
-    }
+        console.log('Estado de la tienda actualizado:', newStatus ? 'Abierta' : 'Cerrada');
+        console.log('Información de la tienda actualizada:', shop);
+
+        if (this.isStoreOpen) {
+          this.toastr.success('Abriste tu tienda en el mapa', 'Tienda Abierta');
+        } else {
+          this.toastr.success('Cerraste tu tienda en el mapa', 'Tienda Cerrada');
+        }
+      },
+      error: (err) => {
+        console.error('Error al actualizar el estado de la tienda:', err);
+        this.toastr.error('Error al actualizar el estado de la tienda', 'Error');
+      }
+    });
   }
 }

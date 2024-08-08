@@ -1,5 +1,6 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsNumber, IsLatitude, IsLongitude } from 'class-validator';
 import { IsCellPhone } from '../decorators/is-cell-phone.decorator';
+import { IsBoolean } from 'class-validator';
 
 export class RegisterShopDto {
   @IsEmail()
@@ -30,6 +31,17 @@ export class RegisterShopDto {
   
   @IsNotEmpty()
   @IsString()
-  logo: string; 
-}
+  logo: string;
 
+  @IsNotEmpty()
+  @IsLatitude()
+  latitude: number; // Nuevo campo para latitud
+
+  @IsNotEmpty()
+  @IsLongitude()
+  longitude: number; // Nuevo campo para longitud
+
+  @IsNotEmpty()
+  @IsBoolean()
+  statusShop: boolean;
+}

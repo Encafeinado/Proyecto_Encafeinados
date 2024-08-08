@@ -1,4 +1,6 @@
-import { Module } from '@nestjs/common';
+// src/auth/auth.module.ts
+
+import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
@@ -8,13 +10,12 @@ import { User, UserSchema } from './entities/user.entity';
 import { Book, BookSchema } from '../book/entities/book.entity';
 import { MailModule } from './mail/mail.module';
 import { Shop, ShopSchema } from 'src/shop/entities/shop.entity';
+import { ShopModule } from 'src/shop/shop.module';
 
 @Module({
-  controllers: [AuthController],
-  providers: [AuthService],
   imports: [
-    
-    MailModule, 
+    forwardRef(() => ShopModule),
+    MailModule,
     ConfigModule.forRoot(),
     MongooseModule.forFeature([{ name: Book.name, schema: BookSchema }]),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
@@ -25,6 +26,8 @@ import { Shop, ShopSchema } from 'src/shop/entities/shop.entity';
       signOptions: { expiresIn: '6h' },
     }),
   ],
-  exports: [AuthService],
+  controllers: [AuthController],
+  providers: [AuthService],
+  exports: [AuthService, MongooseModule], // Exporta MongooseModule aquí
 })
 export class AuthModule {}
