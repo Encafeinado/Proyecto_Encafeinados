@@ -55,6 +55,10 @@
   width: auto; /* Mantiene la proporción original */
 }
 
+
+
+
+
 /*//////////////////////////////////////////////////////////////////
 [ RESTYLE TAG ]*/
 * {
@@ -135,6 +139,86 @@ button {
 button:hover {
     cursor: pointer;
 }
+
+
+
+/*//////////////////////////////////////////////////////////////////
+[ tratamiento de datos ]*/
+
+/* data-treatment-dialog.component.css */
+
+.mat-mdc-dialog-title {
+  background-color: #03AED2; /* Fondo blanco para el título */
+  padding: 16px;
+  font-size: 1.5em;
+  color: #000000; /* Texto negro */
+  border-bottom: 1px solid #03AED2;
+}
+
+.mdc-dialog-title {
+
+  font-size: 1.5em;
+  color: #000000; /* Texto negro */
+  background-color: #03AED2;
+
+}
+
+.mat-mdc-dialog-container {
+  padding: 16px;
+  font-size: 1em;
+  color: #080808; /* Texto negro */
+  background-color: #ffffff; /* Fondo blanco para el contenido */
+}
+
+
+.mat-mdc-dialog-actions {
+  padding: 16px;
+  display: flex;
+  justify-content: flex-end;
+  background-color: #ffffff; /* Fondo blanco para las acciones */
+  border-top: 1px solid #030303; /* Borde negro arriba del contenedor de acciones */
+  border-bottom: 1px solid #030303; /* Borde negro debajo del contenedor de acciones */
+}
+
+
+
+.mat-mdc-dialog-content {
+  padding: 16px;
+  display: flex;
+  justify-content: flex-end;
+  background-color: #ffffff; /* Fondo blanco para las acciones */
+  border-top: 1px solid #ffffff;
+}
+
+button {
+  margin-left: 8px;
+}
+
+.mat-button {
+  font-size: 1em;
+  background-color: #ffffff; /* Fondo blanco para los botones */
+  color: #000000; /* Texto negro para los botones */
+  border: 1px solid #0a0a0a; /* Borde gris claro */
+}
+
+button.mat-button:hover {
+  background-color: #f0f0f0; /* Fondo gris claro al pasar el ratón sobre los botones */
+}
+
+button.mat-button.mat-button-color-primary {
+  background-color: #007bff; /* Fondo azul para el botón de Aceptar */
+  color: #ffffff; /* Texto blanco para el botón de Aceptar */
+  border: none; /* Sin borde para el botón primario */
+}
+
+button.mat-button.mat-button-color-warn {
+  background-color: #dc3545; /* Fondo rojo para el botón de Cancelar */
+  color: #ffffff; /* Texto blanco para el botón de Cancelar */
+  border: none; /* Sin borde para el botón de advertencia */
+}
+
+
+
 
 /*//////////////////////////////////////////////////////////////////
 [ Utility ]*/
@@ -552,26 +636,29 @@ button:hover {
   color: #fff;
   line-height: 1.2;
   text-transform: uppercase;
-
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -moz-box;
-  display: -ms-flexbox;
+  background-color: #03AED2; /* Color cuando está habilitado */
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 0 20px;
   width: 100%;
   height: 50px;
+  border: none; /* Elimina el borde si lo hay */
+  border-radius: 25px; /* Asegúrate de que tenga bordes redondeados */
+  cursor: pointer; /* Cambia el cursor para indicar que es clickeable */
 }
+
 
 .wrap-login100-form-btn:hover .login100-form-bgbtn {
   left: 0;
 }
 
+
 .login100-form-btn:disabled {
-  background-color: rgb(158, 158, 154);
+  background-color: rgb(158, 158, 154); /* Color gris para el botón deshabilitado */
+  cursor: not-allowed; /* Cambia el cursor para indicar que no es clickeable */
 }
+
 
 
 /*[ PADDING ]
@@ -3171,3 +3258,6 @@ body {
 
 
 
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

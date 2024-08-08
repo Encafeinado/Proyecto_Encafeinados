@@ -64,7 +64,7 @@
                 </div>
                 <div *ngIf="myForm.get('name')?.touched && myForm.get('name')?.hasError('maxlength')"
                   class="error-message">
-                  El campo correo no puede superar los 30 caracteres.
+                  El campo nombre no puede superar los 30 caracteres.
                 </div>
               </div>
 
@@ -86,7 +86,7 @@
                 </div>
                 <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('invalidDomain')"
                   class="error-message">
-                  El dominio del correo electrónico no es válido.
+                  El formato del correo electrónico no es válido.
                 </div>
                 <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('emailTaken')"
                   class="error-message">
@@ -195,7 +195,7 @@
               </div>
 
               <div class="text-center pt-1 mb-5 pb-1">
-                <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4"
+                <button data-mdb-button-init data-mdb-ripple-init class="login100-form-btn"
                   [disabled]="myForm.invalid" type="submit">
                   Registrar
                 </button>

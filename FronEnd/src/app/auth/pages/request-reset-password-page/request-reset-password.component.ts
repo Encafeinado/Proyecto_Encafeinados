@@ -25,8 +25,7 @@ export class RequestResetPasswordComponent {
     this.requestResetForm = this.fb.group({
       email: ['', {
         validators: [
-          Validators.required,  // Asegúrate de que el campo sea requerido
-          Validators.email      // Verifica que sea un correo válido
+          Validators.required,    // Verifica que sea un correo válido
         ],
         asyncValidators: [
           validateEmailForLogin(this.authService),

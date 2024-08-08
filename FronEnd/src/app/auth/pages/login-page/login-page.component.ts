@@ -30,14 +30,17 @@ export class LoginPageComponent {
     this.myForm = this.fb.group({
       email: [
         '',
-        [
-          Validators.required
-        ],
-        [
-          validateEmailForLogin(this.authService),
-          emailFormatAsyncValidator(), // Validador asíncrono para chequeo adicional
-          emailDomainValidator(this.validDomains) // Validador de dominio
-        ]
+        {
+          validators: [
+            Validators.required
+          ],
+          asyncValidators: [
+            validateEmailForLogin(this.authService),
+            //emailFormatAsyncValidator(), // Validador asíncrono para chequeo adicional
+            emailDomainValidator(this.validDomains) // Validador de dominio
+          ],
+          updateOn: 'blur'
+        }
       ],
       password: [
         '',
@@ -49,8 +52,7 @@ export class LoginPageComponent {
       ],
       role: ['user']
     });
-  }
-
+  }    
   togglePasswordVisibility(): void {
     this.hidePassword = !this.hidePassword;
   }
@@ -59,16 +61,7 @@ export class LoginPageComponent {
     return this.myForm.get('email');
   }
 
-  onEmailBlur() {
-    this.emailTouched = true;
-    this.emailControl?.markAsTouched();
-  }
-
-  isErrorVisible() {
-    return this.emailTouched || this.emailControl?.dirty;
-  }
-
-  
+ 
 
 
   login(): void {

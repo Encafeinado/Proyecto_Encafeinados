@@ -106,7 +106,6 @@ export function validateEmail(authService: AuthService): AsyncValidatorFn {
 }
 
 
-// validacion de correo de login
 export function validateEmailForLogin(authService: AuthService): AsyncValidatorFn {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {
     const email = control.value ? control.value.toLowerCase() : '';

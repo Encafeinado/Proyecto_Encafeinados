@@ -1,12 +1,16 @@
 // register-page.component.ts
-import { Component, inject, HostListener } from '@angular/core';
+import { Component, inject, HostListener, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
 import { AuthService } from '../../services/auth.service';
 import { GeocodingService } from 'src/app/service/geocoding.service';
-import { emailDomainValidator, passwordValidator, phoneNumberValidator, validateEmail, validateNameSimbolAndNumber } from '../../validators/custom-validators';
+import { emailDomainValidator, emailFormatAsyncValidator, passwordValidator, phoneNumberValidator, validateEmail, validateNameSimbolAndNumber } from '../../validators/custom-validators';
+import { DataTreatmentDialogComponent } from 'src/app/data-treatment-dialog/data-treatment-dialog.component';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+
+
 
 
 interface CustomFile {
@@ -17,7 +21,8 @@ interface CustomFile {
 
 @Component({
   templateUrl: './register-page.component.html',
-  styleUrls: ['./register-page.component.css']
+  styleUrls: ['./register-page.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class RegisterPageComponent {
 
@@ -26,6 +31,7 @@ export class RegisterPageComponent {
   private router = inject(Router);
   private toastr = inject(ToastrService);
   private geocodingService = inject(GeocodingService); // Inyecta el servicio de geocodificación
+  private MatDialogModule = inject(MatDialog);
 
   validDomains = ["gmail.com", "gmail.co", "gmail.es", "gmail.mx", "hotmail.com", "hotmail.co", "hotmail.es", "hotmail.mx", "outlook.com", "outlook.co", "outlook.es", "outlook.mx", "yahoo.com", "yahoo.co", "yahoo.es",
     "yahoo.mx", "gmail.com.co", "hotmail.com.co", "outlook.com.co", "yahoo.com.co", "gmail.com.es", "hotmail.com.es", "outlook.com.es", "yahoo.com.es", "gmail.com.mx", "hotmail.com.mx", "outlook.com.mx",
@@ -38,16 +44,21 @@ export class RegisterPageComponent {
       Validators.minLength(3)
     ], [validateNameSimbolAndNumber()]],
 
-    email: ['', [
+    email: ['', 
+      {
+        validators: [
       Validators.required,
-      Validators.email
-    ], [
-        Validators.composeAsync([
+    ], 
+    asyncValidators: [
+     
+         // emailFormatAsyncValidator(),
           validateEmail(this.authService),
           emailDomainValidator(this.validDomains)
-        ])
-      ]],
-
+        ],
+        updateOn: 'blur'
+      }
+    ],
+      
     password: ['', [
       Validators.required,
       Validators.minLength(8),
@@ -153,50 +164,61 @@ export class RegisterPageComponent {
       return;
     }
 
-    const { name, email, password, phone, specialties1, specialties2, address, logo } = this.myForm.value;
+    // Abre el diálogo y espera la respuesta
+    const dialogRef = this.MatDialogModule.open(DataTreatmentDialogComponent);
 
-    if (this.isStore) {
-      this.geocodingService.geocodeAddress(address).subscribe({
-        next: (response) => {
-          if (response.length > 0) {
-            const { lat, lon } = response[0];
-            console.log('Latitud:', lat, 'Longitud:', lon);
-            console.log('Dirección: ', address);
-            this.authService.registerStore(name, email, password, phone, specialties1, specialties2, address, logo, lat, lon, false)
-              .subscribe({
-                next: () => {
-                  this.toastr.success('¡Registro de tienda exitoso!', 'Éxito');
-                  console.log(name, email, password, phone, specialties1, specialties2, address, logo, lat, lon, false);
-                  // this.router.navigateByUrl('/auth/login');
-                },
-                error: (err) => {
-                  console.error('Error al registrar tienda:', err);
-                  this.toastr.error('Error al registrar tienda', 'Error');
-                }
-              });
-          } else {
-            this.toastr.error('No se pudo geocodificar la dirección', 'Error');
-          }
-        },
-        error: (err) => {
-          console.error('Error al geocodificar la dirección:', err);
-          this.toastr.error('Error al geocodificar la dirección', 'Error');
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const { name, email, password, phone, specialties1, specialties2, address, logo } = this.myForm.value;
+
+        if (this.isStore) {
+          this.geocodingService.geocodeAddress(address).subscribe({
+            next: (response) => {
+              if (response.length > 0) {
+                const { lat, lon } = response[0];
+                console.log('Latitud:', lat, 'Longitud:', lon);
+                console.log('Dirección: ', address);
+                this.authService.registerStore(name, email, password, phone, specialties1, specialties2, address, logo, lat, lon, false)
+                  .subscribe({
+                    next: () => {
+                      this.toastr.success('¡Registro de tienda exitoso!', 'Éxito');
+                      this.router.navigateByUrl('/auth/login');
+                    },
+                    error: (err) => {
+                      console.error('Error al registrar tienda:', err);
+                      this.toastr.error('Error al registrar tienda', 'Error');
+                    }
+                  });
+              } else {
+                this.toastr.error('No se pudo geocodificar la dirección', 'Error');
+              }
+            },
+            error: (err) => {
+              console.error('Error al geocodificar la dirección:', err);
+              this.toastr.error('Error al geocodificar la dirección', 'Error');
+            }
+          });
+        } else {
+          this.authService.register(name, email, password, phone)
+            .subscribe({
+              next: () => {
+                this.toastr.success('¡Registro de usuario exitoso!', 'Éxito');
+                this.router.navigateByUrl('/auth/login');
+              },
+              error: (err) => {
+                console.error('Error al registrar usuario:', err);
+                this.toastr.error('Error al registrar usuario', 'Error');
+              }
+            });
         }
-      });
-    } else {
-      this.authService.register(name, email, password, phone)
-        .subscribe({
-          next: () => {
-            this.toastr.success('¡Registro de usuario exitoso!', 'Éxito');
-            this.router.navigateByUrl('/auth/login');
-          },
-          error: (err) => {
-            console.error('Error al registrar usuario:', err);
-            this.toastr.error('Error al registrar usuario', 'Error');
-          }
-        });
-    }
+      } else {
+        // Usuario no aceptó el tratamiento de datos
+        console.log('Usuario no aceptó el tratamiento de datos.');
+      }
+    });
   }
+
+
 
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {
