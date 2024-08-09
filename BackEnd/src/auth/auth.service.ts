@@ -72,14 +72,17 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<LoginResponce> {
     const { email, password } = loginDto;
     const user = await this.userModel.findOne({ email });
+
     if (!user) {
       console.log('Email not found');
-      throw new UnauthorizedException('Error credenciales incorrectas ');
+      throw new UnauthorizedException('Credenciales incorrectas');
     }
+
     if (!bcryptjs.compareSync(password, user.password)) {
       console.log('Password incorrect');
       throw new UnauthorizedException('Credenciales de la contraseña no válidas');
     }
+
     const { password: _, ...rest } = user.toJSON();
     return {
       user: rest,
@@ -113,7 +116,7 @@ export class AuthService {
     }
 
     const entity = user || shop;
-    const token = this.jwtService.sign({ id: entity._id }, { expiresIn: '1h' });
+    const token = this.jwtService.sign({ id: entity._id }, { expiresIn: '10m' });
 
     console.log('Generated token:', token);
 
@@ -123,30 +126,29 @@ export class AuthService {
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
     try {
-     
       const payload = this.jwtService.verify(token);
-      
   
       const user = await this.userModel.findById(payload.id);
       const shop = !user ? await this.shopModel.findById(payload.id) : null;
-
+  
       if (!user && !shop) {
         throw new NotFoundException('Usuario o tienda no encontrado');
       }
-
   
       if (user) {
         user.password = bcryptjs.hashSync(newPassword, 10);
         await user.save();
+      } else if (shop) {
+        shop.password = bcryptjs.hashSync(newPassword, 10);
+        await shop.save();
       }
-
-
-
+  
     } catch (error) {
-     
+      console.error('Error en el restablecimiento de contraseña:', error);
       throw new UnauthorizedException('Token no válido o expirado');
     }
   }
+  
 
   findAll(): Promise<User[]> {
     return this.userModel.find();
@@ -204,8 +206,9 @@ export class AuthService {
     return `This action removes a #${id} auth`;
   }
 
-  getJwtToken(payload: JwtPayload) {
-    const token = this.jwtService.sign(payload);
-    return token;
+   getJwtToken(payload: JwtPayload): string {
+    // Configura la expiración del token (ejemplo: 1 hora)
+    return this.jwtService.sign(payload, { expiresIn: '1h' });
   }
+  
 }
