@@ -140,7 +140,11 @@
       </div>
       <div class="album">
         <div class="album-page" *ngFor="let shop of shopLogos">
-          <img *ngIf="shop.logoUrl" [src]="shop.logoUrl" alt="{{ shop.name }}">
+          <img 
+            *ngIf="shop.logoUrl" 
+            [src]="shop.logoUrl" 
+            [class.colored]="isLogoColored(shop.logoUrl)" 
+            alt="{{ shop.name }}">
         </div>
       </div>
     </div>

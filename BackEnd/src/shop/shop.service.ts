@@ -1,4 +1,11 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcryptjs from 'bcryptjs';
@@ -19,55 +26,73 @@ export class ShopService {
     private userModel: Model<UserDocument>,
     @InjectModel(Book.name) // Asegúrate de inyectar el modelo Book
     private bookModel: Model<BookDocument>,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
-  async verifyVerificationCodeByCodeAndAddCoins(code: string, userId: string): Promise<{ message: string, shop?: ShopDocument }> {
+  async verifyVerificationCodeByCodeAndAddCoins(
+    code: string,
+    userId: string,
+  ): Promise<{ message: string; shop?: ShopDocument }> {
     // Buscar la tienda con el código de verificación
     const shop = await this.shopModel.findOne({ verificationCode: code });
-    
+
     if (!shop) {
       return { message: 'Código de verificación no válido' };
     }
-  
+
     // Actualizar los CoffeeCoins del usuario
     const user = await this.userModel.findById(userId);
     if (user) {
       user.cafecoin += 10; // Aumentar los CoffeeCoins
       await user.save();
     }
-  
+
     // Actualizar el uso del código y generar un nuevo código de verificación
     shop.codeUsage = (shop.codeUsage || 0) + 1;
     shop.verificationCode = await this.generateUniqueVerificationCode();
     await shop.save();
     console.log('Tienda actualizada con nuevo código y uso:', shop);
-  
+
     // Actualizar el libro del usuario con los detalles de la tienda
     await this.updateBookWithShopDetails(shop, userId);
-  
-    return { message: 'Código de verificación guardado exitosamente', shop: shop.toObject() as ShopDocument };
+
+    return {
+      message: 'Código de verificación guardado exitosamente',
+      shop: shop.toObject() as ShopDocument,
+    };
   }
-  
-  async updateBookWithShopDetails(shop: ShopDocument, userId: string): Promise<void> {
+
+  async updateBookWithShopDetails(
+    shop: ShopDocument,
+    userId: string,
+  ): Promise<void> {
     // Buscar el libro asociado al usuario
     const book = await this.bookModel.findOne({ userId: userId });
-  
+
     if (!book) {
       throw new NotFoundException('Libro no encontrado para el usuario');
     }
-  
+
+    // Verificar si la tienda ya está presente en el libro basándose en el nombre
+    const shopExists = book.images.some((image) => image.name === shop.name);
+    if (shopExists) {
+      throw new ConflictException('La tienda ya está presente en el libro');
+    }
+
     // Agregar los detalles de la tienda al libro
     book.images.push({
       code: shop.verificationCode,
       name: shop.name,
-      image: shop.logo // Asegúrate de que esto sea un Buffer o base64
+      image: shop.logo, // Asegúrate de que esto sea un Buffer o base64
     });
-  
+
     await book.save();
     console.log('Libro actualizado con los detalles de la tienda:', book);
-  }  
+  }
 
-  async create(createShopDto: RegisterShopDto, logoBase64: string): Promise<ShopDocument> {
+  async create(
+    createShopDto: RegisterShopDto,
+    logoBase64: string,
+  ): Promise<ShopDocument> {
     try {
       const { password, ...shopData } = createShopDto;
 
@@ -82,7 +107,7 @@ export class ShopService {
         ...shopData,
         logo: logoBuffer,
         verificationCode,
-        codeUsage: 0
+        codeUsage: 0,
       });
 
       await newShop.save();
@@ -94,17 +119,20 @@ export class ShopService {
       if (error.code === 11000) {
         throw new BadRequestException(`${createShopDto.email} Ya Existe!`);
       }
-      throw new InternalServerErrorException('Algo terrible está sucediendo!!!!');
+      throw new InternalServerErrorException(
+        'Algo terrible está sucediendo!!!!',
+      );
     }
   }
-//verificar  librerias para generar código aleatorio
+  //verificar  librerias para generar código aleatorio
   async generateUniqueVerificationCode(): Promise<string> {
     let code: string;
     let codeExists: boolean;
 
     do {
       code = Math.random().toString(36).substring(2, 8);
-      codeExists = await this.shopModel.exists({ verificationCode: code }) !== null;
+      codeExists =
+        (await this.shopModel.exists({ verificationCode: code })) !== null;
       console.log('Checking if code exists:', code, codeExists);
     } while (codeExists);
 
@@ -129,7 +157,9 @@ export class ShopService {
     return false;
   }
 
-  async verifyVerificationCodeByCode(code: string): Promise<ShopDocument | null> {
+  async verifyVerificationCodeByCode(
+    code: string,
+  ): Promise<ShopDocument | null> {
     const shop = await this.shopModel.findOne({ verificationCode: code });
 
     if (!shop) {
@@ -152,7 +182,9 @@ export class ShopService {
     }
 
     if (!bcryptjs.compareSync(password, shop.password)) {
-      throw new UnauthorizedException('Credenciales de la contraseña no válidas');
+      throw new UnauthorizedException(
+        'Credenciales de la contraseña no válidas',
+      );
     }
 
     const { password: _, ...rest } = shop.toJSON();
@@ -167,7 +199,7 @@ export class ShopService {
       const existingEmail = await this.shopModel.findOne({ email });
       return !!existingEmail; // Retorna true si el email existe, false si no existe
     } catch (error) {
-      console.error("Error al verificar el correo:", error);
+      console.error('Error al verificar el correo:', error);
       throw new InternalServerErrorException('Error al verificar el correo.');
     }
   }
@@ -184,7 +216,10 @@ export class ShopService {
   }
   
 
-  async register(registerDto: RegisterShopDto, logoBase64: string): Promise<LoginResponce> {
+  async register(
+    registerDto: RegisterShopDto,
+    logoBase64: string,
+  ): Promise<LoginResponce> {
     try {
       const shop = await this.create(registerDto, logoBase64);
 
@@ -209,31 +244,31 @@ export class ShopService {
     return `This action removes a #${id} auth`;
   }
 
-// <<<<<<< HEAD
+  // <<<<<<< HEAD
   async findShopById(id: string): Promise<ShopDocument> {
     const shop = await this.shopModel.findById(id);
     if (!shop) {
       throw new NotFoundException('Tienda no encontrada');
     }
     return shop.toObject() as ShopDocument; // Conviértelo a objeto
-// =======
-//   async findShopById(id: string): Promise<any> {
-//     const shop = await this.shopModel.findById(id).exec();
-//     if (!shop) {
-//       throw new NotFoundException('Tienda no encontrada');
-//     }
+    // =======
+    //   async findShopById(id: string): Promise<any> {
+    //     const shop = await this.shopModel.findById(id).exec();
+    //     if (!shop) {
+    //       throw new NotFoundException('Tienda no encontrada');
+    //     }
 
-//     // Convierte el logo a base64 si está presente
-//     let logoBase64 = null;
-//     if (shop.logo) {
-//       logoBase64 = `data:image/png;base64,${shop.logo.toString('base64')}`;
-//     }
+    //     // Convierte el logo a base64 si está presente
+    //     let logoBase64 = null;
+    //     if (shop.logo) {
+    //       logoBase64 = `data:image/png;base64,${shop.logo.toString('base64')}`;
+    //     }
 
-//     return {
-//       ...shop.toJSON(),
-//       logo: logoBase64
-//     };
-// >>>>>>> 97129f26196d5ca8ba9dfb94447dc286ff2e3439
+    //     return {
+    //       ...shop.toJSON(),
+    //       logo: logoBase64
+    //     };
+    // >>>>>>> 97129f26196d5ca8ba9dfb94447dc286ff2e3439
   }
 
   getJwtToken(payload: JwtPayload): string {

@@ -5,6 +5,7 @@ import {
   AfterViewInit,
   ViewChild,
   ElementRef,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import * as L from 'leaflet';
@@ -15,7 +16,12 @@ import { StoreStatusService } from '../../service/store-status.service';
 import { UserService } from '../../service/user.service';
 import { StoreService } from '../../service/store.service';
 import { ShopService } from '../../service/shop.service';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
+import { AuthService } from 'src/app/auth/services/auth.service';
 
 @Component({
   selector: 'app-map',
@@ -41,6 +47,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   verified: boolean = false;
   message: string = '';
   albumImages: Image[] = [];
+  images: Image[] = [];
   currentImageIndex: number = 0; // Índice de la imagen actual para colorear
   isStoreOpen: boolean = false;
   userData: any;
@@ -49,7 +56,10 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   hasArrived: boolean = false; // Nuevo estado para verificar si ya ha llegado
   shopLogos: { name: string; logoUrl: string }[] = [];
   shopMarkers: any[] = []; // Asegúrate de inicializar shopMarkers
-
+  userId: string | null = null;
+  bookImages: Image[] = [];
+  obtainedStamps: number = 0;
+  // totalStamps: number = 0;
   @ViewChild('createModal', { static: true }) createModal: any;
   @ViewChild('cancelModal', { static: true }) cancelModal: any;
   @ViewChild('codeModal', { static: true }) codeModal: any;
@@ -63,6 +73,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     private userService: UserService,
     private storeService: StoreService,
     private shopService: ShopService,
+    private authService: AuthService,
+    private changeDetector: ChangeDetectorRef
   ) {
     this.userLocationIcon = L.icon({
       iconUrl: 'assets/IconsMarker/cosechaUser.png',
@@ -74,11 +86,26 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   ngOnInit(): void {
-    this.albumImages = this.albumService.getAlbumImages();    
     this.fetchUserData();
     this.fetchShopData();
     this.populateShopLogos();
+    this.fetchBookData();
+    this.userId = this.authService.getUserId(); // Obtener el ID del usuario
+  
+    if (this.userId) {
+      this.fetchBookData();
+    } else {
+      console.error('No se encontró el ID del usuario.');
+    }
+    this.changeDetector.detectChanges();
+  
+    // Actualiza los datos cada 10 segundos (10000 ms)
+    setInterval(() => {
+      this.fetchShopData();
+      this.fetchBookData();
+    }, 10000); // 10 segundos
   }
+  
 
   fetchUserData(): void {
     const token = localStorage.getItem('token');
@@ -104,18 +131,45 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       console.error('Token no encontrado en el almacenamiento local.');
       return;
     }
-
+  
     this.shopService.fetchShopData(token).subscribe(
       (data: any) => {
         this.shopData = data;
-        console.log('Datos de la tienda:', this.shopData); // Agrega esta línea para verificar la estructura de los datos
+        // console.log('Datos de la tienda:', this.shopData); // Agrega esta línea para verificar la estructura de los datos
         this.populateShopLogos();
-        this.addShopMarkersToMap();
+        this.addShopMarkersToMap(false); // Pasar false para no hacer zoom
       },
       (error) => {
         console.error('Error al obtener los datos de la tienda:', error);
       }
     );
+  }
+  
+
+  fetchBookData(): void {
+    if (this.userId) {
+      this.albumService.getBookData(this.userId).subscribe(
+        (data) => {
+          this.bookImages = data;
+          this.obtainedStamps = this.bookImages.length;
+          // console.log('Datos del álbum:', this.bookImages); // Para depuración
+          // this.totalStamps = this.shopLogos.length; // Asume que totalStamps es igual a la cantidad de logos de tiendas
+          // console.log(this.userId);
+        },
+        (error) => {
+          console.error('Error al obtener los datos del álbum:', error);
+        }
+      );
+    }
+  }
+
+  isLogoColored(logoUrl: string): boolean {
+    const cleanLogoUrl = logoUrl.split(',')[1]; // Eliminar el prefijo de base64
+    return this.bookImages.some((image) => {
+      const cleanImageUrl = image.logoUrl.split(',')[1]; // Eliminar el prefijo de base64
+      // console.log('Comparando:', cleanLogoUrl, 'con', cleanImageUrl); // Para depuración
+      return cleanImageUrl === cleanLogoUrl;
+    });
   }
 
   async populateShopLogos(): Promise<void> {
@@ -129,7 +183,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         };
       })
     );
-    console.log('Logos de la tienda: ', this.shopLogos);
+    // console.log('Logos de la tienda: ', this.shopLogos);
   }
 
   getMimeType(format: string): string {
@@ -172,29 +226,29 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     }
   }
 
-  addShopMarkersToMap(): void {
+  addShopMarkersToMap(shouldZoom: boolean = true): void {
     if (!this.map) {
       console.error('El mapa no está inicializado.');
       return;
     }
-
+  
     this.shopMarkers = this.shopData
       .map((shop) => {
         const lat = shop.latitude;
         const lng = shop.longitude;
-
+  
         if (typeof lat !== 'number' || typeof lng !== 'number') {
           console.error('Coordenadas inválidas para la tienda:', shop);
           return null;
         }
-
+  
         const iconUrl = 'assets/IconsMarker/cafeteria.png'; // Usamos la misma imagen para todas las tiendas
         const marker = L.marker([lat, lng], {
           icon: this.createStoreIcon(iconUrl, shop.statusShop),
         })
           .addTo(this.map)
           .bindPopup(shop.name);
-
+  
         marker.on('click', () => {
           this.showRouteConfirmation(
             this.map,
@@ -203,7 +257,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
             shop.name
           );
         });
-
+  
         return {
           marker,
           name: shop.name,
@@ -211,8 +265,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         };
       })
       .filter((markerData) => markerData !== null);
-
-    if (this.shopMarkers.length > 0) {
+  
+    if (shouldZoom && this.shopMarkers.length > 0) {
       this.map.fitBounds(
         this.shopMarkers.map((data) => [
           data.marker.getLatLng().lat,
@@ -221,19 +275,22 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       );
     }
   }
+  
 
   ngAfterViewInit(): void {
     this.map = new L.Map('map', {
       center: [6.150155571503784, -75.61905204382627], // Coordenadas iniciales
       zoom: 13,
       attributionControl: false,
+      zoomDelta: 0.5, // Cambia la cantidad de zoom en cada paso
+      zoomSnap: 0.1, // Opcional: controla la suavidad del zoom
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
     }).addTo(this.map);
 
-    this.userLocationMarker = L.marker([0,0], {
+    this.userLocationMarker = L.marker([0, 0], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
@@ -372,7 +429,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       console.error('Error: No se han inicializado los marcadores o el mapa.');
     }
   }
-  
+
   showRoute(
     map: L.Map,
     startLat: number,
@@ -408,59 +465,56 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
     if (transport != 'car') {
       fetch(url)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Error en la solicitud al servicio OSRM');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (!data || !data.routes || data.routes.length === 0) {
-          throw new Error('No se encontraron rutas válidas');
-        }
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Error en la solicitud al servicio OSRM');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (!data || !data.routes || data.routes.length === 0) {
+            throw new Error('No se encontraron rutas válidas');
+          }
 
-        const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
-        const routeCoordinates = route.geometry.coordinates.map(
-          (coord: [number, number]) => [coord[1], coord[0]]
-        );
+          const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
+          const routeCoordinates = route.geometry.coordinates.map(
+            (coord: [number, number]) => [coord[1], coord[0]]
+          );
 
-        // Dibujar la ruta en el mapa usando Leaflet
-        let color = 'blue'; // Default color for foot transport
+          // Dibujar la ruta en el mapa usando Leaflet
+          let color = 'blue'; // Default color for foot transport
 
-        if (transport === 'car') {
-          color = 'red';
-        } else if (transport === 'bike') {
-          color = 'green';
-        }
+          if (transport === 'car') {
+            color = 'red';
+          } else if (transport === 'bike') {
+            color = 'green';
+          }
 
-        if (this.routingControl) {
-          this.routingControl.remove();
-        }
+          if (this.routingControl) {
+            this.routingControl.remove();
+          }
 
-        this.routingControl = L.polyline(routeCoordinates, {
-          color: color,
-        }).addTo(map);
+          this.routingControl = L.polyline(routeCoordinates, {
+            color: color,
+          }).addTo(map);
 
-        // Mostrar la distancia y tiempo estimado
-        const distance = route.distance / 1000; // Distancia en kilómetros
-        const duration = route.duration / 60; // Duración en minutos
+          // Mostrar la distancia y tiempo estimado
+          const distance = route.distance / 1000; // Distancia en kilómetros
+          const duration = route.duration / 60; // Duración en minutos
 
-        toastr.info(
-          `Ruta hacia ${this.destinationName} es de ${distance.toFixed(
-            2
-          )} km y tomará aproximadamente ${duration.toFixed(0)} minutos.`
-        );
-      })
-      .catch((error) => {
-        console.error('Error al obtener la ruta desde OSRM:', error);
-        toastr.error('Error al obtener la ruta');
-      });
-    }else{
+          toastr.info(
+            `Ruta hacia ${this.destinationName} es de ${distance.toFixed(
+              2
+            )} km y tomará aproximadamente ${duration.toFixed(0)} minutos.`
+          );
+        })
+        .catch((error) => {
+          console.error('Error al obtener la ruta desde OSRM:', error);
+          toastr.error('Error al obtener la ruta');
+        });
+    } else {
       this.routingControl = (L as any).Routing.control({
-        waypoints: [
-          L.latLng(startLat, startLng),
-          L.latLng(endLat, endLng)
-        ],
+        waypoints: [L.latLng(startLat, startLng), L.latLng(endLat, endLng)],
         routeWhileDragging: true,
         createMarker: (i: number, waypoint: any, n: number) => {
           if (i === n - 1) {
@@ -553,7 +607,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   verifyCode() {
-    console.log('Primer bloque)');
+    console.log('Primer bloque');
     this.storeService.verifyCodeCode(this.enteredCode).subscribe(
       (response) => {
         console.log(response);
@@ -563,22 +617,30 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         if (this.message === 'Código de verificación guardado exitosamente') {
           this.verifiedcode = true;
           if (response.shop) {
-            console.log('2 bloque)');
+            console.log('2 bloque');
             // Llamar a verifyCodeOnce con el shopId y el código
             this.storeService
               .verifyCode(response.shop._id, this.enteredCode)
               .subscribe(
                 (res) => {
-                  console.log('3 bloque)');
+                  console.log('3 bloque');
                   console.log(res);
                   toastr.success(
                     'Código verificado y CoffeeCoins añadidos exitosamente'
                   );
+                  this.reloadComponent();
                   this.modalRef.close();
                 },
                 (err) => {
-                  console.log('4 bloque)');
-                  toastr.error('Error al añadir CoffeeCoins');
+                  console.log('4 bloque');
+                  if (
+                    err.error.message ===
+                    'La tienda ya está presente en el libro'
+                  ) {
+                    toastr.error('La tienda ya está presente en el álbum');
+                  } else {
+                    toastr.error('Error al añadir CoffeeCoins');
+                  }
                   this.modalRef.close();
                 }
               );
@@ -586,45 +648,28 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
             toastr.success(
               'Código verificado y CoffeeCoins añadidos exitosamente'
             );
+            this.reloadComponent();
           }
         } else {
           this.verifiedcode = false;
           toastr.error('Código de verificación no válido');
         }
-        console.log('5 bloque)');
+        console.log('5 bloque');
         this.verified = false;
         this.modalRef.close();
       },
       (error) => {
-        console.log('6 bloque)');
-        this.message = 'Error al verificar el código';
-        toastr.error('Error al verificar el código');
+        console.log('6 bloque');
+        if (error.error.message === 'La tienda ya está presente en el libro') {
+          toastr.warning(
+            'La tienda ya está presente en el álbum pero te aumentamos coffecoins'
+          );
+        } else {
+          this.message = 'Error al verificar el código';
+          toastr.error('Error al verificar el código');
+        }
       }
     );
-  }
-
-  coloredImage(): void {
-    if (this.currentImageIndex < this.albumImages.length) {
-      this.albumImages[this.currentImageIndex].colored = true;
-      this.currentImageIndex++;
-    } else {
-      console.log('Todas las imágenes ya están coloreadas');
-    }
-  }
-
-  updateImages(userId: string): void {
-    this.albumService.updateAlbumImages(userId).subscribe(
-      (images) => {
-        console.log('Datos del álbum obtenidos:', images);
-      },
-      (error: HttpErrorResponse) => {
-        console.error('Error al actualizar el álbum de imágenes:', error);
-      }
-    );
-  }
-
-  get obtainedStamps(): number {
-    return this.albumService.getObtainedStamps();
   }
 
   get totalStamps(): number {
@@ -634,5 +679,22 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     }
 
     return this.shopData.length;
+  }
+
+  // Método para recargar el componente
+  reloadComponent(): void {
+    // Limpiar los datos actuales
+    this.userData = null;
+    this.shopData = [];
+    this.bookImages = [];
+    this.shopMarkers = [];
+    this.shopLogos = [];
+
+    // Volver a cargar los datos
+    this.fetchUserData();
+    this.fetchShopData();
+    this.populateShopLogos();
+    this.fetchBookData();
+    console.log('Recargadoooooooooooooooo');
   }
 }

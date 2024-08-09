@@ -5,7 +5,7 @@ import { throwError } from 'rxjs';
 import { environment } from 'src/environments/environments';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
   private readonly apiUrl: string = environment.baseUrl;
@@ -15,11 +15,11 @@ export class UserService {
   fetchUserData(token: string) {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
 
     return this.http.get<any>(`${this.apiUrl}/auth`, { headers }).pipe(
-      catchError(error => {
+      catchError((error) => {
         console.error('Error al obtener los datos del usuario:', error);
         return throwError(() => error);
       })
@@ -27,17 +27,18 @@ export class UserService {
   }
 
   fetchUserId(token: string) {
-  const headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`
-  });
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    });
 
-  return this.http.get<{ userId: string }>(`${this.apiUrl}/auth/user-id`, { headers }).pipe(
-    catchError(error => {
-      console.error('Error al obtener el userId del usuario:', error);
-      return throwError(() => error);
-    })
-  );
-}
-
+    return this.http
+      .get<{ userId: string }>(`${this.apiUrl}/auth/user-id`, { headers })
+      .pipe(
+        catchError((error) => {
+          console.error('Error al obtener el userId del usuario:', error);
+          return throwError(() => error);
+        })
+      );
+  }
 }
