@@ -15,8 +15,8 @@ export class MailService {
   });
 
   async sendPasswordResetMail(email: string, token: string): Promise<void> {
-    //const resetLink = `http://localhost:4200/#/auth/reset-password?token=${token}`;
-     const resetLink = `https://www.encafeinados.club/#/auth/reset-password?token=${token}`;
+    const resetLink = `http://localhost:4200/#/auth/reset-password?token=${token}`;
+     //const resetLink = `https://www.encafeinados.club/#/auth/reset-password?token=${token}`;
     console.log('Sending reset link:', resetLink); // Verifica la URL generada
 
     await this.transporter.sendMail({
