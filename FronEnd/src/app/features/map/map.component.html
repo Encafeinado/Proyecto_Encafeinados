@@ -17,10 +17,15 @@
     </div>
     <div class="col-md-4 sidebar">
       <h2>Bienvenido a Encafeinados</h2>
-      <p>¡Encuentra los mejores lugares de café en tu área!</p>
-      <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid">
+      <p>¡Encuentra los mejores lugares de café en tu área!</p> 
       <p>Explora nuestras mejores recomendaciones para los amantes del café.</p>
+      <div class="alert alert-info" *ngIf="showAlert" role="alert">
+        <h4 class="alert-heading">{{ routeInfo }}</h4>
+        <p>Distancia: {{ routeDistance }} km</p>
+        <p>Tiempo estimado: {{ routeDuration }} minutos</p>
+      </div>
       <br>
+
       <!-- Información adicional -->
       <div style="margin-top: 20px; background-color: #f8f9fa; padding: 10px; border-radius: 5px;">
         <h3 style="margin-bottom: 10px;">Información adicional</h3>
