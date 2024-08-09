@@ -145,13 +145,15 @@
                 <span class="label-input100">Celular</span>
                 <div class="input-with-eye">
                   <input class="input100 small-placeholder form-control" type="number" formControlName="phone"
-                    placeholder="Celular" autocomplete="tel">
+                  placeholder="Celular" autocomplete="tel" min="1000000000" max="999999999999999">
+
                   <span class="focus-input100"></span>
                 </div>
-                <!-- Mensaje de error para teléfono no válido -->
+               
                 <div *ngIf="myForm.get('phone')?.hasError('invalidPhoneNumber') && myForm.get('phone')?.touched" class="error-message">
-                  El número de celular solo debe contener numeros.
+                  El número de celular debe contener solo números y tener entre 10 .
                 </div>
+
                 <!-- Mensaje de error para campo requerido -->
                 <div *ngIf="myForm.get('phone')?.touched && myForm.get('phone')?.hasError('required')" class="error-message">
                   El campo celular es obligatorio.
