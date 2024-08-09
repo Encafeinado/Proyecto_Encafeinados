@@ -1,0 +1,41 @@
+.modal-content-datos{
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-family: "Poppins", sans-serif;
+    overflow: hidden;
+  }
+  
+  .modal-header-datos {
+    background-color: #03aed2;
+    color: #ffffff;
+    padding: 15px;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .modal-body-datos{
+    padding: 20px;
+    background-color: #feefad;
+    border-radius: 0 0 10px 10px;
+  }
+  
+  .modal-footer-datos {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    border-top: none;
+  }
+  
+  .modal-footer-datos .btn{
+    margin: 0 10px;
+    background-color: #fdde55;
+    color: #03aed2;
+    border: none;
+  }
+  
+  .modal-footer-datos .btn:hover {
+    background-color: #feefad;
+  }

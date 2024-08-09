@@ -1,11 +1,15 @@
 <!-- data-treatment-dialog.component.html -->
-<h1 mat-dialog-title>Tratamiento de Datos</h1>
-<div mat-dialog-content>
-  <p>Antes de registrarte leer porfavor el tratamiento de datos...</p>
-  <!-- Puedes agregar un enlace al PDF si es necesario -->
-  <a href="assets/pdf/Tratamiento-datos-personales-Encafeina2.pdf" target="_blank">Ver PDF</a>
+<div class="modal-content-datos">
+  <div class="modal-header-datos">
+    <h5 class="modal-title-datos">Tratamiento de Datos</h5>
+  </div>
+  <div class="modal-body-datos">
+    <p>Antes de registrarte, por favor lee el tratamiento de datos...</p>
+    <a href="assets/pdf/Tratamiento-datos-personales-Encafeina2.pdf" target="_blank">Ver PDF</a>
+  </div>
+  <div class="modal-footer-datos">
+    <button type="button" class="btn" (click)="onNoClick()">Cancelar</button>
+    <button type="button" class="btn" (click)="onYesClick()">Aceptar</button>
+  </div>
 </div>
-<div mat-dialog-actions>
-  <button mat-button color="warn" (click)="onNoClick()">Cancelar</button>
-  <button mat-button color="primary" (click)="onYesClick()">Aceptar</button>
-</div>
+
