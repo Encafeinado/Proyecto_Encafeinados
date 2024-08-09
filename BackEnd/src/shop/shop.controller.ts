@@ -28,7 +28,7 @@ export class ShopController {
     const isValid = await this.shopService.verifyVerificationCode(shopId, code);
 
     if (isValid) {
-      return { message: 'Código de verificación válido' };
+      return { message: 'Código de verificación actualizado' };
     } else {
       return { message: 'Código de verificación no aceptado' };
     }

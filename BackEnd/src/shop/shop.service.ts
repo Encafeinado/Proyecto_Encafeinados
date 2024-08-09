@@ -92,7 +92,7 @@ export class ShopService {
     }
 
     if (shop.verificationCode === code) {
-      shop.codeUsage = (shop.codeUsage || 0) + 1;
+      // shop.codeUsage = (shop.codeUsage || 0) + 1;
       shop.verificationCode = await this.generateUniqueVerificationCode();
       await shop.save();
       console.log('Updated shop with new code and usage:', shop);
