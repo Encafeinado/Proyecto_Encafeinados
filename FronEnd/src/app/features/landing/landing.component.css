@@ -41,3 +41,7 @@ footer p {
   font-size: 1rem;
   color: #6c757d; /* Gris */
 }
+
+.social-link {
+  margin: 0 10px; /* Esto agrega un margen de 10px a los lados de cada logo */
+}

@@ -60,6 +60,12 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   bookImages: Image[] = [];
   obtainedStamps: number = 0;
   // totalStamps: number = 0;
+
+  showAlert: boolean = false;
+  routeInfo: string = '';
+  routeDistance: string = '';
+  routeDuration: string = '';
+
   @ViewChild('createModal', { static: true }) createModal: any;
   @ViewChild('cancelModal', { static: true }) cancelModal: any;
   @ViewChild('codeModal', { static: true }) codeModal: any;
@@ -107,286 +113,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
   
 
-  fetchUserData(): void {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('Token no encontrado en el almacenamiento local.');
-      return;
-    }
-
-    this.userService.fetchUserData(token).subscribe(
-      (data: any) => {
-        this.userData = data;
-        // console.log('Datos del usuario:', this.userData);
-      },
-      (error) => {
-        console.error('Error al obtener los datos del usuario:', error);
-      }
-    );
-  }
-
-  fetchShopData(): void {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('Token no encontrado en el almacenamiento local.');
-      return;
-    }
-  
-    this.shopService.fetchShopData(token).subscribe(
-      (data: any) => {
-        this.shopData = data;
-        // console.log('Datos de la tienda:', this.shopData); // Agrega esta línea para verificar la estructura de los datos
-        this.populateShopLogos();
-        this.addShopMarkersToMap(false); // Pasar false para no hacer zoom
-      },
-      (error) => {
-        console.error('Error al obtener los datos de la tienda:', error);
-      }
-    );
-  }
-  
-
-  fetchBookData(): void {
-    if (this.userId) {
-      this.albumService.getBookData(this.userId).subscribe(
-        (data) => {
-          this.bookImages = data;
-          this.obtainedStamps = this.bookImages.length;
-          // console.log('Datos del álbum:', this.bookImages); // Para depuración
-          // this.totalStamps = this.shopLogos.length; // Asume que totalStamps es igual a la cantidad de logos de tiendas
-          // console.log(this.userId);
-        },
-        (error) => {
-          console.error('Error al obtener los datos del álbum:', error);
-        }
-      );
-    }
-  }
-
-  isLogoColored(logoUrl: string): boolean {
-    const cleanLogoUrl = logoUrl.split(',')[1]; // Eliminar el prefijo de base64
-    return this.bookImages.some((image) => {
-      const cleanImageUrl = image.logoUrl.split(',')[1]; // Eliminar el prefijo de base64
-      // console.log('Comparando:', cleanLogoUrl, 'con', cleanImageUrl); // Para depuración
-      return cleanImageUrl === cleanLogoUrl;
-    });
-  }
-
-  async populateShopLogos(): Promise<void> {
-    this.shopLogos = await Promise.all(
-      this.shopData.map(async (shop: any) => {
-        const mimeType = this.getMimeType(shop.logo.format);
-        const logoUrl = await this.convertBufferToDataUrl(shop.logo, mimeType);
-        return {
-          name: shop.name,
-          logoUrl: logoUrl,
-        };
-      })
-    );
-    // console.log('Logos de la tienda: ', this.shopLogos);
-  }
-
-  getMimeType(format: string): string {
-    switch (format) {
-      case 'jpeg':
-      case 'jpg':
-        return 'image/jpeg';
-      case 'png':
-        return 'image/png';
-      case 'gif':
-        return 'image/gif';
-      default:
-        return 'application/octet-stream'; // Tipo MIME genérico
-    }
-  }
-
-  convertBufferToDataUrl(buffer: any, mimeType: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      try {
-        const arrayBuffer = new Uint8Array(buffer.data).buffer;
-        const blob = new Blob([arrayBuffer], { type: mimeType });
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.onerror = () => reject('Error al leer el archivo');
-        reader.readAsDataURL(blob);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
-
-  goToUserLocation(): void {
-    if (this.userLocation) {
-      this.map.setView([this.userLocation.lat, this.userLocation.lng], 15, {
-        animate: true,
-        duration: 1.5, // Duración de la animación en segundos
-      });
-    } else {
-      console.error('La ubicación del usuario no está disponible.');
-    }
-  }
-
-  addShopMarkersToMap(shouldZoom: boolean = true): void {
-    if (!this.map) {
-      console.error('El mapa no está inicializado.');
-      return;
-    }
-  
-    this.shopMarkers = this.shopData
-      .map((shop) => {
-        const lat = shop.latitude;
-        const lng = shop.longitude;
-  
-        if (typeof lat !== 'number' || typeof lng !== 'number') {
-          console.error('Coordenadas inválidas para la tienda:', shop);
-          return null;
-        }
-  
-        const iconUrl = 'assets/IconsMarker/cafeteria.png'; // Usamos la misma imagen para todas las tiendas
-        const marker = L.marker([lat, lng], {
-          icon: this.createStoreIcon(iconUrl, shop.statusShop),
-        })
-          .addTo(this.map)
-          .bindPopup(shop.name);
-  
-        marker.on('click', () => {
-          this.showRouteConfirmation(
-            this.map,
-            marker,
-            this.userLocationMarker,
-            shop.name
-          );
-        });
-  
-        return {
-          marker,
-          name: shop.name,
-          iconUrl: iconUrl,
-        };
-      })
-      .filter((markerData) => markerData !== null);
-  
-    if (shouldZoom && this.shopMarkers.length > 0) {
-      this.map.fitBounds(
-        this.shopMarkers.map((data) => [
-          data.marker.getLatLng().lat,
-          data.marker.getLatLng().lng,
-        ])
-      );
-    }
-  }
-  
-
-  ngAfterViewInit(): void {
-    this.map = new L.Map('map', {
-      center: [6.150155571503784, -75.61905204382627], // Coordenadas iniciales
-      zoom: 13,
-      attributionControl: false,
-      zoomDelta: 0.5, // Cambia la cantidad de zoom en cada paso
-      zoomSnap: 0.1, // Opcional: controla la suavidad del zoom
-    });
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-    }).addTo(this.map);
-
-    this.userLocationMarker = L.marker([0, 0], {
-      icon: this.userLocationIcon,
-    })
-      .addTo(this.map)
-      .bindPopup('Tu ubicación actual');
-
-    // Carga los datos de la tienda y los marcadores
-    this.fetchShopData();
-
-    // Observa la ubicación del usuario
-    this.watchId = navigator.geolocation.watchPosition(
-      (position) => {
-        const userLat = position.coords.latitude;
-        const userLng = position.coords.longitude;
-        const accuracy = position.coords.accuracy;
-
-        if (accuracy < 50) {
-          this.userLocationMarker.setLatLng([userLat, userLng]);
-          this.userLocation = { lat: userLat, lng: userLng };
-
-          if (!this.initialZoomDone) {
-            // Centra el mapa en la ubicación del usuario con un zoom de nivel 15
-            this.map.setView([userLat, userLng], 15, {
-              animate: true,
-            });
-            this.initialZoomDone = true;
-          }
-
-          this.checkProximityToStores(userLat, userLng, this.shopMarkers);
-        }
-      },
-      (error) => {
-        console.error('Error al obtener la ubicación del usuario:', error);
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 30000,
-      }
-    );
-  }
-
-  checkProximityToStores(
-    userLat: number,
-    userLng: number,
-    markers: { marker: L.Marker; name: string; iconUrl: string }[] // Define claramente el tipo aquí
-  ) {
-    const proximityThreshold = 10; // 10 metros
-
-    markers.forEach(({ marker, name, iconUrl }) => {
-      const { lat, lng } = marker.getLatLng();
-      const distance = this.calculateDistance(userLat, userLng, lat, lng);
-
-      const shop = this.shopData.find((s) => s.name === name); // Encuentra la tienda correspondiente
-      if (shop) {
-        const statusShop = shop.statusShop; // Accede a statusShop de la tienda encontrada
-
-        if (distance <= proximityThreshold) {
-          marker.setIcon(this.createStoreIcon(iconUrl, statusShop));
-          console.log(`Estás cerca de ${name}`);
-          this.openModal(this.arriveModal, name); // Pasa el nombre de la cafetería
-        } else {
-          marker.setIcon(
-            this.createStoreIcon(iconUrl, statusShop, 'grayscale-icon')
-          );
-        }
-      } else {
-        console.error(`No se encontró la tienda con nombre ${name}`);
-      }
-    });
-  }
-
-  // Método para calcular la distancia
-  calculateDistance(
-    lat1: number,
-    lng1: number,
-    lat2: number,
-    lng2: number
-  ): number {
-    const R = 6371e3; // Radio de la Tierra en metros
-    const φ1 = this.degreesToRadians(lat1);
-    const φ2 = this.degreesToRadians(lat2);
-    const Δφ = this.degreesToRadians(lat2 - lat1);
-    const Δλ = this.degreesToRadians(lng2 - lng1);
-
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    const distance = R * c; // Distancia en metros
-    return distance;
-  }
-
-  // Método para convertir grados a radianes
-  degreesToRadians(degrees: number): number {
-    return degrees * (Math.PI / 180);
+  closeAlert(): void {
+    this.showAlert = false;
   }
 
   showRouteConfirmation(
@@ -628,6 +356,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
                   toastr.success(
                     'Código verificado y CoffeeCoins añadidos exitosamente'
                   );
+                  
                   this.reloadComponent();
                   this.modalRef.close();
                 },
@@ -664,6 +393,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
           toastr.warning(
             'La tienda ya está presente en el álbum pero te aumentamos coffecoins'
           );
+          this.modalRef.close();
         } else {
           this.message = 'Error al verificar el código';
           toastr.error('Error al verificar el código');
@@ -671,6 +401,289 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       }
     );
   }
+  
+  ngAfterViewInit(): void {
+    this.map = new L.Map('map', {
+      center: [6.150155571503784, -75.61905204382627], // Coordenadas iniciales
+      zoom: 13,
+      attributionControl: false,
+      zoomDelta: 0.5, // Cambia la cantidad de zoom en cada paso
+      zoomSnap: 0.1, // Opcional: controla la suavidad del zoom
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+    }).addTo(this.map);
+
+    this.userLocationMarker = L.marker([0, 0], {
+      icon: this.userLocationIcon,
+    })
+      .addTo(this.map)
+      .bindPopup('Tu ubicación actual');
+
+    // Carga los datos de la tienda y los marcadores
+    this.fetchShopData();
+
+    // Observa la ubicación del usuario
+    this.watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+        const accuracy = position.coords.accuracy;
+
+        if (accuracy < 50) {
+          this.userLocationMarker.setLatLng([userLat, userLng]);
+          this.userLocation = { lat: userLat, lng: userLng };
+
+          if (!this.initialZoomDone) {
+            // Centra el mapa en la ubicación del usuario con un zoom de nivel 15
+            this.map.setView([userLat, userLng], 15, {
+              animate: true,
+            });
+            this.initialZoomDone = true;
+          }
+
+          this.checkProximityToStores(userLat, userLng, this.shopMarkers);
+        }
+      },
+      (error) => {
+        console.error('Error al obtener la ubicación del usuario:', error);
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 30000,
+      }
+    );
+  }
+
+  checkProximityToStores(
+    userLat: number,
+    userLng: number,
+    markers: { marker: L.Marker; name: string; iconUrl: string }[] // Define claramente el tipo aquí
+  ) {
+    const proximityThreshold = 10; // 10 metros
+
+    markers.forEach(({ marker, name, iconUrl }) => {
+      const { lat, lng } = marker.getLatLng();
+      const distance = this.calculateDistance(userLat, userLng, lat, lng);
+
+      const shop = this.shopData.find((s) => s.name === name); // Encuentra la tienda correspondiente
+      if (shop) {
+        const statusShop = shop.statusShop; // Accede a statusShop de la tienda encontrada
+
+        if (distance <= proximityThreshold) {
+          marker.setIcon(this.createStoreIcon(iconUrl, statusShop));
+          console.log(`Estás cerca de ${name}`);
+          this.openModal(this.arriveModal, name); // Pasa el nombre de la cafetería
+        } else {
+          marker.setIcon(
+            this.createStoreIcon(iconUrl, statusShop, 'grayscale-icon')
+          );
+        }
+      } else {
+        console.error(`No se encontró la tienda con nombre ${name}`);
+      }
+    });
+  }
+  fetchUserData(): void {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token no encontrado en el almacenamiento local.');
+      return;
+    }
+
+    this.userService.fetchUserData(token).subscribe(
+      (data: any) => {
+        this.userData = data;
+        // console.log('Datos del usuario:', this.userData);
+      },
+      (error) => {
+        console.error('Error al obtener los datos del usuario:', error);
+      }
+    );
+  }
+
+  fetchShopData(): void {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token no encontrado en el almacenamiento local.');
+      return;
+    }
+  
+    this.shopService.fetchShopData(token).subscribe(
+      (data: any) => {
+        this.shopData = data;
+        // console.log('Datos de la tienda:', this.shopData); // Agrega esta línea para verificar la estructura de los datos
+        this.populateShopLogos();
+        this.addShopMarkersToMap(false); // Pasar false para no hacer zoom
+      },
+      (error) => {
+        console.error('Error al obtener los datos de la tienda:', error);
+      }
+    );
+  }
+  
+
+  fetchBookData(): void {
+    if (this.userId) {
+      this.albumService.getBookData(this.userId).subscribe(
+        (data) => {
+          this.bookImages = data;
+          this.obtainedStamps = this.bookImages.length;
+          // console.log('Datos del álbum:', this.bookImages); // Para depuración
+          // this.totalStamps = this.shopLogos.length; // Asume que totalStamps es igual a la cantidad de logos de tiendas
+          // console.log(this.userId);
+        },
+        (error) => {
+          console.error('Error al obtener los datos del álbum:', error);
+        }
+      );
+    }
+  }
+
+  isLogoColored(logoUrl: string): boolean {
+    const cleanLogoUrl = logoUrl.split(',')[1]; // Eliminar el prefijo de base64
+    return this.bookImages.some((image) => {
+      const cleanImageUrl = image.logoUrl.split(',')[1]; // Eliminar el prefijo de base64
+      // console.log('Comparando:', cleanLogoUrl, 'con', cleanImageUrl); // Para depuración
+      return cleanImageUrl === cleanLogoUrl;
+    });
+  }
+
+  async populateShopLogos(): Promise<void> {
+    this.shopLogos = await Promise.all(
+      this.shopData.map(async (shop: any) => {
+        const mimeType = this.getMimeType(shop.logo.format);
+        const logoUrl = await this.convertBufferToDataUrl(shop.logo, mimeType);
+        return {
+          name: shop.name,
+          logoUrl: logoUrl,
+        };
+      })
+    );
+    // console.log('Logos de la tienda: ', this.shopLogos);
+  }
+
+  getMimeType(format: string): string {
+    switch (format) {
+      case 'jpeg':
+      case 'jpg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      case 'gif':
+        return 'image/gif';
+      default:
+        return 'application/octet-stream'; // Tipo MIME genérico
+    }
+  }
+
+  convertBufferToDataUrl(buffer: any, mimeType: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      try {
+        const arrayBuffer = new Uint8Array(buffer.data).buffer;
+        const blob = new Blob([arrayBuffer], { type: mimeType });
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = () => reject('Error al leer el archivo');
+        reader.readAsDataURL(blob);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  goToUserLocation(): void {
+    if (this.userLocation) {
+      this.map.setView([this.userLocation.lat, this.userLocation.lng], 15, {
+        animate: true,
+        duration: 1.5, // Duración de la animación en segundos
+      });
+    } else {
+      console.error('La ubicación del usuario no está disponible.');
+    }
+  }
+
+  addShopMarkersToMap(shouldZoom: boolean = true): void {
+    if (!this.map) {
+      console.error('El mapa no está inicializado.');
+      return;
+    }
+  
+    this.shopMarkers = this.shopData
+      .map((shop) => {
+        const lat = shop.latitude;
+        const lng = shop.longitude;
+  
+        if (typeof lat !== 'number' || typeof lng !== 'number') {
+          console.error('Coordenadas inválidas para la tienda:', shop);
+          return null;
+        }
+  
+        const iconUrl = 'assets/IconsMarker/cafeteria.png'; // Usamos la misma imagen para todas las tiendas
+        const marker = L.marker([lat, lng], {
+          icon: this.createStoreIcon(iconUrl, shop.statusShop),
+        })
+          .addTo(this.map)
+          .bindPopup(shop.name);
+  
+        marker.on('click', () => {
+          this.showRouteConfirmation(
+            this.map,
+            marker,
+            this.userLocationMarker,
+            shop.name
+          );
+        });
+  
+        return {
+          marker,
+          name: shop.name,
+          iconUrl: iconUrl,
+        };
+      })
+      .filter((markerData) => markerData !== null);
+  
+    if (shouldZoom && this.shopMarkers.length > 0) {
+      this.map.fitBounds(
+        this.shopMarkers.map((data) => [
+          data.marker.getLatLng().lat,
+          data.marker.getLatLng().lng,
+        ])
+      );
+    }
+  }
+  
+
+  // Método para calcular la distancia
+  calculateDistance(
+    lat1: number,
+    lng1: number,
+    lat2: number,
+    lng2: number
+  ): number {
+    const R = 6371e3; // Radio de la Tierra en metros
+    const φ1 = this.degreesToRadians(lat1);
+    const φ2 = this.degreesToRadians(lat2);
+    const Δφ = this.degreesToRadians(lat2 - lat1);
+    const Δλ = this.degreesToRadians(lng2 - lng1);
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    const distance = R * c; // Distancia en metros
+    return distance;
+  }
+
+  // Método para convertir grados a radianes
+  degreesToRadians(degrees: number): number {
+    return degrees * (Math.PI / 180);
+  }
+
+  
 
   get totalStamps(): number {
     // La cantidad total de estampas es igual a la cantidad total de tiendas

@@ -3264,3 +3264,10 @@ body {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.leaflet-routing-container {
+  width: 100%; /* Make it fit the sidebar */
+  max-height: 300px; /* Or another value depending on the available space */
+  overflow-y: auto; /* Scroll if content is too long */
+  margin-top: 20px; /* Add some space above */
+}
