@@ -28,7 +28,7 @@ import { AuthService } from 'src/app/auth/services/auth.service';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
 })
-export class MapComponent implements OnDestroy, AfterViewInit,OnInit {
+export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   modalRef!: NgbModalRef;
   openedModal = false;
   verifiedcode: boolean = false;
@@ -91,14 +91,21 @@ export class MapComponent implements OnDestroy, AfterViewInit,OnInit {
     this.populateShopLogos();
     this.fetchBookData();
     this.userId = this.authService.getUserId(); // Obtener el ID del usuario
-
+  
     if (this.userId) {
       this.fetchBookData();
     } else {
       console.error('No se encontró el ID del usuario.');
     }
     this.changeDetector.detectChanges();
+  
+    // Actualiza los datos cada 10 segundos (10000 ms)
+    setInterval(() => {
+      this.fetchShopData();
+      this.fetchBookData();
+    }, 10000); // 10 segundos
   }
+  
 
   fetchUserData(): void {
     const token = localStorage.getItem('token');
@@ -124,19 +131,20 @@ export class MapComponent implements OnDestroy, AfterViewInit,OnInit {
       console.error('Token no encontrado en el almacenamiento local.');
       return;
     }
-
+  
     this.shopService.fetchShopData(token).subscribe(
       (data: any) => {
         this.shopData = data;
         // console.log('Datos de la tienda:', this.shopData); // Agrega esta línea para verificar la estructura de los datos
         this.populateShopLogos();
-        this.addShopMarkersToMap();
+        this.addShopMarkersToMap(false); // Pasar false para no hacer zoom
       },
       (error) => {
         console.error('Error al obtener los datos de la tienda:', error);
       }
     );
   }
+  
 
   fetchBookData(): void {
     if (this.userId) {
@@ -218,29 +226,29 @@ export class MapComponent implements OnDestroy, AfterViewInit,OnInit {
     }
   }
 
-  addShopMarkersToMap(): void {
+  addShopMarkersToMap(shouldZoom: boolean = true): void {
     if (!this.map) {
       console.error('El mapa no está inicializado.');
       return;
     }
-
+  
     this.shopMarkers = this.shopData
       .map((shop) => {
         const lat = shop.latitude;
         const lng = shop.longitude;
-
+  
         if (typeof lat !== 'number' || typeof lng !== 'number') {
           console.error('Coordenadas inválidas para la tienda:', shop);
           return null;
         }
-
+  
         const iconUrl = 'assets/IconsMarker/cafeteria.png'; // Usamos la misma imagen para todas las tiendas
         const marker = L.marker([lat, lng], {
           icon: this.createStoreIcon(iconUrl, shop.statusShop),
         })
           .addTo(this.map)
           .bindPopup(shop.name);
-
+  
         marker.on('click', () => {
           this.showRouteConfirmation(
             this.map,
@@ -249,7 +257,7 @@ export class MapComponent implements OnDestroy, AfterViewInit,OnInit {
             shop.name
           );
         });
-
+  
         return {
           marker,
           name: shop.name,
@@ -257,8 +265,8 @@ export class MapComponent implements OnDestroy, AfterViewInit,OnInit {
         };
       })
       .filter((markerData) => markerData !== null);
-
-    if (this.shopMarkers.length > 0) {
+  
+    if (shouldZoom && this.shopMarkers.length > 0) {
       this.map.fitBounds(
         this.shopMarkers.map((data) => [
           data.marker.getLatLng().lat,
@@ -267,12 +275,15 @@ export class MapComponent implements OnDestroy, AfterViewInit,OnInit {
       );
     }
   }
+  
 
   ngAfterViewInit(): void {
     this.map = new L.Map('map', {
       center: [6.150155571503784, -75.61905204382627], // Coordenadas iniciales
       zoom: 13,
       attributionControl: false,
+      zoomDelta: 0.5, // Cambia la cantidad de zoom en cada paso
+      zoomSnap: 0.1, // Opcional: controla la suavidad del zoom
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -602,31 +613,42 @@ export class MapComponent implements OnDestroy, AfterViewInit,OnInit {
         console.log(response);
         this.message = response.message;
         console.log(this.message);
-  
+
         if (this.message === 'Código de verificación guardado exitosamente') {
           this.verifiedcode = true;
           if (response.shop) {
             console.log('2 bloque');
             // Llamar a verifyCodeOnce con el shopId y el código
-            this.storeService.verifyCode(response.shop._id, this.enteredCode).subscribe(
-              (res) => {
-                console.log('3 bloque');
-                console.log(res);
-                toastr.success('Código verificado y CoffeeCoins añadidos exitosamente');
-                this.modalRef.close();
-              },
-              (err) => {
-                console.log('4 bloque');
-                if (err.error.message === 'La tienda ya está presente en el libro') {
-                  toastr.error('La tienda ya está presente en el álbum');
-                } else {
-                  toastr.error('Error al añadir CoffeeCoins');
+            this.storeService
+              .verifyCode(response.shop._id, this.enteredCode)
+              .subscribe(
+                (res) => {
+                  console.log('3 bloque');
+                  console.log(res);
+                  toastr.success(
+                    'Código verificado y CoffeeCoins añadidos exitosamente'
+                  );
+                  this.reloadComponent();
+                  this.modalRef.close();
+                },
+                (err) => {
+                  console.log('4 bloque');
+                  if (
+                    err.error.message ===
+                    'La tienda ya está presente en el libro'
+                  ) {
+                    toastr.error('La tienda ya está presente en el álbum');
+                  } else {
+                    toastr.error('Error al añadir CoffeeCoins');
+                  }
+                  this.modalRef.close();
                 }
-                this.modalRef.close();
-              }
-            );
+              );
           } else {
-            toastr.success('Código verificado y CoffeeCoins añadidos exitosamente');
+            toastr.success(
+              'Código verificado y CoffeeCoins añadidos exitosamente'
+            );
+            this.reloadComponent();
           }
         } else {
           this.verifiedcode = false;
@@ -639,27 +661,16 @@ export class MapComponent implements OnDestroy, AfterViewInit,OnInit {
       (error) => {
         console.log('6 bloque');
         if (error.error.message === 'La tienda ya está presente en el libro') {
-          toastr.warning('La tienda ya está presente en el álbum pero te aumentamos coffecoins');
+          toastr.warning(
+            'La tienda ya está presente en el álbum pero te aumentamos coffecoins'
+          );
         } else {
           this.message = 'Error al verificar el código';
           toastr.error('Error al verificar el código');
         }
       }
     );
-  }  
-
-  // colorAllImages(): void {
-  //   this.albumService.colorAllImages();
-  //   this.images = this.albumService.getAlbumImages(); // Actualiza las imágenes en el componente
-  // }
-
-  // isLogoColored(logoUrl: string): boolean {
-  //   return this.bookImages.some((image) => image.logoUrl === logoUrl);
-  // }
-
-  // get obtainedStamps(): number {
-  //   return this.albumService.getObtainedStamps();
-  // }
+  }
 
   get totalStamps(): number {
     // La cantidad total de estampas es igual a la cantidad total de tiendas
@@ -668,5 +679,22 @@ export class MapComponent implements OnDestroy, AfterViewInit,OnInit {
     }
 
     return this.shopData.length;
+  }
+
+  // Método para recargar el componente
+  reloadComponent(): void {
+    // Limpiar los datos actuales
+    this.userData = null;
+    this.shopData = [];
+    this.bookImages = [];
+    this.shopMarkers = [];
+    this.shopLogos = [];
+
+    // Volver a cargar los datos
+    this.fetchUserData();
+    this.fetchShopData();
+    this.populateShopLogos();
+    this.fetchBookData();
+    console.log('Recargadoooooooooooooooo');
   }
 }
