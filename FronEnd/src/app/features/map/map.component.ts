@@ -176,7 +176,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       routed = 'routed-foot';
     } else if (transport === 'car') {
       profile = 'driving';
-      routed = 'routed-driving';
+      routed = 'routed-car';
     } else {
       profile = 'bike';
       routed = 'routed-bike';
@@ -190,12 +190,13 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     } else {
       url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
     }
-
-    if (transport != 'car') {
+    url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`
+    if (transport !== 'caro') {
       fetch(url)
         .then((response) => {
+          console.log(url);
           if (!response.ok) {
-            throw new Error('Error en la solicitud al servicio OSRM');
+            throw new Error('Error en la solicitud al servicio OSM');
           }
           return response.json();
         })
@@ -203,47 +204,60 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
           if (!data || !data.routes || data.routes.length === 0) {
             throw new Error('No se encontraron rutas válidas');
           }
-
+    
           const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
           const routeCoordinates = route.geometry.coordinates.map(
             (coord: [number, number]) => [coord[1], coord[0]]
           );
-
+    
           // Dibujar la ruta en el mapa usando Leaflet
           let color = 'blue'; // Default color for foot transport
-
+    
           if (transport === 'car') {
             color = 'red';
           } else if (transport === 'bike') {
             color = 'green';
           }
-
+    
           if (this.routingControl) {
             this.routingControl.remove();
           }
-
+    
           this.routingControl = L.polyline(routeCoordinates, {
             color: color,
           }).addTo(map);
-
+    
+          // Calcular el tiempo estimado basado en la velocidad promedio
+          const averageSpeeds: { [key: string]: number } = {
+            foot: 5, // km/h
+            bike: 15, // km/h
+            car: 40 // km/h
+          };
+    
+          const speed = averageSpeeds[transport] || averageSpeeds['foot']; // Default to foot speed if transport type is unknown
+          const routeDistanceKm = route.distance / 1000; // Convert distance to kilometers
+          const estimatedTimeHours = routeDistanceKm / speed; // Time in hours
+          const estimatedTimeMinutes = estimatedTimeHours * 60; // Convert to minutes
+    
           // Mostrar la distancia y tiempo estimado
-          const distance = route.distance / 1000; // Distancia en kilómetros
-          const duration = route.duration / 60; // Duración en minutos
-
-          toastr.info(
-            `Ruta hacia ${this.destinationName} es de ${distance.toFixed(
-              2
-            )} km y tomará aproximadamente ${duration.toFixed(0)} minutos.`
-          );
+          this.routeDistance = routeDistanceKm.toFixed(2); // Distancia en kilómetros
+          this.routeDuration = estimatedTimeMinutes.toFixed(0); // Duración en minutos
+          this.routeInfo = `Ruta hacia ${this.destinationName}`;
+    
+          // Mostrar la alerta con la información de la ruta
+          this.showAlert = true;
         })
         .catch((error) => {
-          console.error('Error al obtener la ruta desde OSRM:', error);
-          toastr.error('Error al obtener la ruta');
+          console.error('Error al obtener la ruta desde OSM:', error);
         });
-    } else {
+    }else {
       this.routingControl = (L as any).Routing.control({
-        waypoints: [L.latLng(startLat, startLng), L.latLng(endLat, endLng)],
+        waypoints: [
+          L.latLng(startLat, startLng),
+          L.latLng(endLat, endLng)
+        ],
         routeWhileDragging: true,
+        language: 'es', // Añadido para asegurarse de que las instrucciones estén en español
         createMarker: (i: number, waypoint: any, n: number) => {
           if (i === n - 1) {
             return L.marker(waypoint.latLng, { icon: icon });
@@ -252,8 +266,15 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
           }
         },
       }).addTo(map);
-    }
-  }
+      setTimeout(() => {
+        const routingContainer = document.querySelector('.leaflet-routing-container');
+        const sidebar = document.querySelector('.sidebar'); // Replace with your actual sidebar selector
+        if (routingContainer && sidebar) {
+          sidebar.appendChild(routingContainer);
+        }
+      }, 500);
+    }
+  }
 
   selectTransportMode(mode: string) {
     this.selectedTransport = mode;
@@ -415,7 +436,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       maxZoom: 19,
     }).addTo(this.map);
 
-    this.userLocationMarker = L.marker([0, 0], {
+    this.userLocationMarker = L.marker([6.34174375755806, -75.54009324965105], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
