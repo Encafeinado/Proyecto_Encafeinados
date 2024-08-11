@@ -8,7 +8,7 @@ export class RegisterUserDto {
     name: string;
 
     @IsCellPhone()
-    phone: string;
+    phone: number;
     
     @MinLength(6)
     password: string;
