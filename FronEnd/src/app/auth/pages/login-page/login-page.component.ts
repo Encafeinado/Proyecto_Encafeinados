@@ -46,7 +46,7 @@ export class LoginPageComponent {
         asyncValidators: [
         passwordAsyncValidator(this.authService) // Pasar `true` si es tienda, `false` si es usuario
         ],
-        updateOn: 'blur'
+       //updateOn: 'blur'
     }],
       role: ['user']
     });
