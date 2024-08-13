@@ -34,14 +34,19 @@ export class ShopController {
     }
   }
   
-  @UseGuards(AuthGuard)
-  @Post('/verify-code')
-  async verifyCodeByUser(@Body() verifyCodeDto: VerifyCodeDto, @Request() req: RequestWithUser) {
-    console.log('Request user:', req.user); // Añade esta línea
-    const userId = req.user.id; // Obtén el ID del usuario desde el token JWT
-    const result = await this.shopService.verifyVerificationCodeByCodeAndAddCoins(verifyCodeDto.code, userId);
-    return result; // Devuelve el resultado tal cual
-  }
+// shop.controller.ts
+@UseGuards(AuthGuard)
+@Post('/verify-code')
+async verifyCodeByUser(
+  @Body() verifyCodeDto: VerifyCodeDto,
+  @Request() req: RequestWithUser
+) {
+  const userId = req.user.id; // Obtén el ID del usuario desde el token JWT
+  const { code, review, rating } = verifyCodeDto; // Extrae review y rating
+  const result = await this.shopService.verifyVerificationCodeByCodeAndAddCoins(code, userId, review, rating);
+  return result;
+}
+
 
   @Post('/login')
   login(@Body() loginDto: LoginDto) {

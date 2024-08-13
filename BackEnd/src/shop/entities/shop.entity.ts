@@ -36,19 +36,27 @@ export class Shop {
   logo: Buffer;
 
   @Prop({ unique: true })
-  verificationCode: string; // Nuevo campo para el código de verificación
+  verificationCode: string;
 
   @Prop({ default: 0 })
-  codeUsage: number; // Nuevo campo para contar las veces que se ha usado el código
+  codeUsage: number;
 
   @Prop({ required: true })
-  latitude: number; // Nuevo campo para la latitud
+  latitude: number;
 
   @Prop({ required: true })
-  longitude: number; // Nuevo campo para la longitud
+  longitude: number;
 
-  @Prop({default: false})
-  statusShop: boolean; // Nuevo campo para prender la tienda
+  @Prop({ default: false })
+  statusShop: boolean;
+
+  // Campo para almacenar calificaciones (estrellas) directamente en la clase
+  @Prop({ type: [{ stars: Number }], default: [] })
+  ratings: { stars: number }[];
+
+  // Campo para almacenar reseñas directamente en la clase
+  @Prop({ type: [{ text: String, user: String, createdAt: Date }], default: [] })
+  reviews: { text: string; user: string;}[];
 }
 
 export const ShopSchema = SchemaFactory.createForClass(Shop);
