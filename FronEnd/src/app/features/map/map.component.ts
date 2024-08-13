@@ -97,21 +97,20 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.populateShopLogos();
     this.fetchBookData();
     this.userId = this.authService.getUserId(); // Obtener el ID del usuario
-  
+
     if (this.userId) {
       this.fetchBookData();
     } else {
       console.error('No se encontró el ID del usuario.');
     }
     this.changeDetector.detectChanges();
-  
+
     // Actualiza los datos cada 10 segundos (10000 ms)
     setInterval(() => {
       this.fetchShopData();
       this.fetchBookData();
     }, 10000); // 10 segundos
   }
-  
 
   closeAlert(): void {
     this.showAlert = false;
@@ -190,7 +189,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     } else {
       url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
     }
-    url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`
+    url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
     if (transport !== 'caro') {
       fetch(url)
         .then((response) => {
@@ -204,58 +203,55 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
           if (!data || !data.routes || data.routes.length === 0) {
             throw new Error('No se encontraron rutas válidas');
           }
-    
+
           const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
           const routeCoordinates = route.geometry.coordinates.map(
             (coord: [number, number]) => [coord[1], coord[0]]
           );
-    
+
           // Dibujar la ruta en el mapa usando Leaflet
           let color = 'blue'; // Default color for foot transport
-    
+
           if (transport === 'car') {
             color = 'red';
           } else if (transport === 'bike') {
             color = 'green';
           }
-    
+
           if (this.routingControl) {
             this.routingControl.remove();
           }
-    
+
           this.routingControl = L.polyline(routeCoordinates, {
             color: color,
           }).addTo(map);
-    
+
           // Calcular el tiempo estimado basado en la velocidad promedio
           const averageSpeeds: { [key: string]: number } = {
             foot: 5, // km/h
             bike: 15, // km/h
-            car: 40 // km/h
+            car: 40, // km/h
           };
-    
+
           const speed = averageSpeeds[transport] || averageSpeeds['foot']; // Default to foot speed if transport type is unknown
           const routeDistanceKm = route.distance / 1000; // Convert distance to kilometers
           const estimatedTimeHours = routeDistanceKm / speed; // Time in hours
           const estimatedTimeMinutes = estimatedTimeHours * 60; // Convert to minutes
-    
+
           // Mostrar la distancia y tiempo estimado
           this.routeDistance = routeDistanceKm.toFixed(2); // Distancia en kilómetros
           this.routeDuration = estimatedTimeMinutes.toFixed(0); // Duración en minutos
           this.routeInfo = `Ruta hacia ${this.destinationName}`;
-    
+
           // Mostrar la alerta con la información de la ruta
           this.showAlert = true;
         })
         .catch((error) => {
           console.error('Error al obtener la ruta desde OSM:', error);
         });
-    }else {
+    } else {
       this.routingControl = (L as any).Routing.control({
-        waypoints: [
-          L.latLng(startLat, startLng),
-          L.latLng(endLat, endLng)
-        ],
+        waypoints: [L.latLng(startLat, startLng), L.latLng(endLat, endLng)],
         routeWhileDragging: true,
         language: 'es', // Añadido para asegurarse de que las instrucciones estén en español
         createMarker: (i: number, waypoint: any, n: number) => {
@@ -267,14 +263,16 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         },
       }).addTo(map);
       setTimeout(() => {
-        const routingContainer = document.querySelector('.leaflet-routing-container');
+        const routingContainer = document.querySelector(
+          '.leaflet-routing-container'
+        );
         const sidebar = document.querySelector('.sidebar'); // Replace with your actual sidebar selector
         if (routingContainer && sidebar) {
           sidebar.appendChild(routingContainer);
         }
-      }, 500);
-    }
-  }
+      }, 500);
+    }
+  }
 
   selectTransportMode(mode: string) {
     this.selectedTransport = mode;
@@ -289,10 +287,10 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     if (this.routingControl) {
       this.routingControl.remove();
       this.showCancelButton = false;
-      this.closeAlert(); // cCerrar la alerta
+      this.closeAlert(); // Cerrar la alerta
     }
     this.modalRef.close();
-  }
+  }
 
   confirmArrive(): void {
     this.hasArrived = true; // Marca que el usuario ya ha llegado
@@ -378,7 +376,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
                   toastr.success(
                     'Código verificado y CoffeeCoins añadidos exitosamente'
                   );
-                  
+
                   this.reloadComponent();
                   this.modalRef.close();
                 },
@@ -423,7 +421,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       }
     );
   }
-  
+
   ngAfterViewInit(): void {
     this.map = new L.Map('map', {
       center: [6.150155571503784, -75.61905204382627], // Coordenadas iniciales
@@ -437,7 +435,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       maxZoom: 19,
     }).addTo(this.map);
 
-    this.userLocationMarker = L.marker([6.34174375755806, -75.54009324965105], {
+    this.userLocationMarker = L.marker([0, 0], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
@@ -508,6 +506,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       }
     });
   }
+
   fetchUserData(): void {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -532,7 +531,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       console.error('Token no encontrado en el almacenamiento local.');
       return;
     }
-  
+
     this.shopService.fetchShopData(token).subscribe(
       (data: any) => {
         this.shopData = data;
@@ -545,7 +544,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       }
     );
   }
-  
 
   fetchBookData(): void {
     if (this.userId) {
@@ -632,24 +630,24 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       console.error('El mapa no está inicializado.');
       return;
     }
-  
+
     this.shopMarkers = this.shopData
       .map((shop) => {
         const lat = shop.latitude;
         const lng = shop.longitude;
-  
+
         if (typeof lat !== 'number' || typeof lng !== 'number') {
           console.error('Coordenadas inválidas para la tienda:', shop);
           return null;
         }
-  
+
         const iconUrl = 'assets/IconsMarker/cafeteria.png'; // Usamos la misma imagen para todas las tiendas
         const marker = L.marker([lat, lng], {
           icon: this.createStoreIcon(iconUrl, shop.statusShop),
         })
           .addTo(this.map)
           .bindPopup(shop.name);
-  
+
         marker.on('click', () => {
           this.showRouteConfirmation(
             this.map,
@@ -658,7 +656,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
             shop.name
           );
         });
-  
+
         return {
           marker,
           name: shop.name,
@@ -666,7 +664,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         };
       })
       .filter((markerData) => markerData !== null);
-  
+
     if (shouldZoom && this.shopMarkers.length > 0) {
       this.map.fitBounds(
         this.shopMarkers.map((data) => [
@@ -676,7 +674,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       );
     }
   }
-  
 
   // Método para calcular la distancia
   calculateDistance(
@@ -704,8 +701,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   degreesToRadians(degrees: number): number {
     return degrees * (Math.PI / 180);
   }
-
-  
 
   get totalStamps(): number {
     // La cantidad total de estampas es igual a la cantidad total de tiendas

@@ -3,8 +3,10 @@ import { registerDecorator, ValidationOptions, ValidatorConstraint, ValidatorCon
 @ValidatorConstraint({ async: false })
 export class IsCellPhoneConstraint implements ValidatorConstraintInterface {
   validate(phone: any) {
+    // Asegúrate de que el valor se convierte a cadena
+    const phoneString = phone !== null && phone !== undefined ? phone.toString() : '';
     const cellPhoneRegex = /^[1-9]\d{9}$/; // Ajusta la expresión regular según el formato de números de celular de tu país
-    return typeof phone === 'string' && cellPhoneRegex.test(phone);
+    return cellPhoneRegex.test(phoneString);
   }
 
   defaultMessage() {
