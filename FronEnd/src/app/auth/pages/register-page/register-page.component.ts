@@ -74,11 +74,11 @@ export class RegisterPageComponent {
       phoneNumberValidator()
     ]],
 
-    // specialties1: [''],
-    // specialties2: [''],
-    // address: [''],
-    // logo: [''],
-    // statusShop: [false]  // Campo oculto con valor predeterminado
+    specialties1: [''],
+    specialties2: [''],
+    address: [''],
+    logo: [''],
+    statusShop: [false]  // Campo oculto con valor predeterminado
   }, {
     validators: this.passwordMatchValidator
   });
