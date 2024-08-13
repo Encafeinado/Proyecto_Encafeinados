@@ -289,7 +289,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     if (this.routingControl) {
       this.routingControl.remove();
       this.showCancelButton = false;
-      this.showAlert = false;
+      this.closeAlert(); // cCerrar la alerta
     }
     this.modalRef.close();
   }
