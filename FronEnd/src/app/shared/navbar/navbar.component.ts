@@ -31,13 +31,11 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     console.log('Nombre del usuario inicial:', this.userName);
     
     // Actualiza el texto del navbar basado en la ruta actual al iniciar
-    this.updateNavbarText(this.router.url);
 
     // Escucha los eventos de navegación para actualizar el texto del navbar
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.isLoading = false;
-        this.updateNavbarText(event.url);
       } else if (event instanceof NavigationCancel || event instanceof NavigationError) {
         this.isLoading = false;
       }
@@ -48,17 +46,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     this.cdr.detectChanges();
   }
 
-  updateNavbarText(url: string): void {
-    if (url === '/store') {
-      this.navbarText = 'Descubre el mejor café cerca de ti';
-    } else if (url === '/map') {
-      this.navbarText = 'Explora las ubicaciones en el mapa';
-    } else if (url === '/landing') {
-      this.navbarText = 'Bienvenidos a encafeinados';
-    } else if (url === '/landing-tienda') {
-      this.navbarText = 'Bienvenidos a encafeinados Tienda';
-    }
-  }
+  
 
   onLogout() {
     this.authService.logout();

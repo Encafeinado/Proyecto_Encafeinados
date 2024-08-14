@@ -1,184 +1,183 @@
+<!-- En tu HTML -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
 <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-8 position-relative">
-      <div id="map" style="height: 600px;"></div>
-      <!-- En tu plantilla HTML -->
-      <button *ngIf="showCancelButton" class="floating-button-cancel" (click)="cancelRoute()">
-        <i class="fas fa-times text-white"></i>
-      </button>
-      <button class="floating-button-location" (click)="goToUserLocation()">
-        <i class="fa fa-location-arrow" aria-hidden="true"></i>
-      </button>
-    </div>
-    <div class="col-md-4 sidebar">
-      <h2>Bienvenido a Encafeinados</h2>
-      <p>¡Encuentra los mejores lugares de café en tu área!</p> 
-      <p>Explora nuestras mejores recomendaciones para los amantes del café.</p>
-      <div class="alert alert-info" *ngIf="showAlert" role="alert">
-        <h4 class="alert-heading">{{ routeInfo }}</h4>
-        <p>Distancia: {{ routeDistance }} km</p>
-        <p>Tiempo estimado: {{ routeDuration }} minutos</p>
+<div class="main-content">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 position-relative">
+        <div id="map" style="height: 600px;"></div>
+        <!-- En tu plantilla HTML -->
+        <button *ngIf="showCancelButton" class="floating-button-cancel" (click)="cancelRoute()">
+          <i class="fas fa-times text-white"></i>
+        </button>
+        <button class="floating-button-location" (click)="goToUserLocation()">
+          <i class="fa fa-location-arrow" aria-hidden="true"></i>
+        </button>
       </div>
-     
-      <br>
-
-      <!-- Información adicional -->
-      <div style="margin-top: 20px; background-color: #f8f9fa; padding: 10px; border-radius: 5px;">
-        <h3 style="margin-bottom: 10px;">Información adicional</h3>
-        <ul style="list-style-type: none; padding-left: 0;">
-          <li style="margin-bottom: 10px;">
-            <img src="assets/IconsMarker/cosechaUser.png" alt="Icono de persona"
-              style="width: 20px; height: 20px; margin-right: 10px;">
-            <span style="font-size: 16px;">Eres tú</span>
-          </li>
-          <li style="margin-bottom: 10px;">
-            <img src="assets/IconsMarker/cafeteriaAroma.png" alt="Icono de persona"
-              style="width: 20px; height: 20px; margin-right: 10px;">
-            <span style="font-size: 16px;">Tienda de café</span>
-          </li>
-          <li style="margin-bottom: 10px;">
-            <span style="color: green; font-size: 18px;">&#8226;</span> Tienda abierta
-          </li>
-          <li style="margin-bottom: 10px;">
-            <span style="color: red; font-size: 18px;">&#8226;</span> Tienda cerrada
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Botón del librito -->
-<div class="button-container-footer">
-  <button class="floating-button button-book" (click)="openModalAlbum()">
-    <i class="fas fa-book text-white"></i>
-  </button>
-  <button class="floating-button button-camera" (click)="openModalWithCodigo()">
-    <i class="fas fa-coffee text-white"></i>
-  </button>
-</div>
-
-<!-- Modal para confirmar la ruta -->
-<!-- Modal para confirmar la ruta -->
-<ng-template #createModal let-modal>
-  <div class="modal-content-create">
-    <div class="modal-header-create">
-      <h4 class="modal-title-create">{{ destinationName }}</h4>
-    </div>
-    <div class="modal-body-create">
-      <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid" style="width: 100%;">
-      <p style="padding-top: 3%;">Información sobre el café...</p>
-      <div class="transport-selection" style="margin-top: 15px;">
-        <label class="transport-label">
-          <input type="radio" name="transport" value="car" [(ngModel)]="selectedTransport"
-            (change)="selectTransportMode('car')" [checked]="selectedTransport === 'car'">
-          <i class="fa fa-car" aria-hidden="true"></i>
-        </label>
-        <label class="transport-label">
-          <input type="radio" name="transport" value="foot" [(ngModel)]="selectedTransport"
-            (change)="selectTransportMode('foot')" [checked]="selectedTransport === 'foot'">
-          <i class="fa fa-blind" aria-hidden="true"></i>
-        </label>
-        <label class="transport-label">
-          <input type="radio" name="transport" value="bike" [(ngModel)]="selectedTransport"
-            (change)="selectTransportMode('bike')" [checked]="selectedTransport === 'bike'">
-          <i class="fa fa-bicycle" aria-hidden="true"></i>
-        </label>
-      </div>
-    </div>
-    <div class="modal-footer-create">
-      <button type="button" class="btn btn-primary" (click)="showRouteGuia()">Guíame</button>
-      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancelar</button>
-    </div>
-  </div>
-</ng-template>
-
-<!-- Modal para cancelar la ruta -->
-<ng-template #cancelModal let-modal>
-  <div class="modal-content-cancelR">
-    <div class="modal-header-cancelR">
-      <h4 class="modal-title-cancelR">Cancelar Rutas</h4>
-    </div>
-    <div class="modal-body-cancelR">
-      <p>¿Estás seguro de que quieres cancelar las rutas?</p>
-    </div>
-    <div class="modal-footer-cancelR">
-      <button type="button" class="btn" (click)="confirmCancelRoute()">Confirmar</button>
-      <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
-    </div>
-  </div>
-</ng-template>
-
-<!-- Modal para ingresar el código -->
-<ng-template #codeModal let-modal>
-  <div class="modal-content-code">
-    <div class="modal-header-code">
-      <h5 class="modal-title-code">Ingresa tu código:</h5>
-    </div>
-    <div class="modal-body-code">
-      <label for="code">Código:</label>
-      <input #codeInput type="text" id="code" class="form-control" [(ngModel)]="enteredCode"
-        placeholder="Ingresa tu código">
-    </div>
-    <div class="modal-footer-code">
-      <button type="button" class="btn" (click)="verifyCode()">Verificar</button>
-      <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
-    </div>
-  </div>
-</ng-template>
-
-<!-- Modal álbum -->
-<ng-template #modalBook let-modal>
-  <div class="modal-content modal-book">
-    <div class="modal-header">
-      <h5 class="modal-title">Álbum</h5>
-    </div>
-    <div class="modal-body">
-      <div class="album-info">
-        <div class="missing-stamps">
-          Estampitas obtenidas: {{ obtainedStamps }}/{{ totalStamps }}
+      <div class="col-md-4 sidebar">
+        <h2>Bienvenido a Encafeinados</h2>
+        <p>¡Encuentra los mejores lugares de café en tu área!</p> 
+        <p>Explora nuestras mejores recomendaciones para los amantes del café.</p>
+        <div class="alert alert-info" *ngIf="showAlert" role="alert">
+          <h4 class="alert-heading">{{ routeInfo }}</h4>
+          <p>Distancia: {{ routeDistance }} km</p>
+          <p>Tiempo estimado: {{ routeDuration }} minutos</p>
         </div>
-      </div>
-      <div class="album">
-        <div class="album-page" *ngFor="let shop of shopLogos">
-          <img 
-            *ngIf="shop.logoUrl" 
-            [src]="shop.logoUrl" 
-            [class.colored]="isLogoColored(shop.logoUrl)" 
-            alt="{{ shop.name }}">
+       
+        <br>
+
+        <!-- Información adicional -->
+        <div style="margin-top: 20px; background-color: #f8f9fa; padding: 10px; border-radius: 5px;">
+          <h3 style="margin-bottom: 10px;">Información adicional</h3>
+          <ul style="list-style-type: none; padding-left: 0;">
+            <li style="margin-bottom: 10px;">
+              <img src="assets/IconsMarker/cosechaUser.png" alt="Icono de persona"
+                style="width: 20px; height: 20px; margin-right: 10px;">
+              <span style="font-size: 16px;">Eres tú</span>
+            </li>
+            <li style="margin-bottom: 10px;">
+              <img src="assets/IconsMarker/cafeteriaAroma.png" alt="Icono de persona"
+                style="width: 20px; height: 20px; margin-right: 10px;">
+              <span style="font-size: 16px;">Tienda de café</span>
+            </li>
+            <li style="margin-bottom: 10px;">
+              <span style="color: green; font-size: 18px;">&#8226;</span> Tienda abierta
+            </li>
+            <li style="margin-bottom: 10px;">
+              <span style="color: red; font-size: 18px;">&#8226;</span> Tienda cerrada
+            </li>
+          </ul>
         </div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cerrar</button>
-    </div>
   </div>
-</ng-template>
 
-<!-- Modal de llegada al café -->
-<ng-template #arriveModal let-modal>
-  <div class="modal-content-coffee modal-coffee">
-    <div class="modal-header-coffee">
-      <h4 class="modal-title-coffee" id="modal-title-coffee">¡¡Llegaste a {{ destinationName }}!!</h4>
-    </div>
-    <div class="modal-body-coffee">
-      <div class="image-gallery-coffee">
-        <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
-        <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
-        <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
-      </div>
-      <p class="description-coffee">
-        Información sobre el café...
-      </p>
-    </div>
-    <div class="modal-footer-coffee">
-      <button type="button" class="btn" (click)="confirmArrive()">Si, he llegado</button>
-      <button type="button" class="btn" (click)="cancelArrive(modal)">Cancelar</button>
-    </div>
+  <!-- Botón del librito -->
+  <div class="button-container-footer">
+    <button class="floating-button button-book" (click)="openModalAlbum()">
+      <i class="fas fa-book text-white"></i>
+    </button>
+    <button class="floating-button button-camera" (click)="openModalWithCodigo()">
+      <i class="fas fa-coffee text-white"></i>
+    </button>
   </div>
-</ng-template>
+
+  <!-- Modal para confirmar la ruta -->
+  <ng-template #createModal let-modal>
+    <div class="modal-content-create">
+      <div class="modal-header-create">
+        <h4 class="modal-title-create">{{ destinationName }}</h4>
+      </div>
+      <div class="modal-body-create">
+        <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid" style="width: 100%;">
+        <p style="padding-top: 3%;">Información sobre el café...</p>
+        <div class="transport-selection" style="margin-top: 15px;">
+          <label class="transport-label">
+            <input type="radio" name="transport" value="car" [(ngModel)]="selectedTransport"
+              (change)="selectTransportMode('car')" [checked]="selectedTransport === 'car'">
+            <i class="fa fa-car" aria-hidden="true"></i>
+          </label>
+          <label class="transport-label">
+            <input type="radio" name="transport" value="foot" [(ngModel)]="selectedTransport"
+              (change)="selectTransportMode('foot')" [checked]="selectedTransport === 'foot'">
+            <i class="fa fa-blind" aria-hidden="true"></i>
+          </label>
+          <label class="transport-label">
+            <input type="radio" name="transport" value="bike" [(ngModel)]="selectedTransport"
+              (change)="selectTransportMode('bike')" [checked]="selectedTransport === 'bike'">
+            <i class="fa fa-bicycle" aria-hidden="true"></i>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer-create">
+        <button type="button" class="btn btn-primary" (click)="showRouteGuia()">Guíame</button>
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancelar</button>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Modal para cancelar la ruta -->
+  <ng-template #cancelModal let-modal>
+    <div class="modal-content-cancelR">
+      <div class="modal-header-cancelR">
+        <h4 class="modal-title-cancelR">Cancelar Rutas</h4>
+      </div>
+      <div class="modal-body-cancelR">
+        <p>¿Estás seguro de que quieres cancelar las rutas?</p>
+      </div>
+      <div class="modal-footer-cancelR">
+        <button type="button" class="btn" (click)="confirmCancelRoute()">Confirmar</button>
+        <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Modal para ingresar el código -->
+  <ng-template #codeModal let-modal>
+    <div class="modal-content-code">
+      <div class="modal-header-code">
+        <h5 class="modal-title-code">Ingresa tu código:</h5>
+      </div>
+      <div class="modal-body-code">
+        <label for="code">Código:</label>
+        <input type="text" id="code" class="form-control" [(ngModel)]="enteredCode"
+          placeholder="Ingresa tu código">
+      </div>
+      <div class="modal-footer-code">
+        <button type="button" class="btn" (click)="verifyCode()">Verificar</button>
+        <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Modal álbum -->
+  <ng-template #modalBook let-modal>
+    <div class="modal-content modal-book">
+      <div class="modal-header">
+        <h5 class="modal-title">Álbum</h5>
+      </div>
+      <div class="modal-body">
+        <div class="album-info">
+          <div class="missing-stamps">
+            Estampitas obtenidas: {{ obtainedStamps }}/{{ totalStamps }}
+          </div>
+        </div>
+        <div class="album">
+          <div class="album-page" *ngFor="let shop of shopLogos">
+            <img 
+              *ngIf="shop.logoUrl" 
+              [src]="shop.logoUrl" 
+              [class.colored]="isLogoColored(shop.logoUrl)" 
+              alt="{{ shop.name }}">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cerrar</button>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Modal de llegada al café -->
+  <ng-template #arriveModal let-modal>
+    <div class="modal-content-coffee modal-coffee">
+      <div class="modal-header-coffee">
+        <h4 class="modal-title-coffee" id="modal-title-coffee">¡¡Llegaste a {{ destinationName }}!!</h4>
+      </div>
+      <div class="modal-body-coffee">
+        <div class="image-gallery-coffee">
+          <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
+          <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
+          <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
+        </div>
+        <p>¡Gracias por visitar {{ destinationName }}!</p>
+      </div>
+      <div class="modal-footer-coffee">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cerrar</button>
+      </div>
+    </div>
+  </ng-template>
+</div>

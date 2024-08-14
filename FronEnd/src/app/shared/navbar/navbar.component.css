@@ -1,16 +1,56 @@
 /* Navbar Styles */
 .navbar {
-  background-color: #03AED2; /* Color de fondo principal del navbar */
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #ffffff; /* Color de fondo principal del navbar */
   padding: 10px 20px;
   font-family: 'Poppins', sans-serif;
-  border-bottom: 3px solid #FDDE55; /* Añadimos un borde inferior */
+  border-bottom: 3px solid #ffffff; /* Añadimos un borde inferior */
+  transition: top 0.3s; /* Transición suave al cambiar la posición */
+  z-index: 1000; /* Asegúrate de que el navbar esté sobre otros elementos */
+  transition: top 0.3s;
 }
 
+/* Clase para desplazar el navbar hacia abajo */
+.navbar-scroll {
+  top: 60px; /* Ajusta la distancia que deseas que el navbar se desplace hacia abajo */
+}
+
+
+
 .navbar .navbar-brand {
-  color: #FFFFFF; /* Color del texto de la marca */
+  color: #0f1eee; /* Color del texto de la marca */
   font-size: 1.5rem;
   font-weight: bold;
 }
+
+
+.btn-outline-light, .btn-outline-light2 {
+  border-radius: 30px; /* Ajusta el valor según el radio de redondeo que desees */
+}
+
+.btn-outline-light {
+  --bs-btn-color: #ffffff;
+  --bs-btn-border-color: #0f1eee;
+  --bs-btn-hover-color: #0f1eee;
+  --bs-btn-hover-bg: #f8f9fa;
+  --bs-btn-hover-border-color: #0f1eee;
+  --bs-btn-bg: #0f1eee;
+
+}
+
+.btn-outline-light2 {
+  --bs-btn-color: #000000;
+  --bs-btn-border-color: #ffffff;
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: #0f1eee;
+  --bs-btn-hover-border-color: #0f1eee;
+  --bs-btn-bg: #ffffff;
+
+}
+
+
 
 .navbar .navbar-nav .nav-link {
   color: #FFFFFF; /* Color de los enlaces de navegación */
@@ -18,12 +58,14 @@
   font-size: 1rem;
 }
 
+
+
 .navbar .navbar-nav .nav-link:hover {
   color: #FEEFAD; /* Color de los enlaces al pasar el cursor */
 }
 
 .navbar .dropdown-menu {
-  background-color: #68D2E8; /* Color de fondo del menú desplegable */
+  background-color: #0f1eee; /* Color de fondo del menú desplegable */
   border: 1px solid #FDDE55;
 }
 
@@ -32,8 +74,8 @@
 }
 
 .navbar .dropdown-menu .dropdown-item:hover {
-  background-color: #FDDE55; /* Color de fondo al pasar el cursor sobre los elementos */
-  color: #03AED2; /* Color del texto al pasar el cursor */
+  background-color: #ffffff; /* Color de fondo al pasar el cursor sobre los elementos */
+  color: #0f1eee; /* Color del texto al pasar el cursor */
 }
 
 /* Imagen del usuario en el dropdown */
@@ -169,3 +211,6 @@
 .dropdown-toggle::after {
   display: none !important;
 }
+
+
+

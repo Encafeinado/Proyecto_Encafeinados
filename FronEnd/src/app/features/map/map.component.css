@@ -4,15 +4,24 @@
   height: 70vh;
   width: 100%;
   background-image: url("https://www.transparenttextures.com/patterns/wood-pattern.png"); /* Texture for the map */
-  border-top: 2px solid #fdde55;
+  border-left: 2px solid #000000;
+  border-right: 2px solid #000000;
+  border-top: 2px solid #000000;
+  border-bottom: 2px solid #000000;
 }
+
+.main-content {
+  padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
+}
+
+
 
 /* Estilos comunes para ambos botones */
 .floating-button-location,
 .floating-button-cancel {
   position: absolute;
   right: 20px; /* Coloca los botones en la misma posición lateral */
-  background-color: #03aed2; /* Color de fondo azul */
+  background-color: #0f1eee; /* Color de fondo azul */
   color: #ffffff;
   border: none;
   border-radius: 50%;
@@ -29,7 +38,7 @@
 
 .floating-button-location:hover,
 .floating-button-cancel:hover {
-  background-color: #68d2e8; /* Color más claro al pasar el ratón */
+  background-color: #676ed6; /* Color más claro al pasar el ratón */
 }
 
 /* Estilos específicos para el botón de cancelar */
@@ -51,17 +60,22 @@
 }
 
 .sidebar {
-  background-color: #feefad;
+  background-color: #0f1eee;
   padding: 20px;
-  border-left: 2px solid #fdde55;
+  border-left: 2px solid #000000;
+  border-right: 2px solid #000000;
+  border-top: 2px solid #000000;
+  border-bottom: 2px solid #000000;
 }
 
 .sidebar h2 {
   font-size: 1.8rem;
+  color: #ffffff;
 }
 
 .sidebar p {
   font-size: 0.8rem;
+  color: #ffffff;
 }
 
 .sidebar img {
@@ -69,7 +83,7 @@
 }
 
 .floating-button:hover {
-  background-color: #68d2e8;
+  background-color: #676ed6;
 }
 
 .floating-button i {
@@ -87,6 +101,7 @@
 /* Estilos específicos para cada botón */
 .button-book {
   margin-right: 10px; /* Espacio entre los botones */
+  
 }
 
 .button-camera {
@@ -169,13 +184,17 @@
   display: flex;
   gap: 10px; /* Espacio entre los botones */
 }
+.text-white {
+  --bs-text-opacity: 1;
+  color: #0f1eee;
+}
 
 .floating-button {
   position: fixed; /* Cambia de absolute a fixed */
   bottom: 20px; /* Ajusta la distancia desde el fondo */
   left: 20px; /* Ajusta la distancia desde el borde izquierdo */
-  background-color: #03aed2;
-  color: #feefad;
+  background-color: #0f1eee;
+  color: #fcfcfc;
   border: none;
   border-radius: 50%;
   width: 50px;
@@ -384,6 +403,8 @@
 .modal-footer-coffee .btn:hover {
   background-color: #feefad;
 }
+
+
 /* ------------------------------------------------------------------------------- */
 .transport-selection {
   display: flex;

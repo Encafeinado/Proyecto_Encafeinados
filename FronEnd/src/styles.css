@@ -3239,8 +3239,8 @@ align-items: center;
 
 body {
   font-family: 'Merriweather', serif;
-  background-color: #f7f3e9; /* Light coffee color */
-  color: #4b3832; /* Dark brown color */
+  background-color: #ffffff; /* Light coffee color */
+  color: #0e0d0d; /* Dark brown color */
 }
 
 .navbar {
@@ -3248,11 +3248,11 @@ body {
 }
 
 .navbar-brand, .nav-link, .navbar-text {
-  color: #f7f3e9 !important; /* Light coffee color */
+  color: #0f1eee !important; /* Light coffee color */
 }
 
 .nav-link:hover {
-  color: #c8b7a6 !important; /* Light brown color */
+  color: #b2a6c8 !important; /* Light brown color */
 }
 
 .navbar-toggler {
