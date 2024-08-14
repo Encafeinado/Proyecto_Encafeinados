@@ -130,7 +130,10 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.map = map;
     this.openModal(this.createModal, this.destinationName); // Asegúrate de pasar el nombre aquí
   }
-
+  setRating(rating: number): void {
+    this.enteredRating = rating;
+    console.log('Rating seleccionado: ', this.enteredRating);
+  }
   showRouteGuia(): void {
     console.log('showCancelButton antes:', this.showCancelButton);
     if (

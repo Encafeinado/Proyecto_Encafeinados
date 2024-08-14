@@ -17,6 +17,7 @@
 }
 
 .info, .activation-section {
+  max-height: 1000px;
   flex: 1;
   padding: 20px;
   background-color: #FEEFAD;
@@ -34,6 +35,7 @@
 
 .info p {
   margin: 10px 0;
+  max-height: 1000px;
 }
 
 .info .btn {
@@ -110,4 +112,16 @@
 
 .modal-footer .btn:hover {
   background-color: #FEEFAD;
+}
+
+.review-container {
+  max-height: 100px; /* Altura máxima del contenedor */
+  overflow-y: auto; /* Habilita el scroll vertical */
+  border: 1px solid #e6d06a; /* Opcional: borde para definir la caja */
+  padding: 10px; /* Espacio interno */
+  background-color: #fff4c1; /* Fondo amarillo para coincidir con el resto */
+}
+
+.review {
+  margin-bottom: 10px; /* Espacio entre reseñas */
 }

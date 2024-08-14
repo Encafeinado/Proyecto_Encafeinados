@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
@@ -124,11 +125,14 @@
       <label for="code">Código:</label>
       <input #codeInput type="text" id="code" class="form-control" [(ngModel)]="enteredCode"
         placeholder="Ingresa tu código">   
-      <label for="rating">Calificación:</label>
-      <select id="rating" class="form-control" [(ngModel)]="enteredRating">
-        <option *ngFor="let i of [1, 2, 3, 4, 5]" [value]="i">{{ i }} estrellas</option>
-      </select>
-
+        
+        <label for="rating">Calificación:</label>
+        <div class="star-rating">
+          <span *ngFor="let i of [1, 2, 3, 4, 5]; let index = index"
+                (click)="setRating(index + 1)">
+            {{ enteredRating > index ? '★' : '☆' }}
+          </span>
+        </div>
       <label for="review">Reseña:</label>
       <textarea id="review" class="form-control" [(ngModel)]="enteredReview" placeholder="Escribe tu reseña"></textarea>
     </div>
@@ -138,6 +142,7 @@
     </div>
   </div>
 </ng-template>
+
 
 <!-- Modal álbum -->
 <ng-template #modalBook let-modal>
