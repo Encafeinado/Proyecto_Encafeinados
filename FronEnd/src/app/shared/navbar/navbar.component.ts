@@ -52,6 +52,18 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     this.authService.logout();
   }
 
+
+  setupDropdownToggle() {
+    const dropdownButton = document.getElementById('userDropdown');
+    const navbarCollapse = document.getElementById('navbarText');
+
+    if (dropdownButton && navbarCollapse) {
+      dropdownButton.addEventListener('click', () => {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+  }
+
   isStoreOrMapRoute(): boolean {
     return (
       this.router.url === '/store' ||
