@@ -41,7 +41,6 @@ export class AppComponent {
         this.isLoading = false;
         // Ajuste aquí para no ocultar la barra de navegación en la ruta de restablecimiento de contraseña
         this.showNavbar =
-          !event.url.includes('/auth/forgot-password') &&
           !event.url.includes('/auth/reset-password');
         // this.cdr.detectChanges();
       }

@@ -7,7 +7,9 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-request-reset-password',
-  templateUrl: './request-reset-password.component.html'
+  templateUrl: './request-reset-password.component.html',
+  styleUrls: ['./request-reset-password.component.css'],
+
 })
 export class RequestResetPasswordComponent {
   requestResetForm: FormGroup;
