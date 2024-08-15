@@ -291,23 +291,12 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   confirmCancelRoute(): void {
-    console.log('Confirmación de cancelación de ruta');
     if (this.routingControl) {
-      this.map.removeControl(this.routingControl); // Asegúrate de eliminar el control del mapa
-      this.routingControl = null; // Limpia la referencia
-      console.log('Control de ruta eliminado');
+      this.routingControl.remove();
+      this.showCancelButton = false;
+      this.closeAlert(); // Cerrar la alerta
     }
-    this.showCancelButton = false; // Oculta el botón de cancelar
-    console.log('Botón de cancelar oculto');
-    this.routeInfo = ''; // Limpia la información de la ruta
-  
-    this.closeAlert(); // Cierra la alerta si es necesario
-    console.log('Alerta cerrada');
-    
-    if (this.modalRef) {
-      this.modalRef.close(); // Cierra el modal de confirmación
-      console.log('Modal de confirmación cerrado');
-    }
+    this.modalRef.close();
   }
 
   confirmArrive(): void {
@@ -458,7 +447,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       maxZoom: 19,
     }).addTo(this.map);
 
-    this.userLocationMarker = L.marker([6.341645199748481, -75.51343233562439], {
+    this.userLocationMarker = L.marker([0, 0], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
@@ -553,15 +542,15 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     endLng: number,
     transport: string
   ): void {
-    // Verifica si ya existe una ruta y elimínala
-    if (this.routingControl) {
-      this.map.removeControl(this.routingControl);
-    }
+    // // Verifica si ya existe una ruta y elimínala
+    // if (this.routingControl) {
+    //   this.map.removeControl(this.routingControl);
+    // }
 
-    // Verifica si el botón de cancelar está visible
-    if (!this.showCancelButton) {
-      return; // Si no se ha mostrado el botón de cancelar, no procedemos a crear una nueva ruta
-    }
+    // // Verifica si el botón de cancelar está visible
+    // if (!this.showCancelButton) {
+    //   return; // Si no se ha mostrado el botón de cancelar, no procedemos a crear una nueva ruta
+    // }
 
     let profile: string;
     let routed: string;
@@ -576,6 +565,10 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     } else {
       profile = 'bike';
       routed = 'routed-bike';
+    }
+
+    if (this.routingControl) {
+      this.map.removeControl(this.routingControl);
     }
 
     // Construye la URL para la solicitud de la ruta
@@ -605,6 +598,10 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
           color = 'red';
         } else if (transport === 'bike') {
           color = 'green';
+        }
+
+        if (this.routingControl) {
+          this.routingControl.remove();
         }
 
         // Crea una nueva ruta y añádela al mapa
