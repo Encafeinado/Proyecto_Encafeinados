@@ -116,16 +116,25 @@
     </div>
   </ng-template>
 
-  <!-- Modal para ingresar el código -->
   <ng-template #codeModal let-modal>
     <div class="modal-content-code">
       <div class="modal-header-code">
-        <h5 class="modal-title-code">Ingresa tu código:</h5>
+        <h5 class="modal-title-code">Ingresa tu código y calificación:</h5>
       </div>
       <div class="modal-body-code">
         <label for="code">Código:</label>
-        <input type="text" id="code" class="form-control" [(ngModel)]="enteredCode"
-          placeholder="Ingresa tu código">
+        <input #codeInput type="text" id="code" class="form-control" [(ngModel)]="enteredCode"
+          placeholder="Ingresa tu código">   
+          
+          <label for="rating">Calificación:</label>
+          <div class="star-rating">
+            <span *ngFor="let i of [1, 2, 3, 4, 5]; let index = index"
+                  (click)="setRating(index + 1)">
+              {{ enteredRating > index ? '★' : '☆' }}
+            </span>
+          </div>
+        <label for="review">Reseña:</label>
+        <textarea id="review" class="form-control" [(ngModel)]="enteredReview" placeholder="Escribe tu reseña"></textarea>
       </div>
       <div class="modal-footer-code">
         <button type="button" class="btn" (click)="verifyCode()">Verificar</button>
