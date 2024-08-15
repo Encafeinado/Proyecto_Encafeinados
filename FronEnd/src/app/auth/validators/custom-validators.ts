@@ -93,8 +93,8 @@ export function phoneNumberValidator(): ValidatorFn {
     const phoneNumber = control.value ? control.value.toString() : '';
     // Validar que el número de teléfono contenga solo dígitos
     const isValidPhoneNumber = /^\d+$/.test(phoneNumber);
-    // Validar longitud mínima y máxima (ejemplo: entre 10 y 15 dígitos)
-    const isValidLength = phoneNumber.length >= 10 && phoneNumber.length <= 11;
+    // Validar longitud mínima y máxima (ejemplo: entre 10 y 11 dígitos)
+    const isValidLength = phoneNumber.length >= 10 && phoneNumber.length < 11;
 
     return !isValidPhoneNumber || !isValidLength
       ? { 'invalidPhoneNumber': true }

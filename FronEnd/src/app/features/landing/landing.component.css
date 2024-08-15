@@ -1,10 +1,14 @@
+/* Estilos generales */
 body {
   font-family: 'Arial', sans-serif;
   background-color: #FEEFAD; /* Fondo amarillo claro */
+  margin: 0;
+  padding: 0;
 }
 
+/* Estilos para el encabezado */
 header h1 {
-  font-size: 3rem;
+  font-size: 4rem;
   margin-bottom: 10px;
   color: #03AED2; /* Azul principal */
 }
@@ -14,34 +18,256 @@ header p {
   color: #6c757d; /* Gris */
 }
 
+.text-content .title {
+  font-size: 2em; /* Tamaño de fuente grande */
+  color: #0f1eee; /* Color del texto */
+  font-weight: 700; /* Peso de fuente más grueso */
+}
+
+
+/* Si deseas aplicar estilos a través de la clase generada automáticamente */
+.text-content[_ngcontent-ng-c2951528271] .subtitle[_ngcontent-ng-c2951528271] {
+  font-size: 3.5em; /* Tamaño de fuente */
+  color: #000000; /* Color negro */
+  white-space: pre-line; /* Permite saltos de línea */
+  line-height: 1.4; /* Espacio entre líneas */
+  font-weight: 300; /* Peso de fuente más delgado */
+}
+
+
+/* Estilos para el carrusel */
 .carousel-item img {
   height: 400px;
   object-fit: cover;
 }
 
+/* Estilos para las secciones */
 section h2 {
   font-size: 2rem;
   margin-bottom: 20px;
-  color: #FDDE55; /* Amarillo brillante */
+  color: #0f1eee; /* Amarillo brillante */
 }
 
 section p {
   font-size: 1.2rem;
-  color: #03AED2; /* Azul principal */
+  color: #000000; /* Azul principal */
 }
+
+.service-circle-text {
+  font-size: 1.2rem;
+  color: #000000; /* Color de texto */
+  font-weight: 400; /* Asegura que el texto tenga un peso normal */
+  font-family: 'Arial', sans-serif; /* Establece la fuente */
+}
+
+
 
 blockquote {
   background-color: #fff;
   padding: 20px;
   border-left: 5px solid #68D2E8; /* Azul claro */
-  color: #6c757d; /* Gris */
+  color: #797d6c; /* Gris */
 }
 
 footer p {
   font-size: 1rem;
-  color: #6c757d; /* Gris */
+  color: #7d6c75; /* Gris */
 }
 
+.main-content {
+  padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
+}
+
+/* Estilos para los enlaces sociales */
 .social-link {
-  margin: 0 10px; /* Esto agrega un margen de 10px a los lados de cada logo */
+  margin: 0 10px; /* Espacio entre los logos sociales */
+}
+
+/* Estilos para el círculo de servicio */
+.service-circle-container {
+  width: 150px; /* Tamaño del círculo */
+  height: 150px; /* Tamaño del círculo */
+  border-radius: 50%; /* Círculo */
+  overflow: hidden; /* Ajusta la imagen al círculo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto; /* Centra el círculo */
+  background-color: #f0f0f0; /* Color de fondo opcional */
+}
+
+.service-circle-img {
+  width: 100%;
+  height: auto;
+}
+
+.service-circle-text {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+/* Estilos para las tarjetas */
+.card {
+  background-color: #fff; /* Fondo blanco */
+  border: 1px solid #ddd; /* Borde gris claro */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  margin-bottom: 20px; /* Espacio inferior */
+  transition: transform 0.2s; /* Transición para el efecto hover */
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Efecto de elevación en hover */
+}
+
+.card-body {
+  padding: 20px; /* Espaciado interno */
+}
+
+/* Ajustes responsivos para pantallas pequeñas */
+@media (max-width: 768px) {
+  .carousel {
+    height: 300px; /* Ajusta la altura del carrusel en pantallas pequeñas */
+    width: 100%; /* Asegura que el carrusel use el ancho completo */
+  }
+
+  .content-container {
+    flex-direction: column; /* Cambia la dirección del contenedor a columna */
+    text-align: center; /* Centra el texto en pantallas pequeñas */
+  }
+
+  .carousel {
+    flex: 1;
+     /* Ajusta el ancho máximo del carrusel en pantallas pequeñas */
+    height: 30px; /* Altura máxima del carrusel en pantallas pequeñas */
+    width: 90%;
+    margin: 0 auto; /* Centra el carrusel */
+  }
+
+  .carousel-item img {
+    height: 300px; /* Altura máxima para evitar que el carrusel se vuelva muy grande */
+    width: 100%; /* Asegura que la imagen se ajuste al ancho del carrusel */
+  }
+
+  .carousel-inner {
+    width: 100%; /* Ancho completo del carrusel interno */
+  }
+
+  .text-content .title {
+    font-size: 1.5rem; /* Tamaño de fuente más pequeño */
+  }
+
+  .text-content .subtitle {
+    font-size: 1rem; /* Tamaño de fuente más pequeño */
+  }
+
+  .service-circle-container {
+    width: 120px; /* Tamaño reducido del círculo */
+    height: 120px; /* Tamaño reducido del círculo */
+  }
+
+  .service-circle-text {
+    font-size: 1rem; /* Tamaño de fuente más pequeño */
+  }
+}
+
+@media (max-width: 576px) {
+  .background-circle {
+    height: 300px; /* Tamaño aún más pequeño del círculo */
+    padding: 5px; /* Espacio reducido alrededor del contenido */
+  }
+
+  .carousel-item img {
+    max-height: 200px; /* Altura máxima aún menor en dispositivos muy pequeños */
+  }
+
+  .text-content .title {
+    font-size: 1.2rem; /* Tamaño de fuente aún más pequeño */
+  }
+
+  .text-content .subtitle {
+    font-size: 0.9rem; /* Tamaño de fuente aún más pequeño */
+  }
+
+  .service-circle-container {
+    width: 100px; /* Tamaño más pequeño del círculo */
+    height: 100px; /* Tamaño más pequeño del círculo */
+  }
+
+  .service-circle-text {
+    font-size: 0.9rem; /* Tamaño de fuente más pequeño */
+  }
+}
+
+/* Estilos para la sección de fondo circular */
+.background-circle {
+  position: relative;
+  background: radial-gradient(circle, rgba(224, 247, 250, 0.5), rgba(224, 247, 250, 0)); /* Degradado difuminado del azul claro */
+  border-radius: 100%;
+  padding: 20px; /* Espacio alrededor del contenido */
+  height: 700px; /* Tamaño del círculo */
+  width: 100%; /* Ancho completo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* Estilos para el contenedor de contenido */
+.content-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Estilos para el contenido de texto */
+.text-content {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.text-content .title {
+  font-size: 2em; /* Tamaño de fuente grande */
+  color: #0f1eee; /* Color negro */
+}
+
+.text-content .subtitle {
+  font-size: 4em; /* Tamaño grande del subtítulo */
+  color: #000000; /* Gris */
+  white-space: pre-line; /* Permite saltos de línea en el texto */
+  line-height: 1.4; /* Espacio entre líneas */
+}
+
+/* Estilos para el carrusel */
+.carousel {
+  flex: 1;
+  max-width: 50%;
+  height: 400px;
+}
+
+.carousel-inner {
+  border-radius: 20px; /* Bordes redondeados */
+  overflow: hidden; /* Aplicación correcta de los bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra */
+  height: 100%;
+}
+
+.carousel-item img {
+  border-radius: 20px; /* Bordes redondeados en las imágenes */
+  object-fit: cover; /* Ajuste de la imagen sin deformar */
+}
+
+.carousel-indicators button {
+  background-color: #e0f7fa; /* Color de fondo de los indicadores inactivos */
+  border-color: transparent; /* Elimina el borde por defecto */
+  border-radius: 0; /* Cambia a 50% si deseas mantener forma circular */
+  width: 80px; /* Ancho del indicador */
+  height: 4px; /* Altura del indicador */
+  margin: 0 5px; /* Espacio entre los indicadores */
+}
+
+.carousel-indicators .active {
+  background-color: #0f1eee; /* Color azul para el indicador activo */
 }

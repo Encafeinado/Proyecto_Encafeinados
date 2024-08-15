@@ -45,3 +45,8 @@
   max-height: 150px; /* Ajusta la altura máxima del logo */
   border-radius: 8px; /* Opcional: agrega bordes redondeados */
 }
+
+.main-content {
+  padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
+}
+

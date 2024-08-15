@@ -2,46 +2,34 @@
   <img src="../../../../assets/images/logosinfondo.png" alt="Logo de Encafeinados" class="navbar-logo">
   <div class="container-fluid">  
 
-    <a class="navbar-brand" >Encafeinados</a>
+    <a class="navbar-brand" routerLink="/landing">Encafeinados</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarText">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item" *ngIf="isUserShop()">
-          <a class="nav-link" routerLink="/store">Tienda</a>
-        </li>
-        <li class="nav-item" *ngIf=" isUserUser()">
-          <a class="nav-link" routerLink="/map">Mapa</a>
-        </li>
-        <li class="nav-item" *ngIf="isOnLandingPage()">
-          <a class="nav-link" routerLink="/landing">Inicio</a>
-        </li>
-        
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">        
         <li class="nav-item" *ngIf="isUserLanding()">
-          <a class="nav-link" routerLink="/landing-tienda">tiendas aliadas</a>
+          <a class="btn btn-outline-light2" routerLink="/landing-tienda">Tiendas Aliadas</a>
         </li>
       </ul>
-      <span class="navbar-text me-2">
-        {{ navbarText }}
-      </span>
-
+      
       <ng-container *ngIf="isUserLanding()">
         <a class="btn btn-outline-light" routerLink="/auth/login">Iniciar sesión</a>
       </ng-container>
 
       <ng-container *ngIf="isUserLandingTienda()">
         <!--<a class="btn btn-outline-light" routerLink="/auth/login">Iniciar sesión Tienda</a>-->
-        <a class="btn btn-outline-light" >Iniciar sesión Tienda</a>
+        <a class="btn btn-outline-light">Iniciar sesión Tienda</a>
       </ng-container>
-      <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda()">
+
+      <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage()">
          <div *ngIf="userName" class="dropdown">
           <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <span class="me-2">{{ userName }}</span>
+            <span class="me-2">Menu</span>
             <i class="fas fa-user" style="font-size: 1rem"></i>
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-            <li><button class="dropdown-item" routerLink="/perfil"><i class="fas fa-user"></i> Mi perfil</button></li>
+            <li><button class="dropdown-item" routerLink="/perfil"><i class="fas fa-user"></i> {{ userName }}</button></li>
             <li><button class="dropdown-item" (click)="openLogoutModal(sesionModal)"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button></li>
           </ul>
         </div>

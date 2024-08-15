@@ -58,3 +58,6 @@ footer p {
   height: auto;
   width: auto;
 }
+.main-content {
+  padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
+}
