@@ -440,6 +440,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       attributionControl: false,
       zoomDelta: 0.5,
       zoomSnap: 0.1,
+      zoomControl: false
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
