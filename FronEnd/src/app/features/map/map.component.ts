@@ -155,7 +155,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       );
       this.showCancelButton = true;
       console.log('showCancelButton después:', this.showCancelButton);
-      // Asegúrate de que el modal se cierre correctamente
       if (this.modalRef) {
         this.modalRef.close();
       }
@@ -441,13 +440,14 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       attributionControl: false,
       zoomDelta: 0.5,
       zoomSnap: 0.1,
+      zoomControl: false
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
     }).addTo(this.map);
 
-    this.userLocationMarker = L.marker([0, 0], {
+    this.userLocationMarker = L.marker([6.341645199748481, -75.51341937423055], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
@@ -542,96 +542,15 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     endLng: number,
     transport: string
   ): void {
-    // // Verifica si ya existe una ruta y elimínala
-    // if (this.routingControl) {
-    //   this.map.removeControl(this.routingControl);
-    // }
-
-    // // Verifica si el botón de cancelar está visible
-    // if (!this.showCancelButton) {
-    //   return; // Si no se ha mostrado el botón de cancelar, no procedemos a crear una nueva ruta
-    // }
-
-    let profile: string;
-    let routed: string;
-
-    // Define el perfil de transporte según la opción seleccionada
-    if (transport === 'foot') {
-      profile = 'foot';
-      routed = 'routed-foot';
-    } else if (transport === 'car') {
-      profile = 'driving';
-      routed = 'routed-car';
-    } else {
-      profile = 'bike';
-      routed = 'routed-bike';
-    }
-
     if (this.routingControl) {
-      this.map.removeControl(this.routingControl);
+      this.routingControl.setWaypoints([
+        L.latLng(startLat, startLng),
+        L.latLng(endLat, endLng)
+      ]);
+    } else {
+      // Si no hay routingControl, inicialízalo con la nueva ruta
+      this.showRoute(this.map, startLat, startLng, endLat, endLng, this.userLocationIcon, transport);
     }
-
-    // Construye la URL para la solicitud de la ruta
-    const url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-
-    // Realiza la solicitud para obtener la ruta
-    fetch(url)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Error en la solicitud al servicio OSM');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (!data || !data.routes || data.routes.length === 0) {
-          throw new Error('No se encontraron rutas válidas');
-        }
-
-        const route = data.routes[0];
-        const routeCoordinates = route.geometry.coordinates.map(
-          (coord: [number, number]) => [coord[1], coord[0]]
-        );
-
-        // Define el color de la ruta según el transporte seleccionado
-        let color = 'blue';
-        if (transport === 'car') {
-          color = 'red';
-        } else if (transport === 'bike') {
-          color = 'green';
-        }
-
-        if (this.routingControl) {
-          this.routingControl.remove();
-        }
-
-        // Crea una nueva ruta y añádela al mapa
-        this.routingControl = L.polyline(routeCoordinates, {
-          color: color,
-        }).addTo(this.map);
-
-        // Calcula el tiempo estimado de la ruta
-        const averageSpeeds: { [key: string]: number } = {
-          foot: 5,
-          bike: 15,
-          car: 40,
-        };
-
-        const speed = averageSpeeds[transport] || averageSpeeds['foot'];
-        const routeDistanceKm = route.distance / 1000;
-        const estimatedTimeHours = routeDistanceKm / speed;
-        const estimatedTimeMinutes = estimatedTimeHours * 60;
-
-        // Actualiza la información de la ruta
-        this.routeDistance = routeDistanceKm.toFixed(2);
-        this.routeDuration = estimatedTimeMinutes.toFixed(0);
-        this.routeInfo = `Ruta hacia ${this.destinationName}`;
-
-        // Muestra la alerta con la información de la ruta
-        this.showAlert = true;
-      })
-      .catch((error) => {
-        console.error('Error al obtener la ruta desde OSM:', error);
-      });
   }
 
   checkProximityToStores(
