@@ -444,35 +444,34 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       zoomDelta: 0.5,
       zoomSnap: 0.1,
     });
-
+  
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
     }).addTo(this.map);
-
+  
     this.userLocationMarker = L.marker([0, 0], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
       .bindPopup('Tu ubicación actual');
-
+  
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
         const accuracy = position.coords.accuracy;
-
+  
         if (accuracy < 50) {
           this.userLocationMarker.setLatLng([userLat, userLng]);
           this.userLocation = { lat: userLat, lng: userLng };
-
+  
           if (!this.initialZoomDone) {
             this.map.setView([userLat, userLng], 15, {
               animate: true,
             });
             this.initialZoomDone = true;
           }
-
-          // Actualizar la ruta en tiempo real
+  
           if (this.targetMarker) {
             this.updateRoute(
               userLat,
@@ -482,7 +481,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
               this.selectedTransport
             );
           }
-
+  
           this.checkProximityToStores(userLat, userLng, this.shopMarkers);
         }
       },
@@ -495,11 +494,26 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         timeout: 30000,
       }
     );
-
-    window.addEventListener('deviceorientation', (event: DeviceOrientationEvent) => {
-      const alpha = event.alpha;
-      this.userLocationMarker.setRotationAngle(alpha || 0);
-    }, true);
+  
+    // Comprobación de soporte y solicitud de permiso para la orientación del dispositivo
+    if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+      (DeviceOrientationEvent as any).requestPermission()
+        .then((permissionState: string) => {
+          if (permissionState === 'granted') {
+            window.addEventListener('deviceorientation', this.handleOrientation.bind(this), true);
+          } else {
+            console.log('Permiso de orientación denegado');
+          }
+        })
+        .catch(console.error);
+    } else {
+      window.addEventListener('deviceorientation', this.handleOrientation.bind(this), true);
+    }
+  }
+  
+  handleOrientation(event: DeviceOrientationEvent) {
+    const alpha = event.alpha;
+    this.userLocationMarker.setRotationAngle(alpha || 0);
   }
 
   updateRoute(
@@ -509,9 +523,18 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     endLng: number,
     transport: string
   ): void {
+    if (this.routingControl) {
+      this.routingControl.remove(); // Eliminar la ruta anterior si existe
+      this.routingControl = null; // Limpiar la referencia a la ruta
+    }
+  
+    if (!this.showCancelButton) {
+      return; // Si no se ha mostrado el botón de cancelar, no procedemos a crear una nueva ruta
+    }
+  
     let profile: string;
     let routed: string;
-
+  
     if (transport === 'foot') {
       profile = 'foot';
       routed = 'routed-foot';
@@ -522,9 +545,9 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       profile = 'bike';
       routed = 'routed-bike';
     }
-
+  
     const url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-
+  
     fetch(url)
       .then((response) => {
         if (!response.ok) {
@@ -536,42 +559,38 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         if (!data || !data.routes || data.routes.length === 0) {
           throw new Error('No se encontraron rutas válidas');
         }
-
+  
         const route = data.routes[0];
         const routeCoordinates = route.geometry.coordinates.map(
           (coord: [number, number]) => [coord[1], coord[0]]
         );
-
+  
         let color = 'blue';
         if (transport === 'car') {
           color = 'red';
         } else if (transport === 'bike') {
           color = 'green';
         }
-
-        if (this.routingControl) {
-          this.routingControl.remove();
-        }
-
+  
         this.routingControl = L.polyline(routeCoordinates, {
           color: color,
         }).addTo(this.map);
-
+  
         const averageSpeeds: { [key: string]: number } = {
           foot: 5,
           bike: 15,
           car: 40,
         };
-
+  
         const speed = averageSpeeds[transport] || averageSpeeds['foot'];
         const routeDistanceKm = route.distance / 1000;
         const estimatedTimeHours = routeDistanceKm / speed;
         const estimatedTimeMinutes = estimatedTimeHours * 60;
-
+  
         this.routeDistance = routeDistanceKm.toFixed(2);
         this.routeDuration = estimatedTimeMinutes.toFixed(0);
         this.routeInfo = `Ruta hacia ${this.destinationName}`;
-
+  
         this.showAlert = true;
       })
       .catch((error) => {
