@@ -22,6 +22,8 @@ header p {
   font-size: 2em; /* Tamaño de fuente grande */
   color: #0f1eee; /* Color del texto */
   font-weight: 700; /* Peso de fuente más grueso */
+  text-align: center; /* Centra el texto horizontalmente */
+  
 }
 
 
@@ -32,6 +34,8 @@ header p {
   white-space: pre-line; /* Permite saltos de línea */
   line-height: 1.4; /* Espacio entre líneas */
   font-weight: 300; /* Peso de fuente más delgado */
+  text-align: center; /* Centra el texto horizontalmente */
+  
 }
 
 
