@@ -22,12 +22,21 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import 'leaflet-rotatedmarker';
+// Extendemos la interfaz de L.Marker para incluir setRotationAngle
+declare module 'leaflet' {
+  interface Marker {
+    setRotationAngle(angle: number): this;
+  }
+}
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
 })
+
+
 export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   modalRef!: NgbModalRef;
   openedModal = false;
@@ -290,10 +299,15 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       this.closeAlert(); // Cerrar la alerta
     }
     this.modalRef.close();
-  }
+  }
 
   confirmArrive(): void {
     this.hasArrived = true; // Marca que el usuario ya ha llegado
+    if (this.routingControl) {
+      this.routingControl.remove();
+      this.showCancelButton = false;
+      this.closeAlert(); // Cerrar la alerta
+    }
     this.modalRef.close(); // Cierra el modal
   }
 
@@ -427,8 +441,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       center: [6.150155571503784, -75.61905204382627], // Coordenadas iniciales
       zoom: 13,
       attributionControl: false,
-      zoomDelta: 0.5, // Cambia la cantidad de zoom en cada paso
-      zoomSnap: 0.1, // Opcional: controla la suavidad del zoom
+      zoomDelta: 0.5,
+      zoomSnap: 0.1,
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -441,10 +455,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       .addTo(this.map)
       .bindPopup('Tu ubicación actual');
 
-    // Carga los datos de la tienda y los marcadores
-    this.fetchShopData();
-
-    // Observa la ubicación del usuario
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         const userLat = position.coords.latitude;
@@ -456,11 +466,21 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
           this.userLocation = { lat: userLat, lng: userLng };
 
           if (!this.initialZoomDone) {
-            // Centra el mapa en la ubicación del usuario con un zoom de nivel 15
             this.map.setView([userLat, userLng], 15, {
               animate: true,
             });
             this.initialZoomDone = true;
+          }
+
+          // Actualizar la ruta en tiempo real
+          if (this.targetMarker) {
+            this.updateRoute(
+              userLat,
+              userLng,
+              this.targetMarker.getLatLng().lat,
+              this.targetMarker.getLatLng().lng,
+              this.selectedTransport
+            );
           }
 
           this.checkProximityToStores(userLat, userLng, this.shopMarkers);
@@ -475,6 +495,88 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         timeout: 30000,
       }
     );
+
+    window.addEventListener('deviceorientation', (event: DeviceOrientationEvent) => {
+      const alpha = event.alpha;
+      this.userLocationMarker.setRotationAngle(alpha || 0);
+    }, true);
+  }
+
+  updateRoute(
+    startLat: number,
+    startLng: number,
+    endLat: number,
+    endLng: number,
+    transport: string
+  ): void {
+    let profile: string;
+    let routed: string;
+
+    if (transport === 'foot') {
+      profile = 'foot';
+      routed = 'routed-foot';
+    } else if (transport === 'car') {
+      profile = 'driving';
+      routed = 'routed-car';
+    } else {
+      profile = 'bike';
+      routed = 'routed-bike';
+    }
+
+    const url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
+
+    fetch(url)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Error en la solicitud al servicio OSM');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (!data || !data.routes || data.routes.length === 0) {
+          throw new Error('No se encontraron rutas válidas');
+        }
+
+        const route = data.routes[0];
+        const routeCoordinates = route.geometry.coordinates.map(
+          (coord: [number, number]) => [coord[1], coord[0]]
+        );
+
+        let color = 'blue';
+        if (transport === 'car') {
+          color = 'red';
+        } else if (transport === 'bike') {
+          color = 'green';
+        }
+
+        if (this.routingControl) {
+          this.routingControl.remove();
+        }
+
+        this.routingControl = L.polyline(routeCoordinates, {
+          color: color,
+        }).addTo(this.map);
+
+        const averageSpeeds: { [key: string]: number } = {
+          foot: 5,
+          bike: 15,
+          car: 40,
+        };
+
+        const speed = averageSpeeds[transport] || averageSpeeds['foot'];
+        const routeDistanceKm = route.distance / 1000;
+        const estimatedTimeHours = routeDistanceKm / speed;
+        const estimatedTimeMinutes = estimatedTimeHours * 60;
+
+        this.routeDistance = routeDistanceKm.toFixed(2);
+        this.routeDuration = estimatedTimeMinutes.toFixed(0);
+        this.routeInfo = `Ruta hacia ${this.destinationName}`;
+
+        this.showAlert = true;
+      })
+      .catch((error) => {
+        console.error('Error al obtener la ruta desde OSM:', error);
+      });
   }
 
   checkProximityToStores(
@@ -616,10 +718,16 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
   goToUserLocation(): void {
     if (this.userLocation) {
-      this.map.setView([this.userLocation.lat, this.userLocation.lng], 15, {
-        animate: true,
-        duration: 1.5, // Duración de la animación en segundos
-      });
+      const zoomLevel = this.routingControl ? 18 : 15;
+
+      this.map.flyTo(
+        [this.userLocation.lat, this.userLocation.lng],
+        zoomLevel,
+        {
+          animate: true,
+          duration: 1.5, // Duración de la animación en segundos
+        }
+      );
     } else {
       console.error('La ubicación del usuario no está disponible.');
     }

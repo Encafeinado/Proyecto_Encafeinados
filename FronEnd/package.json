@@ -25,6 +25,7 @@
     "@types/multer": "^1.4.11",
     "jquery": "^3.7.1",
     "leaflet": "^1.9.4",
+    "leaflet-rotatedmarker": "^0.2.0",
     "leaflet-routing-machine": "^3.2.12",
     "multer": "^1.4.5-lts.1",
     "ngx-toastr": "^19.0.0",
