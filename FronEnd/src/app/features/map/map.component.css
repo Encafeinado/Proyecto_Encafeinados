@@ -13,6 +13,12 @@
 }
 
 
+.alert-info {
+  --bs-alert-color: #007bff; /* Color del texto dentro de la alerta */
+  --bs-alert-bg: #ffffff;    /* Color de fondo de la alerta */
+  --bs-alert-border-color: #ffffff; /* Color del borde de la alerta */
+  --bs-alert-link-color: #0056b3; /* Color de los enlaces dentro de la alerta */
+}
 
 /* Estilos comunes para ambos botones */
 .floating-button-location,

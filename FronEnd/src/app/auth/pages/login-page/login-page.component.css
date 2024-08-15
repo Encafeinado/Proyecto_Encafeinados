@@ -1,172 +1,159 @@
-
-  /* Estilos generales */
+/* Estilos generales */
 body {
-    font-family: 'Arial', sans-serif;
-    
-    margin: 0;
-    padding: 0;
-  }
-  
-  
-  /* Estilos para el encabezado */
-  header h1 {
-    font-size: 3rem;
-    margin-bottom: 10px;
-    color: #03AED2; /* Azul principal */
-  }
-  
-  header p {
-    font-size: 1.5rem;
-    color: #6c757d; /* Gris */
-  }
-  
-  .txt1{
-    font-size: 1rem;
-    color: #000000; /* Gris */
-  }
-  
-  /* Estilos para las secciones */
-  section h2 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: #0f1eee; /* Amarillo brillante */
-  }
-  
-  section p {
-    font-size: 1.2rem;
-    color: #000000; /* Azul principal */
-  }
-  
-  blockquote {
-    background-color: #fff;
-    padding: 20px;
-    border-left: 5px solid #68D2E8; /* Azul claro */
-    color: #797d6c; /* Gris */
-  }
-  
-  footer p {
-    font-size: 1rem;
-    color: #7d6c75; /* Gris */
-  }
-  
-  
-  .main-content {
-    padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
-  }
-  /* Estilos para los enlaces sociales */
-  .social-link {
-    margin: 0 10px; /* Espacio entre los logos sociales */
-  }
-  
-  /* Estilos para el círculo de servicio */
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Estilos para el encabezado */
+header h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  color: #03AED2; /* Azul principal */
+}
+
+header p {
+  font-size: 1.5rem;
+  color: #6c757d; /* Gris */
+}
+
+.txt1 {
+  font-size: 1rem;
+  color: #000000; /* Gris */
+}
+
+/* Estilos para las secciones */
+section h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #0f1eee; /* Amarillo brillante */
+}
+
+section p {
+  font-size: 1.2rem;
+  color: #000000; /* Azul principal */
+}
+
+blockquote {
+  background-color: #fff;
+  padding: 20px;
+  border-left: 5px solid #68D2E8; /* Azul claro */
+  color: #797d6c; /* Gris */
+}
+
+footer p {
+  font-size: 1rem;
+  color: #7d6c75; /* Gris */
+}
+
+.main-content {
+  padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
+}
+
+/* Estilos para el contenedor del formulario */
+.form-container {
+  border: 2px solid #e0d9d9; /* Borde azul principal */
+  border-radius: 12px; /* Bordes redondeados */
+  padding: 20px; /* Espacio interior reducido */
+  background-color: #fff; /* Fondo blanco para el contenedor */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  position: relative; /* Posicionamiento para efectos adicionales si es necesario */
+  max-width: 400px; /* Ajusta el tamaño máximo del formulario */
+  max-height: 650px; /* Ajusta el tamaño máximo del formulario */
+  margin: 0 auto; /* Centra el formulario horizontalmente */
+}
+
+
+
+/* Estilos para el círculo de servicio */
+.service-circle-container {
+  width: 150px; /* Tamaño del círculo */
+  height: 150px; /* Tamaño del círculo */
+  border-radius: 50%; /* Círculo */
+  overflow: hidden; /* Ajusta la imagen al círculo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto; /* Centra el círculo */
+  background-color: #f0f0f0; /* Color de fondo opcional */
+}
+
+.service-circle-img {
+  width: 100%;
+  height: auto;
+}
+
+.service-circle-text {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+/* Ajustes responsivos para pantallas pequeñas */
+@media (max-width: 768px) {
   .service-circle-container {
-    width: 150px; /* Tamaño del círculo */
-    height: 150px; /* Tamaño del círculo */
-    border-radius: 50%; /* Círculo */
-    overflow: hidden; /* Ajusta la imagen al círculo */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto; /* Centra el círculo */
-    background-color: #f0f0f0; /* Color de fondo opcional */
+    width: 100px; /* Tamaño más pequeño en pantallas pequeñas */
+    height: 100px; /* Tamaño más pequeño en pantallas pequeñas */
   }
-  
-  .service-circle-img {
-    width: 100%;
-    height: auto;
-  }
-  
+
   .service-circle-text {
-    margin-top: 10px;
-    font-size: 1.2rem;
-    color: #333;
+    font-size: 1rem; /* Tamaño de fuente más pequeño en pantallas pequeñas */
   }
-  
-  /* Ajustes responsivos para pantallas pequeñas */
-  @media (max-width: 768px) {
-    .service-circle-container {
-      width: 100px; /* Tamaño más pequeño en pantallas pequeñas */
-      height: 100px; /* Tamaño más pequeño en pantallas pequeñas */
-    }
-  
-    .service-circle-text {
-      font-size: 1rem; /* Tamaño de fuente más pequeño en pantallas pequeñas */
-    }
-  }
-  
-  @media (max-width: 600px) {
-    .background-circle {
-      height: 300px; /* Ajusta el tamaño del círculo en pantallas pequeñas */
-    }
-  
-    .carousel-item {
-      height: 100px; /* Ajusta la altura del carrusel en pantallas pequeñas */
-    }
-  }
-  
-  /* Estilos para la sección de fondo circular */
+}
+
+@media (max-width: 600px) {
   .background-circle {
-    position: relative;
-    background: radial-gradient(circle, rgba(224, 247, 250, 0.5), rgba(224, 247, 250, 0)); /* Degradado difuminado del azul claro */
-    border-radius: 100%;
-    padding: 20px; /* Espacio alrededor del contenido */
-    height: 700px; /* Tamaño del círculo */
-    width: 100%; /* Ancho completo */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: 300px; /* Ajusta el tamaño del círculo en pantallas pequeñas */
   }
-  
-  /* Estilos para el contenedor de contenido */
-  .content-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+
+  .carousel-item {
+    height: 100px; /* Ajusta la altura del carrusel en pantallas pequeñas */
   }
-  
-  /* Estilos para el contenido de texto */
-  .text-content {
-    flex: 1;
-    padding-right: 20px;
-  }
-  
-  .text-content .title {
-    font-size: 2em; /* Tamaño de fuente grande */
-    color: #0f1eee; /* Color negro */
-  }
-  
- 
-  
-  /* Estilos para el carrusel */
-  .carousel {
-    flex: 1;
-    max-width: 50%;
-    height: 400px;
-  }
-  
-  .carousel-inner {
-    border-radius: 20px; /* Bordes redondeados */
-    overflow: hidden; /* Aplicación correcta de los bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra */
-    height: 100%;
-  }
-  
-  .carousel-item img {
-    border-radius: 20px; /* Bordes redondeados en las imágenes */
-    object-fit: cover; /* Ajuste de la imagen sin deformar */
-  }
-  
-  .carousel-indicators button {
-    background-color: #e0f7fa; /* Color de fondo de los indicadores inactivos */
-    border-color: transparent; /* Elimina el borde por defecto */
-    border-radius: 0; /* Cambia a 50% si deseas mantener forma circular */
-    width: 80px; /* Ancho del indicador */
-    height: 4px; /* Altura del indicador */
-    margin: 0 5px; /* Espacio entre los indicadores */
-  }
-  
-  .carousel-indicators .active {
-    background-color: #0f1eee; /* Color azul para el indicador activo */
-  }
-  
+}
+
+/* Ajustes para el card */
+.card {
+  background-color: #fff; /* Fondo blanco */
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  border: 1px solid #ddd; /* Borde gris claro */
+  padding: 10px; /* Espacio interior reducido */
+  margin: 10px; /* Espacio exterior reducido */
+  position: relative; /* Para posicionar elementos en el contorno si es necesario */
+  max-width: 400px; /* Tamaño máximo del card */
+}
+
+
+
+/* Estilos para la sección de fondo circular */
+.background-circle {
+  position: relative;
+  background: radial-gradient(circle, rgba(129, 227, 240, 0.5), rgba(224, 247, 250, 0)); /* Degradado difuminado del azul claro */
+  border-radius: 100%;
+  padding: 20px; /* Espacio alrededor del contenido */
+  height: 700px; /* Tamaño del círculo */
+  width: 100%; /* Ancho completo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Estilos para el contenedor de contenido */
+.content-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Estilos para el contenido de texto */
+.text-content {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.text-content .title {
+  font-size: 2em; /* Tamaño de fuente grande */
+  color: #0f1eee; /* Color negro */
+}
+

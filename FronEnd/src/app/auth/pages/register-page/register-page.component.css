@@ -123,11 +123,25 @@ body {
   
     
   }
+
+  /* Estilos para el contenedor del formulario */
+.form-container {
+  border: 2px solid #e0d9d9; /* Borde azul principal */
+  border-radius: 12px; /* Bordes redondeados */
+  padding: 20px; /* Espacio interior reducido */
+  background-color: #fff; /* Fondo blanco para el contenedor */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  position: relative; /* Posicionamiento para efectos adicionales si es necesario */
+  max-width: 400px; /* Ajusta el tamaño máximo del formulario */
+  margin: 0 auto; /* Centra el formulario horizontalmente */
+}
+
+
   
   /* Estilos para la sección de fondo circular */
   .background-circle {
     position: relative;
-    background: radial-gradient(circle, rgba(224, 247, 250, 0.5), rgba(224, 247, 250, 0)); /* Degradado difuminado del azul claro */
+    background: radial-gradient(circle, rgba(129, 227, 240, 0.5), rgba(224, 247, 250, 0)); /* Degradado difuminado del azul claro */
     border-radius: 100%;
     padding: 20px; /* Espacio alrededor del contenido */
     height: auto; /* Permite que el contenedor ajuste su altura según el contenido */
