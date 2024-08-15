@@ -48,11 +48,7 @@ body {
     color: #000000; /* Gris */
   }
   
-  /* Estilos para el carrusel */
-  .carousel-item img {
-    height: 400px;
-    object-fit: cover;
-  }
+  
   
   /* Estilos para las secciones */
   section h2 {
@@ -82,12 +78,7 @@ body {
   .main-content {
     padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
   }
-  /* Estilos para los enlaces sociales */
-  .social-link {
-    margin: 0 10px; /* Espacio entre los logos sociales */
-  }
-  
-  /* Estilos para el círculo de servicio */
+   /* Estilos para el círculo de servicio */
   .service-circle-container {
     width: 150px; /* Tamaño del círculo */
     height: 150px; /* Tamaño del círculo */
@@ -130,9 +121,7 @@ body {
       height: 300px; /* Ajusta el tamaño del círculo en pantallas pequeñas */
     }
   
-    .carousel-item {
-      height: 100px; /* Ajusta la altura del carrusel en pantallas pequeñas */
-    }
+    
   }
   
   /* Estilos para la sección de fondo circular */
@@ -166,40 +155,3 @@ body {
     font-size: 2em; /* Tamaño de fuente grande */
     color: #0f1eee; /* Color negro */
   }
-  
- 
-  
-  /* Estilos para el carrusel */
-  .carousel {
-    flex: 1;
-    max-width: 50%;
-    height: 400px;
-  }
-  
-  .carousel-inner {
-    border-radius: 20px; /* Bordes redondeados */
-    overflow: hidden; /* Aplicación correcta de los bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra */
-    height: 100%;
-  }
-  
-  .carousel-item img {
-    border-radius: 20px; /* Bordes redondeados en las imágenes */
-    object-fit: cover; /* Ajuste de la imagen sin deformar */
-  }
-  
-  .carousel-indicators button {
-    background-color: #e0f7fa; /* Color de fondo de los indicadores inactivos */
-    border-color: transparent; /* Elimina el borde por defecto */
-    border-radius: 0; /* Cambia a 50% si deseas mantener forma circular */
-    width: 80px; /* Ancho del indicador */
-    height: 4px; /* Altura del indicador */
-    margin: 0 5px; /* Espacio entre los indicadores */
-  }
-  
-  .carousel-indicators .active {
-    background-color: #0f1eee; /* Color azul para el indicador activo */
-  }
-  
-
-  
