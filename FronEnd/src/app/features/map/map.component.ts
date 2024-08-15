@@ -291,17 +291,22 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   confirmCancelRoute(): void {
+    console.log('Confirmación de cancelación de ruta');
     if (this.routingControl) {
       this.map.removeControl(this.routingControl); // Asegúrate de eliminar el control del mapa
       this.routingControl = null; // Limpia la referencia
-      this.showCancelButton = false; // Oculta el botón de cancelar
-      this.routeInfo = ''; // Limpia la información de la ruta
-      this.closeAlert(); // Cierra la alerta si es necesario
-      console.log('Ruta cancelada y controles limpiados.');
+      console.log('Control de ruta eliminado');
     }
+    this.showCancelButton = false; // Oculta el botón de cancelar
+    console.log('Botón de cancelar oculto');
+    this.routeInfo = ''; // Limpia la información de la ruta
   
+    this.closeAlert(); // Cierra la alerta si es necesario
+    console.log('Alerta cerrada');
+    
     if (this.modalRef) {
       this.modalRef.close(); // Cierra el modal de confirmación
+      console.log('Modal de confirmación cerrado');
     }
   }
 
