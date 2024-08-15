@@ -35,8 +35,6 @@ declare module 'leaflet' {
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
 })
-
-
 export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   modalRef!: NgbModalRef;
   openedModal = false;
@@ -444,34 +442,34 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       zoomDelta: 0.5,
       zoomSnap: 0.1,
     });
-  
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
     }).addTo(this.map);
-  
+
     this.userLocationMarker = L.marker([0, 0], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
       .bindPopup('Tu ubicación actual');
-  
+
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
         const accuracy = position.coords.accuracy;
-  
+
         if (accuracy < 50) {
           this.userLocationMarker.setLatLng([userLat, userLng]);
           this.userLocation = { lat: userLat, lng: userLng };
-  
+
           if (!this.initialZoomDone) {
             this.map.setView([userLat, userLng], 15, {
               animate: true,
             });
             this.initialZoomDone = true;
           }
-  
+
           if (this.targetMarker) {
             this.updateRoute(
               userLat,
@@ -481,7 +479,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
               this.selectedTransport
             );
           }
-  
+
           this.checkProximityToStores(userLat, userLng, this.shopMarkers);
         }
       },
@@ -494,26 +492,47 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         timeout: 30000,
       }
     );
-  
+
     // Comprobación de soporte y solicitud de permiso para la orientación del dispositivo
-    if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
-      (DeviceOrientationEvent as any).requestPermission()
+    if (
+      typeof (DeviceOrientationEvent as any).requestPermission === 'function'
+    ) {
+      (DeviceOrientationEvent as any)
+        .requestPermission()
         .then((permissionState: string) => {
           if (permissionState === 'granted') {
-            window.addEventListener('deviceorientation', this.handleOrientation.bind(this), true);
+            console.log('Permiso de orientación otorgado');
+            window.addEventListener(
+              'deviceorientation',
+              this.handleOrientation.bind(this),
+              true
+            );
           } else {
             console.log('Permiso de orientación denegado');
           }
         })
-        .catch(console.error);
+        .catch((error: unknown) => {
+          console.error('Error al solicitar permiso de orientación:', error);
+        });
     } else {
-      window.addEventListener('deviceorientation', this.handleOrientation.bind(this), true);
+      console.log('No es necesario solicitar permisos de orientación');
+      window.addEventListener(
+        'deviceorientation',
+        this.handleOrientation.bind(this),
+        true
+      );
     }
   }
-  
+
   handleOrientation(event: DeviceOrientationEvent) {
     const alpha = event.alpha;
-    this.userLocationMarker.setRotationAngle(alpha || 0);
+
+    if (alpha !== null) {
+      console.log('Ángulo de rotación detectado:', alpha);
+      this.userLocationMarker.setRotationAngle(alpha || 0);
+    } else {
+      console.warn('No se pudo obtener la orientación del dispositivo.');
+    }
   }
 
   updateRoute(
@@ -523,18 +542,20 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     endLng: number,
     transport: string
   ): void {
-    if (this.routingControl) {
-      this.routingControl.remove(); // Eliminar la ruta anterior si existe
-      this.routingControl = null; // Limpiar la referencia a la ruta
-    }
-  
-    if (!this.showCancelButton) {
-      return; // Si no se ha mostrado el botón de cancelar, no procedemos a crear una nueva ruta
-    }
-  
+    // // Verifica si ya existe una ruta y elimínala
+    // if (this.routingControl) {
+    //   this.map.removeControl(this.routingControl);
+    // }
+
+    // // Verifica si el botón de cancelar está visible
+    // if (!this.showCancelButton) {
+    //   return; // Si no se ha mostrado el botón de cancelar, no procedemos a crear una nueva ruta
+    // }
+
     let profile: string;
     let routed: string;
-  
+
+    // Define el perfil de transporte según la opción seleccionada
     if (transport === 'foot') {
       profile = 'foot';
       routed = 'routed-foot';
@@ -545,9 +566,15 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       profile = 'bike';
       routed = 'routed-bike';
     }
-  
+
+    if (this.routingControl) {
+      this.map.removeControl(this.routingControl);
+    }
+
+    // Construye la URL para la solicitud de la ruta
     const url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-  
+
+    // Realiza la solicitud para obtener la ruta
     fetch(url)
       .then((response) => {
         if (!response.ok) {
@@ -559,38 +586,47 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         if (!data || !data.routes || data.routes.length === 0) {
           throw new Error('No se encontraron rutas válidas');
         }
-  
+
         const route = data.routes[0];
         const routeCoordinates = route.geometry.coordinates.map(
           (coord: [number, number]) => [coord[1], coord[0]]
         );
-  
+
+        // Define el color de la ruta según el transporte seleccionado
         let color = 'blue';
         if (transport === 'car') {
           color = 'red';
         } else if (transport === 'bike') {
           color = 'green';
         }
-  
+
+        if (this.routingControl) {
+          this.routingControl.remove();
+        }
+
+        // Crea una nueva ruta y añádela al mapa
         this.routingControl = L.polyline(routeCoordinates, {
           color: color,
         }).addTo(this.map);
-  
+
+        // Calcula el tiempo estimado de la ruta
         const averageSpeeds: { [key: string]: number } = {
           foot: 5,
           bike: 15,
           car: 40,
         };
-  
+
         const speed = averageSpeeds[transport] || averageSpeeds['foot'];
         const routeDistanceKm = route.distance / 1000;
         const estimatedTimeHours = routeDistanceKm / speed;
         const estimatedTimeMinutes = estimatedTimeHours * 60;
-  
+
+        // Actualiza la información de la ruta
         this.routeDistance = routeDistanceKm.toFixed(2);
         this.routeDuration = estimatedTimeMinutes.toFixed(0);
         this.routeInfo = `Ruta hacia ${this.destinationName}`;
-  
+
+        // Muestra la alerta con la información de la ruta
         this.showAlert = true;
       })
       .catch((error) => {
