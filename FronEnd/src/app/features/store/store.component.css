@@ -12,36 +12,60 @@
 
 .main-content {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; /* Alinea los elementos en la fila */
+  gap: 20px; /* Espacio entre los elementos */
 }
 
 .info, .activation-section {
-  max-height: 1000px;
-  flex: 1;
+  flex: 1; /* Permite que las secciones se expandan igualmente */
   padding: 20px;
-  background-color: #FEEFAD;
+  background-color: #d4f1f7;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   text-align: center; /* Centro el contenido dentro de las secciones */
+  max-height: 1000px;
 }
 
+/* Oculta el separador en dispositivos móviles */
 .separator {
   width: 2px;
-  height: 100%;
   background-color: #FDDE55;
   margin: 0 20px;
+  display: none; /* Ocultar por defecto */
+}
+
+/* Media Queries para pantallas grandes */
+@media (min-width: 768px) {
+  .separator {
+    display: block; /* Mostrar en pantallas grandes */
+    height: 100%; /* Altura del separador igual al contenido */
+  }
+}
+
+/* Media Queries para dispositivos móviles */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column; /* Acomoda los elementos en columna en lugar de fila */
+  }
+
+  .info, .activation-section {
+    margin-bottom: 20px; /* Espacio entre secciones */
+    flex: 1 1 100%; /* Toma el 100% del ancho en dispositivos móviles */
+  }
+
+  .separator {
+    display: none; /* Asegúrate de que el separador esté oculto en pantallas pequeñas */
+  }
 }
 
 .info p {
   margin: 10px 0;
-  max-height: 1000px;
 }
 
 .info .btn {
   margin-top: 10px;
-  background-color: #03AED2;
-  color: #FEEFAD;
+  background-color: #2516f1;
+  color: #ffffff;
 }
 
 .activation-section h2 {
@@ -49,8 +73,8 @@
 }
 
 .activation-section .btn {
-  background-color: #03AED2;
-  color: #FEEFAD;
+  background-color: #2516f1;
+  color: #ffffff;
 }
 
 .status p {
@@ -83,7 +107,7 @@
 }
 
 .modal-header {
-  background-color: #03AED2;
+  background-color: #2516f1;
   color: #FFFFFF;
   padding: 15px;
   border-radius: 10px 10px 0 0;
@@ -92,7 +116,7 @@
 
 .modal-body {
   padding: 20px;
-  background-color: #FEEFAD;
+  background-color: #d4f1f7;
   border-radius: 0 0 10px 10px;
   text-align: center;
 }
@@ -105,21 +129,21 @@
 
 .modal-footer .btn {
   margin: 0 10px;
-  background-color: #FDDE55;
-  color: #03AED2;
+  background-color: #2516f1;
+  color: #ffffff;
   border: none;
 }
 
 .modal-footer .btn:hover {
-  background-color: #FEEFAD;
+  background-color: #d4f1f7;
 }
 
 .review-container {
   max-height: 100px; /* Altura máxima del contenedor */
   overflow-y: auto; /* Habilita el scroll vertical */
-  border: 1px solid #e6d06a; /* Opcional: borde para definir la caja */
+  border: 1px solid #ffffff; /* Opcional: borde para definir la caja */
   padding: 10px; /* Espacio interno */
-  background-color: #fff4c1; /* Fondo amarillo para coincidir con el resto */
+  background-color: #fafafa; /* Fondo amarillo para coincidir con el resto */
 }
 
 .review {
