@@ -22,7 +22,7 @@
         <a class="btn btn-outline-light">Iniciar sesión Tienda</a>
       </ng-container>
 
-      <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage()">
+      <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage()  && !isOnRegisterPage()">
          <div *ngIf="userName" class="dropdown">
           <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
             <span class="me-2">Menu</span>

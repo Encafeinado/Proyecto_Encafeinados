@@ -18,13 +18,14 @@
   
 
   .main-content {
-    padding-top: 300px; /* Ajusta este valor según la altura de tu navbar */
+    padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
   }
+  
 
   /* Estilos generales */
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #FEEFAD; /* Fondo amarillo claro */
+    background-color: #ffffff; /* Fondo amarillo claro */
     margin: 0;
     padding: 0;
   }

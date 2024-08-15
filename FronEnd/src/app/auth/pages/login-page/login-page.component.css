@@ -5,7 +5,7 @@
   /* Estilos generales */
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #FEEFAD; /* Fondo amarillo claro */
+    
     margin: 0;
     padding: 0;
   }
@@ -23,11 +23,7 @@ body {
     color: #6c757d; /* Gris */
   }
   
-  /* Estilos para el carrusel */
-  .carousel-item img {
-    height: 400px;
-    object-fit: cover;
-  }
+  
   
   /* Estilos para las secciones */
   section h2 {

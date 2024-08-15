@@ -87,6 +87,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     return this.router.url === '/auth/login';
   }
 
+  isOnRegisterPage(): boolean {
+    return this.router.url === '/auth/register';
+  }
+
   openLogoutModal(content: any): void {
     this.openModal(content);
   }
