@@ -23,7 +23,10 @@ body {
     color: #6c757d; /* Gris */
   }
   
-  
+  .txt1{
+    font-size: 1rem;
+    color: #000000; /* Gris */
+  }
   
   /* Estilos para las secciones */
   section h2 {

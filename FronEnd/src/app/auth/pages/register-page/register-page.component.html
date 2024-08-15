@@ -159,11 +159,19 @@
             </div>
 
             <div class="text-center pt-1 mb-5 pb-1">
-              <button data-mdb-button-init data-mdb-ripple-color="dark" type="submit"
-                class="btn btn-primary btn-block mb-3">Registrar</button>
+              <button 
+                  data-mdb-button-init 
+                  data-mdb-ripple-init 
+                  class="login100-form-btn" 
+                  [disabled]="myForm.invalid" 
+                  type="submit"
+                >Registrar</button>
             </div>
-            <div class="text-center">
-              <p>Ya tienes cuenta? <a routerLink="/auth/login" class="txt2">Inicia sesión</a></p>
+            <div class="flex-col-c p-t-3 mt-3">
+              <span class="txt1 p-b-2">
+              ¿Ya tienes cuenta?
+             </span>
+             <a routerLink="/auth/login" class="txt2">Inicia sesión</a>
             </div>
           </form>
         </div>

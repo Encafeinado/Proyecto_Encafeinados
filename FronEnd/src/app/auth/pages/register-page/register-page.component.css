@@ -42,6 +42,11 @@ body {
     font-size: 1.5rem;
     color: #6c757d; /* Gris */
   }
+
+  .txt1{
+    font-size: 1rem;
+    color: #000000; /* Gris */
+  }
   
   /* Estilos para el carrusel */
   .carousel-item img {
@@ -57,7 +62,7 @@ body {
   }
   
   section p {
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: #000000; /* Azul principal */
   }
   
@@ -105,6 +110,8 @@ body {
     font-size: 1.2rem;
     color: #333;
   }
+
+  
   
   /* Ajustes responsivos para pantallas pequeñas */
   @media (max-width: 768px) {
@@ -134,7 +141,7 @@ body {
     background: radial-gradient(circle, rgba(224, 247, 250, 0.5), rgba(224, 247, 250, 0)); /* Degradado difuminado del azul claro */
     border-radius: 100%;
     padding: 20px; /* Espacio alrededor del contenido */
-    height: 700px; /* Tamaño del círculo */
+    height: auto; /* Permite que el contenedor ajuste su altura según el contenido */
     width: 100%; /* Ancho completo */
     display: flex;
     align-items: center;
