@@ -292,11 +292,17 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
   confirmCancelRoute(): void {
     if (this.routingControl) {
-      this.routingControl.remove();
-      this.showCancelButton = false;
-      this.closeAlert(); // Cerrar la alerta
+      this.map.removeControl(this.routingControl); // Asegúrate de eliminar el control del mapa
+      this.routingControl = null; // Limpia la referencia
+      this.showCancelButton = false; // Oculta el botón de cancelar
+      this.routeInfo = ''; // Limpia la información de la ruta
+      this.closeAlert(); // Cierra la alerta si es necesario
+      console.log('Ruta cancelada y controles limpiados.');
     }
-    this.modalRef.close();
+  
+    if (this.modalRef) {
+      this.modalRef.close(); // Cierra el modal de confirmación
+    }
   }
 
   confirmArrive(): void {
@@ -447,7 +453,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       maxZoom: 19,
     }).addTo(this.map);
 
-    this.userLocationMarker = L.marker([0, 0], {
+    this.userLocationMarker = L.marker([6.341645199748481, -75.51343233562439], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
@@ -544,8 +550,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   ): void {
     // Verifica si ya existe una ruta y elimínala
     if (this.routingControl) {
-      this.map.removeControl(this.routingControl); // Elimina la ruta del mapa
-      this.routingControl = null; // Limpia la referencia
+      this.map.removeControl(this.routingControl);
     }
 
     // Verifica si el botón de cancelar está visible
