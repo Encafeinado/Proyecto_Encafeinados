@@ -66,6 +66,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   userId: string | null = null;
   bookImages: Image[] = [];
   obtainedStamps: number = 0;
+  enteredRating: number = 0;
+  enteredReview: string = '';
   // totalStamps: number = 0;
 
   showAlert: boolean = false;
@@ -135,7 +137,10 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.map = map;
     this.openModal(this.createModal, this.destinationName); // Asegúrate de pasar el nombre aquí
   }
-
+  setRating(rating: number): void {
+    this.enteredRating = rating;
+    console.log('Rating seleccionado: ', this.enteredRating);
+  }
   showRouteGuia(): void {
     console.log('showCancelButton antes:', this.showCancelButton);
     if (
@@ -367,7 +372,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
   verifyCode() {
     console.log('Primer bloque');
-    this.storeService.verifyCodeCode(this.enteredCode).subscribe(
+    this.storeService.verifyCodeCode(this.enteredCode, this.enteredReview, this.enteredRating).subscribe(
+    // this.storeService.verifyCodeCode(this.enteredCode).subscribe(
       (response) => {
         console.log(response);
         this.message = response.message;

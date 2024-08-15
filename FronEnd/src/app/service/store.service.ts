@@ -39,12 +39,14 @@ export class StoreService {
     return this.http.post<{ message: string }>(url, { code }, { headers });
   }
 
-  verifyCodeCode(code: string): Observable<{ message: string, shop: Shop }> {
-    const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`); // Configurar la cabecera con el token
-    const url = `${this.baseUrl}/verify-code`;
-    return this.http.post<{ message: string, shop: Shop }>(url, { code }, { headers });
-  }
+// store.service.ts
+verifyCodeCode(code: string, review: string, rating: number): Observable<{ message: string, shop: Shop }> {
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  const url = `${this.baseUrl}/verify-code`;
+  return this.http.post<{ message: string, shop: Shop }>(url, { code, review, rating: +rating }, { headers });
+}
+
 
   setStoreActivation(status: boolean): void {
     this.isStoreOpen = status;

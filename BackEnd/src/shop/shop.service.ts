@@ -31,30 +31,45 @@ export class ShopService {
   async verifyVerificationCodeByCodeAndAddCoins(
     code: string,
     userId: string,
+    review?: string,
+    rating?: number
   ): Promise<{ message: string; shop?: ShopDocument }> {
     // Buscar la tienda con el código de verificación
     const shop = await this.shopModel.findOne({ verificationCode: code });
-
+  
     if (!shop) {
       return { message: 'Código de verificación no válido' };
     }
-
+  
     // Actualizar los CoffeeCoins del usuario
     const user = await this.userModel.findById(userId);
     if (user) {
       user.cafecoin += 10; // Aumentar los CoffeeCoins
       await user.save();
     }
-
+  
     // Actualizar el uso del código y generar un nuevo código de verificación
     shop.codeUsage = (shop.codeUsage || 0) + 1;
     shop.verificationCode = await this.generateUniqueVerificationCode();
+  
+    // Si se proporciona una calificación, añádela a la tienda
+    if (rating) {
+      shop.ratings.push({ stars: rating });
+    }
+  
+    // Si se proporciona una reseña, añádela a la tienda
+    if (review) {
+      shop.reviews.push({
+        text: review,
+        user: userId, // Guardar el ID del usuario para referencia
+      });
+    }
+  
     await shop.save();
-    console.log('Tienda actualizada con nuevo código y uso:', shop);
-
+  
     // Actualizar el libro del usuario con los detalles de la tienda
     await this.updateBookWithShopDetails(shop, userId);
-
+  
     return {
       message: 'Código de verificación guardado exitosamente',
       shop: shop.toObject() as ShopDocument,

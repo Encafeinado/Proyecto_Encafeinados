@@ -452,3 +452,13 @@
   overflow-y: auto; /* Scroll if content is too long */
   margin-top: 20px; /* Add some space above */
 }
+
+.star-rating {
+  font-size: 32px; /* Aumenta el tamaño de las estrellas */
+  color: #FFD700; /* Mantiene el color dorado brillante */
+}
+
+.star-rating span {
+  cursor: pointer;
+}
+

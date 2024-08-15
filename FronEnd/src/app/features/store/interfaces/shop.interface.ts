@@ -13,5 +13,7 @@ export interface Shop {
   verificationCode: string;
   codeUsage: number;
   statusShop: boolean;
+  ratings: [];
+  reviews: [];
 }
 
