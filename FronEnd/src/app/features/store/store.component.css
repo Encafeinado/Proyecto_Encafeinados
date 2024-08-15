@@ -1,8 +1,10 @@
 .store-content {
   padding: 20px;
-  background-color: #fffaf0;
+  background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  max-width: 1200px; /* Ajusta el ancho máximo según sea necesario */
+  margin: 0 auto; /* Centra el contenedor horizontalmente */
 }
 
 .header {
@@ -14,6 +16,13 @@
   display: flex;
   justify-content: space-between; /* Alinea los elementos en la fila */
   gap: 20px; /* Espacio entre los elementos */
+  
+  
+}
+
+.main-content1{
+  padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
+  
 }
 
 .info, .activation-section {
@@ -106,6 +115,7 @@
   display: block;
 }
 
+
 .modal-header {
   background-color: #2516f1;
   color: #FFFFFF;
@@ -113,6 +123,7 @@
   border-radius: 10px 10px 0 0;
   text-align: center;
 }
+
 
 .modal-body {
   padding: 20px;
@@ -126,13 +137,16 @@
   display: flex;
   justify-content: center;
 }
-
+.h1{
+  background-color: #2516f1;
+}
 .modal-footer .btn {
   margin: 0 10px;
   background-color: #2516f1;
   color: #ffffff;
   border: none;
 }
+
 
 .modal-footer .btn:hover {
   background-color: #d4f1f7;
