@@ -4,10 +4,8 @@
   height: 70vh;
   width: 100%;
   background-image: url("https://www.transparenttextures.com/patterns/wood-pattern.png"); /* Texture for the map */
-  border-left: 2px solid #000000;
-  border-right: 2px solid #000000;
-  border-top: 2px solid #000000;
-  border-bottom: 2px solid #000000;
+  border-radius: 20px;
+ 
 }
 
 .main-content {
@@ -59,24 +57,22 @@
   max-width: 1200px;
 }
 
+
 .sidebar {
-  background-color: #0f1eee;
+  background-color: #d4f1f7;
   padding: 20px;
-  border-left: 2px solid #000000;
-  border-right: 2px solid #000000;
-  border-top: 2px solid #000000;
-  border-bottom: 2px solid #000000;
+  border-radius: 20px;
+
 }
 
-.sidebar h2 {
-  font-size: 1.8rem;
-  color: #ffffff;
+.sidebar h2, .sidebar p {
+  position: relative;
+  color: #0c0c0c;
+  border-radius: 5px;
+  padding: 5px;
 }
 
-.sidebar p {
-  font-size: 0.8rem;
-  color: #ffffff;
-}
+
 
 .sidebar img {
   margin-bottom: 15px;

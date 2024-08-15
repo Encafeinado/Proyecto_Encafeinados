@@ -83,6 +83,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     return this.isUserLanding() || this.isUserLandingTienda();
   }
   
+  isOnLoginPage(): boolean {
+    return this.router.url === '/auth/login';
+  }
 
   openLogoutModal(content: any): void {
     this.openModal(content);
@@ -108,4 +111,6 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   isUserLandingTienda(): boolean {
     return this.router.url === '/landing-tienda';
   }
+
+  
 }

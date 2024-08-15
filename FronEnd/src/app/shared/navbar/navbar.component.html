@@ -9,20 +9,20 @@
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">        
         <li class="nav-item" *ngIf="isUserLanding()">
-          <a class="btn btn-outline-light2"routerLink="/landing-tienda">Tiendas Aliadas</a>
+          <a class="btn btn-outline-light2" routerLink="/landing-tienda">Tiendas Aliadas</a>
         </li>
       </ul>
       
-
       <ng-container *ngIf="isUserLanding()">
         <a class="btn btn-outline-light" routerLink="/auth/login">Iniciar sesión</a>
       </ng-container>
 
       <ng-container *ngIf="isUserLandingTienda()">
         <!--<a class="btn btn-outline-light" routerLink="/auth/login">Iniciar sesión Tienda</a>-->
-        <a class="btn btn-outline-light" >Iniciar sesión Tienda</a>
+        <a class="btn btn-outline-light">Iniciar sesión Tienda</a>
       </ng-container>
-      <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda()">
+
+      <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage()">
          <div *ngIf="userName" class="dropdown">
           <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
             <span class="me-2">Menu</span>

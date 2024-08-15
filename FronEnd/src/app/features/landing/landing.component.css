@@ -8,7 +8,7 @@ body {
 
 /* Estilos para el encabezado */
 header h1 {
-  font-size: 3rem;
+  font-size: 4rem;
   margin-bottom: 10px;
   color: #03AED2; /* Azul principal */
 }
@@ -17,6 +17,23 @@ header p {
   font-size: 1.5rem;
   color: #6c757d; /* Gris */
 }
+
+.text-content .title {
+  font-size: 2em; /* Tamaño de fuente grande */
+  color: #0f1eee; /* Color del texto */
+  font-weight: 700; /* Peso de fuente más grueso */
+}
+
+
+/* Si deseas aplicar estilos a través de la clase generada automáticamente */
+.text-content[_ngcontent-ng-c2951528271] .subtitle[_ngcontent-ng-c2951528271] {
+  font-size: 3.5em; /* Tamaño de fuente */
+  color: #000000; /* Color negro */
+  white-space: pre-line; /* Permite saltos de línea */
+  line-height: 1.4; /* Espacio entre líneas */
+  font-weight: 300; /* Peso de fuente más delgado */
+}
+
 
 /* Estilos para el carrusel */
 .carousel-item img {
@@ -35,6 +52,15 @@ section p {
   font-size: 1.2rem;
   color: #000000; /* Azul principal */
 }
+
+.service-circle-text {
+  font-size: 1.2rem;
+  color: #000000; /* Color de texto */
+  font-weight: 400; /* Asegura que el texto tenga un peso normal */
+  font-family: 'Arial', sans-serif; /* Establece la fuente */
+}
+
+
 
 blockquote {
   background-color: #fff;
@@ -81,6 +107,24 @@ footer p {
   color: #333;
 }
 
+/* Estilos para las tarjetas */
+.card {
+  background-color: #fff; /* Fondo blanco */
+  border: 1px solid #ddd; /* Borde gris claro */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  margin-bottom: 20px; /* Espacio inferior */
+  transition: transform 0.2s; /* Transición para el efecto hover */
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Efecto de elevación en hover */
+}
+
+.card-body {
+  padding: 20px; /* Espaciado interno */
+}
+
 /* Ajustes responsivos para pantallas pequeñas */
 @media (max-width: 768px) {
   .carousel {
@@ -105,7 +149,6 @@ footer p {
     height: 300px; /* Altura máxima para evitar que el carrusel se vuelva muy grande */
     width: 100%; /* Asegura que la imagen se ajuste al ancho del carrusel */
   }
-
 
   .carousel-inner {
     width: 100%; /* Ancho completo del carrusel interno */
@@ -160,7 +203,7 @@ footer p {
 /* Estilos para la sección de fondo circular */
 .background-circle {
   position: relative;
-  background-color: #e0f7fa; /* Fondo azul claro */
+  background: radial-gradient(circle, rgba(224, 247, 250, 0.5), rgba(224, 247, 250, 0)); /* Degradado difuminado del azul claro */
   border-radius: 100%;
   padding: 20px; /* Espacio alrededor del contenido */
   height: 700px; /* Tamaño del círculo */
@@ -169,6 +212,7 @@ footer p {
   align-items: center;
   justify-content: center;
 }
+
 
 /* Estilos para el contenedor de contenido */
 .content-container {

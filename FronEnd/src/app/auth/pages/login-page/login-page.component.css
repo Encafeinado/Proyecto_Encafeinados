@@ -111,7 +111,7 @@ body {
   /* Estilos para la sección de fondo circular */
   .background-circle {
     position: relative;
-    background-color: #e0f7fa; /* Fondo azul claro */
+    background: radial-gradient(circle, rgba(224, 247, 250, 0.5), rgba(224, 247, 250, 0)); /* Degradado difuminado del azul claro */
     border-radius: 100%;
     padding: 20px; /* Espacio alrededor del contenido */
     height: 700px; /* Tamaño del círculo */
@@ -140,12 +140,7 @@ body {
     color: #0f1eee; /* Color negro */
   }
   
-  .text-content .subtitle {
-    font-size: 4em; /* Tamaño grande del subtítulo */
-    color: #000000; /* Gris */
-    white-space: pre-line; /* Permite saltos de línea en el texto */
-    line-height: 1.4; /* Espacio entre líneas */
-  }
+ 
   
   /* Estilos para el carrusel */
   .carousel {
