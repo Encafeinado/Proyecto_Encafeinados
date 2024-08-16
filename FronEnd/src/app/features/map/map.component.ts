@@ -70,7 +70,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   enteredRating: number = 0;
   enteredReview: string = '';
   // totalStamps: number = 0;
-
+  routeCancelled: boolean = false;
   showAlert: boolean = false;
   routeInfo: string = '';
   routeDistance: string = '';
@@ -302,9 +302,9 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       this.showCancelButton = false;
       this.closeAlert(); // Cerrar la alerta
     }
+    this.routeCancelled = true; // Marcar la ruta como cancelada
     this.modalRef.close();
   }
-  
 
   confirmArrive(): void {
     this.hasArrived = true; // Marca que el usuario ya ha llegado
@@ -460,7 +460,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       maxZoom: 19,
     }).addTo(this.map);
 
-    this.userLocationMarker = L.marker([6.341584226661025, -75.51330085387781], {
+    this.userLocationMarker = L.marker([0, 0], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
@@ -558,15 +558,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     endLng: number,
     transport: string
   ): void {
-    // // Verifica si ya existe una ruta y elimínala
-    // if (this.routingControl) {
-    //   this.map.removeControl(this.routingControl);
-    // }
-
-    // // Verifica si el botón de cancelar está visible
-    // if (!this.showCancelButton) {
-    //   return; // Si no se ha mostrado el botón de cancelar, no procedemos a crear una nueva ruta
-    // }
+    if (this.routeCancelled) return;
 
     let profile: string;
     let routed: string;
@@ -649,7 +641,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         console.error('Error al obtener la ruta desde OSM:', error);
       });
   }
-
 
   checkProximityToStores(
     userLat: number,
