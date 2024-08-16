@@ -161,6 +161,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       );
       this.showCancelButton = true;
       console.log('showCancelButton después:', this.showCancelButton);
+      // Asegúrate de que el modal se cierre correctamente
       if (this.modalRef) {
         this.modalRef.close();
       }
@@ -192,83 +193,98 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       profile = 'bike';
       routed = 'routed-bike';
     }
-
     if (this.routingControl) {
       this.map.removeControl(this.routingControl);
     }
 
-    if (transport === 'foot') {
-      profile = 'foot';
-      routed = 'routed-foot';
+    if (transport === 'foot' || transport === 'bike') {
       url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-    } else if (transport === 'car') {
-      profile = 'driving';
-      routed = 'routed-car';
+    } else {
       url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-    } else if (transport === 'bike') {
-      profile = 'bike';
-      routed = 'routed-bike';
-      url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
     }
+    url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
+    if (transport !== 'caro') {
+      fetch(url)
+        .then((response) => {
+          console.log(url);
+          if (!response.ok) {
+            throw new Error('Error en la solicitud al servicio OSM');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (!data || !data.routes || data.routes.length === 0) {
+            throw new Error('No se encontraron rutas válidas');
+          }
 
-    fetch(url)
-      .then((response) => {
-        console.log(url);
-        if (!response.ok) {
-          throw new Error('Error en la solicitud al servicio OSM');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (!data || !data.routes || data.routes.length === 0) {
-          throw new Error('No se encontraron rutas válidas');
-        }
+          const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
+          const routeCoordinates = route.geometry.coordinates.map(
+            (coord: [number, number]) => [coord[1], coord[0]]
+          );
 
-        const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
-        const routeCoordinates = route.geometry.coordinates.map(
-          (coord: [number, number]) => [coord[1], coord[0]]
+          // Dibujar la ruta en el mapa usando Leaflet
+          let color = 'blue'; // Default color for foot transport
+
+          if (transport === 'car') {
+            color = 'red';
+          } else if (transport === 'bike') {
+            color = 'green';
+          }
+
+          if (this.routingControl) {
+            this.routingControl.remove();
+          }
+
+          this.routingControl = L.polyline(routeCoordinates, {
+            color: color,
+          }).addTo(map);
+
+          // Calcular el tiempo estimado basado en la velocidad promedio
+          const averageSpeeds: { [key: string]: number } = {
+            foot: 5, // km/h
+            bike: 15, // km/h
+            car: 40, // km/h
+          };
+
+          const speed = averageSpeeds[transport] || averageSpeeds['foot']; // Default to foot speed if transport type is unknown
+          const routeDistanceKm = route.distance / 1000; // Convert distance to kilometers
+          const estimatedTimeHours = routeDistanceKm / speed; // Time in hours
+          const estimatedTimeMinutes = estimatedTimeHours * 60; // Convert to minutes
+
+          // Mostrar la distancia y tiempo estimado
+          this.routeDistance = routeDistanceKm.toFixed(2); // Distancia en kilómetros
+          this.routeDuration = estimatedTimeMinutes.toFixed(0); // Duración en minutos
+          this.routeInfo = `Ruta hacia ${this.destinationName}`;
+
+          // Mostrar la alerta con la información de la ruta
+          this.showAlert = true;
+        })
+        .catch((error) => {
+          console.error('Error al obtener la ruta desde OSM:', error);
+        });
+    } else {
+      this.routingControl = (L as any).Routing.control({
+        waypoints: [L.latLng(startLat, startLng), L.latLng(endLat, endLng)],
+        routeWhileDragging: true,
+        language: 'es', // Añadido para asegurarse de que las instrucciones estén en español
+        createMarker: (i: number, waypoint: any, n: number) => {
+          if (i === n - 1) {
+            return L.marker(waypoint.latLng, { icon: icon });
+          } else {
+            return L.marker(waypoint.latLng, { icon: this.userLocationIcon });
+          }
+        },
+      }).addTo(map);
+      setTimeout(() => {
+        const routingContainer = document.querySelector(
+          '.leaflet-routing-container'
         );
-
-        // Dibujar la ruta en el mapa usando Leaflet
-        let color = 'blue'; // Default color for foot transport
-
-        if (transport === 'car') {
-          color = 'red';
-        } else if (transport === 'bike') {
-          color = 'green';
+        const sidebar = document.querySelector('.sidebar'); // Replace with your actual sidebar selector
+        if (routingContainer && sidebar) {
+          sidebar.appendChild(routingContainer);
         }
-
-        if (this.routingControl) {
-          this.routingControl.remove();
-        }
-
-        this.routingControl = L.polyline(routeCoordinates, {
-          color: color,
-        }).addTo(map);
-
-        // Calcular el tiempo estimado basado en la velocidad promedio
-        const averageSpeeds: { [key: string]: number } = {
-          foot: 5, // km/h
-          bike: 15, // km/h
-          car: 40, // km/h
-        };
-
-        const speed = averageSpeeds[transport] || averageSpeeds['foot']; // Default to foot speed if transport type is unknown
-        const routeDistanceKm = route.distance / 1000; // Convert distance to kilometers
-        const estimatedTimeHours = routeDistanceKm / speed; // Time in hours
-        const estimatedTimeMinutes = estimatedTimeHours * 60; // Convert to minutes
-
-        // Mostrar la distancia y tiempo estimado
-        this.routeDistance = routeDistanceKm.toFixed(2); // Distancia en kilómetros
-        this.routeDuration = estimatedTimeMinutes.toFixed(0); // Duración en minutos
-        this.routeInfo = `Ruta hacia ${this.destinationName}`;
-
-        // Mostrar la alerta con la información de la ruta
-        this.showAlert = true;
-      })
-      .catch((error) => {
-        console.error('Error al obtener la ruta desde OSM:', error);
-      });
+      }, 500);
+    }
   }
 
   selectTransportMode(mode: string) {
@@ -282,20 +298,13 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
   confirmCancelRoute(): void {
     if (this.routingControl) {
-      this.routingControl.remove(); // Eliminar la ruta del mapa
-      this.routingControl = null;
+      this.routingControl.remove();
       this.showCancelButton = false;
-      this.isRouteActive = false;
+      this.closeAlert(); // Cerrar la alerta
     }
-
-    // Cerrar la alerta si está abierta
-    this.closeAlert();
-
-    // Cerrar el modal
-    if (this.modalRef) {
-      this.modalRef.close();
-    }
+    this.modalRef.close();
   }
+  
 
   confirmArrive(): void {
     this.hasArrived = true; // Marca que el usuario ya ha llegado
@@ -543,88 +552,103 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   updateRoute(
-  startLat: number,
-  startLng: number,
-  endLat: number,
-  endLng: number,
-  transport: string
-): void {
-  // Primero, verifica y elimina la ruta existente
-  if (this.routingControl) {
-    this.routingControl.remove();
-    this.routingControl = null; // Asegúrate de limpiar la referencia
+    startLat: number,
+    startLng: number,
+    endLat: number,
+    endLng: number,
+    transport: string
+  ): void {
+    // // Verifica si ya existe una ruta y elimínala
+    // if (this.routingControl) {
+    //   this.map.removeControl(this.routingControl);
+    // }
+
+    // // Verifica si el botón de cancelar está visible
+    // if (!this.showCancelButton) {
+    //   return; // Si no se ha mostrado el botón de cancelar, no procedemos a crear una nueva ruta
+    // }
+
+    let profile: string;
+    let routed: string;
+
+    // Define el perfil de transporte según la opción seleccionada
+    if (transport === 'foot') {
+      profile = 'foot';
+      routed = 'routed-foot';
+    } else if (transport === 'car') {
+      profile = 'driving';
+      routed = 'routed-car';
+    } else {
+      profile = 'bike';
+      routed = 'routed-bike';
+    }
+
+    if (this.routingControl) {
+      this.map.removeControl(this.routingControl);
+    }
+
+    // Construye la URL para la solicitud de la ruta
+    const url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
+
+    // Realiza la solicitud para obtener la ruta
+    fetch(url)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Error en la solicitud al servicio OSM');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (!data || !data.routes || data.routes.length === 0) {
+          throw new Error('No se encontraron rutas válidas');
+        }
+
+        const route = data.routes[0];
+        const routeCoordinates = route.geometry.coordinates.map(
+          (coord: [number, number]) => [coord[1], coord[0]]
+        );
+
+        // Define el color de la ruta según el transporte seleccionado
+        let color = 'blue';
+        if (transport === 'car') {
+          color = 'red';
+        } else if (transport === 'bike') {
+          color = 'green';
+        }
+
+        if (this.routingControl) {
+          this.routingControl.remove();
+        }
+
+        // Crea una nueva ruta y añádela al mapa
+        this.routingControl = L.polyline(routeCoordinates, {
+          color: color,
+        }).addTo(this.map);
+
+        // Calcula el tiempo estimado de la ruta
+        const averageSpeeds: { [key: string]: number } = {
+          foot: 5,
+          bike: 15,
+          car: 40,
+        };
+
+        const speed = averageSpeeds[transport] || averageSpeeds['foot'];
+        const routeDistanceKm = route.distance / 1000;
+        const estimatedTimeHours = routeDistanceKm / speed;
+        const estimatedTimeMinutes = estimatedTimeHours * 60;
+
+        // Actualiza la información de la ruta
+        this.routeDistance = routeDistanceKm.toFixed(2);
+        this.routeDuration = estimatedTimeMinutes.toFixed(0);
+        this.routeInfo = `Ruta hacia ${this.destinationName}`;
+
+        // Muestra la alerta con la información de la ruta
+        this.showAlert = true;
+      })
+      .catch((error: unknown) => {
+        console.error('Error al obtener la ruta desde OSM:', error);
+      });
   }
-
-  // Define el perfil de transporte y construye la URL
-  let profile: string;
-  let routed: string;
-
-  if (transport === 'foot') {
-    profile = 'foot';
-    routed = 'routed-foot';
-  } else if (transport === 'car') {
-    profile = 'driving';
-    routed = 'routed-car';
-  } else {
-    profile = 'bike';
-    routed = 'routed-bike';
-  }
-
-  const url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-
-  // Solicita la ruta
-  fetch(url)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Error en la solicitud al servicio OSM');
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (!data || !data.routes || data.routes.length === 0) {
-        throw new Error('No se encontraron rutas válidas');
-      }
-
-      const route = data.routes[0];
-      const routeCoordinates = route.geometry.coordinates.map(
-        (coord: [number, number]) => [coord[1], coord[0]]
-      );
-
-      // Define el color de la ruta
-      let color = 'blue';
-      if (transport === 'car') {
-        color = 'red';
-      } else if (transport === 'bike') {
-        color = 'green';
-      }
-
-      // Crea y añade la nueva ruta al mapa
-      this.routingControl = L.polyline(routeCoordinates, { color }).addTo(this.map);
-
-      // Calcula la distancia y duración estimadas
-      const averageSpeeds: { [key: string]: number } = {
-        foot: 5,
-        bike: 15,
-        car: 40,
-      };
-
-      const speed = averageSpeeds[transport] || averageSpeeds['foot'];
-      const routeDistanceKm = route.distance / 1000;
-      const estimatedTimeHours = routeDistanceKm / speed;
-      const estimatedTimeMinutes = estimatedTimeHours * 60;
-
-      // Actualiza la información de la ruta
-      this.routeDistance = routeDistanceKm.toFixed(2);
-      this.routeDuration = estimatedTimeMinutes.toFixed(0);
-      this.routeInfo = `Ruta hacia ${this.destinationName}`;
-
-      // Muestra la alerta
-      this.showAlert = true;
-    })
-    .catch((error) => {
-      console.error('Error al obtener la ruta desde OSM:', error);
-    });
-}
 
 
   checkProximityToStores(
