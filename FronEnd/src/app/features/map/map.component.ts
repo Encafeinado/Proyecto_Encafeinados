@@ -575,10 +575,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       routed = 'routed-bike';
     }
 
-    if (this.routingControl) {
-      this.map.removeControl(this.routingControl);
-    }
-
     // Construye la URL para la solicitud de la ruta
     const url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
 
@@ -608,14 +604,15 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
           color = 'green';
         }
 
+        // Si ya existe una ruta en el mapa, actualiza las coordenadas
         if (this.routingControl) {
-          this.routingControl.remove();
+          this.routingControl.setLatLngs(routeCoordinates);
+        } else {
+          // Crea una nueva ruta y añádela al mapa
+          this.routingControl = L.polyline(routeCoordinates, {
+            color: color,
+          }).addTo(this.map);
         }
-
-        // Crea una nueva ruta y añádela al mapa
-        this.routingControl = L.polyline(routeCoordinates, {
-          color: color,
-        }).addTo(this.map);
 
         // Calcula el tiempo estimado de la ruta
         const averageSpeeds: { [key: string]: number } = {
