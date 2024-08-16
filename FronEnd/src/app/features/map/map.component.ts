@@ -141,7 +141,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.map = map;
     this.openModal(this.createModal, this.destinationName); // Asegúrate de pasar el nombre aquí
   }
-  
+
   showRouteGuia(): void {
     console.log('showCancelButton antes:', this.showCancelButton);
     if (
@@ -161,11 +161,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       );
       this.showCancelButton = true;
       console.log('showCancelButton después:', this.showCancelButton);
-      this.isRouteActive = true; // Marcamos que hay una ruta activa
-
-      // Hacer zoom al marcador del usuario después de mostrar la ruta
-      this.goToUserLocation();
-
       if (this.modalRef) {
         this.modalRef.close();
       }
@@ -202,10 +197,18 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       this.map.removeControl(this.routingControl);
     }
 
-    if (transport === 'foot' || transport === 'bike') {
+    if (transport === 'foot') {
+      profile = 'foot';
+      routed = 'routed-foot';
       url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-    } else {
+    } else if (transport === 'car') {
+      profile = 'driving';
+      routed = 'routed-car';
       url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
+    } else if (transport === 'bike') {
+      profile = 'bike';
+      routed = 'routed-bike';
+      url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
     }
 
     fetch(url)
@@ -279,27 +282,19 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
   confirmCancelRoute(): void {
     if (this.routingControl) {
-        this.routingControl.remove();
-        this.routingControl = null; // Asegúrate de eliminar la referencia
+      this.routingControl.remove(); // Eliminar la ruta del mapa
+      this.routingControl = null;
+      this.showCancelButton = false;
+      this.isRouteActive = false;
     }
-
-    // Eliminar cualquier marcador asociado
-    if (this.targetMarker) {
-        this.targetMarker.remove();
-    }
-
-    // Ocultar el botón de cancelar
-    this.showCancelButton = false;
 
     // Cerrar la alerta si está abierta
     this.closeAlert();
 
     // Cerrar el modal
     if (this.modalRef) {
-        this.modalRef.close();
+      this.modalRef.close();
     }
-
-    this.isRouteActive = false; // Indicar que no hay una ruta activa
   }
 
   confirmArrive(): void {
@@ -371,71 +366,75 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
   verifyCode() {
     console.log('Primer bloque');
-    this.storeService.verifyCodeCode(this.enteredCode, this.enteredReview, this.enteredRating).subscribe(
-    // this.storeService.verifyCodeCode(this.enteredCode).subscribe(
-      (response) => {
-        console.log(response);
-        this.message = response.message;
-        console.log(this.message);
+    this.storeService
+      .verifyCodeCode(this.enteredCode, this.enteredReview, this.enteredRating)
+      .subscribe(
+        // this.storeService.verifyCodeCode(this.enteredCode).subscribe(
+        (response) => {
+          console.log(response);
+          this.message = response.message;
+          console.log(this.message);
 
-        if (this.message === 'Código de verificación guardado exitosamente') {
-          this.verifiedcode = true;
-          if (response.shop) {
-            console.log('2 bloque');
-            // Llamar a verifyCodeOnce con el shopId y el código
-            this.storeService
-              .verifyCode(response.shop._id, this.enteredCode)
-              .subscribe(
-                (res) => {
-                  console.log('3 bloque');
-                  console.log(res);
-                  toastr.success(
-                    'Código verificado y CoffeeCoins añadidos exitosamente'
-                  );
+          if (this.message === 'Código de verificación guardado exitosamente') {
+            this.verifiedcode = true;
+            if (response.shop) {
+              console.log('2 bloque');
+              // Llamar a verifyCodeOnce con el shopId y el código
+              this.storeService
+                .verifyCode(response.shop._id, this.enteredCode)
+                .subscribe(
+                  (res) => {
+                    console.log('3 bloque');
+                    console.log(res);
+                    toastr.success(
+                      'Código verificado y CoffeeCoins añadidos exitosamente'
+                    );
 
-                  this.reloadComponent();
-                  this.modalRef.close();
-                },
-                (err) => {
-                  console.log('4 bloque');
-                  if (
-                    err.error.message ===
-                    'La tienda ya está presente en el libro'
-                  ) {
-                    toastr.error('La tienda ya está presente en el álbum');
-                  } else {
-                    toastr.error('Error al añadir CoffeeCoins');
+                    this.reloadComponent();
+                    this.modalRef.close();
+                  },
+                  (err) => {
+                    console.log('4 bloque');
+                    if (
+                      err.error.message ===
+                      'La tienda ya está presente en el libro'
+                    ) {
+                      toastr.error('La tienda ya está presente en el álbum');
+                    } else {
+                      toastr.error('Error al añadir CoffeeCoins');
+                    }
+                    this.modalRef.close();
                   }
-                  this.modalRef.close();
-                }
+                );
+            } else {
+              toastr.success(
+                'Código verificado y CoffeeCoins añadidos exitosamente'
               );
+              this.reloadComponent();
+            }
           } else {
-            toastr.success(
-              'Código verificado y CoffeeCoins añadidos exitosamente'
-            );
-            this.reloadComponent();
+            this.verifiedcode = false;
+            toastr.error('Código de verificación no válido');
           }
-        } else {
-          this.verifiedcode = false;
-          toastr.error('Código de verificación no válido');
-        }
-        console.log('5 bloque');
-        this.verified = false;
-        this.modalRef.close();
-      },
-      (error) => {
-        console.log('6 bloque');
-        if (error.error.message === 'La tienda ya está presente en el libro') {
-          toastr.warning(
-            'La tienda ya está presente en el álbum pero te aumentamos coffecoins'
-          );
+          console.log('5 bloque');
+          this.verified = false;
           this.modalRef.close();
-        } else {
-          this.message = 'Error al verificar el código';
-          toastr.error('Error al verificar el código');
+        },
+        (error) => {
+          console.log('6 bloque');
+          if (
+            error.error.message === 'La tienda ya está presente en el libro'
+          ) {
+            toastr.warning(
+              'La tienda ya está presente en el álbum pero te aumentamos coffecoins'
+            );
+            this.modalRef.close();
+          } else {
+            this.message = 'Error al verificar el código';
+            toastr.error('Error al verificar el código');
+          }
         }
-      }
-    );
+      );
   }
 
   ngAfterViewInit(): void {
@@ -445,14 +444,14 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       attributionControl: false,
       zoomDelta: 0.5,
       zoomSnap: 0.1,
-      zoomControl: false
+      zoomControl: false,
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
     }).addTo(this.map);
 
-    this.userLocationMarker = L.marker([0, 0], {
+    this.userLocationMarker = L.marker([6.341584226661025, -75.51330085387781], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
@@ -550,28 +549,83 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   endLng: number,
   transport: string
 ): void {
-  try {
-    const waypoints = [
-      L.latLng(startLat, startLng),
-      L.latLng(endLat, endLng)
-    ];
-
-    if (this.routingControl) {
-      this.routingControl.setLatLngs(waypoints); // Actualiza la ruta existente sin recrearla
-    } else {
-      this.showRoute(this.map, startLat, startLng, endLat, endLng, this.userLocationIcon, transport);
-    }
-  } catch (error) {
-    console.error('Error al actualizar la ruta, recreando...', error);
-    // Si falla, elimina y vuelve a crear la ruta
-    if (this.routingControl) {
-      this.routingControl.remove();
-      this.routingControl = null;
-    }
-    this.showRoute(this.map, startLat, startLng, endLat, endLng, this.userLocationIcon, transport);
+  // Primero, verifica y elimina la ruta existente
+  if (this.routingControl) {
+    this.routingControl.remove();
+    this.routingControl = null; // Asegúrate de limpiar la referencia
   }
+
+  // Define el perfil de transporte y construye la URL
+  let profile: string;
+  let routed: string;
+
+  if (transport === 'foot') {
+    profile = 'foot';
+    routed = 'routed-foot';
+  } else if (transport === 'car') {
+    profile = 'driving';
+    routed = 'routed-car';
+  } else {
+    profile = 'bike';
+    routed = 'routed-bike';
+  }
+
+  const url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
+
+  // Solicita la ruta
+  fetch(url)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Error en la solicitud al servicio OSM');
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (!data || !data.routes || data.routes.length === 0) {
+        throw new Error('No se encontraron rutas válidas');
+      }
+
+      const route = data.routes[0];
+      const routeCoordinates = route.geometry.coordinates.map(
+        (coord: [number, number]) => [coord[1], coord[0]]
+      );
+
+      // Define el color de la ruta
+      let color = 'blue';
+      if (transport === 'car') {
+        color = 'red';
+      } else if (transport === 'bike') {
+        color = 'green';
+      }
+
+      // Crea y añade la nueva ruta al mapa
+      this.routingControl = L.polyline(routeCoordinates, { color }).addTo(this.map);
+
+      // Calcula la distancia y duración estimadas
+      const averageSpeeds: { [key: string]: number } = {
+        foot: 5,
+        bike: 15,
+        car: 40,
+      };
+
+      const speed = averageSpeeds[transport] || averageSpeeds['foot'];
+      const routeDistanceKm = route.distance / 1000;
+      const estimatedTimeHours = routeDistanceKm / speed;
+      const estimatedTimeMinutes = estimatedTimeHours * 60;
+
+      // Actualiza la información de la ruta
+      this.routeDistance = routeDistanceKm.toFixed(2);
+      this.routeDuration = estimatedTimeMinutes.toFixed(0);
+      this.routeInfo = `Ruta hacia ${this.destinationName}`;
+
+      // Muestra la alerta
+      this.showAlert = true;
+    })
+    .catch((error) => {
+      console.error('Error al obtener la ruta desde OSM:', error);
+    });
 }
-  
+
 
   checkProximityToStores(
     userLat: number,
