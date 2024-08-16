@@ -13,6 +13,12 @@
 }
 
 
+.alert-info {
+  --bs-alert-color: #007bff; /* Color del texto dentro de la alerta */
+  --bs-alert-bg: #ffffff;    /* Color de fondo de la alerta */
+  --bs-alert-border-color: #ffffff; /* Color del borde de la alerta */
+  --bs-alert-link-color: #0056b3; /* Color de los enlaces dentro de la alerta */
+}
 
 /* Estilos comunes para ambos botones */
 .floating-button-location,
@@ -118,7 +124,7 @@
 .modal-header-code,
 .modal-header-create,
 .modal-header-cancelR {
-  background-color: #03aed2;
+  background-color: #0f1eee;
   color: #ffffff;
   padding: 15px;
   border-radius: 10px 10px 0 0;
@@ -130,7 +136,7 @@
 .modal-body-create,
 .modal-body-cancelR {
   padding: 20px;
-  background-color: #feefad;
+  background-color: #d4f1f7;
   border-radius: 0 0 10px 10px;
 }
 
@@ -147,15 +153,14 @@
 .modal-footer-create .btn,
 .modal-footer-cancelR .btn {
   margin: 0 10px;
-  background-color: #fdde55;
-  color: #03aed2;
-  border: none;
+  background-color: #2516f1;
+  color: #ffffff;
 }
 
 .modal-footer-code .btn:hover,
 .modal-footer-create .btn:hover,
 .modal-footer-cancelR .btn:hover {
-  background-color: #feefad;
+  background-color: #68d2e8;
 }
 /* ------------------------------------------------------------------------------------------------- */
 .album {
@@ -237,7 +242,7 @@
 }
 
 .modal-book .modal-header {
-  background-color: #03aed2;
+  background-color: #0f1eee;
   color: #ffffff;
   border: none; /* Eliminamos el borde */
   padding: 15px;
@@ -266,7 +271,7 @@
 
 .modal-book .modal-body {
   padding: 20px;
-  background-color: #feefad;
+  background-color: #d4f1f7;
   border-radius: 0 0 10px 10px;
 }
 
@@ -301,13 +306,13 @@
 
 .modal-book .modal-footer .btn {
   margin: 0 10px;
-  background-color: #fdde55;
-  color: #03aed2;
+  background-color: #0f1eee;
+  color: #ffffff;
   border: none;
 }
 
 .modal-book .modal-footer .btn:hover {
-  background-color: #feefad;
+  background-color: #68d2e8;
 }
 
 /* Estilo por defecto para los logos */
@@ -447,3 +452,13 @@
   overflow-y: auto; /* Scroll if content is too long */
   margin-top: 20px; /* Add some space above */
 }
+
+.star-rating {
+  font-size: 32px; /* Aumenta el tamaño de las estrellas */
+  color: #FFD700; /* Mantiene el color dorado brillante */
+}
+
+.star-rating span {
+  cursor: pointer;
+}
+

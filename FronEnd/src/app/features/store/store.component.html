@@ -1,39 +1,57 @@
-<div class="store-content">
-  <div class="header">
-    <h1>Bienvenido a la tienda de cafés de especialidad</h1>
-  </div>
-  <div class="main-content">
-    <div class="info">
-      <h2>Código de la tienda</h2>
-      <p>Tu código aleatorio es: <strong>{{ codigo }}</strong></p>
-      <p>Número de personas que han ingresado el código: <strong>{{ codeEntries }}</strong></p>
-      <button class="btn" (click)="useCode()">Generar un nuevo código</button>
+<div class="main-content1">
+  <div class="store-content">
+    <div class="header">
+      <h1>Bienvenido a la tienda de cafés de especialidad</h1>
     </div>
-    <div class="separator"></div>
-    <div class="activation-section">
-      <h2>Activar Tienda en el Mapa</h2>
-      <button class="btn" (click)="openModal()">
-        {{ isStoreOpen ? 'Cerrar Tienda' : 'Abrir Tienda' }}
-      </button>
-      <div class="status">
-        <p [ngClass]="{ 'active': isStoreOpen, 'inactive': !isStoreOpen }">
-          {{ isStoreOpen ? 'La tienda está abierta.' : 'La tienda está cerrada.' }}
-        </p>
+    <div class="main-content">
+      
+      <div class="info">
+        <h2>Código de la tienda</h2>
+        <p>Tu código aleatorio es: <strong>{{ codigo }}</strong></p>
+        <p>Número de personas que han ingresado el código: <strong>{{ codeEntries }}</strong></p>
+        <button class="btn" (click)="useCode()">Generar un nuevo código</button>
+      </div>
+      
+      <div class="info">
+        <div class="average-rating">
+          <h2>Promedio de Calificaciones</h2>
+          <p>{{ averageRating | number:'1.1-1' }} estrellas</p>
+          <div class="reviews-section">
+            <h2>Reseñas de Clientes</h2>
+            <div class="review-container">
+              <div *ngFor="let review of reviews" class="review">
+                <p>{{ review.text }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="activation-section">
+        <h2>Activar Tienda en el Mapa</h2>
+        <button class="btn" (click)="openModal()">
+          {{ isStoreOpen ? 'Cerrar Tienda' : 'Abrir Tienda' }}
+        </button>
+        <div class="status">
+          <p [ngClass]="{ 'active': isStoreOpen, 'inactive': !isStoreOpen }">
+            {{ isStoreOpen ? 'La tienda está abierta.' : 'La tienda está cerrada.' }}
+          </p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Modal -->
-  <div class="modal-base" [ngClass]="{ 'show': showModal }">
-    <div class="modal-header">
-      <h4 class="modal-title">¿Deseas {{ isStoreOpen ? 'cerrar' : 'abrir' }} la tienda en el mapa?</h4>
-    </div>
-    <div class="modal-body">
-      <p>¿Estás seguro de que quieres {{ isStoreOpen ? 'cerrar' : 'abrir' }} la tienda en el mapa?</p>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-primary" (click)="confirmToggleStoreActivation()">Sí, {{ isStoreOpen ? 'cerrar' : 'abrir' }}</button>
-      <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+    <!-- Modal -->
+    <div class="modal-base" [ngClass]="{ 'show': showModal }">
+      <div class="modal-header">
+        <h4 class="modal-title">¿Deseas {{ isStoreOpen ? 'cerrar' : 'abrir' }} la tienda en el mapa?</h4>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que quieres {{ isStoreOpen ? 'cerrar' : 'abrir' }} la tienda en el mapa?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="confirmToggleStoreActivation()">Sí, {{ isStoreOpen ? 'cerrar' : 'abrir' }}</button>
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+      </div>
     </div>
   </div>
 </div>

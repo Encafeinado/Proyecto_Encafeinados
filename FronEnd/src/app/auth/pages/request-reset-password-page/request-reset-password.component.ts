@@ -7,10 +7,12 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-request-reset-password',
-  templateUrl: './request-reset-password.component.html'
+  templateUrl: './request-reset-password.component.html',
+  styleUrls: ['./request-reset-password.component.css'],
+
 })
 export class RequestResetPasswordComponent {
-  requestResetForm: FormGroup;
+  public requestResetForm: FormGroup;
   validDomains = [
     "gmail.com", "gmail.co","yopmail.com", "gmail.es", "gmail.mx", "hotmail.com", "hotmail.co", "hotmail.es", "hotmail.mx",
     "outlook.com", "outlook.co", "outlook.es", "outlook.mx", "yahoo.com", "yahoo.co", "yahoo.es", "yahoo.mx",
@@ -33,7 +35,7 @@ export class RequestResetPasswordComponent {
           validateEmailForLogin(this.authService),
           emailDomainValidator(this.validDomains)
         ],
-        updateOn: 'blur'  // Para que los validadores asíncronos se apliquen cuando el campo pierde el enfoque
+        //updateOn: 'blur'  // Para que los validadores asíncronos se apliquen cuando el campo pierde el enfoque
       }]
     });
   }

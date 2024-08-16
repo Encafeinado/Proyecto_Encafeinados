@@ -5,6 +5,7 @@ import { StoreStatusService } from '../../service/store-status.service';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { Shop } from './interfaces/shop.interface';
+import { UserService } from '../../service/user.service';
 
 @Component({
   selector: 'app-store',
@@ -17,15 +18,21 @@ export class StoreComponent implements OnInit {
   isStoreOpen: boolean = false;
   showModal: boolean = false;
   shopId: string = '';
+  averageRating: number = 0;
+  shop!: Shop;
+  reviews: any[] = [];
+  userData: any;
 
   constructor(
     private storeService: StoreService, 
     private storeStatusService: StoreStatusService,
     private toastr: ToastrService,
-    private authService: AuthService
+    private authService: AuthService,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
+    
     this.shopId = this.authService.getShopId() || '';
     if (this.shopId) {
       this.getShopInfo();
@@ -36,15 +43,27 @@ export class StoreComponent implements OnInit {
   getShopInfo() {
     this.storeService.getShopById(this.shopId).subscribe(
       (shop: Shop) => {
-        console.log('Shop info:', shop);
+        this.shop = shop;  // Asigna la tienda recuperada a la propiedad shop.
         this.codigo = shop.verificationCode;
         this.codeEntries = shop.codeUsage;
-        this.isStoreOpen = shop.statusShop; // Actualiza el estado de la tienda
+        this.isStoreOpen = shop.statusShop;
+        this.reviews = shop.reviews;
+        this.calculateAverageRating();
       },
-      (error) => {
+      error => {
         console.error('Error fetching shop info:', error);
       }
     );
+  }
+
+
+  calculateAverageRating() {
+    if (this.shop && this.shop.ratings.length > 0) {
+      const total = this.shop.ratings.reduce((acc: number, cur: { stars: number }) => acc + cur.stars, 0);
+      this.averageRating = total / this.shop.ratings.length;
+    } else {
+      this.averageRating = 0;
+    }
   }
 
   generateCode() {

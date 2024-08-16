@@ -18,7 +18,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     AppComponent,
     LoadingComponent,
     NavbarComponent,
-    DataTreatmentDialogComponent
+    DataTreatmentDialogComponent,
   ],
   imports: [
     BrowserModule,

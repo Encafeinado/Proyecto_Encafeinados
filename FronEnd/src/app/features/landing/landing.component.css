@@ -6,6 +6,61 @@ body {
   padding: 0;
 }
 
+/* Estilos para la sección combinada */
+.combined-section {
+  background-color: #e0f7fa; /* Azul claro */
+  padding: 40px; /* Espacio interno alrededor del contenido */
+  border-radius: 10px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+.contact-action-content {
+  display: flex;
+  justify-content: space-between; /* Distribuye el espacio entre las columnas */
+  gap: 30px; /* Espacio entre las columnas */
+}
+
+.contact-info,
+.action-info {
+  flex: 1; /* Permite que las columnas se expandan igualmente */
+  background-color: #ffffff; /* Fondo blanco para cada columna */
+  padding: 20px; /* Espacio interno en cada columna */
+  border-radius: 8px; /* Bordes redondeados en cada columna */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil en cada columna */
+}
+
+.contact-info h2,
+.action-info h2 {
+  font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
+  font-weight: 600; /* Peso Semibold */
+  font-size: 1.8rem; /* Tamaño de fuente para los títulos */
+  margin-bottom: 15px; /* Espacio debajo de los títulos */
+  color: #0f1eee; /* Color negro (opcional, si quieres especificar el color) */
+}
+
+
+.contact-info p,
+.action-info p {
+  margin-bottom: 10px;
+  font-size: 1rem;
+  font-weight: 500; /* Peso Medium para la fuente Poppins */
+  font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
+}
+
+
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 15px; /* Espacio entre los íconos */
+}
+
+.social-link img {
+  width: 40px; /* Tamaño fijo para los íconos de redes sociales */
+  height: auto;
+}
+
+
 /* Estilos para el encabezado */
 header h1 {
   font-size: 4rem;
@@ -22,17 +77,21 @@ header p {
   font-size: 2em; /* Tamaño de fuente grande */
   color: #0f1eee; /* Color del texto */
   font-weight: 700; /* Peso de fuente más grueso */
+  text-align: center; /* Centra el texto horizontalmente */
+  
 }
 
 
-/* Si deseas aplicar estilos a través de la clase generada automáticamente */
-.text-content[_ngcontent-ng-c2951528271] .subtitle[_ngcontent-ng-c2951528271] {
-  font-size: 3.5em; /* Tamaño de fuente */
+.text-content[_ngcontent-ng-c1307989152] .subtitle[_ngcontent-ng-c1307989152] {
+  font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
+  font-weight: 600; /* Peso Semibold */
+  font-size: 2em; /* Tamaño de fuente */
   color: #000000; /* Color negro */
   white-space: pre-line; /* Permite saltos de línea */
   line-height: 1.4; /* Espacio entre líneas */
-  font-weight: 300; /* Peso de fuente más delgado */
+  text-align: center; /* Centra el texto horizontalmente */
 }
+
 
 
 /* Estilos para el carrusel */
@@ -46,18 +105,22 @@ section h2 {
   font-size: 2rem;
   margin-bottom: 20px;
   color: #0f1eee; /* Amarillo brillante */
+  font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
+  font-weight: 600; /* Peso Semibold */
+  
 }
 
 section p {
   font-size: 1.2rem;
   color: #000000; /* Azul principal */
+  
 }
 
 .service-circle-text {
-  font-size: 1.2rem;
+  font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
+  font-weight: 500; /* Peso Medium */
+  font-size: 1.2rem; /* Tamaño de fuente */
   color: #000000; /* Color de texto */
-  font-weight: 400; /* Asegura que el texto tenga un peso normal */
-  font-family: 'Arial', sans-serif; /* Establece la fuente */
 }
 
 
@@ -70,8 +133,11 @@ blockquote {
 }
 
 footer p {
-  font-size: 1rem;
   color: #7d6c75; /* Gris */
+  margin-bottom: 10px;
+  font-size: 1rem;
+  font-weight: 500; /* Peso Medium para la fuente Poppins */
+  font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
 }
 
 .main-content {
@@ -127,6 +193,27 @@ footer p {
 
 /* Ajustes responsivos para pantallas pequeñas */
 @media (max-width: 768px) {
+
+  .contact-action-content {
+    flex-direction: column; /* Cambia la dirección a columna en pantallas pequeñas */
+    gap: 20px; /* Reduce el espacio entre las columnas */
+  }
+
+  .contact-info,
+  .action-info {
+    flex: 1 1 auto; /* Permite que las columnas se ajusten al contenido */
+    width: 100%; /* Asegura que las columnas usen el ancho completo */
+  }
+
+  .contact-info h2,
+  .action-info h2 {
+    font-size: 1.5rem; /* Tamaño de fuente más pequeño para pantallas pequeñas */
+  }
+
+  .contact-info p,
+  .action-info p {
+    font-size: 0.9rem; /* Tamaño de fuente más pequeño para pantallas pequeñas */
+  }
   .carousel {
     height: 300px; /* Ajusta la altura del carrusel en pantallas pequeñas */
     width: 100%; /* Asegura que el carrusel use el ancho completo */
@@ -138,8 +225,12 @@ footer p {
   }
 
   .carousel {
+     height: 300px; /* Ajusta la altura del carrusel en pantallas pequeñas */
+    width: 100%; /* Asegura que el carrusel use el ancho completo */
+  }
+
+  .carousel {
     flex: 1;
-     /* Ajusta el ancho máximo del carrusel en pantallas pequeñas */
     height: 30px; /* Altura máxima del carrusel en pantallas pequeñas */
     width: 90%;
     margin: 0 auto; /* Centra el carrusel */
@@ -173,6 +264,20 @@ footer p {
 }
 
 @media (max-width: 576px) {
+
+  .contact-info h2,
+  .action-info h2 {
+    font-size: 1.2rem; /* Tamaño de fuente aún más pequeño para pantallas muy pequeñas */
+  }
+
+  .contact-info p,
+  .action-info p {
+    font-size: 0.8rem; /* Tamaño de fuente aún más pequeño para pantallas muy pequeñas */
+  }
+
+  .social-link img {
+    width: 30px; /* Tamaño más pequeño para los íconos de redes sociales en pantallas pequeñas */
+  }
   .background-circle {
     height: 300px; /* Tamaño aún más pequeño del círculo */
     padding: 5px; /* Espacio reducido alrededor del contenido */
@@ -203,7 +308,7 @@ footer p {
 /* Estilos para la sección de fondo circular */
 .background-circle {
   position: relative;
-  background: radial-gradient(circle, rgba(224, 247, 250, 0.5), rgba(224, 247, 250, 0)); /* Degradado difuminado del azul claro */
+  background: radial-gradient(circle, rgba(129, 227, 240, 0.5), rgba(224, 247, 250, 0)); /* Degradado difuminado del azul claro */
   border-radius: 100%;
   padding: 20px; /* Espacio alrededor del contenido */
   height: 700px; /* Tamaño del círculo */
@@ -229,15 +334,20 @@ footer p {
 }
 
 .text-content .title {
-  font-size: 2em; /* Tamaño de fuente grande */
-  color: #0f1eee; /* Color negro */
+  font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
+  font-weight: 600; /* Peso Semibold */
+  font-size: 3em; /* Tamaño de fuente grande */
+  color: #0f1eee; /* Color azul */
 }
 
+
 .text-content .subtitle {
-  font-size: 4em; /* Tamaño grande del subtítulo */
+  font-size: 3em; /* Tamaño grande del subtítulo */
   color: #000000; /* Gris */
   white-space: pre-line; /* Permite saltos de línea en el texto */
   line-height: 1.4; /* Espacio entre líneas */
+  font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
+  font-weight: 600; /* Peso Semibold */
 }
 
 /* Estilos para el carrusel */
@@ -271,3 +381,5 @@ footer p {
 .carousel-indicators .active {
   background-color: #0f1eee; /* Color azul para el indicador activo */
 }
+
+
