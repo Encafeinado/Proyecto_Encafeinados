@@ -75,6 +75,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   routeInfo: string = '';
   routeDistance: string = '';
   routeDuration: string = '';
+  isButtonDisabled: boolean = true;
+
 
   @ViewChild('createModal', { static: true }) createModal: any;
   @ViewChild('cancelModal', { static: true }) cancelModal: any;
@@ -141,7 +143,13 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.map = map;
     this.openModal(this.createModal, this.destinationName); // Asegúrate de pasar el nombre aquí
   }
-
+  updateButtonState() {
+    this.isButtonDisabled = !(
+      this.enteredCode && 
+      this.enteredReview && 
+      this.enteredRating > 0
+    );
+  }
   showRouteGuia(): void {
     console.log('showCancelButton antes:', this.showCancelButton);
     if (

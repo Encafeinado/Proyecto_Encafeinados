@@ -124,24 +124,26 @@
       <div class="modal-body-code">
         <label for="code">Código:</label>
         <input #codeInput type="text" id="code" class="form-control" [(ngModel)]="enteredCode"
-          placeholder="Ingresa tu código">   
-          
-          <label for="rating">Calificación:</label>
-          <div class="star-rating">
-            <span *ngFor="let i of [1, 2, 3, 4, 5]; let index = index"
-                  (click)="setRating(index + 1)">
-              {{ enteredRating > index ? '★' : '☆' }}
-            </span>
-          </div>
+          placeholder="Ingresa tu código" (input)="updateButtonState()">
+        
+        <label for="rating">Calificación:</label>
+        <div class="star-rating">
+          <span *ngFor="let i of [1, 2, 3, 4, 5]; let index = index"
+                (click)="setRating(index + 1); updateButtonState()">
+            {{ enteredRating > index ? '★' : '☆' }}
+          </span>
+        </div>
+        
         <label for="review">Reseña:</label>
-        <textarea id="review" class="form-control" [(ngModel)]="enteredReview" placeholder="Escribe tu reseña"></textarea>
+        <textarea id="review" class="form-control" [(ngModel)]="enteredReview" placeholder="Escribe tu reseña" (input)="updateButtonState()"></textarea>
       </div>
       <div class="modal-footer-code">
-        <button type="button" class="btn" (click)="verifyCode()">Verificar</button>
+        <button type="button" class="btn" (click)="verifyCode()" [disabled]="isButtonDisabled">Verificar</button>
         <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
       </div>
     </div>
   </ng-template>
+  
 
   <!-- Modal álbum -->
   <ng-template #modalBook let-modal>
