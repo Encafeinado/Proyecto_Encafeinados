@@ -125,7 +125,10 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   closeAlert(): void {
     this.showAlert = false;
   }
-
+  setRating(rating: number): void {
+    this.enteredRating = rating;
+    console.log('Rating seleccionado: ', this.enteredRating);
+  }
   showRouteConfirmation(
     map: L.Map,
     targetMarker: L.Marker,
@@ -138,10 +141,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.map = map;
     this.openModal(this.createModal, this.destinationName); // Asegúrate de pasar el nombre aquí
   }
-  setRating(rating: number): void {
-    this.enteredRating = rating;
-    console.log('Rating seleccionado: ', this.enteredRating);
-  }
+  
   showRouteGuia(): void {
     console.log('showCancelButton antes:', this.showCancelButton);
     if (
@@ -279,25 +279,27 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
   confirmCancelRoute(): void {
     if (this.routingControl) {
-      this.routingControl.remove();
-      this.routingControl = null; // Asegúrate de eliminar la referencia
+        this.routingControl.remove();
+        this.routingControl = null; // Asegúrate de eliminar la referencia
     }
-  
+
     // Eliminar cualquier marcador asociado
     if (this.targetMarker) {
-      this.targetMarker.remove();
+        this.targetMarker.remove();
     }
-  
+
     // Ocultar el botón de cancelar
     this.showCancelButton = false;
-  
+
     // Cerrar la alerta si está abierta
     this.closeAlert();
-  
+
     // Cerrar el modal
     if (this.modalRef) {
-      this.modalRef.close();
+        this.modalRef.close();
     }
+
+    this.isRouteActive = false; // Indicar que no hay una ruta activa
   }
 
   confirmArrive(): void {
@@ -542,32 +544,33 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   updateRoute(
-    startLat: number,
-    startLng: number,
-    endLat: number,
-    endLng: number,
-    transport: string
-  ): void {
-    try {
-      if (this.routingControl) {
-        this.routingControl.setWaypoints([
-          L.latLng(startLat, startLng),
-          L.latLng(endLat, endLng)
-        ]);
-      } else {
-        this.showRoute(this.map, startLat, startLng, endLat, endLng, this.userLocationIcon, transport);
-      }
-    } catch (error) {
-      console.error('Error al actualizar la ruta, recreando...', error);
-      // Si falla, elimina y vuelve a crear la ruta
-      if (this.routingControl) {
-        this.routingControl.remove();
-        this.routingControl = null;
-      }
+  startLat: number,
+  startLng: number,
+  endLat: number,
+  endLng: number,
+  transport: string
+): void {
+  try {
+    const waypoints = [
+      L.latLng(startLat, startLng),
+      L.latLng(endLat, endLng)
+    ];
+
+    if (this.routingControl) {
+      this.routingControl.setLatLngs(waypoints); // Actualiza la ruta existente sin recrearla
+    } else {
       this.showRoute(this.map, startLat, startLng, endLat, endLng, this.userLocationIcon, transport);
     }
+  } catch (error) {
+    console.error('Error al actualizar la ruta, recreando...', error);
+    // Si falla, elimina y vuelve a crear la ruta
+    if (this.routingControl) {
+      this.routingControl.remove();
+      this.routingControl = null;
+    }
+    this.showRoute(this.map, startLat, startLng, endLat, endLng, this.userLocationIcon, transport);
   }
-  
+}  
 
   checkProximityToStores(
     userLat: number,
