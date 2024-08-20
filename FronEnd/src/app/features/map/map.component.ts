@@ -95,6 +95,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     private changeDetector: ChangeDetectorRef
   ) {
     this.userLocationIcon = L.icon({
+      // iconUrl: 'assets/IconsMarker/flecha.png',
       iconUrl: 'assets/IconsMarker/cosechaUser.png',
       iconSize: [25, 41],
       iconAnchor: [12, 41],
@@ -266,6 +267,65 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
           // Mostrar la alerta con la información de la ruta
           this.showAlert = true;
+          this.userLocationIcon = L.icon({
+            iconUrl: 'assets/IconsMarker/flecha.png',
+            iconSize: [25, 41],
+            
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41],
+          });
+          
+          // Verificar si ya existe un marcador y eliminarlo
+          if (this.userLocationMarker) {
+            this.map.removeLayer(this.userLocationMarker);
+          }
+          
+          // Crear un nuevo marcador con el nuevo ícono y agregarlo al mapa
+          this.userLocationMarker = L.marker([6.092140, -75.639212], {
+            icon: this.userLocationIcon,
+          })
+            .addTo(this.map)
+            .bindPopup('Tu ubicación actual');
+            this.watchId = navigator.geolocation.watchPosition(
+              (position) => {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
+        
+                if (accuracy < 50) {
+                  this.userLocationMarker.setLatLng([userLat, userLng]);
+                  this.userLocation = { lat: userLat, lng: userLng };
+        
+                  if (!this.initialZoomDone) {
+                    this.map.setView([userLat, userLng], 15, {
+                      animate: true,
+                    });
+                    this.initialZoomDone = true;
+                  }
+        
+                  if (this.targetMarker) {
+                    this.updateRoute(
+                      userLat,
+                      userLng,
+                      this.targetMarker.getLatLng().lat,
+                      this.targetMarker.getLatLng().lng,
+                      this.selectedTransport
+                    );
+                  }
+        
+                  this.checkProximityToStores(userLat, userLng, this.shopMarkers);
+                }
+              },
+              (error) => {
+                console.error('Error al obtener la ubicación del usuario:', error);
+              },
+              {
+                enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 30000,
+              })
+          // Forzar la detección de cambios en Angular
+          this.changeDetector.detectChanges();
         })
         .catch((error) => {
           console.error('Error al obtener la ruta desde OSM:', error);
@@ -312,6 +372,66 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     }
     this.routeCancelled = true; // Marcar la ruta como cancelada
     this.modalRef.close();
+    this.userLocationIcon = L.icon({
+      // iconUrl: 'assets/IconsMarker/flecha.png',
+      iconUrl: 'assets/IconsMarker/cosechaUser.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+    });
+    
+    // Verificar si ya existe un marcador y eliminarlo
+    if (this.userLocationMarker) {
+      this.map.removeLayer(this.userLocationMarker);
+    }
+    
+    // Crear un nuevo marcador con el nuevo ícono y agregarlo al mapa
+    this.userLocationMarker = L.marker([6.092140, -75.639212], {
+      icon: this.userLocationIcon,
+    })
+      .addTo(this.map)
+      .bindPopup('Tu ubicación actual');
+      this.watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+          const accuracy = position.coords.accuracy;
+  
+          if (accuracy < 50) {
+            this.userLocationMarker.setLatLng([userLat, userLng]);
+            this.userLocation = { lat: userLat, lng: userLng };
+  
+            if (!this.initialZoomDone) {
+              this.map.setView([userLat, userLng], 15, {
+                animate: true,
+              });
+              this.initialZoomDone = true;
+            }
+  
+            if (this.targetMarker) {
+              this.updateRoute(
+                userLat,
+                userLng,
+                this.targetMarker.getLatLng().lat,
+                this.targetMarker.getLatLng().lng,
+                this.selectedTransport
+              );
+            }
+  
+            this.checkProximityToStores(userLat, userLng, this.shopMarkers);
+          }
+        },
+        (error) => {
+          console.error('Error al obtener la ubicación del usuario:', error);
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 0,
+          timeout: 30000,
+        })
+    // Forzar la detección de cambios en Angular
+    this.changeDetector.detectChanges();
   }
 
   confirmArrive(): void {
@@ -345,7 +465,12 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       });
     }
   }
-
+  resetModalFields() {
+    this.enteredCode = '';
+    this.enteredRating = 0;
+    this.enteredReview = '';
+    this.isButtonDisabled = true; // Opcional, si quieres desactivar el botón nuevamente
+  }
   private createStoreIcon(
     iconUrl: string,
     isOpen: boolean,
@@ -374,6 +499,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   openModalWithCodigo(): void {
+    this.resetModalFields();
     this.openModal(this.codeModal, '');
   }
 
@@ -468,7 +594,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       maxZoom: 19,
     }).addTo(this.map);
 
-    this.userLocationMarker = L.marker([0, 0], {
+    this.userLocationMarker = L.marker([6.092140, -75.639212], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)

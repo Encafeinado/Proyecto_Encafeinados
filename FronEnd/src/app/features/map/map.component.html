@@ -125,15 +125,19 @@
         <label for="code">Código:</label>
         <input #codeInput type="text" id="code" class="form-control" [(ngModel)]="enteredCode"
           placeholder="Ingresa tu código" (input)="updateButtonState()">
-        
+        <br>
         <label for="rating">Calificación:</label>
         <div class="star-rating">
           <span *ngFor="let i of [1, 2, 3, 4, 5]; let index = index"
+                [ngClass]="{
+                  'star-filled': enteredRating > index,
+                  'star-empty': enteredRating <= index
+                }"
                 (click)="setRating(index + 1); updateButtonState()">
-            {{ enteredRating > index ? '★' : '☆' }}
+            &#9733;
           </span>
         </div>
-        
+        <br>
         <label for="review">Reseña:</label>
         <textarea id="review" class="form-control" [(ngModel)]="enteredReview" placeholder="Escribe tu reseña" (input)="updateButtonState()"></textarea>
       </div>

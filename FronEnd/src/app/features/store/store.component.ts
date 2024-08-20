@@ -19,6 +19,7 @@ export class StoreComponent implements OnInit {
   showModal: boolean = false;
   shopId: string = '';
   averageRating: number = 0;
+  ratings: any[] = [];
   shop!: Shop;
   reviews: any[] = [];
   userData: any;
@@ -48,7 +49,9 @@ export class StoreComponent implements OnInit {
         this.codeEntries = shop.codeUsage;
         this.isStoreOpen = shop.statusShop;
         this.reviews = shop.reviews;
+        this.ratings = shop.ratings;
         this.calculateAverageRating();
+        console.log(this.reviews, this.ratings)
       },
       error => {
         console.error('Error fetching shop info:', error);

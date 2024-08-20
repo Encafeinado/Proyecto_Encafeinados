@@ -11,22 +11,6 @@
         <p>Número de personas que han ingresado el código: <strong>{{ codeEntries }}</strong></p>
         <button class="btn" (click)="useCode()">Generar un nuevo código</button>
       </div>
-      
-      <div class="info">
-        <div class="average-rating">
-          <h2>Promedio de Calificaciones</h2>
-          <p>{{ averageRating | number:'1.1-1' }} estrellas</p>
-          <div class="reviews-section">
-            <h2>Reseñas de Clientes</h2>
-            <div class="review-container">
-              <div *ngFor="let review of reviews" class="review">
-                <p>{{ review.text }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-  
       <div class="activation-section">
         <h2>Activar Tienda en el Mapa</h2>
         <button class="btn" (click)="openModal()">
@@ -39,6 +23,29 @@
         </div>
       </div>
     </div>
+    <div class="info">
+      <div class="average-rating">
+        <h2>Promedio de Calificaciones</h2>
+        <p>{{ averageRating | number:'1.1-1' }} estrellas</p>
+        <div class="reviews-section">
+          <h2>Reseñas de Clientes</h2>
+          <div class="review-rating-container">
+            <div class="reviews-column">
+              <div *ngFor="let review of reviews" class="review">
+                <p><strong>Comentario:</strong> {{ review.text }}</p>
+              </div>
+            </div>
+            
+            <div class="ratings-column">
+              <div *ngFor="let rating of ratings" class="rating">
+                <p><strong>Calificación:</strong> {{ rating.stars }} </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
 
     <!-- Modal -->
     <div class="modal-base" [ngClass]="{ 'show': showModal }">
