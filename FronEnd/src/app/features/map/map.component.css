@@ -175,8 +175,9 @@
 }
 
 .album-page img {
-  width: 100px; /* Ajusta este valor según el tamaño que prefieras */
-  height: 100px; /* Ajusta este valor según el tamaño que prefieras */
+  max-width: 100%; /* Asegura que la imagen no se desborde */
+  width: 100%; /* La imagen ocupará el 100% de su contenedor */
+  height: auto; /* Mantiene la proporción de la imagen */
   object-fit: cover; /* Hace que la imagen cubra el contenedor sin distorsionarse */
   margin-bottom: 10px;
 }
@@ -277,8 +278,20 @@
 
 .modal-book .album {
   display: grid;
-  grid-template-columns: repeat(6, 1fr); /* 5 columnas */
+  grid-template-columns: repeat(4, 1fr); /* 6 columnas en pantallas grandes */
   gap: 10px; /* Espacio entre las piezas */
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 768px) {
+  .modal-book .album {
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas en móviles */
+  }
+
+  .modal-book .album-page img {
+    width: 45px; /* Tamaño de la imagen en móviles */
+    height: 45px;
+  }
 }
 
 .modal-book .album-page {
@@ -290,8 +303,8 @@
 }
 
 .modal-book .album-page img {
-  width: 75px; /* Ajusta este valor según el tamaño que prefieras */
-  height: 75px; /* Ajusta este valor según el tamaño que prefieras */
+  width: 70px; /* Ajusta este valor según el tamaño que prefieras */
+  height: 70px; /* Ajusta este valor según el tamaño que prefieras */
   object-fit: cover; /* Hace que la imagen cubra el contenedor sin distorsionarse */
   margin-bottom: 10px;
 }

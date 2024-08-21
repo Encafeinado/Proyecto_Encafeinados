@@ -125,17 +125,19 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   closeAlert(): void {
     this.showAlert = false;
   }
+
   setRating(rating: number): void {
     this.enteredRating = rating;
     console.log('Rating seleccionado: ', this.enteredRating);
   }
+  
   showRouteConfirmation(
     map: L.Map,
     targetMarker: L.Marker,
     userLocationMarker: L.Marker,
     destinationName: string
   ): void {
-    this.destinationName = destinationName;
+    this.destinationName = destinationName; // Guarda el nombre de la tienda de destino
     this.targetMarker = targetMarker;
     this.userLocationMarker = userLocationMarker;
     this.map = map;
@@ -642,31 +644,35 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   checkProximityToStores(
     userLat: number,
     userLng: number,
-    markers: { marker: L.Marker; name: string; iconUrl: string }[] // Define claramente el tipo aquí
+    markers: { marker: L.Marker; name: string; iconUrl: string }[] 
   ) {
     const proximityThreshold = 10; // 10 metros
-
-    markers.forEach(({ marker, name, iconUrl }) => {
-      const { lat, lng } = marker.getLatLng();
-      const distance = this.calculateDistance(userLat, userLng, lat, lng);
-
-      const shop = this.shopData.find((s) => s.name === name); // Encuentra la tienda correspondiente
-      if (shop) {
-        const statusShop = shop.statusShop; // Accede a statusShop de la tienda encontrada
-
-        if (distance <= proximityThreshold) {
-          marker.setIcon(this.createStoreIcon(iconUrl, statusShop));
-          console.log(`Estás cerca de ${name}`);
-          this.openModal(this.arriveModal, name); // Pasa el nombre de la cafetería
+  
+    if (this.destinationName) {
+      const destinationMarker = markers.find(({ name }) => name === this.destinationName);
+      if (destinationMarker) {
+        const { marker, name, iconUrl } = destinationMarker;
+        const { lat, lng } = marker.getLatLng();
+        const distance = this.calculateDistance(userLat, userLng, lat, lng);
+  
+        const shop = this.shopData.find((s) => s.name === name); // Encuentra la tienda correspondiente
+        if (shop) {
+          const statusShop = shop.statusShop; // Accede a statusShop de la tienda encontrada
+  
+          if (distance <= proximityThreshold) {
+            marker.setIcon(this.createStoreIcon(iconUrl, statusShop));
+            console.log(`Estás cerca de tu destino: ${name}`);
+            this.openModal(this.arriveModal, name); // Abre el modal solo para la tienda de destino
+          } else {
+            marker.setIcon(
+              this.createStoreIcon(iconUrl, statusShop, 'grayscale-icon')
+            );
+          }
         } else {
-          marker.setIcon(
-            this.createStoreIcon(iconUrl, statusShop, 'grayscale-icon')
-          );
+          console.error(`No se encontró la tienda con nombre ${name}`);
         }
-      } else {
-        console.error(`No se encontró la tienda con nombre ${name}`);
       }
-    });
+    }
   }
 
   fetchUserData(): void {
