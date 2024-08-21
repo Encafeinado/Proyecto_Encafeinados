@@ -1,7 +1,6 @@
-import { AfterViewInit, ChangeDetectorRef, Component, computed, effect, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { NavigationCancel, NavigationEnd, NavigationError, Router } from '@angular/router';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { AuthStatus } from 'src/app/auth/interfaces';
 import { AuthService } from 'src/app/auth/services/auth.service';
 
 @Component({
@@ -10,7 +9,7 @@ import { AuthService } from 'src/app/auth/services/auth.service';
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit, AfterViewInit {
-  private authService = inject(AuthService);
+  authService = inject(AuthService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef); 
   public navbarText: string = 'Descubre el mejor café cerca de ti';
@@ -18,21 +17,14 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   @ViewChild('sesionModal', { static: true }) sesionModal: any;
   modalRef!: NgbModalRef;
   openedModal = false;
-  showCancelButton: boolean = false;
   isLoading = true;
-  
-  
+
   constructor(private modalService: NgbModal) {}
 
   ngOnInit(): void {
-    // Inicializa el nombre del usuario
     const currentUser = this.authService.currentUser();
     this.userName = currentUser ? currentUser.name : 'Nombre del Usuario';
-    console.log('Nombre del usuario inicial:', this.userName);
     
-    // Actualiza el texto del navbar basado en la ruta actual al iniciar
-
-    // Escucha los eventos de navegación para actualizar el texto del navbar
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.isLoading = false;
@@ -42,16 +34,19 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     });
   }
 
+  
+
   ngAfterViewInit() {
     this.cdr.detectChanges();
   }
 
-  
+  shouldShowLogout(): boolean {
+    return this.authService.isAuthenticated() && this.isStoreOrMapRoute();
+  }
 
   onLogout() {
     this.authService.logout();
   }
-
 
   setupDropdownToggle() {
     const dropdownButton = document.getElementById('userDropdown');
@@ -64,6 +59,17 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     }
   }
 
+  shouldShowMobileDropdown(): boolean {
+    return (
+      this.isUserLanding() || 
+      this.isUserLandingTienda() || 
+      (this.userName.trim().length > 0 && this.authService.isAuthenticated())
+    );
+  }
+  
+  
+
+  
   isStoreOrMapRoute(): boolean {
     return (
       this.router.url === '/store' ||
@@ -91,6 +97,15 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     }
   }
 
+  openLogoutModal(content: any): void {
+    this.openModal(content);
+  }
+
+  confirmLogout(): void {
+    this.authService.logout();
+    this.modalRef.close();
+  }
+
   isOnLandingPage(): boolean {
     return this.isUserLanding() || this.isUserLandingTienda();
   }
@@ -103,17 +118,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     return this.router.url === '/auth/register';
   }
 
-
   isOnRequestPage(): boolean {
     return this.router.url === '/auth/forgot-password';
-  }
-  openLogoutModal(content: any): void {
-    this.openModal(content);
-  }
-
-  confirmLogout(): void {
-    this.authService.logout();
-    this.modalRef.close();
   }
 
   isUserShop(): boolean {
@@ -131,6 +137,4 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   isUserLandingTienda(): boolean {
     return this.router.url === '/landing-tienda';
   }
-
-  
 }

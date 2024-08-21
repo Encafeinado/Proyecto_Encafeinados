@@ -120,6 +120,9 @@ validatePassword(email: string, password: string): Observable<{ valid: boolean }
   );
 }
 
+isAuthenticated(): boolean {
+  return !!this.currentUser();
+}
 
 
   register(name: string, email: string, password: string, phone: string): Observable<boolean> {

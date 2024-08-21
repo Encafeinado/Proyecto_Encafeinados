@@ -163,3 +163,18 @@
 .review {
   margin-bottom: 10px; /* Espacio entre reseñas */
 }
+.review-rating-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 50px; /* Reduce el espacio entre las columnas */
+}
+
+.reviews-column, 
+.ratings-column {
+  flex: 1; /* Cada columna ocupa un ancho igual */
+}
+
+.review,
+.rating {
+  margin-bottom: 5px; /* Reduce el espacio entre los elementos dentro de cada columna */
+}

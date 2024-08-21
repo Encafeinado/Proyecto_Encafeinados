@@ -41,7 +41,15 @@ footer p {
   font-size: 1rem;
   color: #6c757d; /* Gris */
 }
-
+header[_ngcontent-ng-c1097974527] h1[_ngcontent-ng-c1097974527] {
+  font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
+  font-weight: 600; /* Peso Semibold */
+  font-size: 3em; /* Tamaño de fuente */
+  color: #0f1eee; /* Color negro */
+  white-space: pre-line; /* Permite saltos de línea */
+  line-height: 1.4; /* Espacio entre líneas */
+  text-align: center; /* Centra el texto horizontalmente */
+}
 
 
 .carousel-image-container {

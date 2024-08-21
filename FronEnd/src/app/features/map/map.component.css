@@ -467,11 +467,20 @@
 }
 
 .star-rating {
-  font-size: 32px; /* Aumenta el tamaño de las estrellas */
-  color: #FFD700; /* Mantiene el color dorado brillante */
+  font-size: 32px; /* Tamaño de las estrellas */
+  color: #FFD700; /* Color dorado */
+}
+
+.star-rating .star-empty {
+  color: #ccc; /* Color gris para estrellas no seleccionadas */
+}
+
+.star-rating .star-filled {
+  color: #FFD700; /* Color dorado para estrellas seleccionadas */
 }
 
 .star-rating span {
   cursor: pointer;
 }
+
 
