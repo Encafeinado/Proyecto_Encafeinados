@@ -77,7 +77,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   routeDuration: string = '';
   isButtonDisabled: boolean = true;
 
-
   @ViewChild('createModal', { static: true }) createModal: any;
   @ViewChild('cancelModal', { static: true }) cancelModal: any;
   @ViewChild('codeModal', { static: true }) codeModal: any;
@@ -133,7 +132,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.enteredRating = rating;
     console.log('Rating seleccionado: ', this.enteredRating);
   }
-  
+
   showRouteConfirmation(
     map: L.Map,
     targetMarker: L.Marker,
@@ -149,8 +148,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
   updateButtonState() {
     this.isButtonDisabled = !(
-      this.enteredCode && 
-      this.enteredReview && 
+      this.enteredCode &&
+      this.enteredReview &&
       this.enteredRating > 0
     );
   }
@@ -274,60 +273,64 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
           this.userLocationIcon = L.icon({
             iconUrl: 'assets/IconsMarker/flecha.png',
             iconSize: [25, 41],
-            
+
             popupAnchor: [1, -34],
             shadowSize: [41, 41],
           });
-          
+
           // Verificar si ya existe un marcador y eliminarlo
           if (this.userLocationMarker) {
             this.map.removeLayer(this.userLocationMarker);
           }
-          
+
           // Crear un nuevo marcador con el nuevo ícono y agregarlo al mapa
-          this.userLocationMarker = L.marker([6.092140, -75.639212], {
+          this.userLocationMarker = L.marker([6.09214, -75.639212], {
             icon: this.userLocationIcon,
           })
             .addTo(this.map)
             .bindPopup('Tu ubicación actual');
-            this.watchId = navigator.geolocation.watchPosition(
-              (position) => {
-                const userLat = position.coords.latitude;
-                const userLng = position.coords.longitude;
-                const accuracy = position.coords.accuracy;
-        
-                if (accuracy < 50) {
-                  this.userLocationMarker.setLatLng([userLat, userLng]);
-                  this.userLocation = { lat: userLat, lng: userLng };
-        
-                  if (!this.initialZoomDone) {
-                    this.map.setView([userLat, userLng], 15, {
-                      animate: true,
-                    });
-                    this.initialZoomDone = true;
-                  }
-        
-                  if (this.targetMarker) {
-                    this.updateRoute(
-                      userLat,
-                      userLng,
-                      this.targetMarker.getLatLng().lat,
-                      this.targetMarker.getLatLng().lng,
-                      this.selectedTransport
-                    );
-                  }
-        
-                  this.checkProximityToStores(userLat, userLng, this.shopMarkers);
+          this.watchId = navigator.geolocation.watchPosition(
+            (position) => {
+              const userLat = position.coords.latitude;
+              const userLng = position.coords.longitude;
+              const accuracy = position.coords.accuracy;
+
+              if (accuracy < 50) {
+                this.userLocationMarker.setLatLng([userLat, userLng]);
+                this.userLocation = { lat: userLat, lng: userLng };
+
+                if (!this.initialZoomDone) {
+                  this.map.setView([userLat, userLng], 15, {
+                    animate: true,
+                  });
+                  this.initialZoomDone = true;
                 }
-              },
-              (error) => {
-                console.error('Error al obtener la ubicación del usuario:', error);
-              },
-              {
-                enableHighAccuracy: true,
-                maximumAge: 0,
-                timeout: 30000,
-              })
+
+                if (this.targetMarker) {
+                  this.updateRoute(
+                    userLat,
+                    userLng,
+                    this.targetMarker.getLatLng().lat,
+                    this.targetMarker.getLatLng().lng,
+                    this.selectedTransport
+                  );
+                }
+
+                this.checkProximityToStores(userLat, userLng, this.shopMarkers);
+              }
+            },
+            (error) => {
+              console.error(
+                'Error al obtener la ubicación del usuario:',
+                error
+              );
+            },
+            {
+              enableHighAccuracy: true,
+              maximumAge: 0,
+              timeout: 30000,
+            }
+          );
           // Forzar la detección de cambios en Angular
           this.changeDetector.detectChanges();
         })
@@ -384,56 +387,57 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       popupAnchor: [1, -34],
       shadowSize: [41, 41],
     });
-    
+
     // Verificar si ya existe un marcador y eliminarlo
     if (this.userLocationMarker) {
       this.map.removeLayer(this.userLocationMarker);
     }
-    
+
     // Crear un nuevo marcador con el nuevo ícono y agregarlo al mapa
     this.userLocationMarker = L.marker([0, 0], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
       .bindPopup('Tu ubicación actual');
-      this.watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          const userLat = position.coords.latitude;
-          const userLng = position.coords.longitude;
-          const accuracy = position.coords.accuracy;
-  
-          if (accuracy < 50) {
-            this.userLocationMarker.setLatLng([userLat, userLng]);
-            this.userLocation = { lat: userLat, lng: userLng };
-  
-            if (!this.initialZoomDone) {
-              this.map.setView([userLat, userLng], 15, {
-                animate: true,
-              });
-              this.initialZoomDone = true;
-            }
-  
-            if (this.targetMarker) {
-              this.updateRoute(
-                userLat,
-                userLng,
-                this.targetMarker.getLatLng().lat,
-                this.targetMarker.getLatLng().lng,
-                this.selectedTransport
-              );
-            }
-  
-            this.checkProximityToStores(userLat, userLng, this.shopMarkers);
+    this.watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+        const accuracy = position.coords.accuracy;
+
+        if (accuracy < 50) {
+          this.userLocationMarker.setLatLng([userLat, userLng]);
+          this.userLocation = { lat: userLat, lng: userLng };
+
+          if (!this.initialZoomDone) {
+            this.map.setView([userLat, userLng], 15, {
+              animate: true,
+            });
+            this.initialZoomDone = true;
           }
-        },
-        (error) => {
-          console.error('Error al obtener la ubicación del usuario:', error);
-        },
-        {
-          enableHighAccuracy: true,
-          maximumAge: 0,
-          timeout: 30000,
-        })
+
+          if (this.targetMarker) {
+            this.updateRoute(
+              userLat,
+              userLng,
+              this.targetMarker.getLatLng().lat,
+              this.targetMarker.getLatLng().lng,
+              this.selectedTransport
+            );
+          }
+
+          this.checkProximityToStores(userLat, userLng, this.shopMarkers);
+        }
+      },
+      (error) => {
+        console.error('Error al obtener la ubicación del usuario:', error);
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 30000,
+      }
+    );
     // Forzar la detección de cambios en Angular
     this.changeDetector.detectChanges();
   }
@@ -680,15 +684,18 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
   handleOrientation(event: DeviceOrientationEvent) {
     let heading: number | null = null;
-  
-    // Para iOS: usa webkitCompassHeading si está disponible
+
     if ((event as any).webkitCompassHeading) {
-      heading = 360 - (event as any).webkitCompassHeading; // Ajustar a la brújula estándar
+      heading = 360 - (event as any).webkitCompassHeading; // Ajuste para la brújula estándar
+      console.log('webkitCompassHeading:', heading);
+    } else if (event.absolute && event.alpha !== null) {
+      heading = event.alpha; // Orientación absoluta
+      console.log('Alpha (absolute):', heading);
     } else if (event.alpha !== null) {
-      // Para otros navegadores, usa alpha
-      heading = event.alpha;
+      heading = (360 - event.alpha) % 360; // Ajuste para mantener el mismo sentido de rotación
+      console.log('Alpha (no absolute):', heading);
     }
-  
+
     if (heading !== null) {
       console.log('Ángulo de rotación detectado:', heading);
       this.userLocationMarker.setRotationAngle(heading || 0);
@@ -696,7 +703,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       console.warn('No se pudo obtener la orientación del dispositivo.');
     }
   }
-
+  
   updateRoute(
     startLat: number,
     startLng: number,
@@ -788,21 +795,23 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   checkProximityToStores(
     userLat: number,
     userLng: number,
-    markers: { marker: L.Marker; name: string; iconUrl: string }[] 
+    markers: { marker: L.Marker; name: string; iconUrl: string }[]
   ) {
     const proximityThreshold = 10; // 10 metros
-  
+
     if (this.destinationName) {
-      const destinationMarker = markers.find(({ name }) => name === this.destinationName);
+      const destinationMarker = markers.find(
+        ({ name }) => name === this.destinationName
+      );
       if (destinationMarker) {
         const { marker, name, iconUrl } = destinationMarker;
         const { lat, lng } = marker.getLatLng();
         const distance = this.calculateDistance(userLat, userLng, lat, lng);
-  
+
         const shop = this.shopData.find((s) => s.name === name); // Encuentra la tienda correspondiente
         if (shop) {
           const statusShop = shop.statusShop; // Accede a statusShop de la tienda encontrada
-  
+
           if (distance <= proximityThreshold) {
             marker.setIcon(this.createStoreIcon(iconUrl, statusShop));
             console.log(`Estás cerca de tu destino: ${name}`);
@@ -1043,6 +1052,5 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.fetchShopData();
     this.populateShopLogos();
     this.fetchBookData();
-    console.log('Recargadoooooooooooooooo');
   }
 }
