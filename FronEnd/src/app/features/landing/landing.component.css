@@ -213,6 +213,16 @@ footer p {
     gap: 20px; /* Reduce el espacio entre las columnas */
   }
 
+
+
+  .text-content[_ngcontent-ng-c2998270043] .title[_ngcontent-ng-c2998270043] {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 3em;
+    color: #0f1eee;
+    line-height: 1.2; /* Espacio entre líneas */
+}
+
   .contact-info,
   .action-info {
     flex: 1 1 auto; /* Permite que las columnas se ajusten al contenido */
