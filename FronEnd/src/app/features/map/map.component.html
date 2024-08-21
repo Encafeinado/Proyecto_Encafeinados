@@ -20,14 +20,14 @@
       </div>
       <div class="col-md-4 sidebar">
         <h2>Bienvenido a Encafeinados</h2>
-        <p>¡Encuentra los mejores lugares de café en tu área!</p> 
+        <p>¡Encuentra los mejores lugares de café en tu área!</p>
         <p>Explora nuestras mejores recomendaciones para los amantes del café.</p>
         <div class="alert alert-info" *ngIf="showAlert" role="alert">
           <h4 class="alert-heading">{{ routeInfo }}</h4>
           <p>Distancia: {{ routeDistance }} km</p>
           <p>Tiempo estimado: {{ routeDuration }} minutos</p>
         </div>
-       
+
         <br>
 
         <!-- Información adicional -->
@@ -163,10 +163,7 @@
         </div>
         <div class="album">
           <div class="album-page" *ngFor="let shop of shopLogos">
-            <img 
-              *ngIf="shop.logoUrl" 
-              [src]="shop.logoUrl" 
-              [class.colored]="isLogoColored(shop.logoUrl)" 
+            <img *ngIf="shop.logoUrl" [src]="shop.logoUrl" [class.colored]="isLogoColored(shop.logoUrl)"
               alt="{{ shop.name }}">
           </div>
         </div>
@@ -189,11 +186,14 @@
           <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
           <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
         </div>
-        <p>¡Gracias por visitar {{ destinationName }}!</p>
+        <p class="description-coffee">
+          Información sobre el café...
+        </p>
       </div>
       <div class="modal-footer-coffee">
-        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cerrar</button>
+        <button type="button" class="btn" (click)="confirmArrive()">Si, he llegado</button>
+        <button type="button" class="btn" (click)="cancelArrive(modal)">Cancelar</button>
       </div>
     </div>
   </ng-template>
-  </div>
+</div>
