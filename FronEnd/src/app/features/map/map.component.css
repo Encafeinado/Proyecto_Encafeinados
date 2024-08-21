@@ -160,8 +160,20 @@
 .modal-footer-code .btn:hover,
 .modal-footer-create .btn:hover,
 .modal-footer-cancelR .btn:hover {
-  background-color: #68d2e8;
+  background-color: #676ed6;
 }
+
+.modal-footer-code .btn:disabled,
+.modal-footer-create .btn:disabled,
+.modal-footer-cancelR .btn:disabled {
+  background-color: #666666;
+}
+
+
+
+
+
+
 /* ------------------------------------------------------------------------------------------------- */
 .album {
   display: flex;
@@ -312,7 +324,7 @@
 }
 
 .modal-book .modal-footer .btn:hover {
-  background-color: #68d2e8;
+  background-color: #676ed6;
 }
 
 /* Estilo por defecto para los logos */
