@@ -6,6 +6,8 @@ body {
   padding: 0;
 }
 
+
+
 /* Estilos para la sección combinada */
 .combined-section {
   background-color: #e0f7fa; /* Azul claro */
@@ -170,7 +172,9 @@ footer p {
   justify-content: center;
   margin: 0 auto; /* Centra el círculo */
   background-color: #f0f0f0; /* Color de fondo opcional */
+  border: 5px solid #68D2E8; /* Borde alrededor del círculo */
 }
+
 
 .service-circle-img {
   width: 100%;
@@ -244,6 +248,14 @@ footer p {
     height: 30px; /* Altura máxima del carrusel en pantallas pequeñas */
     width: 90%;
     margin: 0 auto; /* Centra el carrusel */
+  }
+
+  .social-links {
+    gap: 10px; /* Menor espacio entre los íconos en pantallas pequeñas */
+  }
+
+  .social-link img {
+    width: 30px; /* Tamaño más pequeño para los íconos en pantallas pequeñas */
   }
 
   .carousel-item img {
