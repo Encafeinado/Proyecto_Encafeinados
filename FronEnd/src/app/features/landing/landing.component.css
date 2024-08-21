@@ -92,6 +92,16 @@ header p {
   text-align: center; /* Centra el texto horizontalmente */
 }
 
+.text-content[_ngcontent-ng-c1307989152] .title[_ngcontent-ng-c1307989152] {
+  font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
+  font-weight: 600; /* Peso Semibold */
+  font-size: 3em; /* Tamaño de fuente */
+  color: #0f1eee; /* Color negro */
+  white-space: pre-line; /* Permite saltos de línea */
+  line-height: 1.4; /* Espacio entre líneas */
+  text-align: center; /* Centra el texto horizontalmente */
+}
+
 
 
 /* Estilos para el carrusel */
@@ -355,26 +365,19 @@ footer p {
   flex: 1;
   max-width: 50%;
   height: 400px;
-  display: flex;
-  align-items: center; /* Asegura que el contenido del carrusel esté centrado verticalmente */
-  justify-content: center; /* Centra el contenido horizontalmente */
 }
 
 .carousel-inner {
   border-radius: 20px; /* Bordes redondeados */
-  overflow: hidden; /* Mantén la imagen dentro del contenedor */
+  overflow: hidden; /* Aplicación correcta de los bordes redondeados */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra */
-  width: 100%; /* Asegura que ocupe todo el ancho del contenedor */
-  height: 100%; /* Asegura que ocupe todo el alto del contenedor */
+  height: 100%;
 }
 
 .carousel-item img {
-  width: 100%; /* Ajusta la imagen al ancho del contenedor */
-  height: 100%; /* Ajusta la imagen al alto del contenedor */
-  object-fit: fill; /* Usa 'fill' en lugar de 'cover' para evitar problemas en iOS */
-  border-radius: 20px; /* Mantén los bordes redondeados */
+  border-radius: 20px; /* Bordes redondeados en las imágenes */
+  object-fit: cover; /* Ajuste de la imagen sin deformar */
 }
-
 
 .carousel-indicators button {
   background-color: #e0f7fa; /* Color de fondo de los indicadores inactivos */
