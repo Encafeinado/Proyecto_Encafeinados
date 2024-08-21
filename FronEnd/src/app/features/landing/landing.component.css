@@ -355,19 +355,26 @@ footer p {
   flex: 1;
   max-width: 50%;
   height: 400px;
+  display: flex;
+  align-items: center; /* Asegura que el contenido del carrusel esté centrado verticalmente */
+  justify-content: center; /* Centra el contenido horizontalmente */
 }
 
 .carousel-inner {
   border-radius: 20px; /* Bordes redondeados */
-  overflow: hidden; /* Aplicación correcta de los bordes redondeados */
+  overflow: hidden; /* Mantén la imagen dentro del contenedor */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra */
-  height: 100%;
+  width: 100%; /* Asegura que ocupe todo el ancho del contenedor */
+  height: 100%; /* Asegura que ocupe todo el alto del contenedor */
 }
 
 .carousel-item img {
-  border-radius: 20px; /* Bordes redondeados en las imágenes */
-  object-fit: cover; /* Ajuste de la imagen sin deformar */
+  width: 100%; /* Ajusta la imagen al ancho del contenedor */
+  height: 100%; /* Ajusta la imagen al alto del contenedor */
+  object-fit: fill; /* Usa 'fill' en lugar de 'cover' para evitar problemas en iOS */
+  border-radius: 20px; /* Mantén los bordes redondeados */
 }
+
 
 .carousel-indicators button {
   background-color: #e0f7fa; /* Color de fondo de los indicadores inactivos */
