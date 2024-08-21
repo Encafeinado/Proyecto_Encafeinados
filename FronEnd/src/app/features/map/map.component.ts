@@ -146,6 +146,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.map = map;
     this.openModal(this.createModal, this.destinationName); // Asegúrate de pasar el nombre aquí
   }
+
   updateButtonState() {
     this.isButtonDisabled = !(
       this.enteredCode && 
@@ -153,6 +154,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       this.enteredRating > 0
     );
   }
+
   showRouteGuia(): void {
     console.log('showCancelButton antes:', this.showCancelButton);
     if (
@@ -389,7 +391,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     }
     
     // Crear un nuevo marcador con el nuevo ícono y agregarlo al mapa
-    this.userLocationMarker = L.marker([6.092140, -75.639212], {
+    this.userLocationMarker = L.marker([0, 0], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
@@ -596,7 +598,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       maxZoom: 19,
     }).addTo(this.map);
 
-    this.userLocationMarker = L.marker([6.092140, -75.639212], {
+    this.userLocationMarker = L.marker([0, 0], {
       icon: this.userLocationIcon,
     })
       .addTo(this.map)
@@ -677,11 +679,19 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   handleOrientation(event: DeviceOrientationEvent) {
-    const alpha = event.alpha;
-
-    if (alpha !== null) {
-      console.log('Ángulo de rotación detectado:', alpha);
-      this.userLocationMarker.setRotationAngle(alpha || 0);
+    let heading: number | null = null;
+  
+    // Para iOS: usa webkitCompassHeading si está disponible
+    if ((event as any).webkitCompassHeading) {
+      heading = 360 - (event as any).webkitCompassHeading; // Ajustar a la brújula estándar
+    } else if (event.alpha !== null) {
+      // Para otros navegadores, usa alpha
+      heading = event.alpha;
+    }
+  
+    if (heading !== null) {
+      console.log('Ángulo de rotación detectado:', heading);
+      this.userLocationMarker.setRotationAngle(heading || 0);
     } else {
       console.warn('No se pudo obtener la orientación del dispositivo.');
     }
