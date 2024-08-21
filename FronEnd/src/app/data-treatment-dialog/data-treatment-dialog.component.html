@@ -5,11 +5,23 @@
   </div>
   <div class="modal-body-datos">
     <p>Antes de registrarte, por favor lee el tratamiento de datos...</p>
-    <a href="assets/pdf/Tratamiento-datos-personales-Encafeina2.pdf" target="_blank">Ver PDF</a>
+    
+    <!-- Botón para mostrar el PDF -->
+    <button *ngIf="!showPdf" class="btn" (click)="showPdfDocument()">Ver Tratamiento de Datos</button>
+    
+    <!-- iFrame solo se muestra si showPdf es verdadero -->
+    <iframe *ngIf="showPdf" 
+      src="assets/pdf/Tratamiento-datos-personales-Encafeina2.pdf" 
+      type="application/pdf" 
+      width="100%" 
+      height="300px"
+      (load)="markAsViewed()">
+      Este navegador no soporta PDF. 
+      <a href="assets/pdf/Tratamiento-datos-personales-Encafeina2.pdf">Descargar PDF</a>
+    </iframe>
   </div>
   <div class="modal-footer-datos">
     <button type="button" class="btn" (click)="onNoClick()">Cancelar</button>
-    <button type="button" class="btn" (click)="onYesClick()">Aceptar</button>
+    <button type="button" class="btn" (click)="onYesClick()" [disabled]="!isPdfViewed">Aceptar</button>
   </div>
 </div>
-

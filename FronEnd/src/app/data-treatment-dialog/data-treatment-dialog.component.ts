@@ -1,4 +1,4 @@
-import { Component,ViewEncapsulation  } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -8,6 +8,10 @@ import { MatDialogRef } from '@angular/material/dialog';
   encapsulation: ViewEncapsulation.None
 })
 export class DataTreatmentDialogComponent {
+
+  showPdf: boolean = false;
+  isPdfViewed: boolean = false;
+
   constructor(public dialogRef: MatDialogRef<DataTreatmentDialogComponent>) {}
 
   onNoClick(): void {
@@ -16,5 +20,13 @@ export class DataTreatmentDialogComponent {
 
   onYesClick(): void {
     this.dialogRef.close(true);
+  }
+
+  showPdfDocument(): void {
+    this.showPdf = true;
+  }
+
+  markAsViewed(): void {
+    this.isPdfViewed = true;
   }
 }

@@ -38,13 +38,13 @@ export class RegisterPageComponent {
     "yahoo.com.mx","yopmail.com"];
 
   public myForm: FormGroup = this.fb.group({
-    name: ['', [
+    name: ['sdfsdfsdf', [
       Validators.required,
       Validators.maxLength(30),
       Validators.minLength(3)
     ], [validateNameSimbolAndNumber()]],
 
-    email: ['', 
+    email: ['sdfsfsfs@gmail.com', 
       {
         validators: [
       Validators.required,
@@ -59,17 +59,17 @@ export class RegisterPageComponent {
       }
     ],
       
-    password: ['', [
+    password: ['Julian90*', [
       Validators.required,
       Validators.minLength(8),
       passwordValidator()
     ]],
 
-    confirmPassword: ['', [
+    confirmPassword: ['Julian90*', [
       Validators.required
     ]],
 
-    phone: ['', [ // Cambia el nombre del campo a 'phone'
+    phone: ['3156783389', [ // Cambia el nombre del campo a 'phone'
       Validators.required,
       phoneNumberValidator()
     ]],
