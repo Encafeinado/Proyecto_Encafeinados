@@ -24,6 +24,9 @@
   background-color: #d4f1f7;
   border-radius: 0 0 10px 10px;
 }
+.modal-body-datos iframe {
+  border: none;
+}
 
 .pdf-container {
   width: 100%;
@@ -62,8 +65,14 @@
 }
 
 .modal-footer-datos .btn:hover {
-  background-color: #feefad;
+  background-color: #676ed6;
 }
+
+.modal-footer-datos .btn:disabled {
+  background-color: #666666;
+}
+
+
 
 /* Estilos específicos para móviles */
 @media (max-width: 768px) {
@@ -71,7 +80,9 @@
     font-size: 18px;
   }
 
- 
+  .modal-body-datos iframe {
+    height: 300px; /* Ajusta la altura para pantallas más pequeñas */
+  }
 
   .pdf-container {
     height: 300px; /* Ajusta la altura para pantallas más pequeñas */
@@ -80,7 +91,9 @@
 }
 
 @media (max-width: 480px) {
-
+  .modal-body-datos iframe {
+    height: 250px; /* Ajusta la altura para pantallas aún más pequeñas */
+  }
   .pdf-container {
     height: 250px; /* Ajusta la altura para pantallas aún más pequeñas */
   }

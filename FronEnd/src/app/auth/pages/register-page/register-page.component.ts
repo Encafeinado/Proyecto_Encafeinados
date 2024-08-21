@@ -166,7 +166,9 @@ export class RegisterPageComponent {
     }
 
     // Abre el diálogo y espera la respuesta
-    const dialogRef = this.MatDialogModule.open(DataTreatmentDialogComponent);
+    const dialogRef = this.MatDialogModule.open(DataTreatmentDialogComponent,{
+      disableClose: true 
+    });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
