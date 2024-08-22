@@ -8,6 +8,8 @@
   font-family: "Poppins", sans-serif;
   max-width: 600px; /* Limita el ancho máximo del modal en pantallas grandes */
   margin: auto;
+
+ 
 }
 
 .modal-header-datos {
@@ -44,9 +46,7 @@
   border-top: none;
 }
 
-.pdf-container {
-  width: 100%;
-  height: 400px; /* Ajusta la altura para que el PDF sea visible */
+.pdf-container { 
   overflow: hidden;
   border: 1px solid #ccc; /* Opcional: añade un borde alrededor del iframe */
 }

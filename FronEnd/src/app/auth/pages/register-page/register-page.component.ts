@@ -35,16 +35,16 @@ export class RegisterPageComponent {
 
   validDomains = ["gmail.com", "gmail.co", "gmail.es", "gmail.mx", "hotmail.com", "hotmail.co", "hotmail.es", "hotmail.mx", "outlook.com", "outlook.co", "outlook.es", "outlook.mx", "yahoo.com", "yahoo.co", "yahoo.es",
     "yahoo.mx", "gmail.com.co", "hotmail.com.co", "outlook.com.co", "yahoo.com.co", "gmail.com.es", "hotmail.com.es", "outlook.com.es", "yahoo.com.es", "gmail.com.mx", "hotmail.com.mx", "outlook.com.mx",
-    "yahoo.com.mx","yopmail.com"];
+    "yahoo.com.mx","yopmail.com","@icloud.com"];
 
   public myForm: FormGroup = this.fb.group({
-    name: ['sdfsdfsdf', [
+    name: ['', [
       Validators.required,
       Validators.maxLength(30),
       Validators.minLength(3)
     ], [validateNameSimbolAndNumber()]],
 
-    email: ['sdfsfsfs@gmail.com', 
+    email: ['', 
       {
         validators: [
       Validators.required,
@@ -59,17 +59,17 @@ export class RegisterPageComponent {
       }
     ],
       
-    password: ['Julian90*', [
+    password: ['', [
       Validators.required,
       Validators.minLength(8),
       passwordValidator()
     ]],
 
-    confirmPassword: ['Julian90*', [
+    confirmPassword: ['', [
       Validators.required
     ]],
 
-    phone: ['3156783389', [ // Cambia el nombre del campo a 'phone'
+    phone: ['', [ // Cambia el nombre del campo a 'phone'
       Validators.required,
       phoneNumberValidator()
     ]],
