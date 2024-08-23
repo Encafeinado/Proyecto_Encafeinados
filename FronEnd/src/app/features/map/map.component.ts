@@ -473,12 +473,14 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       });
     }
   }
+
   resetModalFields() {
     this.enteredCode = '';
     this.enteredRating = 0;
     this.enteredReview = '';
     this.isButtonDisabled = true; // Opcional, si quieres desactivar el botón nuevamente
   }
+
   private createStoreIcon(
     iconUrl: string,
     isOpen: boolean,
@@ -684,23 +686,17 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
   handleOrientation(event: DeviceOrientationEvent) {
     let heading: number | null = null;
-
+  
     if ((event as any).webkitCompassHeading) {
       heading = 360 - (event as any).webkitCompassHeading; // Ajuste para la brújula estándar
-      console.log('webkitCompassHeading:', heading);
-    } else if (event.absolute && event.alpha !== null) {
-      heading = event.alpha; // Orientación absoluta
-      console.log('Alpha (absolute):', heading);
     } else if (event.alpha !== null) {
-      heading = (360 - event.alpha) % 360; // Ajuste para mantener el mismo sentido de rotación
-      console.log('Alpha (no absolute):', heading);
+      heading = event.alpha;
     }
-
-    if (heading !== null) {
-      console.log('Ángulo de rotación detectado:', heading);
-      this.userLocationMarker.setRotationAngle(heading || 0);
-    } else {
-      console.warn('No se pudo obtener la orientación del dispositivo.');
+  
+    console.log("Heading:", heading); // Agrega esta línea para depurar
+  
+    if (heading !== null && this.userLocationMarker) {
+      this.userLocationMarker.setRotationAngle(heading);
     }
   }
   
@@ -712,25 +708,26 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     transport: string
   ): void {
     if (this.routeCancelled) return;
-
+  
     let profile: string;
     let routed: string;
-
+    let url: string;
+  
     // Define el perfil de transporte según la opción seleccionada
     if (transport === 'foot') {
       profile = 'foot';
       routed = 'routed-foot';
+      url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
     } else if (transport === 'car') {
       profile = 'driving';
       routed = 'routed-car';
+      url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
     } else {
       profile = 'bike';
       routed = 'routed-bike';
+      url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
     }
-
-    // Construye la URL para la solicitud de la ruta
-    const url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-
+  
     // Realiza la solicitud para obtener la ruta
     fetch(url)
       .then((response) => {
@@ -743,12 +740,12 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         if (!data || !data.routes || data.routes.length === 0) {
           throw new Error('No se encontraron rutas válidas');
         }
-
+  
         const route = data.routes[0];
         const routeCoordinates = route.geometry.coordinates.map(
           (coord: [number, number]) => [coord[1], coord[0]]
         );
-
+  
         // Define el color de la ruta según el transporte seleccionado
         let color = 'blue';
         if (transport === 'car') {
@@ -756,7 +753,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         } else if (transport === 'bike') {
           color = 'green';
         }
-
+  
         // Si ya existe una ruta en el mapa, actualiza las coordenadas
         if (this.routingControl) {
           this.routingControl.setLatLngs(routeCoordinates);
@@ -766,24 +763,24 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
             color: color,
           }).addTo(this.map);
         }
-
+  
         // Calcula el tiempo estimado de la ruta
         const averageSpeeds: { [key: string]: number } = {
           foot: 5,
           bike: 15,
           car: 40,
         };
-
+  
         const speed = averageSpeeds[transport] || averageSpeeds['foot'];
         const routeDistanceKm = route.distance / 1000;
         const estimatedTimeHours = routeDistanceKm / speed;
         const estimatedTimeMinutes = estimatedTimeHours * 60;
-
+  
         // Actualiza la información de la ruta
         this.routeDistance = routeDistanceKm.toFixed(2);
         this.routeDuration = estimatedTimeMinutes.toFixed(0);
         this.routeInfo = `Ruta hacia ${this.destinationName}`;
-
+  
         // Muestra la alerta con la información de la ruta
         this.showAlert = true;
       })
