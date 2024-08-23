@@ -685,18 +685,19 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   }
 
   handleOrientation(event: DeviceOrientationEvent) {
+    console.log('Device Orientation Event:', event);
     let heading: number | null = null;
-  
+
     if ((event as any).webkitCompassHeading) {
-      heading = 360 - (event as any).webkitCompassHeading; // Ajuste para la brújula estándar
+        heading = 360 - (event as any).webkitCompassHeading; // Ajuste para la brújula estándar
     } else if (event.alpha !== null) {
-      heading = event.alpha;
+        heading = event.alpha;
     }
-  
-    console.log("Heading:", heading); // Agrega esta línea para depurar
-  
+
+    console.log('Heading:', heading); // Verificar el valor de heading
+
     if (heading !== null && this.userLocationMarker) {
-      this.userLocationMarker.setRotationAngle(heading);
+        this.userLocationMarker.setRotationAngle(heading);
     }
   }
   
@@ -722,21 +723,26 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       profile = 'driving';
       routed = 'routed-car';
       url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-    } else {
+    } else if (transport === 'bike') {
       profile = 'bike';
       routed = 'routed-bike';
       url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
+    } else {
+      console.error('Tipo de transporte no válido');
+      return;
     }
   
     // Realiza la solicitud para obtener la ruta
     fetch(url)
       .then((response) => {
+        console.log(`Response status for ${transport}:`, response.status);
         if (!response.ok) {
           throw new Error('Error en la solicitud al servicio OSM');
         }
         return response.json();
       })
       .then((data) => {
+        console.log(`Route data for ${transport}:`, data);
         if (!data || !data.routes || data.routes.length === 0) {
           throw new Error('No se encontraron rutas válidas');
         }
@@ -745,6 +751,8 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         const routeCoordinates = route.geometry.coordinates.map(
           (coord: [number, number]) => [coord[1], coord[0]]
         );
+  
+        console.log(`Route coordinates for ${transport}:`, routeCoordinates);
   
         // Define el color de la ruta según el transporte seleccionado
         let color = 'blue';
@@ -756,9 +764,12 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   
         // Si ya existe una ruta en el mapa, actualiza las coordenadas
         if (this.routingControl) {
+          console.log(`Updating existing route for ${transport}`);
           this.routingControl.setLatLngs(routeCoordinates);
+          this.routingControl.setStyle({ color: color }); // Actualiza el color si es necesario
         } else {
           // Crea una nueva ruta y añádela al mapa
+          console.log(`Creating new route for ${transport}`);
           this.routingControl = L.polyline(routeCoordinates, {
             color: color,
           }).addTo(this.map);
