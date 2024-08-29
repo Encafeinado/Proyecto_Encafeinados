@@ -165,13 +165,24 @@ blockquote {
   color: #797d6c; /* Gris */
 }
 
+footer {
+  position: relative; /* Asegúrate de que el contenedor tenga una posición relativa */
+  height: 50px; /* Altura del footer, ajusta según sea necesario */
+}
+
 footer p {
   color: #7d6c75; /* Gris */
-  margin-bottom: 10px;
+  margin: 0; /* Elimina el margen predeterminado */
   font-size: 1rem;
   font-weight: 500; /* Peso Medium para la fuente Poppins */
   font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
+  text-align: center; /* Centra el texto horizontalmente */
+  position: absolute; /* Posiciona el párrafo de forma absoluta dentro del footer */
+  top: 60%; /* Posición vertical media del contenedor */
+  left: 50%; /* Posición horizontal media del contenedor */
+  transform: translate(-60%, -90%); /* Ajusta la posición para centrarlo exactamente */
 }
+
 
 .main-content {
   padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */

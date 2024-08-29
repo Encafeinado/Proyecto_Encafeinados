@@ -3205,36 +3205,17 @@ align-items: center;
   border-radius: 10px !important; /* Agrega un borde redondo al cuadro del mensaje */
 }
 
- /* Estilos específicos para la sección "Cómo Iniciar" */
+/* Estilos específicos para la sección "Cómo Iniciar" */
 
 .como-iniciar-section {
   display: flex;
-  flex-direction: column; /* Alinea elementos en columna */
-  align-items: center; /* Centra todo el contenido horizontalmente */
-}
-
-.como-iniciar-section img {
-  width: 40%;
-  height: 40%;
-  object-fit: contain;
-}
-
-.pasos img {
-  width: 50px; /* Tamaño fijo para las imágenes */
-  height: 50px; /* Mantener la relación de aspecto si es necesario */
-  object-fit: contain; /* Ajustar la imagen sin distorsionarla */
-  vertical-align: middle; /* Alinea verticalmente con el texto */
-}
-
-.como-iniciar-section {
-  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh; /* Asegura que la sección ocupe toda la altura de la vista */
   font-family: 'Open Sans', sans-serif;
   font-size: 20px;
   font-weight: 400;
   background-image: linear-gradient(-25deg, #e0f7fa 50%, #e0f7fa 50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .como-iniciar-contenedor {
@@ -3246,14 +3227,18 @@ align-items: center;
   border-radius: 10px;
   overflow: hidden; /* Previene desbordamiento del contenido */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 400px; /* Altura mínima para evitar movimiento */
 }
 
 .como-iniciar-header {
-  display: flex; /* Habilita Flexbox en el contenedor padre */
-  align-items: center; /* Centra verticalmente */
-  justify-content: center; /* Centra horizontalmente */
-  flex-wrap: wrap; /* Permite que los elementos se ajusten en línea */
-  margin-bottom: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
 .como-iniciar-logo {
@@ -3261,7 +3246,7 @@ align-items: center;
   font-weight: 600;
   color: #0f1eee;
   text-decoration: none;
-  margin: 0 auto; /* Centra horizontalmente dentro del contenedor flex */
+  margin: 0 auto;
 }
 
 .como-iniciar-menu {
@@ -3280,35 +3265,49 @@ align-items: center;
 }
 
 .como-iniciar-menu a:hover {
-  border-bottom: 2px solid #f2c968;
+  border-bottom: 2px solid #0f1eee;
 }
 
 .como-iniciar-main {
   display: flex;
-  justify-content: center; /* Centrará el contenido horizontalmente */
-  align-items: center; /* Centrará el contenido verticalmente */
-  flex-direction: column; /* Asegura que los elementos se apilen verticalmente */
-  text-align: center; /* Alinea el texto al centro */
-  height: 100%; /* Asegura que el contenedor ocupe toda la altura disponible */
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  width: 100%;
+  flex-grow: 1;
 }
+.como-iniciar-contenedor-img-placeholder {
+  width: 100px; /* Tamaño del espacio reservado, ajusta según tus necesidades */
+  height: 100px; /* Tamaño del espacio reservado, ajusta según tus necesidades */
+  background-color: #e0f7fa; /* Color de fondo opcional para el espacio reservado */
+  margin-bottom: 20px; /* Espacio entre el contenedor de imagen y el texto */
+}
+
+.como-iniciar-contenedor-img {
+  width: 30px; /* Tamaño más pequeño */
+  height: 30px; /* Tamaño más pequeño */
+  object-fit: contain;
+  margin-bottom: 10px; /* Menor margen inferior */
+}
+
 
 .como-iniciar-main .como-iniciar-contenedor-img {
-  max-width: 100px; /* Tamaño máximo para las imágenes */
-  flex-shrink: 0; /* Evitar que el contenedor de imágenes se reduzca */
-  margin-right: 20px; /* Ajuste de margen */
+  width: 30px; /* Tamaño más pequeño */
+  height: 30px; /* Tamaño más pequeño */
+  flex-shrink: 0;
+  margin-right: 10px; /* Menor margen derecho */
 }
-
 .como-iniciar-section img {
-  width: 20%; /* Asegura que la imagen se ajuste a su contenedor */
-  align-items: center; /* Centrará el contenido verticalmente */
-  height: auto; /* Mantener la relación de aspecto */
-  object-fit: contain; /* Ajustar la imagen sin distorsionarla */
+  width: 10%; /* Reduce el tamaño al 10% */
+  height: auto;
+  object-fit: contain;
 }
 
 .como-iniciar-contenedor-texto .como-iniciar-titulo {
   font-size: 25px;
   font-weight: normal;
-  margin-bottom: 40px; /* Ajuste de margen */
+  margin-bottom: 40px;
 }
 
 .como-iniciar-contenedor-texto .como-iniciar-pasos img {
@@ -3324,13 +3323,16 @@ align-items: center;
 .como-iniciar-contenedor-texto p {
   margin-bottom: 20px;
   line-height: 1.5;
-  overflow: hidden; /* Ocultar el texto que excede el contenedor */
-  text-overflow: ellipsis; /* Añadir puntos suspensivos si el texto es demasiado largo */
-  white-space: nowrap; /* Evitar saltos de línea */
+  text-align: center; /* Asegura que el texto esté centrado */
+  overflow-wrap: break-word; /* Asegura que el texto largo se ajuste adecuadamente */
+  word-break: break-word; /* Evita el desbordamiento del texto */
+  padding: 0 10px; /* Agrega espaciado en los laterales */
+  font-size: 16px; /* Ajusta el tamaño de la fuente en móviles */
 }
+
 .como-iniciar-contenedor-texto {
-  flex-grow: 1; /* Permitir que el texto ocupe el espacio restante */
-  min-width: 300px; /* Asegurar un tamaño mínimo para el texto */
+  flex-grow: 1;
+  min-width: 300px;
 }
 
 .como-iniciar-btn-link {
@@ -3348,17 +3350,46 @@ align-items: center;
   background: #2516f1;
 }
 
-@media screen and (max-width: 915px) {
+@media screen and (max-width: 768px) {
+  .como-iniciar-menu {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .como-iniciar-menu a {
+    font-size: 18px;
+    margin-left: 0;
+    margin-bottom: 10px;
+  }
+
   .como-iniciar-main {
     flex-direction: column;
+    align-items: center;
     text-align: center;
   }
 
   .como-iniciar-main .como-iniciar-contenedor-img {
-    margin-bottom: 40px;
+    margin-right: 0;
+    margin-bottom: 20px;
+    max-width: 80px;
+  }
+
+  .como-iniciar-contenedor {
+    padding: 20px;
+    margin: 20px auto;
+    min-height: 400px; /* Asegura que el contenedor tenga una altura mínima fija */
+  }
+
+  .como-iniciar-contenedor-texto {
+    min-width: 100%;
+    padding: 0 10px;
+  }
+
+  .como-iniciar-contenedor-texto p {
+    font-size: 14px; /* Ajusta el tamaño de la fuente para pantallas más pequeñas */
+    padding: 0 15px; /* Aumenta el espaciado en los laterales en móviles */
   }
 }
-
 
 
 body {
