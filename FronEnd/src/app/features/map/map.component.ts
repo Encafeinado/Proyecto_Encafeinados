@@ -7,6 +7,7 @@ import {
   ElementRef,
   ChangeDetectorRef,
 } from '@angular/core';
+
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import * as L from 'leaflet';
 import 'leaflet-routing-machine';
@@ -16,6 +17,7 @@ import { StoreStatusService } from '../../service/store-status.service';
 import { UserService } from '../../service/user.service';
 import { StoreService } from '../../service/store.service';
 import { ShopService } from '../../service/shop.service';
+import { ReviewService } from '../../service/reviews.service';
 import {
   HttpClient,
   HttpErrorResponse,
@@ -37,6 +39,7 @@ declare module 'leaflet' {
 })
 export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   modalRef!: NgbModalRef;
+  reviewApp: string = '';
   openedModal = false;
   verifiedcode: boolean = false;
   selectedTransport: string = 'car';
@@ -83,6 +86,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
   @ViewChild('modalBook', { static: true }) modalBook: any;
   @ViewChild('codeInput', { static: false }) codeInput!: ElementRef;
   @ViewChild('arriveModal', { static: true }) arriveModal: any;
+  @ViewChild('modalReviewShop', { static: true }) modalReviewShop: any;
 
   constructor(
     private modalService: NgbModal,
@@ -91,7 +95,9 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     private storeService: StoreService,
     private shopService: ShopService,
     private authService: AuthService,
-    private changeDetector: ChangeDetectorRef
+    private reviewService: ReviewService,
+    private changeDetector: ChangeDetectorRef,
+    
   ) {
     this.userLocationIcon = L.icon({
       // iconUrl: 'assets/IconsMarker/flecha.png',
@@ -370,6 +376,24 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     console.log('Ruta cancelada');
     this.openModal(this.cancelModal, '');
   }
+  updateButtonReviewState() {
+    
+    this.isButtonDisabled = this.reviewApp.trim().length === 0;
+  }
+  addReviewToApp(){
+    this.reviewService.addReview(this.reviewApp).subscribe(
+      (res) => {
+        toastr.success(
+          'Comentario añadido exitosamente'
+        );
+        this.modalRef.close();
+      },
+      (err) => {
+          toastr.error('No se ha podido añadir el comentario');
+        this.modalRef.close();
+      }
+    );
+  }
 
   confirmCancelRoute(): void {
     if (this.routingControl) {
@@ -478,6 +502,7 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.enteredCode = '';
     this.enteredRating = 0;
     this.enteredReview = '';
+    this.reviewApp = '';
     this.isButtonDisabled = true; // Opcional, si quieres desactivar el botón nuevamente
   }
 
@@ -515,6 +540,10 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
   openModalAlbum(): void {
     this.openModal(this.modalBook, '');
+  }
+  openModalReviewShop(): void {
+    this.resetModalFields();
+    this.openModal(this.modalReviewShop, '');
   }
 
   verifyCode() {

@@ -52,6 +52,8 @@
             </li>
           </ul>
         </div>
+        <br>
+        <button class="btn btn-primary" (click)="openModalReviewShop()">Califica la aplicación</button>
       </div>
     </div>
   </div>
@@ -65,6 +67,9 @@
       <i class="fas fa-coffee text-white"></i>
     </button>
   </div>
+
+
+
 
   <!-- Modal para confirmar la ruta -->
   <ng-template #createModal let-modal>
@@ -148,6 +153,40 @@
     </div>
   </ng-template>
   
+<!-- Modal calficar tienda -->
+<ng-template #modalReviewShop let-modal>
+  <div class="modal-content-review">
+    <div class="modal-header-review">
+      <h5 class="modal-title-review">Califica la aplicación</h5>
+    </div>
+    <div class="modal-body-review">
+      <label for="reviewApp">Comentario o sugerencia:</label>
+      <input 
+        #codeInput 
+        type="text" 
+        id="reviewApp" 
+        class="form-control" 
+        [(ngModel)]="reviewApp"
+        placeholder="Ingresa tu comentario o sugerencia" 
+        (input)="updateButtonReviewState()">
+    </div>
+    <div class="modal-footer-review">
+      <button 
+        type="button" 
+        class="btn" 
+        (click)="addReviewToApp()" 
+        [disabled]="isButtonDisabled">
+        Enviar
+      </button>
+      <button 
+        type="button" 
+        class="btn" 
+        (click)="modal.dismiss('cancel')">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</ng-template>
 
   <!-- Modal álbum -->
   <ng-template #modalBook let-modal>
