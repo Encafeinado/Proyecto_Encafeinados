@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import Typed from 'typed.js';
 
 @Component({
@@ -6,9 +6,11 @@ import Typed from 'typed.js';
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css']
 })
-export class LandingComponent implements OnInit {
+export class LandingComponent implements OnInit, AfterViewInit {
+  @ViewChild('video', { static: true }) video?: ElementRef<HTMLVideoElement>; // Propiedad opcional
+  @ViewChild('video1', { static: true }) video1?: ElementRef<HTMLVideoElement>; // Propiedad opcional
+  @ViewChild('video2', { static: true }) video2?: ElementRef<HTMLVideoElement>; // Propiedad opcional
   showWelcomeOverlay = true; // Controla la visibilidad de la imagen de bienvenida
-  private videos: NodeListOf<HTMLVideoElement> = document.querySelectorAll('video');
 
   ngOnInit(): void {
     // Inicializar Typed.js
@@ -34,18 +36,16 @@ export class LandingComponent implements OnInit {
     });
   }
 
-  playVideos(): void {
-    this.videos = document.querySelectorAll('video');
-    this.videos.forEach((video) => {
-      video.play().catch(error => {
-        console.error('El video no pudo reproducirse automáticamente:', error);
-      });
-    });
-  }
-
-  onWelcomeClick(): void {
-    // Ocultar el overlay y reproducir los videos cuando el usuario hace clic
-    this.showWelcomeOverlay = false;
-    this.playVideos();
+  ngAfterViewInit(): void {
+    // Configurar todos los videos para que estén en silencio después de la vista
+    if (this.video) {
+      this.video.nativeElement.muted = true;
+    }
+    if (this.video1) {
+      this.video1.nativeElement.muted = true;
+    }
+    if (this.video2) {
+      this.video2.nativeElement.muted = true;
+    }
   }
 }
