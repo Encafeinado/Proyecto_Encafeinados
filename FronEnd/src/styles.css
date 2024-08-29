@@ -3199,14 +3199,165 @@ align-items: center;
 
 
 
-  .toast-error {
-    color: rgb(248, 245, 245) !important;
-    background-color: #ce1111 !important;
-   
-    border-radius: 10px !important; /* Agrega un borde redondo al cuadro del mensaje */
-   
+.toast-error {
+  color: rgb(248, 245, 245) !important;
+  background-color: #ce1111 !important;
+  border-radius: 10px !important; /* Agrega un borde redondo al cuadro del mensaje */
+}
+
+ /* Estilos específicos para la sección "Cómo Iniciar" */
+
+.como-iniciar-section {
+  display: flex;
+  flex-direction: column; /* Alinea elementos en columna */
+  align-items: center; /* Centra todo el contenido horizontalmente */
+}
+
+.como-iniciar-section img {
+  width: 40%;
+  height: 40%;
+  object-fit: contain;
+}
+
+.pasos img {
+  width: 50px; /* Tamaño fijo para las imágenes */
+  height: 50px; /* Mantener la relación de aspecto si es necesario */
+  object-fit: contain; /* Ajustar la imagen sin distorsionarla */
+  vertical-align: middle; /* Alinea verticalmente con el texto */
+}
+
+.como-iniciar-section {
+  min-height: 100vh;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  background-image: linear-gradient(-25deg, #e0f7fa 50%, #e0f7fa 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.como-iniciar-contenedor {
+  background-color: #fff;
+  width: 90%;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 40px;
+  border-radius: 10px;
+  overflow: hidden; /* Previene desbordamiento del contenido */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.como-iniciar-header {
+  display: flex; /* Habilita Flexbox en el contenedor padre */
+  align-items: center; /* Centra verticalmente */
+  justify-content: center; /* Centra horizontalmente */
+  flex-wrap: wrap; /* Permite que los elementos se ajusten en línea */
+  margin-bottom: 80px;
+}
+
+.como-iniciar-logo {
+  font-size: 25px;
+  font-weight: 600;
+  color: #0f1eee;
+  text-decoration: none;
+  margin: 0 auto; /* Centra horizontalmente dentro del contenedor flex */
+}
+
+.como-iniciar-menu {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.como-iniciar-menu a {
+  font-size: 22px;
+  border-bottom: 2px solid transparent;
+  margin-left: 40px;
+  color: #000;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.como-iniciar-menu a:hover {
+  border-bottom: 2px solid #f2c968;
+}
+
+.como-iniciar-main {
+  display: flex;
+  justify-content: center; /* Centrará el contenido horizontalmente */
+  align-items: center; /* Centrará el contenido verticalmente */
+  flex-direction: column; /* Asegura que los elementos se apilen verticalmente */
+  text-align: center; /* Alinea el texto al centro */
+  height: 100%; /* Asegura que el contenedor ocupe toda la altura disponible */
+}
+
+.como-iniciar-main .como-iniciar-contenedor-img {
+  max-width: 100px; /* Tamaño máximo para las imágenes */
+  flex-shrink: 0; /* Evitar que el contenedor de imágenes se reduzca */
+  margin-right: 20px; /* Ajuste de margen */
+}
+
+.como-iniciar-section img {
+  width: 20%; /* Asegura que la imagen se ajuste a su contenedor */
+  align-items: center; /* Centrará el contenido verticalmente */
+  height: auto; /* Mantener la relación de aspecto */
+  object-fit: contain; /* Ajustar la imagen sin distorsionarla */
+}
+
+.como-iniciar-contenedor-texto .como-iniciar-titulo {
+  font-size: 25px;
+  font-weight: normal;
+  margin-bottom: 40px; /* Ajuste de margen */
+}
+
+.como-iniciar-contenedor-texto .como-iniciar-pasos img {
+  width: 20%;
+}
+
+.como-iniciar-contenedor-texto .como-iniciar-pasos {
+  font-weight: bold;
+  color: #5b4a9a;
+  font-style: normal;
+}
+
+.como-iniciar-contenedor-texto p {
+  margin-bottom: 20px;
+  line-height: 1.5;
+  overflow: hidden; /* Ocultar el texto que excede el contenedor */
+  text-overflow: ellipsis; /* Añadir puntos suspensivos si el texto es demasiado largo */
+  white-space: nowrap; /* Evitar saltos de línea */
+}
+.como-iniciar-contenedor-texto {
+  flex-grow: 1; /* Permitir que el texto ocupe el espacio restante */
+  min-width: 300px; /* Asegurar un tamaño mínimo para el texto */
+}
+
+.como-iniciar-btn-link {
+  display: inline-block;
+  padding: 10px 30px;
+  border-radius: 100px;
+  margin-right: 10px;
+  text-decoration: none;
+  background: #f2f2f2;
+}
+
+.como-iniciar-btn-link:hover,
+.como-iniciar-btn-link.activo {
+  color: #fff;
+  background: #2516f1;
+}
+
+@media screen and (max-width: 915px) {
+  .como-iniciar-main {
+    flex-direction: column;
+    text-align: center;
   }
-   /* Cambia el color del texto del mensaje de error a rojo */
+
+  .como-iniciar-main .como-iniciar-contenedor-img {
+    margin-bottom: 40px;
+  }
+}
 
 
 
