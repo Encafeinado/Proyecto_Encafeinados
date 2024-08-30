@@ -8,75 +8,87 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import * as L from 'leaflet';
-import 'leaflet-routing-machine';
 import * as toastr from 'toastr';
 import { AlbumService, Image } from '../../service/album.service';
-import { StoreStatusService } from '../../service/store-status.service';
 import { UserService } from '../../service/user.service';
 import { StoreService } from '../../service/store.service';
 import { ShopService } from '../../service/shop.service';
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-} from '@angular/common/http';
 import { AuthService } from 'src/app/auth/services/auth.service';
-import 'leaflet-rotatedmarker';
-// Extendemos la interfaz de L.Marker para incluir setRotationAngle
-declare module 'leaflet' {
-  interface Marker {
-    setRotationAngle(angle: number): this;
-  }
-}
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css'],
 })
-export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
+export class MapComponent implements OnInit, OnDestroy {
   modalRef!: NgbModalRef;
   openedModal = false;
   verifiedcode: boolean = false;
-  selectedTransport: string = 'car';
-  watchId: number | undefined;
-  routingControl: any;
-  showCancelButton: boolean = false;
   destinationName!: string;
-  initialZoomDone: boolean = false; // Variable para controlar el zoom inicial
-  userLocation: { lat: number; lng: number } | null = null; // Variable para almacenar la ubicación del usuario
-  userLocationIcon: L.Icon;
-  map!: L.Map;
-  targetMarker!: L.Marker;
-  userLocationMarker!: L.Marker;
   enteredCode: string = '';
   verified: boolean = false;
   message: string = '';
-  albumImages: Image[] = [];
-  images: Image[] = [];
-  currentImageIndex: number = 0; // Índice de la imagen actual para colorear
-  isStoreOpen: boolean = false;
   userData: any;
   shopData: any[] = [];
-  userName: string = 'Nombre del Usuario';
   hasArrived: boolean = false; // Nuevo estado para verificar si ya ha llegado
   shopLogos: { name: string; logoUrl: string }[] = [];
   shopMarkers: any[] = []; // Asegúrate de inicializar shopMarkers
   userId: string | null = null;
   bookImages: Image[] = [];
   obtainedStamps: number = 0;
-  isRouteActive: boolean = false;
   enteredRating: number = 0;
   enteredReview: string = '';
-  // totalStamps: number = 0;
-  routeCancelled: boolean = false;
   showAlert: boolean = false;
-  routeInfo: string = '';
-  routeDistance: string = '';
-  routeDuration: string = '';
   isButtonDisabled: boolean = true;
-
+  google: any = window.google;
+  modoTransporte: google.maps.TravelMode = google.maps.TravelMode.DRIVING;
+  center: google.maps.LatLngLiteral = {
+    lat: 6.150155571503784,
+    lng: -75.61905204382627,
+  };
+  zoom = 15;
+  rutaActiva: boolean = false;
+  routeDetails: string | undefined;
+  markerPosition: google.maps.LatLngLiteral | undefined;
+  watchId: number | undefined;
+  instruccionesRuta: string[] = [];
+  private directionsService: google.maps.DirectionsService =
+    new google.maps.DirectionsService();
+  private directionsRendererInstance: google.maps.DirectionsRenderer =
+    new google.maps.DirectionsRenderer();
+  distanceMatrixService: google.maps.DistanceMatrixService =
+    new google.maps.DistanceMatrixService();
+  private hasZoomed: boolean = false;
+  private markerUsuario: google.maps.Marker | undefined;
+  opcionesMapa: google.maps.MapOptions = {
+    styles: [
+      {
+        featureType: 'poi',
+        elementType: 'labels',
+        stylers: [{ visibility: 'off' }],
+      },
+      {
+        featureType: 'transit',
+        elementType: 'labels',
+        stylers: [{ visibility: 'on' }],
+      },
+    ],
+    streetViewControl: false, // Elimina el control de Street View
+    mapTypeControl: false, // Elimina el botón de "Mapa/Satélite"
+    fullscreenControl: false, // Elimina el botón de pantalla completa
+    zoomControl: false,
+  };
+  iconoUbicacionUsuario = {
+    url: 'assets/IconsMarker/cosechaUser.png', // Ruta desde la raíz pública
+    scaledSize: new google.maps.Size(40, 40),
+    rotation: 0,
+  };
+  iconoTienda = {
+    url: 'assets/IconsMarker/cafeteriaAroma.png', // Ruta desde la raíz pública
+    scaledSize: new google.maps.Size(40, 40),
+    rotation: 0,
+  };
   @ViewChild('createModal', { static: true }) createModal: any;
   @ViewChild('cancelModal', { static: true }) cancelModal: any;
   @ViewChild('codeModal', { static: true }) codeModal: any;
@@ -91,19 +103,13 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     private storeService: StoreService,
     private shopService: ShopService,
     private authService: AuthService,
-    private changeDetector: ChangeDetectorRef
-  ) {
-    this.userLocationIcon = L.icon({
-      // iconUrl: 'assets/IconsMarker/flecha.png',
-      iconUrl: 'assets/IconsMarker/cosechaUser.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
-    });
-  }
+    private changeDetector: ChangeDetectorRef,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
+    // this.iniciarMapa();
+    this.rastrearUbicacionUsuario();
     this.fetchUserData();
     this.fetchShopData();
     this.populateShopLogos();
@@ -119,9 +125,245 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
 
     // Actualiza los datos cada 10 segundos (10000 ms)
     setInterval(() => {
-      this.fetchShopData();
+      // this.fetchShopData();
       this.fetchBookData();
     }, 10000); // 10 segundos
+  }
+
+  ngOnDestroy() {
+    if (this.watchId) {
+      navigator.geolocation.clearWatch(this.watchId);
+    }
+  }
+
+  
+  iniciarMapa() {
+    const mapElement = document.getElementById('map') as HTMLElement;
+    if (mapElement) {
+      const map = new google.maps.Map(mapElement, {
+        center: this.center,
+        zoom: this.zoom,
+        ...this.opcionesMapa,
+      });
+  
+      this.directionsRendererInstance.setMap(map);
+  
+      // Verificar si markerPosition está definido antes de crear el marcador
+      if (this.markerPosition) {
+        this.markerUsuario = new google.maps.Marker({
+          position: this.markerPosition,
+          map: map,
+          icon: this.iconoUbicacionUsuario,
+        });
+      } else {
+        console.error('markerPosition no está definido.');
+      }
+  
+      // Agregar los marcadores de las tiendas
+      this.shopMarkers.forEach((markerData) => {
+        const marker = new google.maps.Marker({
+          position: markerData.position,
+          map: map,
+          icon: this.iconoTienda,
+          title: markerData.title,
+        });
+  
+        marker.addListener('click', () => {
+          console.log(`Nombre de la tienda: ${markerData.title}`);
+          this.openModal(this.createModal, markerData.title);
+        });
+      });
+    } else {
+      console.error('Elemento del mapa no encontrado.');
+    }
+  }
+  
+
+  rastrearUbicacionUsuario() {
+    if (navigator.geolocation) {
+      this.watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          this.center = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          this.markerPosition = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+  
+          console.log('Ubicación del usuario actualizada:', this.markerPosition);
+          this.actualizarMarcadorUbicacionUsuario();
+  
+          // Recalcular la ruta si está activa
+          if (this.rutaActiva) {
+            this.calcularRuta();
+          }
+  
+          // Hacer zoom una vez cuando se encuentra la ubicación por primera vez
+          if (!this.hasZoomed) {
+            const map = this.directionsRendererInstance.getMap();
+            if (map) {
+              map.setCenter(this.markerPosition);
+              map.setZoom(17); // Ajusta el zoom según tus preferencias
+              this.hasZoomed = true; // Establece la bandera para evitar futuros zooms
+            }
+          }
+        },
+        (error) => {
+          console.error('Error rastreando la ubicación', error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        }
+      );
+    } else {
+      console.error('Geolocalización no es soportada por este navegador.');
+    }
+  }
+  
+  
+  actualizarMarcadorUbicacionUsuario() {
+    if (this.markerPosition) {
+      const map = this.directionsRendererInstance.getMap();
+      if (map) {
+        if (!this.markerUsuario) {
+          this.markerUsuario = new google.maps.Marker({
+            position: this.markerPosition,
+            map: map,
+            icon: this.iconoUbicacionUsuario,
+          });
+        } else {
+          this.markerUsuario.setPosition(this.markerPosition);
+        }
+      }
+    } else {
+      console.error('markerPosition no está definido en actualizarMarcadorUbicacionUsuario.');
+    }
+  }
+  
+
+  centerOnUserLocation() {
+    if (this.markerPosition) {
+      const map = this.directionsRendererInstance.getMap();
+      if (map) {
+        // Suavizar el centrado del mapa
+        map.panTo(this.markerPosition);
+  
+        // Opcional: Añadir un pequeño retraso para cambiar el zoom suavemente
+        setTimeout(() => {
+          map.setZoom(17); // Ajusta el nivel de zoom según sea necesario
+        }, 300); // Ajusta el retraso según sea necesario
+      }
+    } else {
+      console.error('La ubicación del usuario no está disponible.');
+    }
+  }
+
+  seleccionarModoTransporte(modo: google.maps.TravelMode) {
+    this.modoTransporte = modo;
+  }
+
+  calcularRuta() {
+    if (!this.modoTransporte) {
+      this.toastr.warning(
+        'Por favor, selecciona un modo de transporte.',
+        'Advertencia'
+      );
+      return;
+    }
+
+    if (!this.markerPosition) {
+      console.error('La posición del marcador no está definida.');
+      return;
+    }
+
+    if (!this.destinationName) {
+      console.error('El destino no está definido.');
+      return;
+    }
+
+    let destination: google.maps.LatLngLiteral | string = '';
+
+    if (typeof this.destinationName === 'object') {
+      destination = {
+        lat: (this.destinationName as google.maps.LatLngLiteral).lat,
+        lng: (this.destinationName as google.maps.LatLngLiteral).lng,
+      };
+    } else {
+      destination = this.destinationName;
+    }
+
+    const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
+
+    const request: google.maps.DirectionsRequest = {
+      origin: this.markerPosition,
+      destination: destination,
+      travelMode: travelMode,
+      unitSystem: google.maps.UnitSystem.METRIC,
+    };
+
+    console.log('Solicitud de ruta:', request);
+
+    // Desactiva los marcadores predeterminados
+    this.directionsRendererInstance.setOptions({
+      suppressMarkers: true,
+    });
+
+    this.directionsService.route(request, (result, status) => {
+      console.log('Resultado de la ruta:', result);
+      console.log('Estado de la ruta:', status);
+
+      if (status === google.maps.DirectionsStatus.OK && result) {
+        this.directionsRendererInstance.setDirections(result);
+        this.obtenerDetallesRuta(result);
+        this.rutaActiva = true;
+
+        // Cierra el modal después de calcular la ruta
+        if (this.modalRef) {
+          this.modalRef.close();
+        }
+      } else {
+        console.error('Error al calcular la ruta:', status, result);
+        this.toastr.warning(
+          'La ruta en este medio de transporte no está disponible',
+          'Advertencia'
+        );
+      }
+    });
+  }
+
+  obtenerDetallesRuta(result: google.maps.DirectionsResult) {
+    if (result.routes.length > 0) {
+      const route = result.routes[0];
+      if (route.legs.length > 0) {
+        const leg = route.legs[0];
+        const duration = leg.duration?.text;
+        const distance = leg.distance?.text;
+        const destination = leg.end_address;
+
+        this.routeDetails = `Distancia: ${distance}, Tiempo estimado: ${duration}, Destino: ${destination}`;
+        console.log(this.routeDetails);
+
+        this.instruccionesRuta = [];
+        leg.steps.forEach((step) => {
+          this.instruccionesRuta.push(step.instructions);
+        });
+      }
+    }
+  }
+
+  cancelarRuta() {
+    if (this.directionsRendererInstance) {
+      this.directionsRendererInstance.setMap(null); // Elimina el renderer del mapa
+      this.directionsRendererInstance = new google.maps.DirectionsRenderer(); // Re-inicializa el renderizador
+      this.rutaActiva = false; // Marca que la ruta ya no está activa
+      this.instruccionesRuta = []; // Limpia las instrucciones de la ruta
+      this.routeDetails = undefined; // Limpia los detalles de la ruta
+      this.iniciarMapa(); // Actualiza el mapa para mostrar los marcadores
+    }
   }
 
   closeAlert(): void {
@@ -133,323 +375,12 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     console.log('Rating seleccionado: ', this.enteredRating);
   }
 
-  showRouteConfirmation(
-    map: L.Map,
-    targetMarker: L.Marker,
-    userLocationMarker: L.Marker,
-    destinationName: string
-  ): void {
-    this.destinationName = destinationName; // Guarda el nombre de la tienda de destino
-    this.targetMarker = targetMarker;
-    this.userLocationMarker = userLocationMarker;
-    this.map = map;
-    this.openModal(this.createModal, this.destinationName); // Asegúrate de pasar el nombre aquí
-  }
-
   updateButtonState() {
     this.isButtonDisabled = !(
       this.enteredCode &&
       this.enteredReview &&
       this.enteredRating > 0
     );
-  }
-
-  showRouteGuia(): void {
-    console.log('showCancelButton antes:', this.showCancelButton);
-    if (
-      this.map &&
-      this.targetMarker &&
-      this.userLocationMarker &&
-      this.destinationName
-    ) {
-      this.showRoute(
-        this.map,
-        this.userLocationMarker.getLatLng().lat,
-        this.userLocationMarker.getLatLng().lng,
-        this.targetMarker.getLatLng().lat,
-        this.targetMarker.getLatLng().lng,
-        this.targetMarker.options.icon as L.Icon,
-        this.selectedTransport
-      );
-      this.showCancelButton = true;
-      console.log('showCancelButton después:', this.showCancelButton);
-      // Asegúrate de que el modal se cierre correctamente
-      if (this.modalRef) {
-        this.modalRef.close();
-      }
-    } else {
-      console.error('Error: No se han inicializado los marcadores o el mapa.');
-    }
-  }
-
-  showRoute(
-    map: L.Map,
-    startLat: number,
-    startLng: number,
-    endLat: number,
-    endLng: number,
-    icon: L.Icon,
-    transport: string
-  ): void {
-    let profile: string;
-    let routed: string;
-    let url: any;
-
-    if (transport === 'foot') {
-      profile = 'foot';
-      routed = 'routed-foot';
-    } else if (transport === 'car') {
-      profile = 'driving';
-      routed = 'routed-car';
-    } else {
-      profile = 'bike';
-      routed = 'routed-bike';
-    }
-    if (this.routingControl) {
-      this.map.removeControl(this.routingControl);
-    }
-
-    if (transport === 'foot' || transport === 'bike') {
-      url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-    } else {
-      url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-    }
-    url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-    if (transport !== 'caro') {
-      fetch(url)
-        .then((response) => {
-          console.log(url);
-          if (!response.ok) {
-            throw new Error('Error en la solicitud al servicio OSM');
-          }
-          return response.json();
-        })
-        .then((data) => {
-          if (!data || !data.routes || data.routes.length === 0) {
-            throw new Error('No se encontraron rutas válidas');
-          }
-
-          const route = data.routes[0]; // Tomar la primera ruta (asumiendo que es la más óptima)
-          const routeCoordinates = route.geometry.coordinates.map(
-            (coord: [number, number]) => [coord[1], coord[0]]
-          );
-
-          // Dibujar la ruta en el mapa usando Leaflet
-          let color = 'blue'; // Default color for foot transport
-
-          if (transport === 'car') {
-            color = 'red';
-          } else if (transport === 'bike') {
-            color = 'green';
-          }
-
-          if (this.routingControl) {
-            this.routingControl.remove();
-          }
-
-          this.routingControl = L.polyline(routeCoordinates, {
-            color: color,
-          }).addTo(map);
-
-          // Calcular el tiempo estimado basado en la velocidad promedio
-          const averageSpeeds: { [key: string]: number } = {
-            foot: 5, // km/h
-            bike: 15, // km/h
-            car: 40, // km/h
-          };
-
-          const speed = averageSpeeds[transport] || averageSpeeds['foot']; // Default to foot speed if transport type is unknown
-          const routeDistanceKm = route.distance / 1000; // Convert distance to kilometers
-          const estimatedTimeHours = routeDistanceKm / speed; // Time in hours
-          const estimatedTimeMinutes = estimatedTimeHours * 60; // Convert to minutes
-
-          // Mostrar la distancia y tiempo estimado
-          this.routeDistance = routeDistanceKm.toFixed(2); // Distancia en kilómetros
-          this.routeDuration = estimatedTimeMinutes.toFixed(0); // Duración en minutos
-          this.routeInfo = `Ruta hacia ${this.destinationName}`;
-
-          // Mostrar la alerta con la información de la ruta
-          this.showAlert = true;
-          this.userLocationIcon = L.icon({
-            iconUrl: 'assets/IconsMarker/flecha.png',
-            iconSize: [25, 41],
-
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41],
-          });
-
-          // Verificar si ya existe un marcador y eliminarlo
-          if (this.userLocationMarker) {
-            this.map.removeLayer(this.userLocationMarker);
-          }
-
-          // Crear un nuevo marcador con el nuevo ícono y agregarlo al mapa
-          this.userLocationMarker = L.marker([6.09214, -75.639212], {
-            icon: this.userLocationIcon,
-          })
-            .addTo(this.map)
-            .bindPopup('Tu ubicación actual');
-          this.watchId = navigator.geolocation.watchPosition(
-            (position) => {
-              const userLat = position.coords.latitude;
-              const userLng = position.coords.longitude;
-              const accuracy = position.coords.accuracy;
-
-              if (accuracy < 50) {
-                this.userLocationMarker.setLatLng([userLat, userLng]);
-                this.userLocation = { lat: userLat, lng: userLng };
-
-                if (!this.initialZoomDone) {
-                  this.map.setView([userLat, userLng], 15, {
-                    animate: true,
-                  });
-                  this.initialZoomDone = true;
-                }
-
-                if (this.targetMarker) {
-                  this.updateRoute(
-                    userLat,
-                    userLng,
-                    this.targetMarker.getLatLng().lat,
-                    this.targetMarker.getLatLng().lng,
-                    this.selectedTransport
-                  );
-                }
-
-                this.checkProximityToStores(userLat, userLng, this.shopMarkers);
-              }
-            },
-            (error) => {
-              console.error(
-                'Error al obtener la ubicación del usuario:',
-                error
-              );
-            },
-            {
-              enableHighAccuracy: true,
-              maximumAge: 0,
-              timeout: 30000,
-            }
-          );
-          // Forzar la detección de cambios en Angular
-          this.changeDetector.detectChanges();
-        })
-        .catch((error) => {
-          console.error('Error al obtener la ruta desde OSM:', error);
-        });
-    } else {
-      this.routingControl = (L as any).Routing.control({
-        waypoints: [L.latLng(startLat, startLng), L.latLng(endLat, endLng)],
-        routeWhileDragging: true,
-        language: 'es', // Añadido para asegurarse de que las instrucciones estén en español
-        createMarker: (i: number, waypoint: any, n: number) => {
-          if (i === n - 1) {
-            return L.marker(waypoint.latLng, { icon: icon });
-          } else {
-            return L.marker(waypoint.latLng, { icon: this.userLocationIcon });
-          }
-        },
-      }).addTo(map);
-      setTimeout(() => {
-        const routingContainer = document.querySelector(
-          '.leaflet-routing-container'
-        );
-        const sidebar = document.querySelector('.sidebar'); // Replace with your actual sidebar selector
-        if (routingContainer && sidebar) {
-          sidebar.appendChild(routingContainer);
-        }
-      }, 500);
-    }
-  }
-
-  selectTransportMode(mode: string) {
-    this.selectedTransport = mode;
-  }
-
-  cancelRoute(): void {
-    console.log('Ruta cancelada');
-    this.openModal(this.cancelModal, '');
-  }
-
-  confirmCancelRoute(): void {
-    if (this.routingControl) {
-      this.routingControl.remove();
-      this.showCancelButton = false;
-      this.closeAlert(); // Cerrar la alerta
-    }
-    this.routeCancelled = true; // Marcar la ruta como cancelada
-    this.modalRef.close();
-    this.userLocationIcon = L.icon({
-      // iconUrl: 'assets/IconsMarker/flecha.png',
-      iconUrl: 'assets/IconsMarker/cosechaUser.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
-    });
-
-    // Verificar si ya existe un marcador y eliminarlo
-    if (this.userLocationMarker) {
-      this.map.removeLayer(this.userLocationMarker);
-    }
-
-    // Crear un nuevo marcador con el nuevo ícono y agregarlo al mapa
-    this.userLocationMarker = L.marker([0, 0], {
-      icon: this.userLocationIcon,
-    })
-      .addTo(this.map)
-      .bindPopup('Tu ubicación actual');
-    this.watchId = navigator.geolocation.watchPosition(
-      (position) => {
-        const userLat = position.coords.latitude;
-        const userLng = position.coords.longitude;
-        const accuracy = position.coords.accuracy;
-
-        if (accuracy < 50) {
-          this.userLocationMarker.setLatLng([userLat, userLng]);
-          this.userLocation = { lat: userLat, lng: userLng };
-
-          if (!this.initialZoomDone) {
-            this.map.setView([userLat, userLng], 15, {
-              animate: true,
-            });
-            this.initialZoomDone = true;
-          }
-
-          if (this.targetMarker) {
-            this.updateRoute(
-              userLat,
-              userLng,
-              this.targetMarker.getLatLng().lat,
-              this.targetMarker.getLatLng().lng,
-              this.selectedTransport
-            );
-          }
-
-          this.checkProximityToStores(userLat, userLng, this.shopMarkers);
-        }
-      },
-      (error) => {
-        console.error('Error al obtener la ubicación del usuario:', error);
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 30000,
-      }
-    );
-    // Forzar la detección de cambios en Angular
-    this.changeDetector.detectChanges();
-  }
-
-  confirmArrive(): void {
-    this.hasArrived = true; // Marca que el usuario ya ha llegado
-    if (this.routingControl) {
-      this.routingControl.remove();
-      this.showCancelButton = false;
-      this.closeAlert(); // Cerrar la alerta
-    }
-    this.modalRef.close(); // Cierra el modal
   }
 
   cancelArrive(modal: any): void {
@@ -479,33 +410,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
     this.enteredRating = 0;
     this.enteredReview = '';
     this.isButtonDisabled = true; // Opcional, si quieres desactivar el botón nuevamente
-  }
-
-  private createStoreIcon(
-    iconUrl: string,
-    isOpen: boolean,
-    additionalClass: string = ''
-  ) {
-    return L.divIcon({
-      html: `
-        <div style="position: relative; display: flex; align-items: center; justify-content: center;">
-          <img src="${iconUrl}" class="${additionalClass}" style="width: 25px; height: 41px; border-radius: 5px;" />
-          <div style="position: absolute; top: -5px; right: -5px; width: 12px; height: 12px; background-color: ${
-            isOpen ? 'green' : 'red'
-          }; border-radius: 50%; border: 2px solid white;"></div>
-        </div>
-      `,
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      className: '',
-    });
-  }
-
-  ngOnDestroy(): void {
-    if (this.watchId !== undefined) {
-      navigator.geolocation.clearWatch(this.watchId);
-    }
   }
 
   openModalWithCodigo(): void {
@@ -590,252 +494,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
       );
   }
 
-  ngAfterViewInit(): void {
-    this.map = new L.Map('map', {
-      center: [6.150155571503784, -75.61905204382627], // Coordenadas iniciales
-      zoom: 13,
-      attributionControl: false,
-      zoomDelta: 0.5,
-      zoomSnap: 0.1,
-      zoomControl: false,
-    });
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-    }).addTo(this.map);
-
-    this.userLocationMarker = L.marker([0, 0], {
-      icon: this.userLocationIcon,
-    })
-      .addTo(this.map)
-      .bindPopup('Tu ubicación actual');
-
-    this.watchId = navigator.geolocation.watchPosition(
-      (position) => {
-        const userLat = position.coords.latitude;
-        const userLng = position.coords.longitude;
-        const accuracy = position.coords.accuracy;
-
-        if (accuracy < 50) {
-          this.userLocationMarker.setLatLng([userLat, userLng]);
-          this.userLocation = { lat: userLat, lng: userLng };
-
-          if (!this.initialZoomDone) {
-            this.map.setView([userLat, userLng], 15, {
-              animate: true,
-            });
-            this.initialZoomDone = true;
-          }
-
-          if (this.targetMarker) {
-            this.updateRoute(
-              userLat,
-              userLng,
-              this.targetMarker.getLatLng().lat,
-              this.targetMarker.getLatLng().lng,
-              this.selectedTransport
-            );
-          }
-
-          this.checkProximityToStores(userLat, userLng, this.shopMarkers);
-        }
-      },
-      (error) => {
-        console.error('Error al obtener la ubicación del usuario:', error);
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 30000,
-      }
-    );
-
-    this.requestOrientationPermission();
-  }
-
-  requestOrientationPermission() {
-    if (
-      typeof (DeviceOrientationEvent as any).requestPermission === 'function'
-    ) {
-      (DeviceOrientationEvent as any)
-        .requestPermission()
-        .then((permissionState: string) => {
-          if (permissionState === 'granted') {
-            console.log('Permiso de orientación otorgado');
-            window.addEventListener(
-              'deviceorientation',
-              this.handleOrientation.bind(this),
-              true
-            );
-          } else {
-            console.log('Permiso de orientación denegado');
-          }
-        })
-        .catch((error: unknown) => {
-          console.error('Error al solicitar permiso de orientación:', error);
-        });
-    } else {
-      console.log('No es necesario solicitar permisos de orientación');
-      window.addEventListener(
-        'deviceorientation',
-        this.handleOrientation.bind(this),
-        true
-      );
-    }
-  }
-
-  handleOrientation(event: DeviceOrientationEvent) {
-    console.log('Device Orientation Event:', event);
-    let heading: number | null = null;
-
-    if ((event as any).webkitCompassHeading) {
-        heading = 360 - (event as any).webkitCompassHeading; // Ajuste para la brújula estándar
-    } else if (event.alpha !== null) {
-        heading = event.alpha;
-    }
-
-    console.log('Heading:', heading); // Verificar el valor de heading
-
-    if (heading !== null && this.userLocationMarker) {
-        this.userLocationMarker.setRotationAngle(heading);
-    }
-  }
-  
-  updateRoute(
-    startLat: number,
-    startLng: number,
-    endLat: number,
-    endLng: number,
-    transport: string
-  ): void {
-    if (this.routeCancelled) return;
-  
-    let profile: string;
-    let routed: string;
-    let url: string;
-  
-    // Define el perfil de transporte según la opción seleccionada
-    if (transport === 'foot') {
-      profile = 'foot';
-      routed = 'routed-foot';
-      url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-    } else if (transport === 'car') {
-      profile = 'driving';
-      routed = 'routed-car';
-      url = `https://router.project-osrm.org/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-    } else if (transport === 'bike') {
-      profile = 'bike';
-      routed = 'routed-bike';
-      url = `https://routing.openstreetmap.de/${routed}/route/v1/${profile}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
-    } else {
-      console.error('Tipo de transporte no válido');
-      return;
-    }
-  
-    // Realiza la solicitud para obtener la ruta
-    fetch(url)
-      .then((response) => {
-        console.log(`Response status for ${transport}:`, response.status);
-        if (!response.ok) {
-          throw new Error('Error en la solicitud al servicio OSM');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(`Route data for ${transport}:`, data);
-        if (!data || !data.routes || data.routes.length === 0) {
-          throw new Error('No se encontraron rutas válidas');
-        }
-  
-        const route = data.routes[0];
-        const routeCoordinates = route.geometry.coordinates.map(
-          (coord: [number, number]) => [coord[1], coord[0]]
-        );
-  
-        console.log(`Route coordinates for ${transport}:`, routeCoordinates);
-  
-        // Define el color de la ruta según el transporte seleccionado
-        let color = 'blue';
-        if (transport === 'car') {
-          color = 'red';
-        } else if (transport === 'bike') {
-          color = 'green';
-        }
-  
-        // Si ya existe una ruta en el mapa, actualiza las coordenadas
-        if (this.routingControl) {
-          console.log(`Updating existing route for ${transport}`);
-          this.routingControl.setLatLngs(routeCoordinates);
-          this.routingControl.setStyle({ color: color }); // Actualiza el color si es necesario
-        } else {
-          // Crea una nueva ruta y añádela al mapa
-          console.log(`Creating new route for ${transport}`);
-          this.routingControl = L.polyline(routeCoordinates, {
-            color: color,
-          }).addTo(this.map);
-        }
-  
-        // Calcula el tiempo estimado de la ruta
-        const averageSpeeds: { [key: string]: number } = {
-          foot: 5,
-          bike: 15,
-          car: 40,
-        };
-  
-        const speed = averageSpeeds[transport] || averageSpeeds['foot'];
-        const routeDistanceKm = route.distance / 1000;
-        const estimatedTimeHours = routeDistanceKm / speed;
-        const estimatedTimeMinutes = estimatedTimeHours * 60;
-  
-        // Actualiza la información de la ruta
-        this.routeDistance = routeDistanceKm.toFixed(2);
-        this.routeDuration = estimatedTimeMinutes.toFixed(0);
-        this.routeInfo = `Ruta hacia ${this.destinationName}`;
-  
-        // Muestra la alerta con la información de la ruta
-        this.showAlert = true;
-      })
-      .catch((error: unknown) => {
-        console.error('Error al obtener la ruta desde OSM:', error);
-      });
-  }
-
-  checkProximityToStores(
-    userLat: number,
-    userLng: number,
-    markers: { marker: L.Marker; name: string; iconUrl: string }[]
-  ) {
-    const proximityThreshold = 10; // 10 metros
-
-    if (this.destinationName) {
-      const destinationMarker = markers.find(
-        ({ name }) => name === this.destinationName
-      );
-      if (destinationMarker) {
-        const { marker, name, iconUrl } = destinationMarker;
-        const { lat, lng } = marker.getLatLng();
-        const distance = this.calculateDistance(userLat, userLng, lat, lng);
-
-        const shop = this.shopData.find((s) => s.name === name); // Encuentra la tienda correspondiente
-        if (shop) {
-          const statusShop = shop.statusShop; // Accede a statusShop de la tienda encontrada
-
-          if (distance <= proximityThreshold) {
-            marker.setIcon(this.createStoreIcon(iconUrl, statusShop));
-            console.log(`Estás cerca de tu destino: ${name}`);
-            this.openModal(this.arriveModal, name); // Abre el modal solo para la tienda de destino
-          } else {
-            marker.setIcon(
-              this.createStoreIcon(iconUrl, statusShop, 'grayscale-icon')
-            );
-          }
-        } else {
-          console.error(`No se encontró la tienda con nombre ${name}`);
-        }
-      }
-    }
-  }
-
   fetchUserData(): void {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -866,12 +524,48 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         this.shopData = data;
         // console.log('Datos de la tienda:', this.shopData); // Agrega esta línea para verificar la estructura de los datos
         this.populateShopLogos();
-        this.addShopMarkersToMap(false); // Pasar false para no hacer zoom
+        this.updateShopMarkers();
       },
       (error) => {
         console.error('Error al obtener los datos de la tienda:', error);
       }
     );
+  }
+
+  updateShopMarkers() {
+    this.shopMarkers = this.shopData.map((shop: any) => ({
+      position: {
+        lat: shop.latitude,
+        lng: shop.longitude,
+      },
+      title: shop.name,
+      status: shop.statusShop, // Supongo que 'statusShop' indica el estado
+    }));
+
+    const mapElement = document.getElementById('map') as HTMLElement;
+    if (mapElement) {
+      const map = new google.maps.Map(mapElement, {
+        center: this.center,
+        zoom: this.zoom,
+        ...this.opcionesMapa,
+      });
+
+      this.directionsRendererInstance.setMap(map);
+
+      this.shopMarkers.forEach((markerData) => {
+        const marker = new google.maps.Marker({
+          position: markerData.position,
+          map: map,
+          icon: this.iconoTienda, // Asegúrate de que `this.iconoTienda` sea una URL de imagen
+          title: markerData.title,
+        });
+
+        marker.addListener('click', () => {
+          console.log(`Nombre de la tienda: ${markerData.title}`);
+          this.openModal(this.createModal, markerData.title); // Abre el modal con el nombre de la tienda
+        });
+      });
+    }
   }
 
   fetchBookData(): void {
@@ -941,100 +635,6 @@ export class MapComponent implements OnDestroy, AfterViewInit, OnInit {
         reject(error);
       }
     });
-  }
-
-  goToUserLocation(): void {
-    if (this.userLocation) {
-      const zoomLevel = this.isRouteActive ? 18 : 15; // Ajustar el nivel de zoom según el estado de la ruta
-
-      this.map.flyTo(
-        [this.userLocation.lat, this.userLocation.lng],
-        zoomLevel,
-        {
-          animate: true,
-          duration: 1.5, // Duración de la animación en segundos
-        }
-      );
-    } else {
-      console.error('La ubicación del usuario no está disponible.');
-    }
-  }
-
-  addShopMarkersToMap(shouldZoom: boolean = true): void {
-    if (!this.map) {
-      console.error('El mapa no está inicializado.');
-      return;
-    }
-
-    this.shopMarkers = this.shopData
-      .map((shop) => {
-        const lat = shop.latitude;
-        const lng = shop.longitude;
-
-        if (typeof lat !== 'number' || typeof lng !== 'number') {
-          console.error('Coordenadas inválidas para la tienda:', shop);
-          return null;
-        }
-
-        const iconUrl = 'assets/IconsMarker/cafeteria.png'; // Usamos la misma imagen para todas las tiendas
-        const marker = L.marker([lat, lng], {
-          icon: this.createStoreIcon(iconUrl, shop.statusShop),
-        })
-          .addTo(this.map)
-          .bindPopup(shop.name);
-
-        marker.on('click', () => {
-          this.showRouteConfirmation(
-            this.map,
-            marker,
-            this.userLocationMarker,
-            shop.name
-          );
-        });
-
-        return {
-          marker,
-          name: shop.name,
-          iconUrl: iconUrl,
-        };
-      })
-      .filter((markerData) => markerData !== null);
-
-    if (shouldZoom && this.shopMarkers.length > 0) {
-      this.map.fitBounds(
-        this.shopMarkers.map((data) => [
-          data.marker.getLatLng().lat,
-          data.marker.getLatLng().lng,
-        ])
-      );
-    }
-  }
-
-  // Método para calcular la distancia
-  calculateDistance(
-    lat1: number,
-    lng1: number,
-    lat2: number,
-    lng2: number
-  ): number {
-    const R = 6371e3; // Radio de la Tierra en metros
-    const φ1 = this.degreesToRadians(lat1);
-    const φ2 = this.degreesToRadians(lat2);
-    const Δφ = this.degreesToRadians(lat2 - lat1);
-    const Δλ = this.degreesToRadians(lng2 - lng1);
-
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    const distance = R * c; // Distancia en metros
-    return distance;
-  }
-
-  // Método para convertir grados a radianes
-  degreesToRadians(degrees: number): number {
-    return degrees * (Math.PI / 180);
   }
 
   get totalStamps(): number {
