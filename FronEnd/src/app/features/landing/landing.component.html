@@ -1,50 +1,30 @@
+
 <div class="main-content">
   <!-- Sección de Carrusel -->
   <section class="background-circle">
     <div class="content-container">
       <!-- Contenido en el lado izquierdo -->
       <div class="text-content">
-        <h1 class="title" >Bienvenidos a Encafeinados</h1>
+        <h1 class="title">Bienvenidos a Encafeinados</h1>
         <h2 class="subtitle">
           Descubre el mejor café de especialidad<br>
           a un solo click
         </h2>
       </div>
-
       <!-- Carrusel en el lado derecho -->
       <div id="coffeeCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <div class="item">
-              <img src="../../../../assets/images/aroma cafe.jpg" class="d-block w-100" alt="Café 1">
-              <div class="carousel-caption d-none d-md-block">
-                <!-- Puedes añadir texto o contenido adicional aquí -->
-              </div>
-            </div>
+            <img src="../../../../assets/images/aroma cafe.jpg" class="d-block w-100" alt="Café 1">
           </div>
           <div class="carousel-item">
-            <div class="item">
-              <img src="../../../../assets/images/vibrante.jpg" class="d-block w-100" alt="Café 2">
-              <div class="carousel-caption d-none d-md-block">
-                <!-- Puedes añadir texto o contenido adicional aquí -->
-              </div>
-            </div>
+            <img src="../../../../assets/images/vibrante.jpg" class="d-block w-100" alt="Café 2">
           </div>
           <div class="carousel-item">
-            <div class="item">
-              <img src="../../../../assets/images/saudade.jpg" class="d-block w-100" alt="Café 3">
-              <div class="carousel-caption d-none d-md-block">
-                <!-- Puedes añadir texto o contenido adicional aquí -->
-              </div>
-            </div>
+            <img src="../../../../assets/images/saudade.jpg" class="d-block w-100" alt="Café 3">
           </div>
           <div class="carousel-item">
-            <div class="item">
-              <img src="../../../../assets/images/milagro.jpg" class="d-block w-100" alt="Café 4">
-              <div class="carousel-caption d-none d-md-block">
-                <!-- Puedes añadir texto o contenido adicional aquí -->
-              </div>
-            </div>
+            <img src="../../../../assets/images/milagro.jpg" class="d-block w-100" alt="Café 4">
           </div>
         </div>
         <!-- Controles del carrusel -->
@@ -66,8 +46,7 @@
       </div>
     </div>
   </section>
-
-  <div class="container">
+    <div class="container"> 
     <!-- Sección de tarjetas con imágenes y texto -->
     <section class="my-5">
       <h2 class="text-center">Hecho por y para CoffeeLovers</h2>
@@ -76,7 +55,7 @@
           <div class="card">
             <div class="card-body">
               <div class="service-circle-container">
-                <video autoplay muted loop class="service-circle-img">
+                <video #video autoplay muted loop playsinline class="service-circle-img">
                   <source src="../../../../assets/videos/primerbeneficio.mp4" type="video/mp4">
                   Tu navegador no soporta el elemento de video.
                 </video>
@@ -89,7 +68,7 @@
           <div class="card">
             <div class="card-body">
               <div class="service-circle-container">
-                <video autoplay muted loop class="service-circle-img">
+                <video #video1 autoplay muted loop playsinline class="service-circle-img">
                   <source src="../../../../assets/videos/segundobeneficio.mp4" type="video/mp4">
                   Tu navegador no soporta el elemento de video.
                 </video>
@@ -102,7 +81,7 @@
           <div class="card">
             <div class="card-body">
               <div class="service-circle-container">
-                <video autoplay muted loop class="service-circle-img">
+                <video #video2 autoplay muted loop playsinline class="service-circle-img">
                   <source src="../../../../assets/videos/tercerbeneficio.mp4" type="video/mp4">
                   Tu navegador no soporta el elemento de video.
                 </video>
@@ -113,45 +92,62 @@
         </div>
       </div>
     </section>
-</div>
-
+  </div>
+<!-- Nueva Sección "Cómo Iniciar" -->
 <div class="content-after-circle">
-  <!-- Sección combinada de contáctenos y llamados a la acción -->
-  <section class="my-5 combined-section">
-    <div class="contact-action-content">
-      <div class="contact-info text-center">
-        <h2>Contáctenos</h2>
-        <p class="mb-4">Si tienes alguna pregunta o quieres más información, no dudes en contactarnos:</p>
-        <div class="contact-details">
-          <a href="mailto:encafeinados4@gmail.com" class="social-link"><img src="../../../../assets/images/correo.png" alt="correo">  encafeinados4&#64;gmail.com</a>
-          <a href="https://wa.me/573006292795" class="social-link"><img src="../../../../assets/images/whatsapp.png" alt="whatsapp"> +57 300 629 27 95</a>
+    <div class="como-iniciar-contenedor">
+      <header class="como-iniciar-header">
+        <a href="#" class="como-iniciar-logo">Cómo iniciar...</a>
+      </header>
+      <nav class="como-iniciar-menu">
+        <a >1. Ingresa o regístrate</a>
+        <a >2. Selecciona el lugar a visitar</a>
+        <a >3. Disfruta y gana</a>
+      </nav>
+      <main class="como-iniciar-main">
+        <div class="como-iniciar-contenedor-texto">
+          <h4 class="como-iniciar-titulo">Para iniciar debes:<br><span class="typed"></span></h4>
+          <p>Fácil, ingresa, llega a la tienda con la guía del mapa, disfruta, acumula láminas y sigue ganando</p>
+
+          <a href="#" class="como-iniciar-btn-link activo">Inicia ahora</a>
+          <a href="#" class="como-iniciar-btn-link">Conoce más</a>
         </div>
-      </div>
-      <div class="action-info text-center">
-        <h2>Únete a nuestra comunidad</h2>
-        <p class="mb-4">Sigue nuestras redes sociales para estar al día con nuestras novedades y promociones.</p>
-        <div class="social-links">
-         <!-- <a href="#" class="social-link"><img src="../../../../assets/images/face.png" alt="Facebook"></a>
-          <a href="#" class="social-link"><img src="../../../../assets/images/twitter.png" alt="Twitter"></a>-->
-          <a href="#" class="social-link"><img src="../../../../assets/images/Instagram-Icon.png" alt="Instagram"></a>
-        </div>
-      </div>
+      </main>
     </div>
-  </section>
-
-  <!-- Pie de página -->
-  <footer class="text-center my-5">
-    <p>&copy; 2024 Encafeinados. Todos los derechos reservados.</p>
-  </footer>
-</div>
 </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var video = document.querySelector('.service-circle-img');
-    if (video) {
-      video.play();
-    }
-  });
-</script>
-
+  <div class="content-after-circle">
+    <!-- Sección combinada de contáctenos y llamados a la acción -->
+    <section class="my-5 combined-section">
+      <div class="contact-action-content">
+        <div class="contact-info text-center">
+          <h2>Contáctenos</h2>
+          <p class="mb-4">Si tienes alguna pregunta o quieres más información, no dudes en contactarnos:</p>
+          <div class="contact-details">
+            <a href="mailto:encafeinados4@gmail.com" class="social-link" target="_blank">
+              <img src="../../../../assets/images/correo.png" alt="Correo"> encafeinados4&#64;gmail.com
+            </a>
+            <a href="https://wa.me/573006292795" class="social-link" target="_blank">
+              <img src="../../../../assets/images/whatsapp.png" alt="WhatsApp"> +57 300 629 27 95
+            </a>
+          </div>
+        </div>
+        <div class="action-info text-center">
+          <h2>Únete a nuestra comunidad</h2>
+          <p class="mb-4">Sigue nuestras redes sociales para estar al día con nuestras novedades y promociones.</p>
+          <div class="social-links">
+            <a href="https://www.instagram.com/encafeinados.club" class="social-link" target="_blank">
+              <img src="../../../../assets/images/Instagram-Icon.png" alt="Instagram">
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Pie de página -->
+    <footer class="text-center my-5">
+      <p>&copy; 2024 Encafeinados. Todos los derechos reservados.</p>
+    </footer>
+  </div>
+</div>
+<script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+<script src="../../../../assets/js/main.js"></script>
