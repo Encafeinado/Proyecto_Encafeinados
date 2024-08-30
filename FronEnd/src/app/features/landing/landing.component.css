@@ -105,7 +105,7 @@ header p {
 }
 
 
-.text-content[_ngcontent-ng-c998818255] .subtitle[_ngcontent-ng-c998818255] {
+.text-content[_ngcontent-ng-c558304794] .subtitle[_ngcontent-ng-c558304794] {
   font-size: 2.5em;
   color: #000000;
   white-space: pre-line;
@@ -115,7 +115,7 @@ header p {
   text-align: center; /* Centra el texto horizontalmente */
 }
 
-.text-content[_ngcontent-ng-c998818255] .title[_ngcontent-ng-c998818255] {
+.text-content[_ngcontent-ng-c558304794] .title[_ngcontent-ng-c558304794] {
   font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
   font-weight: 600; /* Peso Semibold */
   font-size: 3em; /* Tamaño de fuente */
@@ -166,8 +166,11 @@ blockquote {
 }
 
 footer {
-  position: relative; /* Asegúrate de que el contenedor tenga una posición relativa */
+  position: relative; /* Asegura que el contenedor tenga una posición relativa */
   height: 50px; /* Altura del footer, ajusta según sea necesario */
+  display: flex; /* Utiliza Flexbox para centrar */
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
 }
 
 footer p {
@@ -177,11 +180,8 @@ footer p {
   font-weight: 500; /* Peso Medium para la fuente Poppins */
   font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
   text-align: center; /* Centra el texto horizontalmente */
-  position: absolute; /* Posiciona el párrafo de forma absoluta dentro del footer */
-  top: 60%; /* Posición vertical media del contenedor */
-  left: 50%; /* Posición horizontal media del contenedor */
-  transform: translate(-60%, -90%); /* Ajusta la posición para centrarlo exactamente */
 }
+
 
 
 .main-content {

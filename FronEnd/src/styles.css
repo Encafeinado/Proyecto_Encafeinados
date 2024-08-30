@@ -3206,12 +3206,11 @@ align-items: center;
 }
 
 /* Estilos específicos para la sección "Cómo Iniciar" */
-
 .como-iniciar-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh; /* Asegura que la sección ocupe toda la altura de la vista */
+  min-height: 100vh;
   font-family: 'Open Sans', sans-serif;
   font-size: 20px;
   font-weight: 400;
@@ -3225,12 +3224,12 @@ align-items: center;
   margin: 40px auto;
   padding: 40px;
   border-radius: 10px;
-  overflow: hidden; /* Previene desbordamiento del contenido */
+  overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 400px; /* Altura mínima para evitar movimiento */
+  min-height: 400px;
 }
 
 .como-iniciar-header {
@@ -3277,29 +3276,31 @@ align-items: center;
   width: 100%;
   flex-grow: 1;
 }
+
 .como-iniciar-contenedor-img-placeholder {
-  width: 100px; /* Tamaño del espacio reservado, ajusta según tus necesidades */
-  height: 100px; /* Tamaño del espacio reservado, ajusta según tus necesidades */
-  background-color: #e0f7fa; /* Color de fondo opcional para el espacio reservado */
-  margin-bottom: 20px; /* Espacio entre el contenedor de imagen y el texto */
+  width: 100px;
+  height: 100px;
+  background-color: #e0f7fa;
+  margin-bottom: 20px;
 }
 
 .como-iniciar-contenedor-img {
-  width: 30px; /* Tamaño más pequeño */
-  height: 30px; /* Tamaño más pequeño */
-  object-fit: contain;
-  margin-bottom: 10px; /* Menor margen inferior */
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 20px;
 }
-
 
 .como-iniciar-main .como-iniciar-contenedor-img {
-  width: 30px; /* Tamaño más pequeño */
-  height: 30px; /* Tamaño más pequeño */
+  width: 30px;
+  height: 30px;
   flex-shrink: 0;
-  margin-right: 10px; /* Menor margen derecho */
+  margin-right: 10px;
 }
+
 .como-iniciar-section img {
-  width: 10%; /* Reduce el tamaño al 10% */
+  width: 30%; /* Ajusta el tamaño para pantallas grandes */
   height: auto;
   object-fit: contain;
 }
@@ -3311,23 +3312,28 @@ align-items: center;
 }
 
 .como-iniciar-contenedor-texto .como-iniciar-pasos img {
-  width: 20%;
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
 }
 
 .como-iniciar-contenedor-texto .como-iniciar-pasos {
+  display: flex;
+  align-items: center;
   font-weight: bold;
   color: #5b4a9a;
-  font-style: normal;
+  margin-bottom: 20px;
 }
 
 .como-iniciar-contenedor-texto p {
   margin-bottom: 20px;
   line-height: 1.5;
-  text-align: center; /* Asegura que el texto esté centrado */
-  overflow-wrap: break-word; /* Asegura que el texto largo se ajuste adecuadamente */
-  word-break: break-word; /* Evita el desbordamiento del texto */
-  padding: 0 10px; /* Agrega espaciado en los laterales */
-  font-size: 16px; /* Ajusta el tamaño de la fuente en móviles */
+  text-align: center;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  padding: 0 10px;
+  font-size: 16px;
+  max-width: 100%;
 }
 
 .como-iniciar-contenedor-texto {
@@ -3335,13 +3341,22 @@ align-items: center;
   min-width: 300px;
 }
 
+.como-iniciar-contenedor-texto img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto 20px;
+}
+
 .como-iniciar-btn-link {
   display: inline-block;
   padding: 10px 30px;
   border-radius: 100px;
-  margin-right: 10px;
   text-decoration: none;
   background: #f2f2f2;
+  white-space: nowrap;
+  text-align: center;
+  transition: background-color 0.3s ease;
 }
 
 .como-iniciar-btn-link:hover,
@@ -3374,10 +3389,20 @@ align-items: center;
     max-width: 80px;
   }
 
+  .como-iniciar-contenedor-texto img {
+    max-width: 80%; /* Reduce el tamaño máximo en dispositivos móviles */
+    margin-bottom: 10px;
+  }
+
+  .como-iniciar-contenedor img {
+    width: 140px; /* Tamaño fijo ajustado para dispositivos móviles */
+    height: 170px;
+  }
+
   .como-iniciar-contenedor {
     padding: 20px;
     margin: 20px auto;
-    min-height: 400px; /* Asegura que el contenedor tenga una altura mínima fija */
+    min-height: 400px;
   }
 
   .como-iniciar-contenedor-texto {
@@ -3386,10 +3411,19 @@ align-items: center;
   }
 
   .como-iniciar-contenedor-texto p {
-    font-size: 14px; /* Ajusta el tamaño de la fuente para pantallas más pequeñas */
-    padding: 0 15px; /* Aumenta el espaciado en los laterales en móviles */
+    font-size: 14px;
+    padding: 0 15px;
+    margin-bottom: 15px;
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .como-iniciar-btn-link {
+    padding: 8px 20px;
+    font-size: 0.9rem;
   }
 }
+
 
 
 body {
