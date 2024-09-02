@@ -136,7 +136,6 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  
   iniciarMapa() {
     const mapElement = document.getElementById('map') as HTMLElement;
     if (mapElement) {
@@ -145,9 +144,9 @@ export class MapComponent implements OnInit, OnDestroy {
         zoom: this.zoom,
         ...this.opcionesMapa,
       });
-  
+
       this.directionsRendererInstance.setMap(map);
-  
+
       // Verificar si markerPosition está definido antes de crear el marcador
       if (this.markerPosition) {
         this.markerUsuario = new google.maps.Marker({
@@ -158,7 +157,7 @@ export class MapComponent implements OnInit, OnDestroy {
       } else {
         console.error('markerPosition no está definido.');
       }
-  
+
       // Agregar los marcadores de las tiendas
       this.shopMarkers.forEach((markerData) => {
         const marker = new google.maps.Marker({
@@ -167,7 +166,7 @@ export class MapComponent implements OnInit, OnDestroy {
           icon: this.iconoTienda,
           title: markerData.title,
         });
-  
+
         marker.addListener('click', () => {
           console.log(`Nombre de la tienda: ${markerData.title}`);
           this.openModal(this.createModal, markerData.title);
@@ -177,8 +176,8 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Elemento del mapa no encontrado.');
     }
   }
-  
 
+  // Actualiza rastrearUbicacionUsuario para recalcular la ruta y ajustar el zoom
   rastrearUbicacionUsuario() {
     if (navigator.geolocation) {
       this.watchId = navigator.geolocation.watchPosition(
@@ -191,22 +190,26 @@ export class MapComponent implements OnInit, OnDestroy {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-  
-          console.log('Ubicación del usuario actualizada:', this.markerPosition);
+
+          console.log(
+            'Ubicación del usuario actualizada:',
+            this.markerPosition
+          );
           this.actualizarMarcadorUbicacionUsuario();
-  
+
           // Recalcular la ruta si está activa
           if (this.rutaActiva) {
             this.calcularRuta();
           }
-  
+
           // Hacer zoom una vez cuando se encuentra la ubicación por primera vez
-          if (!this.hasZoomed) {
-            const map = this.directionsRendererInstance.getMap();
-            if (map) {
-              map.setCenter(this.markerPosition);
+          const map = this.directionsRendererInstance.getMap();
+          if (map) {
+            map.panTo(this.markerPosition);
+            // Mantener el zoom actual, no cambiarlo si el usuario lo ajusta manualmente
+            if (!this.hasZoomed) {
               map.setZoom(17); // Ajusta el zoom según tus preferencias
-              this.hasZoomed = true; // Establece la bandera para evitar futuros zooms
+              this.hasZoomed = true; // Establece la bandera para evitar futuros zooms automáticos
             }
           }
         },
@@ -223,8 +226,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Geolocalización no es soportada por este navegador.');
     }
   }
-  
-  
+
   actualizarMarcadorUbicacionUsuario() {
     if (this.markerPosition) {
       const map = this.directionsRendererInstance.getMap();
@@ -240,10 +242,11 @@ export class MapComponent implements OnInit, OnDestroy {
         }
       }
     } else {
-      console.error('markerPosition no está definido en actualizarMarcadorUbicacionUsuario.');
+      console.error(
+        'markerPosition no está definido en actualizarMarcadorUbicacionUsuario.'
+      );
     }
   }
-  
 
   centerOnUserLocation() {
     if (this.markerPosition) {
@@ -251,7 +254,7 @@ export class MapComponent implements OnInit, OnDestroy {
       if (map) {
         // Suavizar el centrado del mapa
         map.panTo(this.markerPosition);
-  
+
         // Opcional: Añadir un pequeño retraso para cambiar el zoom suavemente
         setTimeout(() => {
           map.setZoom(17); // Ajusta el nivel de zoom según sea necesario
@@ -262,6 +265,50 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
+  solicitarPermisoOrientacion() {
+    const deviceOrientationEvent = DeviceOrientationEvent as any; // Casting a 'any' para evitar errores de TS
+  
+    if (typeof deviceOrientationEvent.requestPermission === 'function') {
+      // iOS requiere permiso para acceder a los sensores de orientación
+      deviceOrientationEvent.requestPermission()
+        .then((response: string) => {
+          if (response === 'granted') {
+            this.iniciarOrientacionDispositivo();
+          } else {
+            console.error('Permiso de orientación denegado.');
+          }
+        })
+        .catch((error: any) => {
+          console.error('Error solicitando permiso de orientación:', error);
+        });
+    } else {
+      // En dispositivos que no requieren permiso (Android)
+      this.iniciarOrientacionDispositivo();
+    }
+  } 
+  
+  iniciarOrientacionDispositivo() {
+    window.addEventListener('deviceorientation', (event) => {
+      if (event.absolute && event.alpha !== null) {
+        const heading = event.alpha; // El ángulo de rotación en grados
+  
+        // Convertir el heading en grados a una rotación adecuada para el marcador
+        this.actualizarRotacionMarcador(heading);
+      }
+    });
+  }
+
+  actualizarRotacionMarcador(heading: number) {
+    if (this.markerUsuario) {
+      const iconoRotado = {
+        url: this.iconoUbicacionUsuario.url,
+        rotation: heading, // Aplica la rotación al ícono
+      };
+  
+      this.markerUsuario.setIcon(iconoRotado);
+    }
+  }
+  
   seleccionarModoTransporte(modo: google.maps.TravelMode) {
     this.modoTransporte = modo;
   }
