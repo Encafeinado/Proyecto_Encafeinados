@@ -190,28 +190,31 @@ export class MapComponent implements OnInit, OnDestroy {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-
+  
           console.log(
             'Ubicación del usuario actualizada:',
             this.markerPosition
           );
           this.actualizarMarcadorUbicacionUsuario();
-
+  
           // Recalcular la ruta si está activa
           if (this.rutaActiva) {
             this.calcularRuta();
           }
-
+  
           // Hacer zoom una vez cuando se encuentra la ubicación por primera vez
           const map = this.directionsRendererInstance.getMap();
           if (map) {
             map.panTo(this.markerPosition);
-            // Mantener el zoom actual, no cambiarlo si el usuario lo ajusta manualmente
             if (!this.hasZoomed) {
-              map.setZoom(17); // Ajusta el zoom según tus preferencias
-              this.hasZoomed = true; // Establece la bandera para evitar futuros zooms automáticos
+              map.setZoom(17);
+              this.hasZoomed = true;
             }
           }
+  
+          // Después de obtener la ubicación, solicitar el permiso de orientación
+          this.solicitarPermisoOrientacion();
+  
         },
         (error) => {
           console.error('Error rastreando la ubicación', error);
@@ -226,6 +229,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Geolocalización no es soportada por este navegador.');
     }
   }
+  
 
   actualizarMarcadorUbicacionUsuario() {
     if (this.markerPosition) {
@@ -266,10 +270,9 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   solicitarPermisoOrientacion() {
-    const deviceOrientationEvent = DeviceOrientationEvent as any; // Casting a 'any' para evitar errores de TS
+    const deviceOrientationEvent = DeviceOrientationEvent as any;
   
     if (typeof deviceOrientationEvent.requestPermission === 'function') {
-      // iOS requiere permiso para acceder a los sensores de orientación
       deviceOrientationEvent.requestPermission()
         .then((response: string) => {
           if (response === 'granted') {
@@ -282,32 +285,38 @@ export class MapComponent implements OnInit, OnDestroy {
           console.error('Error solicitando permiso de orientación:', error);
         });
     } else {
-      // En dispositivos que no requieren permiso (Android)
+      // Para dispositivos que no requieren permiso (Android u otros)
       this.iniciarOrientacionDispositivo();
     }
-  } 
+  }
   
   iniciarOrientacionDispositivo() {
     window.addEventListener('deviceorientation', (event) => {
       if (event.absolute && event.alpha !== null) {
-        const heading = event.alpha; // El ángulo de rotación en grados
+        const heading = event.alpha;
   
-        // Convertir el heading en grados a una rotación adecuada para el marcador
         this.actualizarRotacionMarcador(heading);
+      } else {
+        console.error('No se pudo obtener la orientación del dispositivo.');
       }
-    });
+    }, true); // Asegúrate de que la orientación se maneje en todos los contextos (incluso cuando la página está en segundo plano).
   }
-
+  
   actualizarRotacionMarcador(heading: number) {
     if (this.markerUsuario) {
       const iconoRotado = {
         url: this.iconoUbicacionUsuario.url,
-        rotation: heading, // Aplica la rotación al ícono
+        rotation: heading,
+        scaledSize: new google.maps.Size(50, 50), // Ajusta el tamaño si es necesario
+        anchor: new google.maps.Point(25, 25), // Centra el ícono
       };
   
       this.markerUsuario.setIcon(iconoRotado);
+    } else {
+      console.error('No se pudo actualizar la rotación del marcador porque no existe.');
     }
   }
+  
   
   seleccionarModoTransporte(modo: google.maps.TravelMode) {
     this.modoTransporte = modo;
@@ -321,19 +330,19 @@ export class MapComponent implements OnInit, OnDestroy {
       );
       return;
     }
-
+  
     if (!this.markerPosition) {
       console.error('La posición del marcador no está definida.');
       return;
     }
-
+  
     if (!this.destinationName) {
       console.error('El destino no está definido.');
       return;
     }
-
+  
     let destination: google.maps.LatLngLiteral | string = '';
-
+  
     if (typeof this.destinationName === 'object') {
       destination = {
         lat: (this.destinationName as google.maps.LatLngLiteral).lat,
@@ -342,32 +351,39 @@ export class MapComponent implements OnInit, OnDestroy {
     } else {
       destination = this.destinationName;
     }
-
+  
     const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
-
+  
     const request: google.maps.DirectionsRequest = {
       origin: this.markerPosition,
       destination: destination,
       travelMode: travelMode,
       unitSystem: google.maps.UnitSystem.METRIC,
     };
-
+  
     console.log('Solicitud de ruta:', request);
-
+  
     // Desactiva los marcadores predeterminados
     this.directionsRendererInstance.setOptions({
       suppressMarkers: true,
     });
-
+  
     this.directionsService.route(request, (result, status) => {
       console.log('Resultado de la ruta:', result);
       console.log('Estado de la ruta:', status);
-
+  
       if (status === google.maps.DirectionsStatus.OK && result) {
         this.directionsRendererInstance.setDirections(result);
         this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
-
+  
+        // Asegúrate de que el mapa maneje automáticamente el enfoque en la ruta
+        const map = this.directionsRendererInstance.getMap();
+        if (map) {
+          map.fitBounds(result.routes[0].bounds); // Ajusta el mapa a la ruta
+          this.hasZoomed = true; // Evita que el zoom cambie más adelante
+        }
+  
         // Cierra el modal después de calcular la ruta
         if (this.modalRef) {
           this.modalRef.close();
@@ -381,6 +397,7 @@ export class MapComponent implements OnInit, OnDestroy {
       }
     });
   }
+  
 
   obtenerDetallesRuta(result: google.maps.DirectionsResult) {
     if (result.routes.length > 0) {
