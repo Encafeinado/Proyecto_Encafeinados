@@ -26,6 +26,9 @@ export class MapComponent implements OnInit, OnDestroy {
   openedModal = false;
   verifiedcode: boolean = false;
   destinationName!: string;
+  shopStatus!: string;
+  specialties1!: string;
+  specialties2!: string;
   enteredCode: string = '';
   verified: boolean = false;
   message: string = '';
@@ -224,8 +227,16 @@ export class MapComponent implements OnInit, OnDestroy {
 
           // Agregar el listener para el marcador de la tienda
           marker.addListener('click', () => {
-            console.log(`Nombre de la tienda: ${markerData.title}`);
-            this.openModal(this.createModal, markerData.title);
+            // console.log(
+            //   `Nombre de la tienda: ${markerData.title} y ${markerData.status}`
+            // );
+            this.openModal(
+              this.createModal,
+              markerData.title,
+              markerData.status,
+              markerData.specialties1,
+              markerData.specialties2
+            );
           });
         } else {
           console.error('Posición del marcador de la tienda no está definida.');
@@ -342,7 +353,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('La ubicación del usuario no está disponible.');
     }
   }
-  
+
   solicitarPermisoOrientacion() {
     const deviceOrientationEvent = DeviceOrientationEvent as any;
 
@@ -552,14 +563,23 @@ export class MapComponent implements OnInit, OnDestroy {
   cancelArrive(modal: any): void {
     modal.dismiss('cancel');
     setTimeout(() => {
-      this.openModal(this.arriveModal, this.destinationName);
+      this.openModal(this.arriveModal, this.destinationName, '', '', '');
     }, 10000); // 10 segundos
   }
 
-  openModal(content: any, destinationName: string): void {
+  openModal(
+    content: any,
+    destinationName: string,
+    status: string,
+    specialties1: string,
+    specialties2: string
+  ): void {
     if (!this.openedModal && !this.hasArrived) {
       // Verifica que no se haya confirmado la llegada
       this.destinationName = destinationName;
+      this.shopStatus = status;
+      this.specialties1 = specialties1;
+      this.specialties2 = specialties2;
       this.openedModal = true;
       this.modalRef = this.modalService.open(content, {
         centered: true,
@@ -580,11 +600,11 @@ export class MapComponent implements OnInit, OnDestroy {
 
   openModalWithCodigo(): void {
     this.resetModalFields();
-    this.openModal(this.codeModal, '');
+    this.openModal(this.codeModal, '', '', '', '');
   }
 
   openModalAlbum(): void {
-    this.openModal(this.modalBook, '');
+    this.openModal(this.modalBook, '', '', '', '');
   }
 
   verifyCode() {
@@ -688,7 +708,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.shopService.fetchShopData(token).subscribe(
       (data: any) => {
         this.shopData = data;
-        // console.log('Datos de la tienda:', this.shopData); // Agrega esta línea para verificar la estructura de los datos
+        console.log('Datos de la tienda:', this.shopData); // Agrega esta línea para verificar la estructura de los datos
         this.populateShopLogos();
         this.updateShopMarkers();
       },
@@ -706,8 +726,10 @@ export class MapComponent implements OnInit, OnDestroy {
       },
       title: shop.name,
       status: shop.statusShop, // Supongo que 'statusShop' indica el estado
+      specialties1: shop.specialties1,
+      specialties2: shop.specialties2,
     }));
-
+    console.log(this.shopMarkers);
     const mapElement = document.getElementById('map') as HTMLElement;
     if (mapElement) {
       const map = new google.maps.Map(mapElement, {
@@ -781,8 +803,18 @@ export class MapComponent implements OnInit, OnDestroy {
 
         // Agregar el listener para el marcador de la tienda
         marker.addListener('click', () => {
-          console.log(`Nombre de la tienda: ${markerData.title}`);
-          this.openModal(this.createModal, markerData.title); // Abre el modal con el nombre de la tienda
+          // console.log(`Nombre de la tienda: ${markerData.title}`);
+          // console.log(`Nombre de la tienda: ${markerData.status}`);
+          // console.log(`Nombre de la tienda: ${markerData.specialties1}`);
+          // console.log(`Nombre de la tienda: ${markerData.specialties2}`);
+
+          this.openModal(
+            this.createModal,
+            markerData.title,
+            markerData.status,
+            markerData.specialties1,
+            markerData.specialties2
+          );
         });
       });
     } else {
