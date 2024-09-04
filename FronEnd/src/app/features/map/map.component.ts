@@ -26,9 +26,9 @@ export class MapComponent implements OnInit, OnDestroy {
   openedModal = false;
   verifiedcode: boolean = false;
   destinationName!: string;
-  shopStatus!: string;
   specialties1!: string;
-  specialties2!: string;
+specialties2!: string;
+shopStatus!: string;
   enteredCode: string = '';
   verified: boolean = false;
   message: string = '';
@@ -117,6 +117,16 @@ export class MapComponent implements OnInit, OnDestroy {
     this.populateShopLogos();
     this.fetchBookData();
     this.userId = this.authService.getUserId(); // Obtener el ID del usuario
+    document.body.addEventListener(
+      'touchstart',
+      this.solicitarPermisoOrientacion.bind(this),
+      { once: true }
+    );
+    document.body.addEventListener(
+      'click',
+      this.solicitarPermisoOrientacion.bind(this),
+      { once: true }
+    );
 
     if (this.userId) {
       this.fetchBookData();
@@ -139,6 +149,18 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   iniciarMapa() {
+    // Actualizar los datos de las tiendas
+    this.shopMarkers = this.shopData.map((shop: any) => ({
+      position: {
+        lat: shop.latitude,
+        lng: shop.longitude,
+      },
+      title: shop.name,
+      status: shop.statusShop, // Supongo que 'statusShop' indica el estado
+      specialties1: shop.specialties1,
+      specialties2: shop.specialties2
+    }));
+
     const mapElement = document.getElementById('map') as HTMLElement;
     if (mapElement) {
       const map = new google.maps.Map(mapElement, {
@@ -160,7 +182,7 @@ export class MapComponent implements OnInit, OnDestroy {
         console.error('markerPosition no está definido.');
       }
 
-      // Definir la clase CircleOverlay fuera del método para evitar redefinirla en cada llamada
+      // Definir y agregar los círculos
       class CircleOverlay extends google.maps.OverlayView {
         private position: google.maps.LatLng;
         private div: HTMLDivElement;
@@ -178,7 +200,6 @@ export class MapComponent implements OnInit, OnDestroy {
           this.div.style.position = 'absolute';
           this.div.style.transform = 'translate(-50%, -100%)'; // Alineación arriba del marcador
 
-          // Agregar el círculo al mapa
           this.setMap(map);
         }
 
@@ -211,6 +232,114 @@ export class MapComponent implements OnInit, OnDestroy {
         }
       }
 
+      this.shopMarkers.forEach((markerData) => {
+        if (markerData.position) {
+          const marker = new google.maps.Marker({
+            position: markerData.position,
+            map: map,
+            icon: this.iconoTienda,
+            title: markerData.title,
+          });
+
+          new CircleOverlay(marker.getPosition()!, map);
+
+          marker.addListener('click', () => {
+            console.log(`Nombre de la tienda: ${markerData.title}`);
+          console.log(`Estado de la tienda: ${markerData.status}`);
+          console.log(`Especialidad 1: ${markerData.specialties1}`);
+          console.log(`Especialidad 2: ${markerData.specialties2}`);
+
+            this.openModal(
+              this.createModal,
+              markerData.title,
+              markerData.status,
+              markerData.specialties1,
+              markerData.specialties2
+            );           });
+        } else {
+          console.error('Posición del marcador de la tienda no está definida.');
+        }
+      });
+
+      // Forzar el redibujado del mapa (opcional)
+      google.maps.event.trigger(map, 'resize');
+    } else {
+      console.error('Elemento del mapa no encontrado.');
+    }
+  }
+
+  /*
+  iniciarMapa() {
+    const mapElement = document.getElementById('map') as HTMLElement;
+    if (mapElement) {
+      const map = new google.maps.Map(mapElement, {
+        center: this.center,
+        zoom: this.zoom,
+        ...this.opcionesMapa,
+      });
+  
+      this.directionsRendererInstance.setMap(map);
+  
+      // Verificar si markerPosition está definido antes de crear el marcador
+      if (this.markerPosition) {
+        this.markerUsuario = new google.maps.Marker({
+          position: this.markerPosition,
+          map: map,
+          icon: this.iconoUbicacionUsuario,
+        });
+      } else {
+        console.error('markerPosition no está definido.');
+      }
+  
+      // Definir la clase CircleOverlay fuera del método para evitar redefinirla en cada llamada
+      class CircleOverlay extends google.maps.OverlayView {
+        private position: google.maps.LatLng;
+        private div: HTMLDivElement;
+        private map: google.maps.Map;
+  
+        constructor(position: google.maps.LatLng, map: google.maps.Map) {
+          super();
+          this.position = position;
+          this.map = map;
+          this.div = document.createElement('div');
+          this.div.style.borderRadius = '50%';
+          this.div.style.backgroundColor = '#FF0000'; // Color del círculo
+          this.div.style.width = '10px'; // Tamaño del círculo
+          this.div.style.height = '10px'; // Tamaño del círculo
+          this.div.style.position = 'absolute';
+          this.div.style.transform = 'translate(-50%, -100%)'; // Alineación arriba del marcador
+  
+          // Agregar el círculo al mapa
+          this.setMap(map);
+        }
+  
+        override onAdd() {
+          const panes = this.getPanes();
+          if (panes && panes.overlayMouseTarget) {
+            panes.overlayMouseTarget.appendChild(this.div);
+          } else {
+            console.error('No se pudieron obtener los panes para el OverlayView.');
+          }
+        }
+  
+        override draw() {
+          const projection = this.getProjection();
+          if (projection) {
+            const position = projection.fromLatLngToDivPixel(this.position);
+            if (position) {
+              this.div.style.left = ${position.x}px;
+              this.div.style.top = ${position.y}px;
+            }
+          }
+        }
+  
+        override onRemove() {
+          if (this.div.parentNode) {
+            this.div.parentNode.removeChild(this.div);
+          }
+        }
+      }
+  
       // Agregar los marcadores y círculos de las tiendas
       this.shopMarkers.forEach((markerData) => {
         if (markerData.position) {
@@ -221,34 +350,29 @@ export class MapComponent implements OnInit, OnDestroy {
             icon: this.iconoTienda,
             title: markerData.title,
           });
-
+  
           // Crear una instancia de CircleOverlay para cada marcador
           new CircleOverlay(marker.getPosition()!, map);
-
+  
           // Agregar el listener para el marcador de la tienda
           marker.addListener('click', () => {
-            // console.log(
-            //   `Nombre de la tienda: ${markerData.title} y ${markerData.status}`
-            // );
-            this.openModal(
-              this.createModal,
-              markerData.title,
-              markerData.status,
-              markerData.specialties1,
-              markerData.specialties2
-            );
+            console.log(Nombre de la tienda: ${markerData.title});
+            this.openModal(this.createModal, markerData.title);
           });
         } else {
           console.error('Posición del marcador de la tienda no está definida.');
         }
       });
-
+  
       // Forzar el redibujado del mapa (opcional, en caso de problemas con el renderizado)
       google.maps.event.trigger(map, 'resize');
     } else {
       console.error('Elemento del mapa no encontrado.');
     }
   }
+  
+  
+  */
 
   // Actualiza rastrearUbicacionUsuario para recalcular la ruta y ajustar el zoom
   rastrearUbicacionUsuario() {
@@ -353,7 +477,6 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('La ubicación del usuario no está disponible.');
     }
   }
-
   solicitarPermisoOrientacion() {
     const deviceOrientationEvent = DeviceOrientationEvent as any;
 
@@ -380,7 +503,14 @@ export class MapComponent implements OnInit, OnDestroy {
       'deviceorientation',
       (event) => {
         if (event.alpha !== null) {
-          this.actualizarRotacionMarcador(event.alpha);
+          const heading = this.calcularHeading(event);
+          if (heading !== null) {
+            this.actualizarRotacionMarcador(heading);
+          } else {
+            console.error(
+              'No se pudo obtener una orientación válida del dispositivo.'
+            );
+          }
         } else {
           console.error('No se pudo obtener la orientación del dispositivo.');
         }
@@ -389,11 +519,25 @@ export class MapComponent implements OnInit, OnDestroy {
     );
   }
 
+  calcularHeading(event: DeviceOrientationEvent): number | null {
+    let heading: number | null = null;
+
+    if (event.alpha !== null) {
+      heading = event.alpha;
+    }
+
+    if (heading !== null) {
+      // Ajustar la rotación si la flecha apunta en la dirección opuesta
+      heading = (heading + 180) % 360;
+    }
+    return heading;
+  }
+
   actualizarRotacionMarcador(heading: number) {
     if (this.rutaActiva && this.markerUsuario) {
       const iconoRotado = {
         path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-        scale: 4, // Ajusta la escala para reducir el tamaño del marcador
+        scale: 4,
         rotation: heading, // Aplica la rotación basada en la orientación del dispositivo
         fillColor: 'blue',
         fillOpacity: 0.8,
@@ -406,8 +550,8 @@ export class MapComponent implements OnInit, OnDestroy {
       const iconoRotado = {
         url: this.iconoUbicacionUsuario.url,
         rotation: heading,
-        scaledSize: new google.maps.Size(40, 40), // Ajusta el tamaño si es necesario
-        anchor: new google.maps.Point(25, 25), // Centra el ícono
+        scaledSize: new google.maps.Size(40, 40),
+        anchor: new google.maps.Point(25, 25),
       };
 
       this.markerUsuario.setIcon(iconoRotado);
@@ -539,7 +683,12 @@ export class MapComponent implements OnInit, OnDestroy {
       this.rutaActiva = false; // Marca que la ruta ya no está activa
       this.instruccionesRuta = []; // Limpia las instrucciones de la ruta
       this.routeDetails = undefined; // Limpia los detalles de la ruta
-      this.iniciarMapa(); // Actualiza el mapa para mostrar los marcadores
+
+      // Vuelve a iniciar el mapa y mostrar los marcadores
+      this.iniciarMapa();
+      console.log('Ruta cancelada y mapa actualizado.');
+    } else {
+      console.error('No se encontró la instancia de DirectionsRenderer.');
     }
   }
 
@@ -563,17 +712,11 @@ export class MapComponent implements OnInit, OnDestroy {
   cancelArrive(modal: any): void {
     modal.dismiss('cancel');
     setTimeout(() => {
-      this.openModal(this.arriveModal, this.destinationName, '', '', '');
+      this.openModal(this.arriveModal, this.destinationName, '','','');
     }, 10000); // 10 segundos
   }
 
-  openModal(
-    content: any,
-    destinationName: string,
-    status: string,
-    specialties1: string,
-    specialties2: string
-  ): void {
+  openModal(content: any, destinationName: string, status: string, specialties1: string, specialties2: string): void {
     if (!this.openedModal && !this.hasArrived) {
       // Verifica que no se haya confirmado la llegada
       this.destinationName = destinationName;
@@ -589,7 +732,8 @@ export class MapComponent implements OnInit, OnDestroy {
         this.openedModal = false;
       });
     }
-  }
+}
+
 
   resetModalFields() {
     this.enteredCode = '';
@@ -600,11 +744,11 @@ export class MapComponent implements OnInit, OnDestroy {
 
   openModalWithCodigo(): void {
     this.resetModalFields();
-    this.openModal(this.codeModal, '', '', '', '');
+    this.openModal(this.codeModal, '','','','');
   }
 
   openModalAlbum(): void {
-    this.openModal(this.modalBook, '', '', '', '');
+    this.openModal(this.modalBook, '','','','');
   }
 
   verifyCode() {
@@ -708,9 +852,9 @@ export class MapComponent implements OnInit, OnDestroy {
     this.shopService.fetchShopData(token).subscribe(
       (data: any) => {
         this.shopData = data;
-        console.log('Datos de la tienda:', this.shopData); // Agrega esta línea para verificar la estructura de los datos
+        // console.log('Datos de la tienda:', this.shopData); // Agrega esta línea para verificar la estructura de los datos
         this.populateShopLogos();
-        this.updateShopMarkers();
+        this.iniciarMapa();
       },
       (error) => {
         console.error('Error al obtener los datos de la tienda:', error);
@@ -718,109 +862,97 @@ export class MapComponent implements OnInit, OnDestroy {
     );
   }
 
-  updateShopMarkers() {
-    this.shopMarkers = this.shopData.map((shop: any) => ({
-      position: {
-        lat: shop.latitude,
-        lng: shop.longitude,
-      },
-      title: shop.name,
-      status: shop.statusShop, // Supongo que 'statusShop' indica el estado
-      specialties1: shop.specialties1,
-      specialties2: shop.specialties2,
-    }));
-    console.log(this.shopMarkers);
-    const mapElement = document.getElementById('map') as HTMLElement;
-    if (mapElement) {
-      const map = new google.maps.Map(mapElement, {
-        center: this.center,
-        zoom: this.zoom,
-        ...this.opcionesMapa,
-      });
+  /*
+updateShopMarkers() {
+  this.shopMarkers = this.shopData.map((shop: any) => ({
+    position: {
+      lat: shop.latitude,
+      lng: shop.longitude,
+    },
+    title: shop.name,
+    status: shop.statusShop, // Supongo que 'statusShop' indica el estado
+  }));
 
-      this.directionsRendererInstance.setMap(map);
+  const mapElement = document.getElementById('map') as HTMLElement;
+  if (mapElement) {
+    const map = new google.maps.Map(mapElement, {
+      center: this.center,
+      zoom: this.zoom,
+      ...this.opcionesMapa,
+    });
 
-      // Definir la clase CircleOverlay fuera del método para evitar redefinirla en cada llamada
-      class CircleOverlay extends google.maps.OverlayView {
-        private position: google.maps.LatLng;
-        private div: HTMLDivElement;
+    this.directionsRendererInstance.setMap(map);
 
-        constructor(position: google.maps.LatLng, map: google.maps.Map) {
-          super();
-          this.position = position;
-          this.div = document.createElement('div');
-          this.div.style.borderRadius = '50%';
-          this.div.style.backgroundColor = '#FF0000'; // Color del círculo (rojo)
-          this.div.style.width = '10px'; // Tamaño del círculo
-          this.div.style.height = '10px'; // Tamaño del círculo
-          this.div.style.position = 'absolute';
-          this.div.style.transform = 'translate(-50%, -100%)'; // Alineación arriba del marcador
+    // Definir la clase CircleOverlay fuera del método para evitar redefinirla en cada llamada
+    class CircleOverlay extends google.maps.OverlayView {
+      private position: google.maps.LatLng;
+      private div: HTMLDivElement;
 
-          // Agregar el círculo al mapa
-          this.setMap(map);
+      constructor(position: google.maps.LatLng, map: google.maps.Map) {
+        super();
+        this.position = position;
+        this.div = document.createElement('div');
+        this.div.style.borderRadius = '50%';
+        this.div.style.backgroundColor = '#FF0000'; // Color del círculo (rojo)
+        this.div.style.width = '10px'; // Tamaño del círculo
+        this.div.style.height = '10px'; // Tamaño del círculo
+        this.div.style.position = 'absolute';
+        this.div.style.transform = 'translate(-50%, -100%)'; // Alineación arriba del marcador
+
+        // Agregar el círculo al mapa
+        this.setMap(map);
+      }
+
+      override onAdd() {
+        const panes = this.getPanes();
+        if (panes && panes.overlayMouseTarget) {
+          panes.overlayMouseTarget.appendChild(this.div);
+        } else {
+          console.error('No se pudieron obtener los panes para el OverlayView.');
         }
+      }
 
-        override onAdd() {
-          const panes = this.getPanes();
-          if (panes && panes.overlayMouseTarget) {
-            panes.overlayMouseTarget.appendChild(this.div);
-          } else {
-            console.error(
-              'No se pudieron obtener los panes para el OverlayView.'
-            );
-          }
-        }
-
-        override draw() {
-          const projection = this.getProjection();
-          if (projection) {
-            const position = projection.fromLatLngToDivPixel(this.position);
-            if (position) {
-              this.div.style.left = `${position.x}px`;
-              this.div.style.top = `${position.y}px`;
-            }
-          }
-        }
-
-        override onRemove() {
-          if (this.div.parentNode) {
-            this.div.parentNode.removeChild(this.div);
+      override draw() {
+        const projection = this.getProjection();
+        if (projection) {
+          const position = projection.fromLatLngToDivPixel(this.position);
+          if (position) {
+            this.div.style.left = ${position.x}px;
+            this.div.style.top = ${position.y}px;
           }
         }
       }
 
-      // Agregar los marcadores y círculos de las tiendas
-      this.shopMarkers.forEach((markerData) => {
-        const marker = new google.maps.Marker({
-          position: markerData.position,
-          map: map,
-          icon: this.iconoTienda, // Asegúrate de que `this.iconoTienda` sea una URL de imagen
-          title: markerData.title,
-        });
-
-        // Crear una instancia de CircleOverlay para cada marcador
-        new CircleOverlay(marker.getPosition()!, map);
-
-        // Agregar el listener para el marcador de la tienda
-        marker.addListener('click', () => {
-          // console.log(`Nombre de la tienda: ${markerData.title}`);
-          // console.log(`Nombre de la tienda: ${markerData.status}`);
-          // console.log(`Nombre de la tienda: ${markerData.specialties1}`);
-          // console.log(`Nombre de la tienda: ${markerData.specialties2}`);
-
-          this.openModal(
-            this.createModal,
-            markerData.title,
-            markerData.status,
-            markerData.specialties1,
-            markerData.specialties2
-          );
-        });
-      });
-    } else {
-      console.error('Elemento del mapa no encontrado.');
+      override onRemove() {
+        if (this.div.parentNode) {
+          this.div.parentNode.removeChild(this.div);
+        }
+      }
     }
+
+    // Agregar los marcadores y círculos de las tiendas
+    this.shopMarkers.forEach((markerData) => {
+      const marker = new google.maps.Marker({
+        position: markerData.position,
+        map: map,
+        icon: this.iconoTienda, // Asegúrate de que this.iconoTienda sea una URL de imagen
+        title: markerData.title,
+      });
+
+      // Crear una instancia de CircleOverlay para cada marcador
+      new CircleOverlay(marker.getPosition()!, map);
+
+      // Agregar el listener para el marcador de la tienda
+      marker.addListener('click', () => {
+        console.log(Nombre de la tienda: ${markerData.title});
+        this.openModal(this.createModal, markerData.title); // Abre el modal con el nombre de la tienda
+      });
+    });
+  } else {
+    console.error('Elemento del mapa no encontrado.');
   }
+}
+*/
 
   fetchBookData(): void {
     if (this.userId) {
