@@ -478,7 +478,8 @@ solicitarPermisoOrientacion() {
 
 iniciarOrientacionDispositivo() {
   window.addEventListener('deviceorientation', (event) => {
-    if (event.alpha !== null) {
+    if (event.absolute || event.alpha !== null) {
+      // Verificar si `event.absolute` es `true` en iOS 13+ para evitar problemas de precisión
       const heading = this.calcularHeading(event);
       if (heading !== null) {
         this.actualizarRotacionMarcador(heading);
@@ -493,18 +494,20 @@ iniciarOrientacionDispositivo() {
 
 calcularHeading(event: DeviceOrientationEvent): number | null {
   let heading: number | null = null;
-
-  if (event.alpha !== null) {
+  if (event.absolute && event.alpha !== null) {
+    // En iOS 13+, `event.absolute` es true cuando el evento proporciona datos absolutos de orientación
     heading = event.alpha; 
+  } else if (event.alpha !== null) {
+    // Fallback para otros dispositivos y navegadores
+    heading = event.alpha;
   }
 
   if (heading !== null) {
-    // Ajustar la rotación si la flecha apunta en la dirección opuesta
-    heading = (heading + 180) % 360;
+    // Asegurarse de que el valor esté entre 0 y 360
+    heading = (360 - heading) % 360;
   }
   return heading;
 }
-
 
 
 actualizarRotacionMarcador(heading: number) {
@@ -512,7 +515,7 @@ actualizarRotacionMarcador(heading: number) {
     const iconoRotado = {
       path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
       scale: 4,
-      rotation: heading, // Aplica la rotación basada en la orientación del dispositivo
+      rotation: heading,
       fillColor: 'blue',
       fillOpacity: 0.8,
       strokeWeight: 2,
@@ -533,7 +536,6 @@ actualizarRotacionMarcador(heading: number) {
     console.error('El marcador del usuario no está definido.');
   }
 }
-
 
 
 seleccionarModoTransporte(modo: google.maps.TravelMode) {
