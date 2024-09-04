@@ -108,7 +108,7 @@ export class MapComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // this.iniciarMapa();
+     
     this.rastrearUbicacionUsuario();
     this.fetchUserData();
     this.fetchShopData();
@@ -135,6 +135,7 @@ export class MapComponent implements OnInit, OnDestroy {
       navigator.geolocation.clearWatch(this.watchId);
     }
   }
+  
 
   iniciarMapa() {
     const mapElement = document.getElementById('map') as HTMLElement;
@@ -144,9 +145,9 @@ export class MapComponent implements OnInit, OnDestroy {
         zoom: this.zoom,
         ...this.opcionesMapa,
       });
-
+  
       this.directionsRendererInstance.setMap(map);
-
+  
       // Verificar si markerPosition está definido antes de crear el marcador
       if (this.markerPosition) {
         this.markerUsuario = new google.maps.Marker({
@@ -157,27 +158,89 @@ export class MapComponent implements OnInit, OnDestroy {
       } else {
         console.error('markerPosition no está definido.');
       }
-
-      // Agregar los marcadores de las tiendas
+  
+      // Definir la clase CircleOverlay fuera del método para evitar redefinirla en cada llamada
+      class CircleOverlay extends google.maps.OverlayView {
+        private position: google.maps.LatLng;
+        private div: HTMLDivElement;
+        private map: google.maps.Map;
+  
+        constructor(position: google.maps.LatLng, map: google.maps.Map) {
+          super();
+          this.position = position;
+          this.map = map;
+          this.div = document.createElement('div');
+          this.div.style.borderRadius = '50%';
+          this.div.style.backgroundColor = '#FF0000'; // Color del círculo
+          this.div.style.width = '10px'; // Tamaño del círculo
+          this.div.style.height = '10px'; // Tamaño del círculo
+          this.div.style.position = 'absolute';
+          this.div.style.transform = 'translate(-50%, -100%)'; // Alineación arriba del marcador
+  
+          // Agregar el círculo al mapa
+          this.setMap(map);
+        }
+  
+        override onAdd() {
+          const panes = this.getPanes();
+          if (panes && panes.overlayMouseTarget) {
+            panes.overlayMouseTarget.appendChild(this.div);
+          } else {
+            console.error('No se pudieron obtener los panes para el OverlayView.');
+          }
+        }
+  
+        override draw() {
+          const projection = this.getProjection();
+          if (projection) {
+            const position = projection.fromLatLngToDivPixel(this.position);
+            if (position) {
+              this.div.style.left = `${position.x}px`;
+              this.div.style.top = `${position.y}px`;
+            }
+          }
+        }
+  
+        override onRemove() {
+          if (this.div.parentNode) {
+            this.div.parentNode.removeChild(this.div);
+          }
+        }
+      }
+  
+      // Agregar los marcadores y círculos de las tiendas
       this.shopMarkers.forEach((markerData) => {
-        const marker = new google.maps.Marker({
-          position: markerData.position,
-          map: map,
-          icon: this.iconoTienda,
-          title: markerData.title,
-        });
-
-        marker.addListener('click', () => {
-          console.log(`Nombre de la tienda: ${markerData.title}`);
-          this.openModal(this.createModal, markerData.title);
-        });
+        if (markerData.position) {
+          // Crear el marcador de la tienda
+          const marker = new google.maps.Marker({
+            position: markerData.position,
+            map: map,
+            icon: this.iconoTienda,
+            title: markerData.title,
+          });
+  
+          // Crear una instancia de CircleOverlay para cada marcador
+          new CircleOverlay(marker.getPosition()!, map);
+  
+          // Agregar el listener para el marcador de la tienda
+          marker.addListener('click', () => {
+            console.log(`Nombre de la tienda: ${markerData.title}`);
+            this.openModal(this.createModal, markerData.title);
+          });
+        } else {
+          console.error('Posición del marcador de la tienda no está definida.');
+        }
       });
+  
+      // Forzar el redibujado del mapa (opcional, en caso de problemas con el renderizado)
+      google.maps.event.trigger(map, 'resize');
     } else {
       console.error('Elemento del mapa no encontrado.');
     }
   }
-
-
+  
+  
+  
   // Actualiza rastrearUbicacionUsuario para recalcular la ruta y ajustar el zoom
   rastrearUbicacionUsuario() {
     if (navigator.geolocation) {
@@ -343,69 +406,70 @@ seleccionarModoTransporte(modo: google.maps.TravelMode) {
 
 // Método para calcular la ruta
 calcularRuta() {
-if (!this.modoTransporte) {
-  this.toastr.warning('Por favor, selecciona un modo de transporte.', 'Advertencia');
-  return;
-}
-
-if (!this.markerPosition) {
-  console.error('La posición del marcador no está definida.');
-  return;
-}
-
-if (!this.destinationName) {
-  console.error('El destino no está definido.');
-  return;
-}
-
-let destination: google.maps.LatLngLiteral | string = '';
-
-if (typeof this.destinationName === 'object') {
-  destination = {
-    lat: (this.destinationName as google.maps.LatLngLiteral).lat,
-    lng: (this.destinationName as google.maps.LatLngLiteral).lng,
-  };
-} else {
-  destination = this.destinationName;
-}
-
-const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
-
-const request: google.maps.DirectionsRequest = {
-  origin: this.markerPosition,
-  destination: destination,
-  travelMode: travelMode,
-  unitSystem: google.maps.UnitSystem.METRIC,
-};
-
-console.log('Solicitud de ruta:', request);
-
-this.directionsRendererInstance.setOptions({
-  suppressMarkers: true, // Suprimir los marcadores de la ruta
-  preserveViewport: true, // No cambiar la vista del mapa automáticamente
-});
-
-this.directionsService.route(request, (result, status) => {
-  if (status === google.maps.DirectionsStatus.OK && result) {
-    this.directionsRendererInstance.setDirections(result);
-    this.obtenerDetallesRuta(result);
-    this.rutaActiva = true;  // Activar el indicador de ruta activa
-    
-    // Centra el mapa en el marcador del usuario
-    this.centrarMapaEnMarcador();
-
-    // Cierra el modal después de calcular la ruta
-    if (this.modalRef) {
-      this.modalRef.close();
-    }
-    this.actualizarRotacionMarcador(0); // Inicialmente sin rotación (puedes ajustar esto)
-  } else {
-    this.rutaActiva = false;  // Desactivar la ruta activa si falla
-    console.error('Error al calcular la ruta:', status, result);
-    this.toastr.warning('La ruta en este medio de transporte no está disponible', 'Advertencia');
+  if (!this.modoTransporte) {
+    this.toastr.warning('Por favor, selecciona un modo de transporte.', 'Advertencia');
+    return;
   }
-});
+
+  if (!this.markerPosition) {
+    console.error('La posición del marcador no está definida.');
+    return;
+  }
+
+  if (!this.destinationName) {
+    console.error('El destino no está definido.');
+    return;
+  }
+
+  // Definir destination como LatLngLiteral o string
+  let destination: google.maps.LatLngLiteral | string;
+
+  if (typeof this.destinationName === 'object' && 'lat' in this.destinationName && 'lng' in this.destinationName) {
+    // Si destinationName es un objeto con lat y lng, usarlo directamente
+    destination = this.destinationName as google.maps.LatLngLiteral;
+  } else if (typeof this.destinationName === 'string') {
+    // Si destinationName es una cadena, la trataremos como una dirección
+    destination = this.destinationName;
+  } else {
+    console.error('El destino proporcionado no es válido.');
+    return;
+  }
+
+  const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
+
+  const request: google.maps.DirectionsRequest = {
+    origin: this.markerPosition,
+    destination: destination,
+    travelMode: travelMode,
+    unitSystem: google.maps.UnitSystem.METRIC,
+  };
+
+  console.log('Solicitud de ruta:', request);
+
+  this.directionsRendererInstance.setOptions({
+    suppressMarkers: true,
+    preserveViewport: true,
+  });
+
+  this.directionsService.route(request, (result, status) => {
+    if (status === google.maps.DirectionsStatus.OK && result) {
+      this.directionsRendererInstance.setDirections(result);
+      this.obtenerDetallesRuta(result);
+      this.rutaActiva = true;
+      this.centrarMapaEnMarcador();
+
+      if (this.modalRef) {
+        this.modalRef.close();
+      }
+      this.actualizarRotacionMarcador(0);
+    } else {
+      this.rutaActiva = false;
+      console.error('Error al calcular la ruta:', status, result);
+      this.toastr.warning('La ruta en este medio de transporte no está disponible', 'Advertencia');
+    }
+  });
 }
+
 
 centrarMapaEnMarcador() {
 const map = this.directionsRendererInstance.getMap();
