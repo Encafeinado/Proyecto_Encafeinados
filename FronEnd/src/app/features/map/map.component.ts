@@ -370,7 +370,8 @@ solicitarPermisoOrientacion() {
 
 iniciarOrientacionDispositivo() {
   window.addEventListener('deviceorientation', (event) => {
-    if (event.alpha !== null) {
+    if (event.absolute || event.alpha !== null) {
+      // Verificar si `event.absolute` es `true` en iOS 13+ para evitar problemas de precisión
       const heading = this.calcularHeading(event);
       if (heading !== null) {
         this.actualizarRotacionMarcador(heading);
@@ -406,7 +407,7 @@ actualizarRotacionMarcador(heading: number) {
     const iconoRotado = {
       path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
       scale: 4,
-      rotation: heading, // Aplica la rotación basada en la orientación del dispositivo
+      rotation: heading,
       fillColor: 'blue',
       fillOpacity: 0.8,
       strokeWeight: 2,
@@ -427,7 +428,6 @@ actualizarRotacionMarcador(heading: number) {
     console.error('El marcador del usuario no está definido.');
   }
 }
-
 
 
 seleccionarModoTransporte(modo: google.maps.TravelMode) {
