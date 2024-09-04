@@ -27,8 +27,8 @@ export class MapComponent implements OnInit, OnDestroy {
   verifiedcode: boolean = false;
   destinationName!: string;
   specialties1!: string;
-specialties2!: string;
-shopStatus!: string;
+  specialties2!: string;
+  shopStatus!: string;
   enteredCode: string = '';
   verified: boolean = false;
   message: string = '';
@@ -158,7 +158,7 @@ shopStatus!: string;
       title: shop.name,
       status: shop.statusShop, // Supongo que 'statusShop' indica el estado
       specialties1: shop.specialties1,
-      specialties2: shop.specialties2
+      specialties2: shop.specialties2,
     }));
 
     const mapElement = document.getElementById('map') as HTMLElement;
@@ -245,9 +245,9 @@ shopStatus!: string;
 
           marker.addListener('click', () => {
             console.log(`Nombre de la tienda: ${markerData.title}`);
-          console.log(`Estado de la tienda: ${markerData.status}`);
-          console.log(`Especialidad 1: ${markerData.specialties1}`);
-          console.log(`Especialidad 2: ${markerData.specialties2}`);
+            console.log(`Estado de la tienda: ${markerData.status}`);
+            console.log(`Especialidad 1: ${markerData.specialties1}`);
+            console.log(`Especialidad 2: ${markerData.specialties2}`);
 
             this.openModal(
               this.createModal,
@@ -255,7 +255,8 @@ shopStatus!: string;
               markerData.status,
               markerData.specialties1,
               markerData.specialties2
-            );           });
+            );
+          });
         } else {
           console.error('Posición del marcador de la tienda no está definida.');
         }
@@ -712,11 +713,17 @@ shopStatus!: string;
   cancelArrive(modal: any): void {
     modal.dismiss('cancel');
     setTimeout(() => {
-      this.openModal(this.arriveModal, this.destinationName, '','','');
+      this.openModal(this.arriveModal, this.destinationName, '', '', '');
     }, 10000); // 10 segundos
   }
 
-  openModal(content: any, destinationName: string, status: string, specialties1: string, specialties2: string): void {
+  openModal(
+    content: any,
+    destinationName: string,
+    status: string,
+    specialties1: string,
+    specialties2: string
+  ): void {
     if (!this.openedModal && !this.hasArrived) {
       // Verifica que no se haya confirmado la llegada
       this.destinationName = destinationName;
@@ -732,8 +739,7 @@ shopStatus!: string;
         this.openedModal = false;
       });
     }
-}
-
+  }
 
   resetModalFields() {
     this.enteredCode = '';
@@ -744,11 +750,11 @@ shopStatus!: string;
 
   openModalWithCodigo(): void {
     this.resetModalFields();
-    this.openModal(this.codeModal, '','','','');
+    this.openModal(this.codeModal, '', '', '', '');
   }
 
   openModalAlbum(): void {
-    this.openModal(this.modalBook, '','','','');
+    this.openModal(this.modalBook, '', '', '', '');
   }
 
   verifyCode() {
