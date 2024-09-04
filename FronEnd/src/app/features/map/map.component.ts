@@ -115,6 +115,8 @@ export class MapComponent implements OnInit, OnDestroy {
     this.populateShopLogos();
     this.fetchBookData();
     this.userId = this.authService.getUserId(); // Obtener el ID del usuario
+    document.body.addEventListener('touchstart', this.solicitarPermisoOrientacion.bind(this), { once: true });
+  document.body.addEventListener('click', this.solicitarPermisoOrientacion.bind(this), { once: true });
 
     if (this.userId) {
       this.fetchBookData();
@@ -137,6 +139,117 @@ export class MapComponent implements OnInit, OnDestroy {
   }
   
 
+  iniciarMapa() {
+    // Actualizar los datos de las tiendas
+    this.shopMarkers = this.shopData.map((shop: any) => ({
+      position: {
+        lat: shop.latitude,
+        lng: shop.longitude,
+      },
+      title: shop.name,
+      status: shop.statusShop,
+    }));
+  
+    const mapElement = document.getElementById('map') as HTMLElement;
+    if (mapElement) {
+      const map = new google.maps.Map(mapElement, {
+        center: this.center,
+        zoom: this.zoom,
+        ...this.opcionesMapa,
+      });
+  
+      this.directionsRendererInstance.setMap(map);
+  
+      // Verificar si markerPosition está definido antes de crear el marcador
+      if (this.markerPosition) {
+        this.markerUsuario = new google.maps.Marker({
+          position: this.markerPosition,
+          map: map,
+          icon: this.iconoUbicacionUsuario,
+        });
+      } else {
+        console.error('markerPosition no está definido.');
+      }
+
+      
+  
+      // Definir y agregar los círculos
+      class CircleOverlay extends google.maps.OverlayView {
+        private position: google.maps.LatLng;
+        private div: HTMLDivElement;
+        private map: google.maps.Map;
+  
+        constructor(position: google.maps.LatLng, map: google.maps.Map) {
+          super();
+          this.position = position;
+          this.map = map;
+          this.div = document.createElement('div');
+          this.div.style.borderRadius = '50%';
+          this.div.style.backgroundColor = '#FF0000'; // Color del círculo
+          this.div.style.width = '10px'; // Tamaño del círculo
+          this.div.style.height = '10px'; // Tamaño del círculo
+          this.div.style.position = 'absolute';
+          this.div.style.transform = 'translate(-50%, -100%)'; // Alineación arriba del marcador
+  
+          this.setMap(map);
+        }
+  
+        override onAdd() {
+          const panes = this.getPanes();
+          if (panes && panes.overlayMouseTarget) {
+            panes.overlayMouseTarget.appendChild(this.div);
+          } else {
+            console.error('No se pudieron obtener los panes para el OverlayView.');
+          }
+        }
+  
+        override draw() {
+          const projection = this.getProjection();
+          if (projection) {
+            const position = projection.fromLatLngToDivPixel(this.position);
+            if (position) {
+              this.div.style.left = `${position.x}px`;
+              this.div.style.top = `${position.y}px`;
+            }
+          }
+        }
+  
+        override onRemove() {
+          if (this.div.parentNode) {
+            this.div.parentNode.removeChild(this.div);
+          }
+        }
+      }
+  
+      this.shopMarkers.forEach((markerData) => {
+        if (markerData.position) {
+          const marker = new google.maps.Marker({
+            position: markerData.position,
+            map: map,
+            icon: this.iconoTienda,
+            title: markerData.title,
+          });
+  
+          new CircleOverlay(marker.getPosition()!, map);
+  
+          marker.addListener('click', () => {
+            console.log(`Nombre de la tienda: ${markerData.title}`);
+            this.openModal(this.createModal, markerData.title);
+          });
+        } else {
+          console.error('Posición del marcador de la tienda no está definida.');
+        }
+      });
+  
+      // Forzar el redibujado del mapa (opcional)
+      google.maps.event.trigger(map, 'resize');
+    } else {
+      console.error('Elemento del mapa no encontrado.');
+    }
+  }
+  
+  
+/*
   iniciarMapa() {
     const mapElement = document.getElementById('map') as HTMLElement;
     if (mapElement) {
@@ -240,7 +353,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
   
   
-  
+  */
   
   // Actualiza rastrearUbicacionUsuario para recalcular la ruta y ajustar el zoom
   rastrearUbicacionUsuario() {
@@ -346,7 +459,8 @@ solicitarPermisoOrientacion() {
   const deviceOrientationEvent = DeviceOrientationEvent as any;
 
   if (typeof deviceOrientationEvent.requestPermission === 'function') {
-    deviceOrientationEvent.requestPermission()
+    deviceOrientationEvent
+      .requestPermission()
       .then((response: string) => {
         if (response === 'granted') {
           this.iniciarOrientacionDispositivo();
@@ -362,44 +476,65 @@ solicitarPermisoOrientacion() {
   }
 }
 
-
 iniciarOrientacionDispositivo() {
-window.addEventListener('deviceorientation', (event) => {
-  if (event.alpha !== null) {
-    this.actualizarRotacionMarcador(event.alpha);
-  } else {
-    console.error('No se pudo obtener la orientación del dispositivo.');
-  }
-}, true);
+  window.addEventListener('deviceorientation', (event) => {
+    if (event.alpha !== null) {
+      const heading = this.calcularHeading(event);
+      if (heading !== null) {
+        this.actualizarRotacionMarcador(heading);
+      } else {
+        console.error('No se pudo obtener una orientación válida del dispositivo.');
+      }
+    } else {
+      console.error('No se pudo obtener la orientación del dispositivo.');
+    }
+  }, true);
 }
+
+calcularHeading(event: DeviceOrientationEvent): number | null {
+  let heading: number | null = null;
+
+  if (event.alpha !== null) {
+    heading = event.alpha; 
+  }
+
+  if (heading !== null) {
+    // Ajustar la rotación si la flecha apunta en la dirección opuesta
+    heading = (heading + 180) % 360;
+  }
+  return heading;
+}
+
+
 
 actualizarRotacionMarcador(heading: number) {
-if (this.rutaActiva && this.markerUsuario) {
-  const iconoRotado = {
-    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-    scale: 4, // Ajusta la escala para reducir el tamaño del marcador
-    rotation: heading, // Aplica la rotación basada en la orientación del dispositivo
-    fillColor: 'blue',
-    fillOpacity: 0.8,
-    strokeWeight: 2,
-    anchor: new google.maps.Point(0, 2.6),
-  };
+  if (this.rutaActiva && this.markerUsuario) {
+    const iconoRotado = {
+      path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+      scale: 4,
+      rotation: heading, // Aplica la rotación basada en la orientación del dispositivo
+      fillColor: 'blue',
+      fillOpacity: 0.8,
+      strokeWeight: 2,
+      anchor: new google.maps.Point(0, 2.6),
+    };
 
-  this.markerUsuario.setIcon(iconoRotado);
-} else if (!this.rutaActiva && this.markerUsuario) {
-  const iconoRotado = {
-    url: this.iconoUbicacionUsuario.url,
-    rotation: heading,
-    scaledSize: new google.maps.Size(40, 40), // Ajusta el tamaño si es necesario
-      anchor: new google.maps.Point(25, 25), // Centra el ícono
-  };
-  
+    this.markerUsuario.setIcon(iconoRotado);
+  } else if (!this.rutaActiva && this.markerUsuario) {
+    const iconoRotado = {
+      url: this.iconoUbicacionUsuario.url,
+      rotation: heading,
+      scaledSize: new google.maps.Size(40, 40),
+      anchor: new google.maps.Point(25, 25),
+    };
 
-  this.markerUsuario.setIcon(iconoRotado);
-} else {
-  console.error('El marcador del usuario no está definido.');
+    this.markerUsuario.setIcon(iconoRotado);
+  } else {
+    console.error('El marcador del usuario no está definido.');
+  }
 }
-}
+
+
 
 seleccionarModoTransporte(modo: google.maps.TravelMode) {
   this.modoTransporte = modo;
@@ -519,9 +654,15 @@ cancelarRuta() {
     this.rutaActiva = false; // Marca que la ruta ya no está activa
     this.instruccionesRuta = []; // Limpia las instrucciones de la ruta
     this.routeDetails = undefined; // Limpia los detalles de la ruta
-    this.iniciarMapa(); // Actualiza el mapa para mostrar los marcadores
+
+    // Vuelve a iniciar el mapa y mostrar los marcadores
+    this.iniciarMapa(); 
+    console.log('Ruta cancelada y mapa actualizado.');
+  } else {
+    console.error('No se encontró la instancia de DirectionsRenderer.');
   }
 }
+
 
 closeAlert(): void {
   this.showAlert = false;
@@ -681,7 +822,7 @@ fetchShopData(): void {
       this.shopData = data;
       // console.log('Datos de la tienda:', this.shopData); // Agrega esta línea para verificar la estructura de los datos
       this.populateShopLogos();
-      this.updateShopMarkers();
+      this.iniciarMapa();
     },
     (error) => {
       console.error('Error al obtener los datos de la tienda:', error);
@@ -689,9 +830,7 @@ fetchShopData(): void {
   );
 }
 
-
-
-
+/*
 updateShopMarkers() {
   this.shopMarkers = this.shopData.map((shop: any) => ({
     position: {
@@ -781,7 +920,7 @@ updateShopMarkers() {
     console.error('Elemento del mapa no encontrado.');
   }
 }
-
+*/
 
 fetchBookData(): void {
   if (this.userId) {
