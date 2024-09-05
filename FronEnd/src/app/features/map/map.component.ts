@@ -44,6 +44,7 @@ export class MapComponent implements OnInit, OnDestroy {
   enteredReview: string = '';
   showAlert: boolean = false;
   isButtonDisabled: boolean = true;
+  markerUsuario?: google.maps.Marker;
   google: any = window.google;
   modoTransporte: google.maps.TravelMode = google.maps.TravelMode.DRIVING;
   center: google.maps.LatLngLiteral = {
@@ -63,7 +64,7 @@ export class MapComponent implements OnInit, OnDestroy {
   distanceMatrixService: google.maps.DistanceMatrixService =
     new google.maps.DistanceMatrixService();
   private hasZoomed: boolean = false;
-  private markerUsuario: google.maps.Marker | undefined;
+  
   opcionesMapa: google.maps.MapOptions = {
     styles: [
       {
@@ -272,88 +273,96 @@ export class MapComponent implements OnInit, OnDestroy {
   // Actualiza rastrearUbicacionUsuario para recalcular la ruta y ajustar el zoom
   rastrearUbicacionUsuario() {
     if (navigator.geolocation) {
-      this.watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          this.center = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          this.markerPosition = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
+        this.watchId = navigator.geolocation.watchPosition(
+            (position) => {
+                this.center = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
+                this.markerPosition = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
 
-          console.log(
-            'Ubicación del usuario actualizada:',
-            this.markerPosition
-          );
-          this.actualizarMarcadorUbicacionUsuario();
+                console.log(
+                    'Ubicación del usuario actualizada:',
+                    this.markerPosition
+                );
+                
+                // Actualiza el marcador de ubicación del usuario
+                this.actualizarMarcadorUbicacionUsuario();
 
-          const map = this.directionsRendererInstance.getMap();
-          if (map) {
-            if (this.rutaActiva) {
-              // Si hay una ruta activa, centrar el mapa y hacer zoom en la ubicación del usuario
-              map.panTo(this.markerPosition);
-              if (!this.hasZoomed) {
-                map.setZoom(17); // Ajusta el nivel de zoom según sea necesario
-                this.hasZoomed = true;
-              }
-              // Recalcular la ruta si está activa
-              this.calcularRuta();
-            } else {
-              // Permitir que el usuario mueva el mapa libremente cuando no hay una ruta activa
-              map.setOptions({
-                draggable: true,
-                scrollwheel: true,
-              });
+                const map = this.directionsRendererInstance.getMap();
+                if (map) {
+                    if (this.rutaActiva) {
+                        // Centra el mapa en la ubicación del usuario sin hacer zoom continuamente
+                        map.panTo(this.markerPosition);
+
+                        // Solo recalcula la ruta si la posición ha cambiado significativamente
+                        if (this.debeRecalcularRuta(this.markerPosition)) {
+                            this.calcularRuta();
+                        }
+                    } else {
+                        // Permite que el usuario mueva el mapa libremente cuando no hay una ruta activa
+                        map.setOptions({
+                            draggable: true,
+                            scrollwheel: true,
+                        });
+                    }
+                }
+
+                // Solicitar permiso de orientación si es necesario
+                this.solicitarPermisoOrientacion();
+            },
+            (error) => {
+                console.error('Error rastreando la ubicación', error);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0,
             }
-          }
-
-          // Después de obtener la ubicación, solicitar el permiso de orientación
-          this.solicitarPermisoOrientacion();
-        },
-        (error) => {
-          console.error('Error rastreando la ubicación', error);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
-        }
-      );
+        );
     } else {
-      console.error('Geolocalización no es soportada por este navegador.');
+        console.error('Geolocalización no es soportada por este navegador.');
     }
-  }
+}
 
-  // Método para actualizar la ubicación del marcador cuando se hace clic en el botón
-  actualizarMarcadorUbicacionUsuario() {
+// Método para determinar si la ruta debe ser recalculada
+debeRecalcularRuta(nuevaPosicion: google.maps.LatLngLiteral): boolean {
+    // Implementa una lógica para determinar si la ruta debe ser recalculada
+    // Por ejemplo, podrías comparar con la última posición conocida y verificar si ha cambiado significativamente
+    return true; // Cambia esto según tu lógica
+}
+
+// Método para actualizar la ubicación del marcador cuando se hace clic en el botón
+actualizarMarcadorUbicacionUsuario() {
     if (this.markerPosition) {
-      const map = this.directionsRendererInstance.getMap();
-      if (map) {
-        if (!this.markerUsuario) {
-          // Inicializar el marcador con el ícono del usuario
-          this.markerUsuario = new google.maps.Marker({
-            position: this.markerPosition,
-            map: map,
-            icon: this.iconoUbicacionUsuario,
-          });
-        } else {
-          this.markerUsuario.setPosition(this.markerPosition);
-        }
+        const map = this.directionsRendererInstance.getMap();
+        if (map) {
+            if (!this.markerUsuario) {
+                // Inicializar el marcador con el ícono del usuario
+                this.markerUsuario = new google.maps.Marker({
+                    position: this.markerPosition,
+                    map: map,
+                    icon: this.iconoUbicacionUsuario,
+                });
+            } else {
+                this.markerUsuario.setPosition(this.markerPosition);
+            }
 
-        // Solo ajustar el mapa si hay una ruta activa
-        if (this.rutaActiva) {
-          map.setZoom(17); // Ajusta el nivel de zoom
-          map.panTo(this.markerPosition);
+            // Solo ajustar el mapa si hay una ruta activa
+            if (this.rutaActiva) {
+                map.setZoom(17); // Ajusta el nivel de zoom
+                map.panTo(this.markerPosition);
+            }
         }
-      }
     } else {
-      console.error(
-        'markerPosition no está definido en actualizarMarcadorUbicacionUsuario.'
-      );
+        console.error(
+            'markerPosition no está definido en actualizarMarcadorUbicacionUsuario.'
+        );
     }
-  }
+}
 
   centerOnUserLocation() {
     if (this.markerPosition) {
@@ -415,47 +424,98 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   calcularHeading(event: DeviceOrientationEvent): number | null {
-    let heading: number | null = null;
-  
-    if (event.alpha !== null) {
-      heading = event.alpha;
+    if (event.alpha === null) {
+        return null;
     }
-  
-    if (heading !== null) {
-      const orientacion = window.screen.orientation.angle || 0;
-      heading = (heading + orientacion) % 360;
-    }
-  
-    return heading;
-  }
-  
 
-  actualizarRotacionMarcador(heading: number) {
-    if (this.rutaActiva && this.markerUsuario) {
-      const iconoRotado = {
+    // Obtiene el heading en grados basado en el evento alpha
+    let heading = event.alpha;
+
+    // Aplica la orientación del dispositivo
+    const orientacion = window.screen.orientation.angle || 0;
+
+    // Ajusta el heading aplicando la orientación del dispositivo y corrige el signo
+    heading = (heading - orientacion + 360) % 360;
+
+    // Si la orientación sigue al revés, invierte el heading
+    heading = (360 - heading) % 360;
+
+    return heading;
+}
+
+
+
+  actualizarRotacionMarcador(heading: number, result?: google.maps.DirectionsResult) {
+    const map = this.directionsRendererInstance.getMap();
+    if (!map) {
+        console.error('El mapa no está definido.');
+        return;
+    }
+
+    // Definir el icono basado en si la ruta está activa o no
+    const iconoRotado = this.rutaActiva ? {
         path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
         scale: 4,
-        rotation: heading, // Aplica la rotación basada en la orientación del dispositivo
+        rotation: heading,
         fillColor: 'blue',
         fillOpacity: 0.8,
         strokeWeight: 2,
         anchor: new google.maps.Point(0, 2.6),
-      };
-
-      this.markerUsuario.setIcon(iconoRotado);
-    } else if (!this.rutaActiva && this.markerUsuario) {
-      const iconoRotado = {
+    } : {
         url: this.iconoUbicacionUsuario.url,
         rotation: heading,
         scaledSize: new google.maps.Size(40, 40),
         anchor: new google.maps.Point(25, 25),
-      };
+    };
 
-      this.markerUsuario.setIcon(iconoRotado);
+    if (this.markerUsuario) {
+        this.markerUsuario.setIcon(iconoRotado);
     } else {
-      console.error('El marcador del usuario no está definido.');
+        console.error('El marcador del usuario no está definido.');
     }
-  }
+
+    if (result) {
+        // Actualiza la posición y rotación del marcador de flecha
+        const route = result.routes[0];
+        const legs = route.legs;
+        const step = legs[0].steps[0]; // Asume que quieres el primer paso
+
+        if (step) {
+            const position = step.start_location;
+
+            if (this.markerUsuario) {
+                // Actualiza el marcador de flecha existente
+                this.markerUsuario.setPosition(position);
+                this.markerUsuario.setIcon({
+                    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                    scale: 4,
+                    rotation: heading,
+                    fillColor: 'blue',
+                    fillOpacity: 0.8,
+                    strokeWeight: 2,
+                });
+            } else {
+                // Crea un nuevo marcador de flecha si no existe
+                this.markerUsuario = new google.maps.Marker({
+                    position: position,
+                    map: map,
+                    icon: {
+                        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                        scale: 4,
+                        rotation: heading,
+                        fillColor: 'blue',
+                        fillOpacity: 0.8,
+                        strokeWeight: 2,
+                    },
+                });
+            }
+        } else {
+            console.error('No se pudo obtener el primer paso de la ruta.');
+        }
+    }
+}
+
+
 
   seleccionarModoTransporte(modo: google.maps.TravelMode) {
     this.modoTransporte = modo;
@@ -464,78 +524,74 @@ export class MapComponent implements OnInit, OnDestroy {
   // Método para calcular la ruta
   calcularRuta() {
     if (!this.modoTransporte) {
-      this.toastr.warning(
-        'Por favor, selecciona un modo de transporte.',
-        'Advertencia'
-      );
-      return;
+        this.toastr.warning(
+            'Por favor, selecciona un modo de transporte.',
+            'Advertencia'
+        );
+        return;
     }
 
     if (!this.markerPosition) {
-      console.error('La posición del marcador no está definida.');
-      return;
+        console.error('La posición del marcador no está definida.');
+        return;
     }
 
     if (!this.destinationName) {
-      console.error('El destino no está definido.');
-      return;
+        console.error('El destino no está definido.');
+        return;
     }
 
-    // Definir destination como LatLngLiteral o string
     let destination: google.maps.LatLngLiteral | string;
 
     if (
-      typeof this.destinationName === 'object' &&
-      'lat' in this.destinationName &&
-      'lng' in this.destinationName
+        typeof this.destinationName === 'object' &&
+        'lat' in this.destinationName &&
+        'lng' in this.destinationName
     ) {
-      // Si destinationName es un objeto con lat y lng, usarlo directamente
-      destination = this.destinationName as google.maps.LatLngLiteral;
+        destination = this.destinationName as google.maps.LatLngLiteral;
     } else if (typeof this.destinationName === 'string') {
-      // Si destinationName es una cadena, la trataremos como una dirección
-      destination = this.destinationName;
+        destination = this.destinationName;
     } else {
-      console.error('El destino proporcionado no es válido.');
-      return;
+        console.error('El destino proporcionado no es válido.');
+        return;
     }
 
     const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
 
     const request: google.maps.DirectionsRequest = {
-      origin: this.markerPosition,
-      destination: destination,
-      travelMode: travelMode,
-      unitSystem: google.maps.UnitSystem.METRIC,
+        origin: this.markerPosition,
+        destination: destination,
+        travelMode: travelMode,
+        unitSystem: google.maps.UnitSystem.METRIC,
     };
 
-    console.log('Solicitud de ruta:', request);
-
     this.directionsRendererInstance.setOptions({
-      suppressMarkers: true,
-      preserveViewport: true,
+        suppressMarkers: true,
+        preserveViewport: true,
     });
 
     this.directionsService.route(request, (result, status) => {
-      if (status === google.maps.DirectionsStatus.OK && result) {
-        this.directionsRendererInstance.setDirections(result);
-        this.obtenerDetallesRuta(result);
-        this.rutaActiva = true;
-        this.centrarMapaEnMarcador();
+        if (status === google.maps.DirectionsStatus.OK && result) {
+            this.directionsRendererInstance.setDirections(result);
+            this.obtenerDetallesRuta(result);
+            this.rutaActiva = true;
+            this.centrarMapaEnMarcador();
 
-        if (this.modalRef) {
-          this.modalRef.close();
+            if (this.modalRef) {
+                this.modalRef.close();
+            }
+            this.actualizarRotacionMarcador(0, result); // Actualiza la rotación y la flecha
+        } else {
+            this.rutaActiva = false;
+            console.error('Error al calcular la ruta:', status, result);
+            this.toastr.warning(
+                'La ruta en este medio de transporte no está disponible',
+                'Advertencia'
+            );
         }
-        this.actualizarRotacionMarcador(0);
-      } else {
-        this.rutaActiva = false;
-        console.error('Error al calcular la ruta:', status, result);
-        this.toastr.warning(
-          'La ruta en este medio de transporte no está disponible',
-          'Advertencia'
-        );
-      }
     });
-  }
+}
+
 
   centrarMapaEnMarcador() {
     const map = this.directionsRendererInstance.getMap();
@@ -764,97 +820,6 @@ export class MapComponent implements OnInit, OnDestroy {
     );
   }
 
-  /*
-updateShopMarkers() {
-  this.shopMarkers = this.shopData.map((shop: any) => ({
-    position: {
-      lat: shop.latitude,
-      lng: shop.longitude,
-    },
-    title: shop.name,
-    status: shop.statusShop, // Supongo que 'statusShop' indica el estado
-  }));
-
-  const mapElement = document.getElementById('map') as HTMLElement;
-  if (mapElement) {
-    const map = new google.maps.Map(mapElement, {
-      center: this.center,
-      zoom: this.zoom,
-      ...this.opcionesMapa,
-    });
-
-    this.directionsRendererInstance.setMap(map);
-
-    // Definir la clase CircleOverlay fuera del método para evitar redefinirla en cada llamada
-    class CircleOverlay extends google.maps.OverlayView {
-      private position: google.maps.LatLng;
-      private div: HTMLDivElement;
-
-      constructor(position: google.maps.LatLng, map: google.maps.Map) {
-        super();
-        this.position = position;
-        this.div = document.createElement('div');
-        this.div.style.borderRadius = '50%';
-        this.div.style.backgroundColor = '#FF0000'; // Color del círculo (rojo)
-        this.div.style.width = '10px'; // Tamaño del círculo
-        this.div.style.height = '10px'; // Tamaño del círculo
-        this.div.style.position = 'absolute';
-        this.div.style.transform = 'translate(-50%, -100%)'; // Alineación arriba del marcador
-
-        // Agregar el círculo al mapa
-        this.setMap(map);
-      }
-
-      override onAdd() {
-        const panes = this.getPanes();
-        if (panes && panes.overlayMouseTarget) {
-          panes.overlayMouseTarget.appendChild(this.div);
-        } else {
-          console.error('No se pudieron obtener los panes para el OverlayView.');
-        }
-      }
-
-      override draw() {
-        const projection = this.getProjection();
-        if (projection) {
-          const position = projection.fromLatLngToDivPixel(this.position);
-          if (position) {
-            this.div.style.left = ${position.x}px;
-            this.div.style.top = ${position.y}px;
-          }
-        }
-      }
-
-      override onRemove() {
-        if (this.div.parentNode) {
-          this.div.parentNode.removeChild(this.div);
-        }
-      }
-    }
-
-    // Agregar los marcadores y círculos de las tiendas
-    this.shopMarkers.forEach((markerData) => {
-      const marker = new google.maps.Marker({
-        position: markerData.position,
-        map: map,
-        icon: this.iconoTienda, // Asegúrate de que this.iconoTienda sea una URL de imagen
-        title: markerData.title,
-      });
-
-      // Crear una instancia de CircleOverlay para cada marcador
-      new CircleOverlay(marker.getPosition()!, map);
-
-      // Agregar el listener para el marcador de la tienda
-      marker.addListener('click', () => {
-        console.log(Nombre de la tienda: ${markerData.title});
-        this.openModal(this.createModal, markerData.title); // Abre el modal con el nombre de la tienda
-      });
-    });
-  } else {
-    console.error('Elemento del mapa no encontrado.');
-  }
-}
-*/
 
   fetchBookData(): void {
     if (this.userId) {
