@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { StoreService } from 'src/app/service/store.service'; 
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { ReviewService } from '../../service/reviews.service';
+import { UserService } from 'src/app/service/user.service';
 
 @Component({
   selector: 'app-mi-perfil',
@@ -18,14 +19,48 @@ export class MiPerfilComponent implements OnInit {
   constructor(
     private storeService: StoreService,
     private authService: AuthService,
-    private reviewService: ReviewService
+    private reviewService: ReviewService,
+    private userService: UserService,
+    private changeDetector: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
     // window.location.reload();
     this.loadUserData();
     this.loadReviews(); 
+    setInterval(() => {
+      this.actualizarDatosUsuario();
+    }, 5000); // 10 segundos
   }
+  actualizarDatosUsuario(): void {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token no encontrado en el almacenamiento local.');
+      return;
+    }
+
+    this.userService.fetchUserData(token).subscribe(
+      (data: any[]) => { // Asegúrate de que estás recibiendo un array
+        console.log('Datos completos del usuario:', data);
+
+        // Encuentra el usuario correcto dentro del array
+        const usuario = data.find(u => u.email === this.userData.email); // Cambia según el criterio que prefieras
+
+        if (usuario && usuario.cafecoin !== undefined) {
+          this.userData.cafecoin = usuario.cafecoin;
+          console.log('Cafecoins actualizados:', this.userData.cafecoin);
+        } else {
+          console.error('Cafecoins no encontrados en la respuesta:', usuario);
+        }
+        this.changeDetector.detectChanges(); // Notifica al componente que se han hecho cambios
+      },
+      (error) => {
+        console.error('Error al actualizar los datos del usuario:', error);
+      }
+    );
+}
+
+
   loadReviews(): void {
     this.reviewService.getAllReviews().subscribe(
       (data) => {

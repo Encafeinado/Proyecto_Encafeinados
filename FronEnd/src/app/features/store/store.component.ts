@@ -39,6 +39,9 @@ export class StoreComponent implements OnInit {
       this.getShopInfo();
     }
     this.isStoreOpen = this.storeStatusService.isStoreActivated();
+    setInterval(() => {
+      this.getShopInfo(); 
+    }, 5000);
   }
 
   getShopInfo() {

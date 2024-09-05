@@ -87,6 +87,10 @@
       <div class="modal-body-create">
         <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid" style="width: 100%;">
         <p style="padding-top: 3%;">Información sobre el café...</p>
+        <p style="padding-top: 3%;">Nombre: {{ destinationName }}</p>
+        <p style="padding-top: 3%;">Especialidad 1: {{ specialties1  }}</p>
+        <p style="padding-top: 3%;">Especialidad 2: {{ specialties2  }}</p>
+        <p style="padding-top: 3%;">Estado de la tienda: {{ shopStatus ? 'Abierto' : 'Cerrado' }}</p>
         <div class="transport-selection" style="margin-top: 15px;">
           <label class="transport-label">
             <input type="radio" name="transport" [class.active]="modoTransporte === google.maps.TravelMode.DRIVING"
