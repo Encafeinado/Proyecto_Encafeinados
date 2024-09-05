@@ -3199,14 +3199,230 @@ align-items: center;
 
 
 
-  .toast-error {
-    color: rgb(248, 245, 245) !important;
-    background-color: #ce1111 !important;
-   
-    border-radius: 10px !important; /* Agrega un borde redondo al cuadro del mensaje */
-   
+.toast-error {
+  color: rgb(248, 245, 245) !important;
+  background-color: #ce1111 !important;
+  border-radius: 10px !important; /* Agrega un borde redondo al cuadro del mensaje */
+}
+
+/* Estilos específicos para la sección "Cómo Iniciar" */
+.como-iniciar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  background-image: linear-gradient(-25deg, #e0f7fa 50%, #e0f7fa 50%);
+}
+
+.como-iniciar-contenedor {
+  background-color: #fff;
+  width: 90%;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 40px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 400px;
+}
+
+.como-iniciar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.como-iniciar-logo {
+  font-size: 25px;
+  font-weight: 600;
+  color: #0f1eee;
+  text-decoration: none;
+  margin: 0 auto;
+}
+
+.como-iniciar-menu {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.como-iniciar-menu a {
+  font-size: 22px;
+  border-bottom: 2px solid transparent;
+  margin-left: 40px;
+  color: #000;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.como-iniciar-menu a:hover {
+  border-bottom: 2px solid #0f1eee;
+}
+
+.como-iniciar-main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  width: 100%;
+  flex-grow: 1;
+}
+
+.como-iniciar-contenedor-img-placeholder {
+  width: 100px;
+  height: 100px;
+  background-color: #e0f7fa;
+  margin-bottom: 20px;
+}
+
+.como-iniciar-contenedor-img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 20px;
+}
+
+.como-iniciar-main .como-iniciar-contenedor-img {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+.como-iniciar-section img {
+  width: 30%; /* Ajusta el tamaño para pantallas grandes */
+  height: auto;
+  object-fit: contain;
+}
+
+.como-iniciar-contenedor-texto .como-iniciar-titulo {
+  font-size: 25px;
+  font-weight: normal;
+  margin-bottom: 40px;
+}
+
+.como-iniciar-contenedor-texto .como-iniciar-pasos img {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.como-iniciar-contenedor-texto .como-iniciar-pasos {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  color: #5b4a9a;
+  margin-bottom: 20px;
+}
+
+.como-iniciar-contenedor-texto p {
+  margin-bottom: 20px;
+  line-height: 1.5;
+  text-align: center;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  padding: 0 10px;
+  font-size: 16px;
+  max-width: 100%;
+}
+
+.como-iniciar-contenedor-texto {
+  flex-grow: 1;
+  min-width: 300px;
+}
+
+.como-iniciar-contenedor-texto img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto 20px;
+}
+
+.como-iniciar-btn-link {
+  display: inline-block;
+  padding: 10px 30px;
+  border-radius: 100px;
+  text-decoration: none;
+  background: #f2f2f2;
+  white-space: nowrap;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.como-iniciar-btn-link:hover,
+.como-iniciar-btn-link.activo {
+  color: #fff;
+  background: #2516f1;
+}
+
+@media screen and (max-width: 768px) {
+  .como-iniciar-menu {
+    flex-direction: column;
+    align-items: center;
   }
-   /* Cambia el color del texto del mensaje de error a rojo */
+
+  .como-iniciar-menu a {
+    font-size: 18px;
+    margin-left: 0;
+    margin-bottom: 10px;
+  }
+
+  .como-iniciar-main {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .como-iniciar-main .como-iniciar-contenedor-img {
+    margin-right: 0;
+    margin-bottom: 20px;
+    max-width: 80px;
+  }
+
+  .como-iniciar-contenedor-texto img {
+    max-width: 80%; /* Reduce el tamaño máximo en dispositivos móviles */
+    margin-bottom: 10px;
+  }
+
+  .como-iniciar-contenedor img {
+    width: 140px; /* Tamaño fijo ajustado para dispositivos móviles */
+    height: 170px;
+  }
+
+  .como-iniciar-contenedor {
+    padding: 20px;
+    margin: 20px auto;
+    min-height: 400px;
+  }
+
+  .como-iniciar-contenedor-texto {
+    min-width: 100%;
+    padding: 0 10px;
+  }
+
+  .como-iniciar-contenedor-texto p {
+    font-size: 14px;
+    padding: 0 15px;
+    margin-bottom: 15px;
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .como-iniciar-btn-link {
+    padding: 8px 20px;
+    font-size: 0.9rem;
+  }
+}
 
 
 

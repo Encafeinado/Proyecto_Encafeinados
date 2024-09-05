@@ -24,6 +24,21 @@
       <p>{{ userData.roles.join(', ') }}</p>
     </div>
   </div>
+  <br>
+  <div class="reviews-section">
+    <h1><b>Reviews de Usuarios</b></h1>
+    <br>
+    <div class="reviews-container">
+      <ul *ngIf="reviews.length > 0; else noReviews">
+        <li *ngFor="let review of reviews" class="review-item">
+          {{ review.review }}
+        </li>
+      </ul>
+      <ng-template #noReviews>
+        <p>No hay reviews disponibles.</p>
+      </ng-template>
+    </div>
+  </div>
 </div>
 
 <div *ngIf="userRole === 'shop' && shopData" class="profile-container">

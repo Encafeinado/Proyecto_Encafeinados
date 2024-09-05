@@ -1,17 +1,26 @@
-@import url("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
-
+/* Estilos generales para el mapa */
 #map {
-  height: 70vh;
-  width: 100%;
-  background-image: url("https://www.transparenttextures.com/patterns/wood-pattern.png"); /* Texture for the map */
-  border-radius: 20px;
- 
+  height: 600px; /* Altura predeterminada para pantallas grandes */
+  width: 100%; /* Asegura que el mapa ocupe el ancho completo */
+}
+
+/* Ajustes para pantallas más pequeñas */
+@media (max-width: 768px) {
+  #map {
+    height: 50vh; /* Reduce la altura a 50vh en pantallas más pequeñas */
+  }
+}
+
+/* Ajustes adicionales para pantallas muy pequeñas (por ejemplo, teléfonos) */
+@media (max-width: 480px) {
+  #map {
+    height: 40vh; /* Reduce aún más la altura en pantallas muy pequeñas */
+  }
 }
 
 .main-content {
   padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
 }
-
 
 .alert-info {
   --bs-alert-color: #007bff; /* Color del texto dentro de la alerta */
@@ -37,7 +46,7 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   transition: background-color 0.3s;
-  z-index: 1000;
+  z-index: 1000; /* Asegura que el botón esté por encima del mapa */
 }
 
 .floating-button-location:hover,

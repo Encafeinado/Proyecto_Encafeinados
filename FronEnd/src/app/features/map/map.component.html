@@ -1,31 +1,30 @@
-<!-- En tu HTML -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
-
 <div class="main-content">
   <div class="container">
     <div class="row">
       <div class="col-md-8 position-relative">
-        <div id="map" style="height: 600px;"></div>
+        <div id="map">
+          <google-map id="map" height="600px" width="100%" [center]="center" [zoom]="zoom" [options]="opcionesMapa">
+
+            <!-- Marcador para la ubicación actual con icono personalizado -->
+            <map-marker *ngIf="markerPosition" [position]="markerPosition" [icon]="iconoUbicacionUsuario">
+            </map-marker>
+       
+          </google-map>
+        </div>
         <!-- En tu plantilla HTML -->
-        <button *ngIf="showCancelButton" class="floating-button-cancel" (click)="cancelRoute()">
+        <button *ngIf="rutaActiva" class="floating-button-cancel" (click)="cancelarRuta()">
           <i class="fas fa-times text-white"></i>
         </button>
-        <button class="floating-button-location" (click)="goToUserLocation()">
+        <button class="floating-button-location" (click)="centerOnUserLocation()">
           <i class="fa fa-location-arrow" aria-hidden="true"></i>
         </button>
+        
       </div>
       <div class="col-md-4 sidebar">
         <h2>Bienvenido a Encafeinados</h2>
         <p>¡Encuentra los mejores lugares de café en tu área!</p>
         <p>Explora nuestras mejores recomendaciones para los amantes del café.</p>
         <div class="alert alert-info" *ngIf="showAlert" role="alert">
-          <h4 class="alert-heading">{{ routeInfo }}</h4>
-          <p>Distancia: {{ routeDistance }} km</p>
-          <p>Tiempo estimado: {{ routeDuration }} minutos</p>
         </div>
 
         <br>
@@ -58,6 +57,14 @@
     </div>
   </div>
 
+  <div *ngIf="rutaActiva && instruccionesRuta.length > 0">
+    <h3>Detalles de la Ruta</h3>
+    <p>{{ routeDetails }}</p>
+    <ul>
+      <li *ngFor="let instruction of instruccionesRuta">{{ instruction }}</li>
+    </ul>
+  </div>
+
   <!-- Botón del librito -->
   <div class="button-container-footer">
     <button class="floating-button button-book" (click)="openModalAlbum()">
@@ -82,24 +89,24 @@
         <p style="padding-top: 3%;">Información sobre el café...</p>
         <div class="transport-selection" style="margin-top: 15px;">
           <label class="transport-label">
-            <input type="radio" name="transport" value="car" [(ngModel)]="selectedTransport"
-              (change)="selectTransportMode('car')" [checked]="selectedTransport === 'car'">
+            <input type="radio" name="transport" [class.active]="modoTransporte === google.maps.TravelMode.DRIVING"
+            (click)="seleccionarModoTransporte(google.maps.TravelMode.DRIVING)">
             <i class="fa fa-car" aria-hidden="true"></i>
           </label>
           <label class="transport-label">
-            <input type="radio" name="transport" value="foot" [(ngModel)]="selectedTransport"
-              (change)="selectTransportMode('foot')" [checked]="selectedTransport === 'foot'">
-            <i class="fa fa-blind" aria-hidden="true"></i>
+            <input type="radio" name="transport" [class.active]="modoTransporte === google.maps.TravelMode.BICYCLING"
+            (click)="seleccionarModoTransporte(google.maps.TravelMode.BICYCLING)">
+            <i class="fa fa-bicycle" aria-hidden="true"></i>
           </label>
           <label class="transport-label">
-            <input type="radio" name="transport" value="bike" [(ngModel)]="selectedTransport"
-              (change)="selectTransportMode('bike')" [checked]="selectedTransport === 'bike'">
-            <i class="fa fa-bicycle" aria-hidden="true"></i>
+            <input type="radio" name="transport"  [class.active]="modoTransporte === google.maps.TravelMode.WALKING"
+            (click)="seleccionarModoTransporte(google.maps.TravelMode.WALKING)">
+            <i class="fa fa-blind" aria-hidden="true"></i>
           </label>
         </div>
       </div>
       <div class="modal-footer-create">
-        <button type="button" class="btn btn-primary" (click)="showRouteGuia()">Guíame</button>
+        <button type="button" class="btn btn-primary" (click)="calcularRuta()">Guíame</button>
         <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancelar</button>
       </div>
     </div>
@@ -115,7 +122,7 @@
         <p>¿Estás seguro de que quieres cancelar las rutas?</p>
       </div>
       <div class="modal-footer-cancelR">
-        <button type="button" class="btn" (click)="confirmCancelRoute()">Confirmar</button>
+        <!-- <button type="button" class="btn" (click)="confirmCancelRoute()">Confirmar</button> -->
         <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
       </div>
     </div>
@@ -230,7 +237,7 @@
         </p>
       </div>
       <div class="modal-footer-coffee">
-        <button type="button" class="btn" (click)="confirmArrive()">Si, he llegado</button>
+        <!-- <button type="button" class="btn" (click)="confirmArrive()">Si, he llegado</button> -->
         <button type="button" class="btn" (click)="cancelArrive(modal)">Cancelar</button>
       </div>
     </div>

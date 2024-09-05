@@ -6,6 +6,26 @@ body {
   padding: 0;
 }
 
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Asegúrate de que esté por encima de otros elementos */
+}
+
+.welcome-image {
+  max-width: 100%;
+  height: auto;
+}
+
+
+
 
 
 /* Estilos para la sección combinada */
@@ -15,6 +35,7 @@ body {
   border-radius: 10px; /* Bordes redondeados */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
 }
+
 
 .contact-action-content {
   display: flex;
@@ -84,7 +105,7 @@ header p {
 }
 
 
-.text-content[_ngcontent-ng-c2998270043] .subtitle[_ngcontent-ng-c2998270043] {
+.text-content[_ngcontent-ng-c558304794] .subtitle[_ngcontent-ng-c558304794] {
   font-size: 2.5em;
   color: #000000;
   white-space: pre-line;
@@ -94,7 +115,7 @@ header p {
   text-align: center; /* Centra el texto horizontalmente */
 }
 
-.text-content[_ngcontent-ng-c1307989152] .title[_ngcontent-ng-c1307989152] {
+.text-content[_ngcontent-ng-c558304794] .title[_ngcontent-ng-c558304794] {
   font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
   font-weight: 600; /* Peso Semibold */
   font-size: 3em; /* Tamaño de fuente */
@@ -144,13 +165,24 @@ blockquote {
   color: #797d6c; /* Gris */
 }
 
+footer {
+  position: relative; /* Asegura que el contenedor tenga una posición relativa */
+  height: 50px; /* Altura del footer, ajusta según sea necesario */
+  display: flex; /* Utiliza Flexbox para centrar */
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+}
+
 footer p {
   color: #7d6c75; /* Gris */
-  margin-bottom: 10px;
+  margin: 0; /* Elimina el margen predeterminado */
   font-size: 1rem;
   font-weight: 500; /* Peso Medium para la fuente Poppins */
   font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
+  text-align: center; /* Centra el texto horizontalmente */
 }
+
+
 
 .main-content {
   padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */

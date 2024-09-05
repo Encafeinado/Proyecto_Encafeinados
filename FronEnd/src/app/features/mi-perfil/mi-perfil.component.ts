@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StoreService } from 'src/app/service/store.service'; 
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { ReviewService } from '../../service/reviews.service';
 
 @Component({
   selector: 'app-mi-perfil',
@@ -10,18 +11,32 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 export class MiPerfilComponent implements OnInit {
   userData: any;
   shopData: any;
+  reviews: any[] = [];
   userRole: string = '';
   shopLogos: { name: string; logoUrl: string }[] = [];
 
   constructor(
     private storeService: StoreService,
-    private authService: AuthService
+    private authService: AuthService,
+    private reviewService: ReviewService
   ) { }
 
   ngOnInit(): void {
+    // window.location.reload();
     this.loadUserData();
+    this.loadReviews(); 
   }
-
+  loadReviews(): void {
+    this.reviewService.getAllReviews().subscribe(
+      (data) => {
+        this.reviews = data;
+        console.log('Reviews cargadas:', this.reviews);
+      },
+      (error) => {
+        console.error('Error al cargar las reviews:', error);
+      }
+    );
+  }
   loadUserData(): void {
     const currentUser = this.authService.currentUser();
     if (!currentUser) {
