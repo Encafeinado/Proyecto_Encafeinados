@@ -37,6 +37,7 @@ export class MapComponent implements OnInit, OnDestroy {
   hasArrived: boolean = false; // Nuevo estado para verificar si ya ha llegado
   shopLogos: { name: string; logoUrl: string }[] = [];
   shopMarkers: any[] = []; // Asegúrate de inicializar shopMarkers
+  circleOverlays: { overlay: any; markerData: any }[] = [];
   userId: string | null = null;
   bookImages: Image[] = [];
   obtainedStamps: number = 0;
@@ -139,6 +140,7 @@ export class MapComponent implements OnInit, OnDestroy {
     // Actualiza los datos cada 10 segundos (10000 ms)
     setInterval(() => {
       // this.fetchShopData();
+      this.actualizarEstadosTiendas();
       this.fetchBookData();
     }, 10000); // 10 segundos
   }
@@ -150,14 +152,71 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   iniciarMapa() {
-    // Actualizar los datos de las tiendas
+    class CircleOverlay extends google.maps.OverlayView {
+      private position: google.maps.LatLng;
+      private div: HTMLDivElement;
+      private map: google.maps.Map;
+
+      constructor(
+        position: google.maps.LatLng,
+        map: google.maps.Map,
+        status: boolean
+      ) {
+        super();
+        this.position = position;
+        this.map = map;
+        this.div = document.createElement('div');
+        this.div.style.borderRadius = '50%';
+        this.div.style.backgroundColor = status ? 'green' : 'red';
+        this.div.style.width = '10px';
+        this.div.style.height = '10px';
+        this.div.style.position = 'absolute';
+        this.div.style.transform = 'translate(30%, -458%)';
+
+        this.setMap(map);
+      }
+
+      updateStatus(status: boolean) {
+        this.div.style.backgroundColor = status ? 'green' : 'red';
+      }
+
+      override onAdd() {
+        const panes = this.getPanes();
+        if (panes && panes.overlayMouseTarget) {
+          panes.overlayMouseTarget.appendChild(this.div);
+        } else {
+          console.error(
+            'No se pudieron obtener los panes para el OverlayView.'
+          );
+        }
+      }
+
+      override draw() {
+        const projection = this.getProjection();
+        if (projection) {
+          const position = projection.fromLatLngToDivPixel(this.position);
+          if (position) {
+            this.div.style.left = `${position.x}px`;
+            this.div.style.top = `${position.y}px`;
+          }
+        }
+      }
+
+      override onRemove() {
+        if (this.div.parentNode) {
+          this.div.parentNode.removeChild(this.div);
+        }
+      }
+    }
+
+    // Utilizar la propiedad `circleOverlays` de la clase
     this.shopMarkers = this.shopData.map((shop: any) => ({
       position: {
         lat: shop.latitude,
         lng: shop.longitude,
       },
       title: shop.name,
-      status: shop.statusShop, // Supongo que 'statusShop' indica el estado
+      status: shop.statusShop,
       specialties1: shop.specialties1,
       specialties2: shop.specialties2,
     }));
@@ -172,7 +231,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
       this.directionsRendererInstance.setMap(map);
 
-      // Verificar si markerPosition está definido antes de crear el marcador
       if (this.markerPosition) {
         this.markerUsuario = new google.maps.Marker({
           position: this.markerPosition,
@@ -181,56 +239,6 @@ export class MapComponent implements OnInit, OnDestroy {
         });
       } else {
         console.error('markerPosition no está definido.');
-      }
-
-      // Definir y agregar los círculos
-      class CircleOverlay extends google.maps.OverlayView {
-        private position: google.maps.LatLng;
-        private div: HTMLDivElement;
-        private map: google.maps.Map;
-
-        constructor(position: google.maps.LatLng, map: google.maps.Map) {
-          super();
-          this.position = position;
-          this.map = map;
-          this.div = document.createElement('div');
-          this.div.style.borderRadius = '50%';
-          this.div.style.backgroundColor = '#FF0000'; // Color del círculo
-          this.div.style.width = '10px'; // Tamaño del círculo
-          this.div.style.height = '10px'; // Tamaño del círculo
-          this.div.style.position = 'absolute';
-          this.div.style.transform = 'translate(30%, -458%)'; // Alineación arriba del marcador
-
-          this.setMap(map);
-        }
-
-        override onAdd() {
-          const panes = this.getPanes();
-          if (panes && panes.overlayMouseTarget) {
-            panes.overlayMouseTarget.appendChild(this.div);
-          } else {
-            console.error(
-              'No se pudieron obtener los panes para el OverlayView.'
-            );
-          }
-        }
-
-        override draw() {
-          const projection = this.getProjection();
-          if (projection) {
-            const position = projection.fromLatLngToDivPixel(this.position);
-            if (position) {
-              this.div.style.left = `${position.x}px`;
-              this.div.style.top = `${position.y}px`;
-            }
-          }
-        }
-
-        override onRemove() {
-          if (this.div.parentNode) {
-            this.div.parentNode.removeChild(this.div);
-          }
-        }
       }
 
       this.shopMarkers.forEach((markerData) => {
@@ -242,14 +250,14 @@ export class MapComponent implements OnInit, OnDestroy {
             title: markerData.title,
           });
 
-          new CircleOverlay(marker.getPosition()!, map);
+          const overlay = new CircleOverlay(
+            marker.getPosition()!,
+            map,
+            markerData.status
+          );
+          this.circleOverlays.push({ overlay: overlay, markerData: markerData });
 
           marker.addListener('click', () => {
-            console.log(`Nombre de la tienda: ${markerData.title}`);
-            console.log(`Estado de la tienda: ${markerData.status}`);
-            console.log(`Especialidad 1: ${markerData.specialties1}`);
-            console.log(`Especialidad 2: ${markerData.specialties2}`);
-
             this.openModal(
               this.createModal,
               markerData.title,
@@ -263,11 +271,52 @@ export class MapComponent implements OnInit, OnDestroy {
         }
       });
 
-      // Forzar el redibujado del mapa (opcional)
       google.maps.event.trigger(map, 'resize');
+
+      // Actualización periódica de los estados
+      setInterval(() => {
+        this.actualizarEstadosTiendas();
+        console.log('Actualizado los estados');
+      }, 10000);
     } else {
       console.error('Elemento del mapa no encontrado.');
     }
+  }
+
+  // Método para actualizar los estados de las tiendas
+  actualizarEstadosTiendas(): void {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token no encontrado en el almacenamiento local.');
+      return;
+    }
+
+    this.shopService.fetchShopData(token).subscribe(
+      (data: any) => {
+        // Solo actualizar los estados de las tiendas
+        this.shopData.forEach((shop: any) => {
+          const tiendaActualizada = data.find((d: any) => d.name === shop.name);
+          if (tiendaActualizada) {
+            shop.statusShop = tiendaActualizada.statusShop;
+            console.log('Holaaaa1')
+          }
+        });
+
+        // Actualiza los estados en las bolitas
+        this.circleOverlays.forEach((overlayData) => {
+          const shop = this.shopData.find(
+            (s) => s.name === overlayData.markerData.title
+          );
+          if (shop) {
+            overlayData.overlay.updateStatus(shop.statusShop);
+            console.log('Holaaaa')
+          }
+        });
+      },
+      (error) => {
+        console.error('Error al actualizar los estados de las tiendas:', error);
+      }
+    );
   }
 
   // Actualiza rastrearUbicacionUsuario para recalcular la ruta y ajustar el zoom
@@ -381,6 +430,7 @@ actualizarMarcadorUbicacionUsuario() {
       console.error('La ubicación del usuario no está disponible.');
     }
   }
+
   solicitarPermisoOrientacion() {
     const deviceOrientationEvent = DeviceOrientationEvent as any;
 
