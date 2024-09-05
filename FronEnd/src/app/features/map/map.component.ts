@@ -465,9 +465,7 @@ actualizarMarcadorUbicacionUsuario() {
               'No se pudo obtener una orientación válida del dispositivo.'
             );
           }
-        } else {
-          console.error('No se pudo obtener la orientación del dispositivo.');
-        }
+        } 
       },
       true
     );
