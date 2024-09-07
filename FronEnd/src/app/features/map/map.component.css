@@ -179,7 +179,57 @@
 }
 
 
+/* Estilos generales para el contenido del modal */
+.modal-content-review {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
+}
 
+/* Estilos para el encabezado del modal */
+.modal-header-review {
+  background-color: #0f1eee;
+  color: #ffffff;
+  padding: 15px;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* Estilos para el cuerpo del modal */
+.modal-body-review {
+  padding: 20px;
+  background-color: #d4f1f7;
+  border-radius: 0 0 10px 10px;
+}
+
+/* Estilos para el pie del modal */
+.modal-footer-review {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  border-top: none;
+}
+
+/* Estilos para los botones del pie del modal */
+.modal-footer-review .btn {
+  margin: 0 10px;
+  background-color: #2516f1;
+  color: #ffffff;
+}
+
+/* Estilo para los botones cuando se pasan por encima */
+.modal-footer-review .btn:hover {
+  background-color: #676ed6;
+}
+
+/* Estilo para los botones deshabilitados */
+.modal-footer-review .btn:disabled {
+  background-color: #666666;
+}
 
 
 

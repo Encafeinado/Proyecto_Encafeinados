@@ -29,22 +29,29 @@
         <p>{{ averageRating | number:'1.1-1' }} estrellas</p>
         <div class="reviews-section">
           <h2>Reseñas de Clientes</h2>
-          <div class="review-rating-container">
-            <div class="reviews-column">
-              <div *ngFor="let review of reviews" class="review">
-                <p><strong>Comentario:</strong> {{ review.text }}</p>
+          
+          <!-- Contenedor común para ambas columnas con scrollbar -->
+          <div class="scrollable-container">
+            <div class="review-rating-container">
+              <div class="reviews-column">
+                <div *ngFor="let review of reviews" class="review">
+                  <p><strong>Comentario:</strong> {{ review.text }}</p>
+                </div>
               </div>
-            </div>
-            
-            <div class="ratings-column">
-              <div *ngFor="let rating of ratings" class="rating">
-                <p><strong>Calificación:</strong> {{ rating.stars }} </p>
+              
+              <div class="ratings-column">
+                <div *ngFor="let rating of ratings" class="rating">
+                  <p><strong>Calificación:</strong> {{ rating.stars }} </p>
+                </div>
               </div>
             </div>
           </div>
+          
         </div>
       </div>
     </div>
+    
+    
   
 
     <!-- Modal -->

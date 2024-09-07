@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ShopModule } from './shop/shop.module';
 import { AuthModule } from './auth/auth.module';
 import { BookModule } from './book/book.module';
+import { ReviewModule } from './reviews/review.module';  // Asegúrate de que la ruta es correcta
 
 @Module({
   imports: [
@@ -13,8 +14,8 @@ import { BookModule } from './book/book.module';
     }),
     ShopModule,
     AuthModule,
-    BookModule
+    BookModule,
+    ReviewModule,
   ],
 })
 export class AppModule {}
-

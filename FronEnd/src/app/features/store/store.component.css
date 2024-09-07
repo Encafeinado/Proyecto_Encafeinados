@@ -152,21 +152,19 @@
   background-color: #d4f1f7;
 }
 
-.review-container {
-  max-height: 100px; /* Altura máxima del contenedor */
-  overflow-y: auto; /* Habilita el scroll vertical */
-  border: 1px solid #ffffff; /* Opcional: borde para definir la caja */
-  padding: 10px; /* Espacio interno */
-  background-color: #fafafa; /* Fondo amarillo para coincidir con el resto */
+/* Contenedor que abarca las columnas de comentarios y calificaciones */
+.scrollable-container {
+  max-height: 300px; /* Ajusta la altura máxima según tus necesidades */
+  overflow-y: auto;  /* Habilita el scroll vertical */
+  border: 1px solid #ccc; /* Borde opcional */
+  padding: 10px;
+  background-color: #fafafa; /* Fondo claro */
 }
 
-.review {
-  margin-bottom: 10px; /* Espacio entre reseñas */
-}
 .review-rating-container {
   display: flex;
   justify-content: space-between;
-  gap: 50px; /* Reduce el espacio entre las columnas */
+  gap: 20px; /* Espacio entre las columnas */
 }
 
 .reviews-column, 
@@ -176,5 +174,5 @@
 
 .review,
 .rating {
-  margin-bottom: 5px; /* Reduce el espacio entre los elementos dentro de cada columna */
+  margin-bottom: 5px; /* Espacio entre las reseñas y las calificaciones */
 }

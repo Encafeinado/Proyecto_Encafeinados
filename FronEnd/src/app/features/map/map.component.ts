@@ -7,12 +7,20 @@ import {
   ElementRef,
   ChangeDetectorRef,
 } from '@angular/core';
+
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import * as toastr from 'toastr';
 import { AlbumService, Image } from '../../service/album.service';
 import { UserService } from '../../service/user.service';
 import { StoreService } from '../../service/store.service';
 import { ShopService } from '../../service/shop.service';
+import { ReviewService } from '../../service/reviews.service';
+
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -23,6 +31,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class MapComponent implements OnInit, OnDestroy {
   modalRef!: NgbModalRef;
+  reviewApp: string = '';
   openedModal = false;
   verifiedcode: boolean = false;
   destinationName!: string;
@@ -100,6 +109,7 @@ export class MapComponent implements OnInit, OnDestroy {
   @ViewChild('modalBook', { static: true }) modalBook: any;
   @ViewChild('codeInput', { static: false }) codeInput!: ElementRef;
   @ViewChild('arriveModal', { static: true }) arriveModal: any;
+  @ViewChild('modalReviewShop', { static: true }) modalReviewShop: any;
 
   constructor(
     private modalService: NgbModal,
@@ -108,6 +118,7 @@ export class MapComponent implements OnInit, OnDestroy {
     private storeService: StoreService,
     private shopService: ShopService,
     private authService: AuthService,
+    private reviewService: ReviewService,
     private changeDetector: ChangeDetectorRef,
     private toastr: ToastrService
   ) {}
@@ -285,6 +296,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Elemento del mapa no encontrado.');
     }
   }
+  
 
   // Método para actualizar los estados de las tiendas
   actualizarEstadosTiendas(): void {
@@ -798,10 +810,30 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
+  updateButtonReviewState() {
+    
+    this.isButtonDisabled = this.reviewApp.trim().length === 0;
+  }
+  addReviewToApp(){
+    this.reviewService.addReview(this.reviewApp).subscribe(
+      (res) => {
+        toastr.success(
+          'Comentario añadido exitosamente'
+        );
+        this.modalRef.close();
+      },
+      (err) => {
+          toastr.error('No se ha podido añadir el comentario');
+        this.modalRef.close();
+      }
+    );
+  }
+
   resetModalFields() {
     this.enteredCode = '';
     this.enteredRating = 0;
     this.enteredReview = '';
+    this.reviewApp = '';
     this.isButtonDisabled = true; // Opcional, si quieres desactivar el botón nuevamente
   }
 
@@ -812,6 +844,11 @@ export class MapComponent implements OnInit, OnDestroy {
 
   openModalAlbum(): void {
     this.openModal(this.modalBook, '', '', '', '');
+  }
+  openModalReviewShop(): void {
+    this.resetModalFields();
+    this.openModal(this.modalReviewShop, '', 'statusValue', "", "");
+
   }
 
   verifyCode() {
@@ -839,7 +876,7 @@ export class MapComponent implements OnInit, OnDestroy {
                     toastr.success(
                       'Código verificado y CoffeeCoins añadidos exitosamente'
                     );
-
+                    // window.location.reload();
                     this.reloadComponent();
                     this.modalRef.close();
                   },
@@ -861,6 +898,7 @@ export class MapComponent implements OnInit, OnDestroy {
                 'Código verificado y CoffeeCoins añadidos exitosamente'
               );
               this.reloadComponent();
+              // window.location.reload();
             }
           } else {
             this.verifiedcode = false;
@@ -878,6 +916,7 @@ export class MapComponent implements OnInit, OnDestroy {
             toastr.warning(
               'La tienda ya está presente en el álbum pero te aumentamos coffecoins'
             );
+            // window.location.reload();
             this.modalRef.close();
           } else {
             this.message = 'Error al verificar el código';
