@@ -1,17 +1,52 @@
 /* Navbar Styles */
 .navbar {
-  background-color: #03AED2; /* Color de fondo principal del navbar */
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #ffffff; /* Color de fondo principal del navbar */
   padding: 10px 20px;
   font-family: 'Poppins', sans-serif;
-  border-bottom: 3px solid #FDDE55; /* Añadimos un borde inferior */
+  border-bottom: 3px solid #ffffff; /* Añadimos un borde inferior */
+  transition: top 0.3s; /* Transición suave al cambiar la posición */
+  z-index: 1000; /* Asegúrate de que el navbar esté sobre otros elementos */
 }
 
+/* Clase para desplazar el navbar hacia abajo */
+.navbar-scroll {
+  top: 60px; /* Ajusta la distancia que deseas que el navbar se desplace hacia abajo */
+}
+
+/* Navbar Brand */
 .navbar .navbar-brand {
-  color: #FFFFFF; /* Color del texto de la marca */
+  color: #0f1eee; /* Color del texto de la marca */
   font-size: 1.5rem;
   font-weight: bold;
 }
 
+/* Botones */
+.btn-outline-light, .btn-outline-light2 {
+  border-radius: 30px; /* Ajusta el valor según el radio de redondeo que desees */
+}
+
+.btn-outline-light {
+  --bs-btn-color: #ffffff;
+  --bs-btn-border-color: #0f1eee;
+  --bs-btn-hover-color: #0f1eee;
+  --bs-btn-hover-bg: #f8f9fa;
+  --bs-btn-hover-border-color: #0f1eee;
+  --bs-btn-bg: #0f1eee;
+}
+
+.btn-outline-light2 {
+  --bs-btn-color: #000000;
+  --bs-btn-border-color: #ffffff;
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: #0f1eee;
+  --bs-btn-hover-border-color: #0f1eee;
+  --bs-btn-bg: #ffffff;
+}
+
+/* Enlaces de navegación */
 .navbar .navbar-nav .nav-link {
   color: #FFFFFF; /* Color de los enlaces de navegación */
   margin: 0 10px;
@@ -22,8 +57,9 @@
   color: #FEEFAD; /* Color de los enlaces al pasar el cursor */
 }
 
+/* Estilos del menú desplegable */
 .navbar .dropdown-menu {
-  background-color: #68D2E8; /* Color de fondo del menú desplegable */
+  background-color: #0f1eee; /* Color de fondo del menú desplegable */
   border: 1px solid #FDDE55;
 }
 
@@ -32,8 +68,8 @@
 }
 
 .navbar .dropdown-menu .dropdown-item:hover {
-  background-color: #FDDE55; /* Color de fondo al pasar el cursor sobre los elementos */
-  color: #03AED2; /* Color del texto al pasar el cursor */
+  background-color: #ffffff; /* Color de fondo al pasar el cursor sobre los elementos */
+  color: #0f1eee; /* Color del texto al pasar el cursor */
 }
 
 /* Imagen del usuario en el dropdown */
@@ -65,7 +101,7 @@
   left: auto;
 }
 
-/* Modal Styles */
+/* Estilos del modal */
 .modal-base {
   background-color: #FFFFFF; /* Color de fondo más claro */
   border-radius: 10px;
@@ -99,7 +135,7 @@
 }
 
 .modal-base .modal-header {
-  background-color: #03AED2;
+  background-color: #0f1eee;
   color: #FFFFFF;
   border: none; /* Eliminamos el borde */
   padding: 15px;
@@ -128,44 +164,83 @@
 
 .modal-base .modal-body {
   padding: 20px;
-  background-color: #FEEFAD;
+  background-color: #d4f1f7;
   border-radius: 0 0 10px 10px;
 }
 
 .modal-base .modal-footer {
-  border-top: none;
+  padding: 15px;
   display: flex;
-  justify-content: center;
-  padding-top: 20px; /* Aumentamos el espacio en la parte superior del footer */
-  padding-bottom: 20px;
+  justify-content: flex-end;
+  border-top: 1px solid #E0E0E0;
 }
 
-.modal-base .modal-footer .btn {
+
+/* Ocultar el toggler en dispositivos móviles */
+.navbar-toggler {
+  display: none;
+}
+
+/* Mostrar el dropdown en móviles */
+@media (max-width: 991px) {
+  .navbar-collapse {
+    display: none !important;
+  }
+
+  .dropdown {
+    display: block;
+  }
+}
+
+/* Mostrar el menú normal en pantallas grandes */
+/* Mostrar el dropdown de "Menú" solo en móviles */
+.d-lg-none {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .d-lg-none {
+    display: block;
+  }
+  .navbar-collapse {
+    display: none !important;
+  }
+}
+
+/* Estilos generales para los dropdowns */
+.navbar .dropdown-menu {
+  background-color: #0f1eee;
+  border: 1px solid #FDDE55;
+}
+
+.navbar .dropdown-menu .dropdown-item {
+  color: #FFFFFF;
+}
+
+.navbar .dropdown-menu .dropdown-item:hover {
+  background-color: #ffffff;
+  color: #0f1eee;
+}
+
+.btn-outline-lighte {
+  width: 90px; /* Ajusta el tamaño según tus necesidades */
+  --bs-btn-color: #ffffff;
+  --bs-btn-border-color: #0f1eee;
+  --bs-btn-hover-color: #0f1eee;
+  --bs-btn-hover-bg: #f8f9fa;
+  --bs-btn-hover-border-color: #0f1eee;
+  --bs-btn-bg: #0f1eee;
+  justify-content: center; /* Centra horizontalmente */
+}
+.btn-primary:hover {
+  background-color: #676ed6;
+}
+
+.btn-primary {
   margin: 0 10px;
-  background-color: #FDDE55;
-  color: #03AED2;
+  background-color: #0f1eee;
+  color: #ffffff;
   border: none;
 }
 
-.modal-base .modal-footer .btn:hover {
-  background-color: #FEEFAD;
-}
 
-/* Navbar Dropdown Styles */
-.navbar .dropdown-toggle {
-  display: flex;
-  align-items: center;
-}
-
-.navbar .dropdown-toggle img {
-  margin-right: 8px;
-}
-
-.navbar .dropdown-menu {
-  right: 0;
-  left: auto;
-}
-
-.dropdown-toggle::after {
-  display: none !important;
-}

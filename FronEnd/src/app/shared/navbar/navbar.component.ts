@@ -1,7 +1,6 @@
-import { AfterViewInit, ChangeDetectorRef, Component, computed, effect, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { NavigationCancel, NavigationEnd, NavigationError, Router } from '@angular/router';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { AuthStatus } from 'src/app/auth/interfaces';
 import { AuthService } from 'src/app/auth/services/auth.service';
 
 @Component({
@@ -10,7 +9,7 @@ import { AuthService } from 'src/app/auth/services/auth.service';
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit, AfterViewInit {
-  private authService = inject(AuthService);
+  authService = inject(AuthService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef); 
   public navbarText: string = 'Descubre el mejor café cerca de ti';
@@ -18,102 +17,65 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   @ViewChild('sesionModal', { static: true }) sesionModal: any;
   modalRef!: NgbModalRef;
   openedModal = false;
-  showCancelButton: boolean = false;
   isLoading = true;
 
-  public finishedAuthCheck = computed<boolean>(() => {
-    if (this.authService.authStatus() === AuthStatus.checking) {
-      return false;
-    }
-    return true;
-  });
-
-  public authStatusChangedEffect = effect(() => {
-    switch (this.authService.authStatus()) {
-      case AuthStatus.checking:
-        // El estado de autenticación está siendo verificado
-        return;
-  
-      case AuthStatus.authenticated:
-        const currentUser = this.authService.currentUser();
-        if (currentUser) {
-          this.userName = currentUser.name || 'Nombre del Usuario';
-          console.log('Nombre del usuario:', this.userName);
-  
-          if (currentUser.roles.includes('user')) {
-            // Usuario normal autenticado
-            if (this.router.url === '/shop') {
-              this.router.navigateByUrl('/landing');
-            }
-          } else if (currentUser.roles.includes('shop')) {
-            // Tienda autenticada
-            if (this.router.url === '/landing') {
-              this.router.navigateByUrl('/shop');
-            }
-          }
-        }
-        this.cdr.detectChanges();
-        return;
-  
-        case AuthStatus.notAuthenticated:
-          const currentUrl = this.router.url;
-          // Permite acceso a las rutas de registro, inicio de sesión y restablecimiento de contraseña
-          if (currentUrl !== '/auth/register' && currentUrl !== '/auth/forgot-password' ) {
-            this.router.navigateByUrl('/auth/login');
-            this.cdr.detectChanges();
-          }
-          return;
-        
-    }
-  });
-  
-  
   constructor(private modalService: NgbModal) {}
 
   ngOnInit(): void {
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.isLoading = true;
-      } else if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
-        this.isLoading = false;
-        this.updateNavbarText(event.url);
-        this.cdr.detectChanges(); 
-      }
-    });
-
-   
     const currentUser = this.authService.currentUser();
     this.userName = currentUser ? currentUser.name : 'Nombre del Usuario';
-    console.log('Nombre del usuario inicial:', this.userName);
-  }
-
-  ngAfterViewInit() {
-   
-    this.cdr.detectChanges();
+    
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.isLoading = false;
+      } else if (event instanceof NavigationCancel || event instanceof NavigationError) {
+        this.isLoading = false;
+      }
+    });
   }
 
   
 
-  updateNavbarText(url: string): void {
-    if (url === '/store' || url === '/landing') {
-      this.navbarText = 'Descubre el mejor café cerca de ti';
-    } else if (url === '/map') {
-      this.navbarText = 'Explora las ubicaciones en el mapa';
-    } else {
-      this.navbarText = 'Descubre el mejor café cerca de ti';
-    }
+  ngAfterViewInit() {
+    this.cdr.detectChanges();
+  }
+
+  shouldShowLogout(): boolean {
+    return this.authService.isAuthenticated() && this.isStoreOrMapRoute();
   }
 
   onLogout() {
     this.authService.logout();
   }
 
+  setupDropdownToggle() {
+    const dropdownButton = document.getElementById('userDropdown');
+    const navbarCollapse = document.getElementById('navbarText');
+
+    if (dropdownButton && navbarCollapse) {
+      dropdownButton.addEventListener('click', () => {
+        navbarCollapse.classList.toggle('show');
+      });
+    }
+  }
+
+  shouldShowMobileDropdown(): boolean {
+    return (
+      this.isUserLanding() || 
+      this.isUserLandingTienda() || 
+      (this.userName.trim().length > 0 && this.authService.isAuthenticated())
+    );
+  }
+  
+  
+
+  
   isStoreOrMapRoute(): boolean {
- 
     return (
       this.router.url === '/store' ||
       this.router.url === '/map' ||
-      this.router.url === '/landing'
+      this.router.url === '/landing'||
+      this.router.url === '/landing-tienda'
     );
   }
 
@@ -144,13 +106,35 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     this.modalRef.close();
   }
 
+  isOnLandingPage(): boolean {
+    return this.isUserLanding() || this.isUserLandingTienda();
+  }
+  
+  isOnLoginPage(): boolean {
+    return this.router.url === '/auth/login';
+  }
 
+  isOnRegisterPage(): boolean {
+    return this.router.url === '/auth/register';
+  }
 
-   isUserShop(): boolean {
+  isOnRequestPage(): boolean {
+    return this.router.url === '/auth/forgot-password';
+  }
+
+  isUserShop(): boolean {
     return this.authService.rolUser() === 'shop';
   }
 
   isUserUser(): boolean {
     return this.authService.rolUser() === 'user';
+  }
+
+  isUserLanding(): boolean {
+    return this.router.url === '/landing';
+  }
+
+  isUserLandingTienda(): boolean {
+    return this.router.url === '/landing-tienda';
   }
 }

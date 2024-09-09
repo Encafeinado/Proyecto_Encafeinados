@@ -1,10 +1,67 @@
-@import url("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
-
+/* Estilos generales para el mapa */
 #map {
-  height: 70vh;
-  width: 100%;
-  background-image: url("https://www.transparenttextures.com/patterns/wood-pattern.png"); /* Texture for the map */
-  border-top: 2px solid #FDDE55;
+  height: 600px; /* Altura predeterminada para pantallas grandes */
+  width: 100%; /* Asegura que el mapa ocupe el ancho completo */
+}
+
+/* Ajustes para pantallas más pequeñas */
+@media (max-width: 768px) {
+  #map {
+    height: 50vh; /* Reduce la altura a 50vh en pantallas más pequeñas */
+  }
+}
+
+/* Ajustes adicionales para pantallas muy pequeñas (por ejemplo, teléfonos) */
+@media (max-width: 480px) {
+  #map {
+    height: 40vh; /* Reduce aún más la altura en pantallas muy pequeñas */
+  }
+}
+
+.main-content {
+  padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
+}
+
+.alert-info {
+  --bs-alert-color: #007bff; /* Color del texto dentro de la alerta */
+  --bs-alert-bg: #ffffff;    /* Color de fondo de la alerta */
+  --bs-alert-border-color: #ffffff; /* Color del borde de la alerta */
+  --bs-alert-link-color: #0056b3; /* Color de los enlaces dentro de la alerta */
+}
+
+/* Estilos comunes para ambos botones */
+.floating-button-location,
+.floating-button-cancel {
+  position: absolute;
+  right: 20px; /* Coloca los botones en la misma posición lateral */
+  background-color: #0f1eee; /* Color de fondo azul */
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 40px; /* Tamaño más pequeño */
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  z-index: 1000; /* Asegura que el botón esté por encima del mapa */
+}
+
+.floating-button-location:hover,
+.floating-button-cancel:hover {
+  background-color: #676ed6; /* Color más claro al pasar el ratón */
+}
+
+/* Estilos específicos para el botón de cancelar */
+.floating-button-cancel {
+  bottom: 70px; /* Ajusta según sea necesario para que esté encima del otro botón */
+}
+
+/* Estilos específicos para el botón de ubicación */
+.floating-button-location {
+  bottom: 20px; /* Ajusta según sea necesario para que esté debajo del botón de cancelar */
 }
 
 .grayscale-icon {
@@ -15,70 +72,57 @@
   max-width: 1200px;
 }
 
+
 .sidebar {
-  background-color: #FEEFAD;
+  background-color: #d4f1f7;
   padding: 20px;
-  border-left: 2px solid #FDDE55;
+  border-radius: 20px;
+
 }
 
-.sidebar h2 {
-  font-size: 1.8rem;
+.sidebar h2, .sidebar p {
+  position: relative;
+  color: #0c0c0c;
+  border-radius: 5px;
+  padding: 5px;
 }
 
-.sidebar p {
-  font-size: 0.8rem;
-}
+
 
 .sidebar img {
   margin-bottom: 15px;
 }
 
-.floating-button {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  background-color: #03AED2;
-  color: #FEEFAD;
-  border: none;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition: background-color 0.3s;
-  z-index: 1000;
-}
-
 .floating-button:hover {
-  background-color: #68D2E8;
+  background-color: #676ed6;
 }
 
 .floating-button i {
   font-size: 24px;
 }
-.flex-container {
-  display: flex;
-  justify-content: center; /* Alinea los elementos al centro horizontalmente */
-  align-items: center; /* Alinea los elementos al centro verticalmente */
-}
 
+/* Contenedor para los botones */
 .button-container-footer {
+  display: flex;
+  flex-direction: column; /* Alinea los botones verticalmente */
+  gap: 10px; /* Espacio entre los botones */
   margin-top: 20px; /* Margen superior para separar del contenido debajo */
 }
 
+/* Estilos específicos para cada botón */
 .button-book {
   margin-right: 10px; /* Espacio entre los botones */
+  
 }
 
 .button-camera {
   margin-left: 60px; /* Espacio entre los botones */
 }
 
-.modal-content-code, .modal-content-create , .modal-content-cancelR{
-  background-color: #FFFFFF;
+.modal-content-code,
+.modal-content-create,
+.modal-content-cancelR {
+  background-color: #ffffff;
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -86,39 +130,109 @@
   overflow: hidden;
 }
 
-.modal-header-code ,.modal-header-create ,.modal-header-cancelR {
-  background-color: #03AED2;
-  color: #FFFFFF;
+.modal-header-code,
+.modal-header-create,
+.modal-header-cancelR {
+  background-color: #0f1eee;
+  color: #ffffff;
   padding: 15px;
   border-radius: 10px 10px 0 0;
   display: flex;
   justify-content: center;
-
 }
 
-.modal-body-code, .modal-body-create ,.modal-body-cancelR{
+.modal-body-code,
+.modal-body-create,
+.modal-body-cancelR {
   padding: 20px;
-  background-color: #FEEFAD;
+  background-color: #d4f1f7;
   border-radius: 0 0 10px 10px;
 }
 
-.modal-footer-code, .modal-footer-create, .modal-footer-cancelR {
+.modal-footer-code,
+.modal-footer-create,
+.modal-footer-cancelR {
   display: flex;
   justify-content: center;
   padding: 20px;
   border-top: none;
 }
 
-.modal-footer-code .btn , .modal-footer-create .btn , .modal-footer-cancelR .btn{
+.modal-footer-code .btn,
+.modal-footer-create .btn,
+.modal-footer-cancelR .btn {
   margin: 0 10px;
-  background-color: #FDDE55;
-  color: #03AED2;
-  border: none;
+  background-color: #2516f1;
+  color: #ffffff;
 }
 
-.modal-footer-code .btn:hover , .modal-footer-create .btn:hover , .modal-footer-cancelR .btn:hover{
-  background-color: #FEEFAD;
+.modal-footer-code .btn:hover,
+.modal-footer-create .btn:hover,
+.modal-footer-cancelR .btn:hover {
+  background-color: #676ed6;
 }
+
+.modal-footer-code .btn:disabled,
+.modal-footer-create .btn:disabled,
+.modal-footer-cancelR .btn:disabled {
+  background-color: #666666;
+}
+
+
+/* Estilos generales para el contenido del modal */
+.modal-content-review {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
+}
+
+/* Estilos para el encabezado del modal */
+.modal-header-review {
+  background-color: #0f1eee;
+  color: #ffffff;
+  padding: 15px;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* Estilos para el cuerpo del modal */
+.modal-body-review {
+  padding: 20px;
+  background-color: #d4f1f7;
+  border-radius: 0 0 10px 10px;
+}
+
+/* Estilos para el pie del modal */
+.modal-footer-review {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  border-top: none;
+}
+
+/* Estilos para los botones del pie del modal */
+.modal-footer-review .btn {
+  margin: 0 10px;
+  background-color: #2516f1;
+  color: #ffffff;
+}
+
+/* Estilo para los botones cuando se pasan por encima */
+.modal-footer-review .btn:hover {
+  background-color: #676ed6;
+}
+
+/* Estilo para los botones deshabilitados */
+.modal-footer-review .btn:disabled {
+  background-color: #666666;
+}
+
+
+
 /* ------------------------------------------------------------------------------------------------- */
 .album {
   display: flex;
@@ -132,8 +246,9 @@
 }
 
 .album-page img {
-  width: 100px; /* Ajusta este valor según el tamaño que prefieras */
-  height: 100px; /* Ajusta este valor según el tamaño que prefieras */
+  max-width: 100%; /* Asegura que la imagen no se desborde */
+  width: 100%; /* La imagen ocupará el 100% de su contenedor */
+  height: auto; /* Mantiene la proporción de la imagen */
   object-fit: cover; /* Hace que la imagen cubra el contenedor sin distorsionarse */
   margin-bottom: 10px;
 }
@@ -142,19 +257,28 @@
   display: flex;
   gap: 10px; /* Espacio entre los botones */
 }
+.text-white {
+  --bs-text-opacity: 1;
+  color: #0f1eee;
+}
 
 .floating-button {
-  background-color: #03AED2;
+  position: fixed; /* Cambia de absolute a fixed */
+  bottom: 20px; /* Ajusta la distancia desde el fondo */
+  left: 20px; /* Ajusta la distancia desde el borde izquierdo */
+  background-color: #0f1eee;
+  color: #fcfcfc;
   border: none;
-  color: white;
-  padding: 10px;
   border-radius: 50%;
-  cursor: pointer;
+  width: 50px;
+  height: 50px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  width: 45px;
-  height: 45px;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  z-index: 1000;
 }
 
 .modal-book {
@@ -174,7 +298,7 @@
   top: 10px;
   bottom: 10px;
   width: 20px;
-  background: linear-gradient(to bottom, #68D2E8, #03AED2);
+  background: linear-gradient(to bottom, #68d2e8, #03aed2);
   z-index: -1;
   border-radius: 10px;
 }
@@ -190,8 +314,8 @@
 }
 
 .modal-book .modal-header {
-  background-color: #03AED2;
-  color: #FFFFFF;
+  background-color: #0f1eee;
+  color: #ffffff;
   border: none; /* Eliminamos el borde */
   padding: 15px;
   border-radius: 10px 10px 0 0;
@@ -206,11 +330,11 @@
   bottom: -20px;
   right: 20px;
   font-size: 0.8rem;
-  color: #03AED2;
+  color: #03aed2;
 }
 
 .modal-book .modal-header .close {
-  color: #FFFFFF;
+  color: #ffffff;
   opacity: 1;
   position: absolute;
   right: 10px;
@@ -219,27 +343,39 @@
 
 .modal-book .modal-body {
   padding: 20px;
-  background-color: #FEEFAD;
+  background-color: #d4f1f7;
   border-radius: 0 0 10px 10px;
 }
 
 .modal-book .album {
   display: grid;
-  grid-template-columns: repeat(6, 1fr); /* 5 columnas */
+  grid-template-columns: repeat(4, 1fr); /* 6 columnas en pantallas grandes */
   gap: 10px; /* Espacio entre las piezas */
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 768px) {
+  .modal-book .album {
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas en móviles */
+  }
+
+  .modal-book .album-page img {
+    width: 45px; /* Tamaño de la imagen en móviles */
+    height: 45px;
+  }
 }
 
 .modal-book .album-page {
   text-align: center;
-  background: #FFFFFF;
+  background: #ffffff;
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .modal-book .album-page img {
-  width: 75px; /* Ajusta este valor según el tamaño que prefieras */
-  height: 75px; /* Ajusta este valor según el tamaño que prefieras */
+  width: 70px; /* Ajusta este valor según el tamaño que prefieras */
+  height: 70px; /* Ajusta este valor según el tamaño que prefieras */
   object-fit: cover; /* Hace que la imagen cubra el contenedor sin distorsionarse */
   margin-bottom: 10px;
 }
@@ -254,22 +390,23 @@
 
 .modal-book .modal-footer .btn {
   margin: 0 10px;
-  background-color: #FDDE55;
-  color: #03AED2;
+  background-color: #0f1eee;
+  color: #ffffff;
   border: none;
 }
 
 .modal-book .modal-footer .btn:hover {
-  background-color: #FEEFAD;
+  background-color: #676ed6;
 }
 
-.album img {
+/* Estilo por defecto para los logos */
+.album-page img {
   filter: grayscale(100%);
-  transition: filter 0.5s ease-in-out;
 }
 
-.album img.colored {
-  filter: grayscale(0%);
+/* Estilo para las imágenes coloreadas */
+.album-page img.colored {
+  filter: grayscale(0%); /* Quita el filtro grayscale para imágenes coloreadas */
 }
 
 .album-info {
@@ -280,7 +417,8 @@
   padding: 3px 0; /* Agrega espacio arriba y abajo */
 }
 
-.obtained-stamps, .missing-stamps {
+.obtained-stamps,
+.missing-stamps {
   font-size: 1rem;
   font-weight: bold;
   margin: 0 10px; /* Agrega espacio a los lados */
@@ -289,7 +427,7 @@
 /* ------------------------------------------------------------------------------------------ */
 
 .modal-coffee {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -297,9 +435,11 @@
   overflow: hidden;
 }
 
+
+
 .modal-header-coffee {
-  background-color: #03AED2;
-  color: #FFFFFF;
+  background-color: #03aed2;
+  color: #ffffff;
   padding: 15px;
   border-radius: 10px 10px 0 0;
   display: flex;
@@ -313,7 +453,7 @@
 
 .modal-body-coffee {
   padding: 20px;
-  background-color: #FEEFAD;
+  background-color: #feefad;
   border-radius: 0 0 10px 10px;
 }
 
@@ -341,12 +481,79 @@
 }
 
 .modal-footer-coffee .btn {
-  background-color: #FDDE55;
-  color: #03AED2;
+  background-color: #fdde55;
+  color: #03aed2;
   border: none;
   margin: 0 10px;
 }
 
 .modal-footer-coffee .btn:hover {
-  background-color: #FEEFAD;
+  background-color: #feefad;
 }
+
+
+/* ------------------------------------------------------------------------------- */
+.transport-selection {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente los elementos */
+  gap: 15px; /* Espacio entre los elementos */
+}
+
+.transport-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.transport-label input[type="radio"] {
+  display: none;
+}
+
+.transport-label i {
+  font-size: 24px; /* Aumenta el tamaño del icono */
+  color: #343a40;
+}
+
+.transport-label:hover {
+  background-color: #e2e6ea;
+  transform: scale(1.1);
+}
+
+.transport-label input[type="radio"]:checked + i {
+  color: #007bff; /* Color del icono seleccionado */
+  background-color: #e2e6ea; /* Fondo más claro al pasar el ratón */
+  border-radius: 50%;
+}
+
+.leaflet-routing-container {
+  width: 100%; /* Make it fit the sidebar */
+  max-height: 300px; /* Or another value depending on the available space */
+  overflow-y: auto; /* Scroll if content is too long */
+  margin-top: 20px; /* Add some space above */
+}
+
+.star-rating {
+  font-size: 32px; /* Tamaño de las estrellas */
+  color: #FFD700; /* Color dorado */
+}
+
+.star-rating .star-empty {
+  color: #ccc; /* Color gris para estrellas no seleccionadas */
+}
+
+.star-rating .star-filled {
+  color: #FFD700; /* Color dorado para estrellas seleccionadas */
+}
+
+.star-rating span {
+  cursor: pointer;
+}
+
+

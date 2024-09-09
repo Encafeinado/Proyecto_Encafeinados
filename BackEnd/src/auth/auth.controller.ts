@@ -1,4 +1,4 @@
-import { Body, Controller, Get, InternalServerErrorException, NotFoundException, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, InternalServerErrorException, NotFoundException, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginDto, RegisterUserDto } from './dto';
 import { User } from './entities/user.entity';
@@ -47,7 +47,37 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
+  @Post('/check-email-availability')
+  async checkEmailAvailability(@Body('email') email: string): Promise<{ available: boolean }> {
+    try {
+      const available = await this.authService.checkEmailAvailability(email);
+      return { available };
+    } catch (error) {
+      throw new InternalServerErrorException('Error al verificar la disponibilidad del correo');
+    }
+  }
+
+  @Post('validate-password')
+  @HttpCode(HttpStatus.OK)
+  async validatePassword(@Body() body: { email: string; password: string }): Promise<{ valid: boolean }> {
+    const { email, password } = body;
+    const isValid = await this.authService.validatePassword(email, password);
+    return { valid: isValid };
+  }
+
+
+  @Post('/check-email-existence')
+  async checkEmailExistence(@Body('email') email: string): Promise<{ message: string }> {
+    try {
+      const exists = await this.authService.checkEmailExistence(email);
+      return { message: exists ? 'Email is registered' : 'Email is not registered' };
+    } catch (error) {
+      throw new InternalServerErrorException('Error al verificar el correo.');
+    }
+  }
   
+  
+
 
   @UseGuards(AuthGuard)
   @Get()
@@ -70,10 +100,17 @@ export class AuthController {
 
   }
 
-  //@Get(':id')
-  //findOne(@Param('id') id: string) {
-   // return this.authService.findOne(+id);
-  //}
+  @UseGuards(AuthGuard)
+  @Get('user-id')
+  getUserId(@Request() req: Request): { userId: string } {
+    const user = req['user'] as User;
+    return { userId: user._id.toString() }; // Asegúrate de que _id sea convertido a string si es necesario
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+   return this.authService.findOne(+id);
+  }
 
   //@Patch(':id')
   //update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {

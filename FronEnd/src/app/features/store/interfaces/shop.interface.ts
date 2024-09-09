@@ -9,7 +9,11 @@ export interface Shop {
   roles: string[];
   specialties: string;
   address: string;
+  logoUrl?: string;
   verificationCode: string;
   codeUsage: number;
+  statusShop: boolean;
+  ratings: [];
+  reviews: [];
 }
 

@@ -2,10 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { passwordValidator, matchPasswordValidator } from '../../validators/custom-validators'; // Asegúrate de que importas matchPasswordValidator
 
 @Component({
   selector: 'app-reset-password',
-  templateUrl: './reset-password.component.html'
+  templateUrl: './reset-password.component.html',
+  styleUrls: ['./reset-password.component.css']
 })
 export class ResetPasswordComponent implements OnInit {
   token: string = ''; 
@@ -18,31 +20,40 @@ export class ResetPasswordComponent implements OnInit {
     private router: Router 
   ) {
     this.resetForm = this.fb.group({
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required, Validators.minLength(6)]]
-    }, { validator: this.passwordMatchValidator });
+      password: ['', [
+        Validators.required,
+        Validators.minLength(8),
+        passwordValidator()
+      ]],
+  
+      confirmPassword: ['', [
+        Validators.required
+      ]],
+    }, {
+      validators: matchPasswordValidator() // Aplicar el validador de coincidencia de contraseñas
+    });
   }
+
+  hidePassword: boolean = true;
+  hidePasswordconfirm: boolean = true;
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.token = params['token'];
-      console.log('Token recibido:', this.token); 
+      console.log('Reset Password Token:', this.token);
 
       if (!this.token) {
-        console.log('Token no proporcionado, redirigiendo a login.');
-        this.router.navigateByUrl('/auth/login');
+        this.router.navigateByUrl('/landing');
       }
     });
   }
 
-  passwordMatchValidator(formGroup: FormGroup): void {
-    const password = formGroup.get('password')?.value;
-    const confirmPassword = formGroup.get('confirmPassword')?.value;
-    if (password !== confirmPassword) {
-      formGroup.get('confirmPassword')?.setErrors({ mismatch: true });
-    } else {
-      formGroup.get('confirmPassword')?.setErrors(null);
-    }
+  togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
+  }
+
+  togglePasswordVisibilityconfirm() {
+    this.hidePasswordconfirm = !this.hidePasswordconfirm;
   }
 
   resetPassword() {
@@ -52,7 +63,7 @@ export class ResetPasswordComponent implements OnInit {
       this.authService.resetPassword(this.token, password).subscribe({
         next: () => {
           console.log('Contraseña restablecida con éxito, redirigiendo a login.');
-          this.router.navigateByUrl('/auth/login');
+          this.router.navigateByUrl('/landing');
         },
         error: (err) => {
           console.error('Error al restablecer la contraseña:', err);

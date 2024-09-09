@@ -1,0 +1,40 @@
+<div class="main-content">
+  <div *ngIf="userRole === 'admin' && userData" class="profile-container">
+    <h2 class="profile-header">Mi Perfil</h2>
+    <div class="profile-details">
+      <div class="profile-item">
+        <label>Email:</label>
+        <p>{{ userData.email }}</p>
+      </div>
+      <div class="profile-item">
+        <label>Nombre:</label>
+        <p>{{ userData.name }}</p>
+      </div>
+      <div class="profile-item">
+        <label>Teléfono:</label>
+        <p *ngIf="userData.phone && userData.phone.length > 0">{{ userData.phone }}</p>
+      </div>
+      <div class="profile-item">
+        <label>Coffee Coins:</label>
+        <p>{{ userData.cafecoin }}</p>
+      </div>
+      <div class="profile-item">
+        <label>Roles:</label>
+        <p>{{ userData.roles.join(', ') }}</p>
+      </div>
+    </div>
+    
+    <!-- Mostrar las reviews -->
+    <div class="reviews-section">
+      <h3>Reviews de Usuarios</h3>
+      <ul *ngIf="reviews.length > 0; else noReviews">
+        <li *ngFor="let review of reviews">
+          {{ review.review }}
+        </li>
+      </ul>
+      <ng-template #noReviews>
+        <p>No hay reviews disponibles.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>

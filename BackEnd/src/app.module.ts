@@ -3,6 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { ShopModule } from './shop/shop.module';
 import { AuthModule } from './auth/auth.module';
+import { BookModule } from './book/book.module';
+import { ReviewModule } from './reviews/review.module';  // Asegúrate de que la ruta es correcta
 
 @Module({
   imports: [
@@ -12,7 +14,8 @@ import { AuthModule } from './auth/auth.module';
     }),
     ShopModule,
     AuthModule,
+    BookModule,
+    ReviewModule,
   ],
 })
 export class AppModule {}
-

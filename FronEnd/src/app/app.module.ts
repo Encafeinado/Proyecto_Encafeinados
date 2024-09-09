@@ -7,6 +7,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavbarComponent } from './shared/navbar/navbar.component';
+import { DataTreatmentDialogComponent } from './data-treatment-dialog/data-treatment-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 
@@ -16,13 +18,15 @@ import { NavbarComponent } from './shared/navbar/navbar.component';
     AppComponent,
     LoadingComponent,
     NavbarComponent,
+    DataTreatmentDialogComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     ToastrModule.forRoot(),
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatDialogModule
     
   ],
   providers: [],
