@@ -105,25 +105,26 @@ header p {
 }
 
 
-.text-content[_ngcontent-ng-c558304794] .subtitle[_ngcontent-ng-c558304794] {
-  font-size: 2.5em;
+.text-content[_ngcontent-ng-c2936805873] .subtitle[_ngcontent-ng-c2936805873] {
+  font-size: 2em;
   color: #000000;
   white-space: pre-line;
-  line-height: 1.4;
+  line-height: 1.2;
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
   text-align: center; /* Centra el texto horizontalmente */
 }
 
-.text-content[_ngcontent-ng-c558304794] .title[_ngcontent-ng-c558304794] {
+.text-content[_ngcontent-ng-c2936805873] .title[_ngcontent-ng-c2936805873] {
   font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
   font-weight: 600; /* Peso Semibold */
-  font-size: 3em; /* Tamaño de fuente */
+  font-size: 2.7em; /* Tamaño de fuente */
   color: #0f1eee; /* Color negro */
   white-space: pre-line; /* Permite saltos de línea */
   line-height: 1.4; /* Espacio entre líneas */
   text-align: center; /* Centra el texto horizontalmente */
 }
+
 
 
 
