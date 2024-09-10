@@ -3219,17 +3219,18 @@ align-items: center;
 
 .como-iniciar-contenedor {
   background-color: #fff;
-  width: 90%;
+  width: 80%;
   max-width: 1200px;
   margin: 40px auto;
-  padding: 40px;
+  padding: 20px;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  border: 1px solid #ddd; /* Borde gris claro */
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 400px;
+  min-height: 350px;
 }
 
 .como-iniciar-header {
@@ -3242,7 +3243,7 @@ align-items: center;
 
 .como-iniciar-logo {
   font-size: 25px;
-  font-weight: 600;
+  font-weight: 900;
   color: #0f1eee;
   text-decoration: none;
   margin: 0 auto;
@@ -3255,7 +3256,7 @@ align-items: center;
 }
 
 .como-iniciar-menu a {
-  font-size: 22px;
+  font-size: 20px;
   border-bottom: 2px solid transparent;
   margin-left: 40px;
   color: #000;
@@ -3365,10 +3366,21 @@ align-items: center;
   background: #2516f1;
 }
 
+
+.section-divider {
+  height: 65px; /* Espacio entre secciones */
+}
+
+
 @media screen and (max-width: 768px) {
   .como-iniciar-menu {
     flex-direction: column;
     align-items: center;
+  }
+
+  
+  .section-divider {
+    height: 10px; /* Reduce el espacio entre secciones en móviles */
   }
 
   .como-iniciar-menu a {
@@ -3401,6 +3413,7 @@ align-items: center;
 
   .como-iniciar-contenedor {
     padding: 20px;
+    width: 100%;
     margin: 20px auto;
     min-height: 400px;
   }
