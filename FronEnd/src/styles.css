@@ -473,8 +473,7 @@ button:hover {
 
 .wrap-input100 {
   position: relative;
-  margin-bottom: 1rem; /* Espacio entre los campos */
- 
+  margin-bottom: 0; /* Espacio entre los campos */
 }
 
 .label-input100 {
