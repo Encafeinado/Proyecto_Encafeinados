@@ -819,22 +819,33 @@ obtenerCoordenadasDestino(destino: string): Promise<google.maps.LatLngLiteral> {
   }
 
   confirmarLlegada() {
-    // Cancela la ruta actual y limpia el mapa
-    this.cancelarRuta();
-    
+    // Evitar que se confirme la llegada más de una vez si el proceso ya se completó
+    if (this.hasArrived) {
+      return; // Salir si ya se ha confirmado la llegada
+    }
+  
     // Marca que la llegada fue confirmada
     this.hasArrived = true;
-    
-    // Cierra el modal de llegada
-    this.modalRef?.close();
-    
-    // Restablece el estado de que el usuario ya puede seleccionar otra ruta inmediatamente
-    this.hasArrived = false;
-    this.rutaActiva = false; // Restablece el estado de la ruta activa
-    this.iniciarMapa(); // Reinicia el mapa para permitir nuevas selecciones
-    
-    console.log('Ruta cancelada. Has llegado al destino y puedes seleccionar una nueva ruta.');
+  
+    // Cancela la ruta actual y limpia el mapa
+    this.cancelarRuta();
+  
+    // Cierra el modal de llegada si está abierto
+    if (this.modalRef) {
+      this.modalRef.close();
+      this.openedModal = false; // Resetear el estado de openedModal
+    }
+  
+    // Reiniciar el estado para permitir seleccionar una nueva ruta
+    this.hasArrived = false; // Permitir seleccionar nuevas rutas después de cerrar el modal
+    this.rutaActiva = false; // Reinicia la ruta activa
+    // No es necesario reiniciar el mapa, solo actualizar el estado
+    console.log('Ruta cancelada. Puedes seleccionar una nueva tienda.');
   }
+  
+  
+  
+  
   
   
 
@@ -855,25 +866,8 @@ obtenerCoordenadasDestino(destino: string): Promise<google.maps.LatLngLiteral> {
     );
   }
 
-  cancelArrive(): void {
-    // Cierra el modal de llegada
-    this.modalRef.close();
-  
-    // Asegúrate de que no se llame openModal en ningún otro lugar en este tiempo
-    console.log('Modal de llegada cerrado. Reabrir en 10 segundos...');
-  
-    // Espera 10 segundos y luego vuelve a abrir el modal
-    setTimeout(() => {
-      if (this.rutaActiva && !this.hasArrived) {
-        // Solo vuelve a abrir el modal si la ruta sigue activa y no ha llegado
-        this.openModal(this.arriveModal, this.destinationName, '', '', ''); 
-        console.log('Modal de llegada reabierto después de 10 segundos.');
-      }
-    }, 10000); // 10 segundos
-  }
   
   
-
   openModal(
     content: any,
     destinationName: string,
@@ -881,22 +875,31 @@ obtenerCoordenadasDestino(destino: string): Promise<google.maps.LatLngLiteral> {
     specialties1: string,
     specialties2: string
   ): void {
-    if (!this.openedModal && !this.hasArrived) {
-      // Verifica que no se haya confirmado la llegada
-      this.destinationName = destinationName;
-      this.shopStatus = status;
-      this.specialties1 = specialties1;
-      this.specialties2 = specialties2;
-      this.openedModal = true;
-      this.modalRef = this.modalService.open(content, {
-        centered: true,
-        backdrop: 'static',
-      });
-      this.modalRef.result.finally(() => {
-        this.openedModal = false;
-      });
+    // Evitar abrir múltiples modales o abrir modal si ya se ha llegado
+    if (this.openedModal || this.hasArrived) {
+      return; // No abrir el modal si ya está abierto o si el usuario ya ha llegado
     }
+  
+    // Marcar como abierto y configurar las propiedades del modal
+    this.destinationName = destinationName;
+    this.shopStatus = status;
+    this.specialties1 = specialties1;
+    this.specialties2 = specialties2;
+    this.openedModal = true;
+  
+    // Abrir el modal
+    this.modalRef = this.modalService.open(content, {
+      centered: true,
+      backdrop: 'static',
+    });
+  
+    // Cerrar el modal y resetear el estado cuando se cierre
+    this.modalRef.result.finally(() => {
+      this.openedModal = false; // Reiniciar el estado del modal
+    });
   }
+  
+  
 
   updateButtonReviewState() {
     this.isButtonDisabled = this.reviewApp.trim().length === 0;
