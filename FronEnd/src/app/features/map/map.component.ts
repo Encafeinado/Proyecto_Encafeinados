@@ -714,7 +714,7 @@ export class MapComponent implements OnInit, OnDestroy {
   verificarCercaniaADestino() {
     if (this.markerPosition && this.destinationName) {
       console.log('Verificando cercanía al destino...', this.destinationName);
-
+      this.toastr.info('Verificando cercanía al destino...', this.destinationName)
       if (
         typeof this.destinationName === 'object' &&
         'lat' in this.destinationName &&
@@ -754,7 +754,6 @@ export class MapComponent implements OnInit, OnDestroy {
     if (this.tiempoUltimaAperturaModal && (ahora - this.tiempoUltimaAperturaModal) < this.intervaloModal) {
       return; // Si no han pasado 30 segundos, no abrir el modal nuevamente
     }
-
     console.log(
       'Posición actual del usuario:',
       this.markerPosition?.lat,
@@ -770,14 +769,19 @@ export class MapComponent implements OnInit, OnDestroy {
     );
 
     console.log(`Distancia calculada: ${distancia} metros`);
+    this.toastr.info(`Distancia calculada: ${distancia} metros`)
 
     if (distancia <= 80 && !this.modalAbierto) { // Umbral de 50 metros
       console.log('Cerca del destino. Abriendo modal...');
+      this.toastr.show('Cerca del destino. Abriendo modal...')
       this.modalAbierto = true; // Evitar que el modal se abra repetidamente
       this.tiempoUltimaAperturaModal = ahora; // Registra el tiempo en que se abrió el modal
       this.openModal(this.arriveModal, this.destinationName, '', '', '');
     } else {
       console.log(
+        `Aún no cerca del destino. Distancia actual: ${distancia} metros`
+      );
+      this.toastr.show(
         `Aún no cerca del destino. Distancia actual: ${distancia} metros`
       );
     }
