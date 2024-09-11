@@ -733,11 +733,7 @@ export class MapComponent implements OnInit, OnDestroy {
     if (this.markerPosition && this.destinationName) {
       console.log('Verificando cercanía al destino...', this.destinationName);
 
-      if (
-        typeof this.destinationName === 'object' &&
-        'lat' in this.destinationName &&
-        'lng' in this.destinationName
-      ) {
+      if (typeof this.destinationName === 'object' && 'lat' in this.destinationName && 'lng' in this.destinationName) {
         const lat2 = (this.destinationName as { lat: number; lng: number }).lat;
         const lng2 = (this.destinationName as { lat: number; lng: number }).lng;
 
@@ -758,19 +754,15 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Posición del marcador o destino no definidos.');
     }
   }
-
+  modalAbierto: boolean = false;
+  
   // Método para procesar la verificación de cercanía
   procesarVerificacionCercania(lat2: number, lng2: number) {
-    if (!this.markerPosition) {
-      console.error('Posición del marcador no está definida.');
-      return;
+    if (!this.markerPosition || this.modalAbierto) {
+      return; // No hacer nada si no hay posición o el modal ya está abierto
     }
 
-    console.log(
-      'Posición actual del usuario:',
-      this.markerPosition?.lat,
-      this.markerPosition?.lng
-    );
+    console.log('Posición actual del usuario:', this.markerPosition?.lat, this.markerPosition?.lng);
 
     // Calcular la distancia
     const distancia = this.calcularDistancia(
@@ -782,14 +774,12 @@ export class MapComponent implements OnInit, OnDestroy {
 
     console.log(`Distancia calculada: ${distancia} metros`);
 
-    if (distancia <= 80) {
-      // Umbral de 80 metros
+    if (distancia <= 80 && !this.modalAbierto) { // Umbral de 80 metros
       console.log('Cerca del destino. Abriendo modal...');
+      this.modalAbierto = true; // Evitar que el modal se abra repetidamente
       this.openModal(this.arriveModal, this.destinationName, '', '', '');
     } else {
-      console.log(
-        `Aún no cerca del destino. Distancia actual: ${distancia} metros`
-      );
+      console.log(`Aún no cerca del destino. Distancia actual: ${distancia} metros`);
     }
   }
 
@@ -816,10 +806,12 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   confirmarLlegada() {
-    this.cancelarRuta();
+    console.log('Has llegado al destino.');
+    this.modalAbierto = false;
     this.modalRef?.close(); // Cierra el modal
     this.hasArrived = true; // Marca que ya has llegado
     console.log('Ruta cancelada. Has llegado al destino.');
+    this.cancelarRuta();
   }
 
   closeAlert(): void {
