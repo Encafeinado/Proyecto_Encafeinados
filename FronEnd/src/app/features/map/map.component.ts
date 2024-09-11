@@ -296,7 +296,6 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Elemento del mapa no encontrado.');
     }
   }
-  
 
   // Método para actualizar los estados de las tiendas
   actualizarEstadosTiendas(): void {
@@ -347,23 +346,23 @@ export class MapComponent implements OnInit, OnDestroy {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-  
+
           console.log(
             'Ubicación del usuario actualizada:',
             this.markerPosition
           );
-  
+
           // Actualiza el marcador de ubicación del usuario
           this.actualizarMarcadorUbicacionUsuario();
-  
+
           // Verifica si está cerca del destino
           this.verificarCercaniaADestino();
-  
+
           const map = this.directionsRendererInstance.getMap();
           if (map) {
             if (this.rutaActiva) {
               map.panTo(this.markerPosition);
-  
+
               if (this.debeRecalcularRuta(this.markerPosition)) {
                 this.calcularRuta();
               }
@@ -374,7 +373,7 @@ export class MapComponent implements OnInit, OnDestroy {
               });
             }
           }
-  
+
           this.solicitarPermisoOrientacion();
         },
         (error) => {
@@ -390,7 +389,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Geolocalización no es soportada por este navegador.');
     }
   }
-  
+
   // Método para determinar si la ruta debe ser recalculada
   debeRecalcularRuta(nuevaPosicion: google.maps.LatLngLiteral): boolean {
     // Implementa una lógica para determinar si la ruta debe ser recalculada
@@ -707,54 +706,78 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  calcularDistancia(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  calcularDistancia(
+    lat1: number,
+    lng1: number,
+    lat2: number,
+    lng2: number
+  ): number {
     const R = 6371e3; // Radio de la Tierra en metros
     const φ1 = (lat1 * Math.PI) / 180; // lat1 en radianes
     const φ2 = (lat2 * Math.PI) / 180; // lat2 en radianes
     const Δφ = ((lat2 - lat1) * Math.PI) / 180;
     const Δλ = ((lng2 - lng1) * Math.PI) / 180;
-  
+
     const a =
       Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) *
-      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  
+
     const distancia = R * c; // En metros
     return distancia;
   }
-  
+
   verificarCercaniaADestino() {
     if (this.markerPosition && this.destinationName) {
-        console.log('Verificando cercanía al destino...', this.destinationName);
-        let lat2: number;
-        let lng2: number;
+      console.log('Verificando cercanía al destino...', this.destinationName);
+      let lat2: number;
+      let lng2: number;
 
-        if (typeof this.destinationName === 'object' && 'lat' in this.destinationName && 'lng' in this.destinationName) {
-            const destinationCoords = this.destinationName as google.maps.LatLngLiteral;
-            lat2 = destinationCoords.lat;
-            lng2 = destinationCoords.lng;
-        } else {
-            console.error('El destino no tiene coordenadas válidas.');
-            return;
-        }
+      if (
+        typeof this.destinationName === 'object' &&
+        'lat' in this.destinationName &&
+        'lng' in this.destinationName
+      ) {
+        const destinationCoords = this
+          .destinationName as google.maps.LatLngLiteral;
+        lat2 = destinationCoords.lat;
+        lng2 = destinationCoords.lng;
 
-        const distancia = this.calcularDistancia(
-            this.markerPosition.lat,
-            this.markerPosition.lng,
-            lat2,
-            lng2
+        console.log('Coordenadas del destino:', lat2, lng2);
+      } else {
+        console.error('El destino no tiene coordenadas válidas.');
+        return;
+      }
+
+      console.log(
+        'Posición actual del usuario:',
+        this.markerPosition.lat,
+        this.markerPosition.lng
+      );
+
+      const distancia = this.calcularDistancia(
+        this.markerPosition.lat,
+        this.markerPosition.lng,
+        lat2,
+        lng2
+      );
+
+      console.log(`Distancia calculada: ${distancia} metros`);
+
+      if (distancia <= 50 && !this.hasArrived) {
+        // 80 metros como umbral
+        this.hasArrived = true;
+        console.log('Cerca del destino. Abriendo modal...');
+        this.openModal(this.arriveModal, this.destinationName, '', '', '');
+      } else {
+        console.log(
+          `Aún no cerca del destino. Distancia actual: ${distancia} metros`
         );
-
-        console.log(`Distancia calculada: ${distancia} metros`);
-
-        if (distancia <= 80 && !this.hasArrived) { // 50 metros como umbral
-            this.hasArrived = true;
-            console.log('Cerca del destino. Abriendo modal...');
-            this.openModal(this.arriveModal, this.destinationName, '', '', '');
-        }
+      }
+    } else {
+      console.error('Posición del marcador o destino no definidos.');
     }
-}
+  }
 
   confirmarLlegada() {
     this.cancelarRuta();
@@ -812,19 +835,17 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   updateButtonReviewState() {
-    
     this.isButtonDisabled = this.reviewApp.trim().length === 0;
   }
-  addReviewToApp(){
+
+  addReviewToApp() {
     this.reviewService.addReview(this.reviewApp).subscribe(
       (res) => {
-        toastr.success(
-          'Comentario añadido exitosamente'
-        );
+        toastr.success('Comentario añadido exitosamente');
         this.modalRef.close();
       },
       (err) => {
-          toastr.error('No se ha podido añadir el comentario');
+        toastr.error('No se ha podido añadir el comentario');
         this.modalRef.close();
       }
     );
@@ -846,10 +867,10 @@ export class MapComponent implements OnInit, OnDestroy {
   openModalAlbum(): void {
     this.openModal(this.modalBook, '', '', '', '');
   }
+
   openModalReviewShop(): void {
     this.resetModalFields();
-    this.openModal(this.modalReviewShop, '', 'statusValue', "", "");
-
+    this.openModal(this.modalReviewShop, '', 'statusValue', '', '');
   }
 
   verifyCode() {
