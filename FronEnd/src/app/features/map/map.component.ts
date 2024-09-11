@@ -344,63 +344,156 @@ export class MapComponent implements OnInit, OnDestroy {
     };
   }
 
-  // Actualiza rastrearUbicacionUsuario para recalcular la ruta y ajustar el zoom
-  rastrearUbicacionUsuario() {
-    if (navigator.geolocation) {
-      this.watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          const nuevaPosicion = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-  
-          // Si ya tienes una posición previa, realiza la interpolación
-          if (this.markerPosition) {
-            const pasos = 10; // Cuantos más pasos, más suave será la transición
-            const duracion = 1000; // Tiempo total de la interpolación en milisegundos
-            const intervalo = duracion / pasos;
-            let pasoActual = 0;
-  
-            const intervaloId = setInterval(() => {
-              pasoActual++;
-              const factor = pasoActual / pasos;
-              const posicionInterpolada = this.interpolarPosicion(
-                this.markerPosition!,
-                nuevaPosicion,
-                factor
-              );
-  
-              // Actualiza la posición del marcador en el mapa
-              this.markerUsuario?.setPosition(posicionInterpolada);
-  
-              if (pasoActual >= pasos) {
-                clearInterval(intervaloId);
-                this.markerPosition = nuevaPosicion;
-              }
-            }, intervalo);
-          } else {
-            // Si es la primera vez que obtienes la posición
-            this.markerPosition = nuevaPosicion;
-            this.markerUsuario?.setPosition(this.markerPosition);
-          }
-  
-          console.log('Ubicación del usuario actualizada:', this.markerPosition);
-          this.actualizarMarcadorUbicacionUsuario();
-          this.solicitarPermisoOrientacion();
-        },
-        (error) => {
-          console.error('Error rastreando la ubicación', error);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
+rastrearUbicacionUsuario() {
+  if (navigator.geolocation) {
+    this.watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const nuevaPosicion = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+
+        // Si ya tienes una posición previa, realiza la interpolación
+        if (this.markerPosition) {
+          const pasos = 10; // Cuantos más pasos, más suave será la transición
+          const duracion = 1000; // Tiempo total de la interpolación en milisegundos
+          const intervalo = duracion / pasos;
+          let pasoActual = 0;
+
+          const intervaloId = setInterval(() => {
+            pasoActual++;
+            const factor = pasoActual / pasos;
+            const posicionInterpolada = this.interpolarPosicion(
+              this.markerPosition!,
+              nuevaPosicion,
+              factor
+            );
+
+            // Actualiza la posición del marcador en el mapa
+            this.markerUsuario?.setPosition(posicionInterpolada);
+
+            if (pasoActual >= pasos) {
+              clearInterval(intervaloId);
+              this.markerPosition = nuevaPosicion;
+              this.verificarCercaniaADestino(); // Verifica cercanía una vez se completa la interpolación
+            }
+          }, intervalo);
+        } else {
+          // Si es la primera vez que obtienes la posición
+          this.markerPosition = nuevaPosicion;
+          this.markerUsuario?.setPosition(this.markerPosition);
+          this.verificarCercaniaADestino(); // Verifica cercanía
         }
-      );
+
+        console.log('Ubicación del usuario actualizada:', this.markerPosition);
+        this.actualizarMarcadorUbicacionUsuario();
+        this.solicitarPermisoOrientacion();
+      },
+      (error) => {
+        console.error('Error rastreando la ubicación', error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
+  } else {
+    console.error('Geolocalización no es soportada por este navegador.');
+  }
+}
+
+// Método para calcular la distancia entre dos puntos (en metros)
+calcularDistancia(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371e3; // Radio de la Tierra en metros
+  const φ1 = (lat1 * Math.PI) / 180; // lat1 en radianes
+  const φ2 = (lat2 * Math.PI) / 180; // lat2 en radianes
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lng2 - lng1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  const distancia = R * c; // En metros
+  return distancia;
+}
+
+// Método para verificar cercanía al destino
+verificarCercaniaADestino() {
+  if (this.markerPosition && this.destinationName && this.rutaActiva && !this.hasArrived) {
+    console.log('Verificando cercanía al destino...', this.destinationName);
+
+    if (typeof this.destinationName === 'object' && 'lat' in this.destinationName && 'lng' in this.destinationName) {
+      const lat2 = (this.destinationName as { lat: number; lng: number }).lat;
+      const lng2 = (this.destinationName as { lat: number; lng: number }).lng;
+
+      // Calcula la distancia y verifica cercanía
+      this.procesarVerificacionCercania(lat2, lng2);
     } else {
-      console.error('Geolocalización no es soportada por este navegador.');
-    }
-  }
+      // Si no hay coordenadas, usa el nombre del destino para obtenerlas
+      this.obtenerCoordenadasDestino(this.destinationName)
+        .then((coords) => {
+          console.log('Coordenadas obtenidas del destino:', coords);
+          this.procesarVerificacionCercania(coords.lat, coords.lng);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  } else {
+    console.error('Posición del marcador, destino o ruta no definidos, o ya se ha llegado.');
+  }
+}
+
+
+// Método para procesar la verificación de cercanía
+procesarVerificacionCercania(lat2: number, lng2: number) {
+  if (!this.markerPosition) {
+    console.error('Posición del marcador no está definida.');
+    return;
+  }
+
+  console.log('Posición actual del usuario:', this.markerPosition?.lat, this.markerPosition?.lng);
+
+  // Calcular la distancia
+  const distancia = this.calcularDistancia(
+    this.markerPosition.lat,
+    this.markerPosition.lng,
+    lat2,
+    lng2
+  );
+
+  console.log(`Distancia calculada: ${distancia} metros`);
+
+  if (distancia <= 80) { // Umbral de 80 metros
+    console.log('Cerca del destino. Abriendo modal...');
+    this.openModal(this.arriveModal, this.destinationName, '', '', '');
+  } else {
+    console.log(`Aún no cerca del destino. Distancia actual: ${distancia} metros`);
+  }
+}
+
+// Método para obtener las coordenadas del destino utilizando Google Maps Geocoding API
+obtenerCoordenadasDestino(destino: string): Promise<google.maps.LatLngLiteral> {
+  return new Promise((resolve, reject) => {
+    const geocoder = new google.maps.Geocoder();
+
+    geocoder.geocode({ address: destino }, (results, status) => {
+      if (status === 'OK' && results && results[0]) {
+        const location = results[0].geometry.location;
+        const coordinates: google.maps.LatLngLiteral = {
+          lat: location.lat(),
+          lng: location.lng(),
+        };
+        resolve(coordinates);
+      } else {
+        reject('No se pudieron obtener las coordenadas del destino');
+      }
+    });
+  });
+}
 
   // Método para determinar si la ruta debe ser recalculada
   debeRecalcularRuta(nuevaPosicion: google.maps.LatLngLiteral): boolean {
@@ -719,11 +812,24 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   confirmarLlegada() {
+    // Cancela la ruta actual y limpia el mapa
     this.cancelarRuta();
-    this.modalRef?.close(); // Cierra el modal
-    this.hasArrived = true; // Marca que ya has llegado
-    console.log('Ruta cancelada. Has llegado al destino.');
+    
+    // Marca que la llegada fue confirmada
+    this.hasArrived = true;
+    
+    // Cierra el modal de llegada
+    this.modalRef?.close();
+    
+    // Restablece el estado de que el usuario ya puede seleccionar otra ruta inmediatamente
+    this.hasArrived = false;
+    this.rutaActiva = false; // Restablece el estado de la ruta activa
+    this.iniciarMapa(); // Reinicia el mapa para permitir nuevas selecciones
+    
+    console.log('Ruta cancelada. Has llegado al destino y puedes seleccionar una nueva ruta.');
   }
+  
+  
 
   closeAlert(): void {
     this.showAlert = false;
@@ -742,12 +848,24 @@ export class MapComponent implements OnInit, OnDestroy {
     );
   }
 
-  cancelArrive(modal: any): void {
-    modal.dismiss('cancel');
+  cancelArrive(): void {
+    // Cierra el modal de llegada
+    this.modalRef.close();
+  
+    // Asegúrate de que no se llame openModal en ningún otro lugar en este tiempo
+    console.log('Modal de llegada cerrado. Reabrir en 10 segundos...');
+  
+    // Espera 10 segundos y luego vuelve a abrir el modal
     setTimeout(() => {
-      this.openModal(this.arriveModal, this.destinationName, '', '', '');
+      if (this.rutaActiva && !this.hasArrived) {
+        // Solo vuelve a abrir el modal si la ruta sigue activa y no ha llegado
+        this.openModal(this.arriveModal, this.destinationName, '', '', ''); 
+        console.log('Modal de llegada reabierto después de 10 segundos.');
+      }
     }, 10000); // 10 segundos
   }
+  
+  
 
   openModal(
     content: any,
