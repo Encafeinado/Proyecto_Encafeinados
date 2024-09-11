@@ -10,31 +10,39 @@
               </div>
               <p class="h5 mb-4 text-center">Iniciar Sesión</p>
 
+              <!-- Campo de correo -->
               <div class="wrap-input100 m-b-23 form-outline mb-4">
+                  <!-- Mensaje de error personalizado -->
+                  <div *ngIf="showError" class="custom-error">
+                    Correo y/o contraseña invalidas
+                  </div>
                 <span class="label-input100">Correo</span>
+              
                 <div class="wrap-input100">
-                  <input class="input100 small-placeholder form-control" type="email" formControlName="email"
-                    placeholder="Correo electrónico" autocomplete="email">
+                  <input 
+                    class="input100 small-placeholder form-control" 
+                    type="email" 
+                    formControlName="email"
+                    placeholder="Correo electrónico" 
+                    autocomplete="email"
+                    (input)="onInputChange()" 
+                  >
                   <span class="focus-input100"></span>
                 </div>
-                <!-- Mensajes de error -->
-                <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('required')"
-                  class="error-message">
+
+                <!-- Mensajes de error aparecen solo si el campo ha sido tocado y la validación asíncrona ha terminado -->
+                <div *ngIf="myForm.get('email')?.touched && !myForm.get('email')?.pending && myForm.get('email')?.hasError('required')" class="error-message">
                   El campo correo es obligatorio.
                 </div>
-                <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('invalidEmailFormat')"
-                  class="error-message">
+                <div *ngIf="myForm.get('email')?.touched && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidEmailFormat')" class="error-message">
                   El formato del correo electrónico es inválido.
                 </div>
-                <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('invalidDomain')"
-                  class="error-message">
+                <div *ngIf="myForm.get('email')?.touched && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidDomain')" class="error-message">
                   El formato del correo electrónico no es válido.
                 </div>
-                <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('emailNotRegistered')" class="error-message">
-                  El correo electrónico no está registrado.
-                </div>
+                
+                
               </div>
-              
               <div class="form-outline mb-4">
                 <span class="label-input100">Contraseña</span>
                 <div class="input-with-eye">
@@ -44,6 +52,7 @@
                     formControlName="password"
                     placeholder="Ingrese su contraseña"
                     autocomplete="current-password"
+                    (input)="onInputChange()" 
                   >
                   <span class="focus-input100"></span>
                   <div class="eye-icon" (click)="togglePasswordVisibility()">
@@ -54,12 +63,7 @@
                 <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('required')" class="error-message">
                   El campo contraseña es obligatorio.
                 </div>
-                <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('minlength')" class="error-message">
-                  La contraseña debe tener al menos 6 caracteres.
-                </div>
-                <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('passwordInvalid')" class="error-message">
-                  La contraseña debe contener al menos una letra mayúscula, un número y un carácter especial.
-                </div>
+               
                 <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('invalidPassword')" class="error-message">
                   La contraseña es incorrecta.
                 </div>
@@ -91,4 +95,3 @@
         </div>
       </div>
   </section>
-

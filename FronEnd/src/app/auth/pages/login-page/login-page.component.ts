@@ -14,8 +14,10 @@ import { emailDomainValidator, emailFormatAsyncValidator, emailFormatValidator, 
 export class LoginPageComponent {
   public myForm: FormGroup;
   public isShop: boolean = false;
+  public showError = false; // Controla cuándo mostrar el mensaje de error
   emailTouched = false;
   hidePassword: boolean = true;
+  
   validDomains = [ "gmail.com","gmail.co","gmail.es","gmail.mx","hotmail.com","hotmail.co","hotmail.es","hotmail.mx","outlook.com","outlook.co","outlook.es","outlook.mx","yahoo.com","yahoo.co","yahoo.es",
     "yahoo.mx","gmail.com.co","hotmail.com.co","outlook.com.co","yahoo.com.co","gmail.com.es","hotmail.com.es","outlook.com.es","yahoo.com.es","gmail.com.mx","hotmail.com.mx","outlook.com.mx",
     "yahoo.com.mx","yopmail.com","@icloud.com"]; 
@@ -27,26 +29,25 @@ export class LoginPageComponent {
     private router: Router,
     private toastr: ToastrService
     
+    
   ) {
     this.myForm = this.fb.group({
       email: ['',{
           validators: [Validators.required],
           asyncValidators: [
-            validateEmailForLogin(this.authService),
+            
             emailDomainValidator(this.validDomains) // Validador de dominio
           ],
-          updateOn: 'blur'
+          updateOn: 'change'
         }],
       password: ['',{
           validators:[        
           Validators.required,
-          Validators.minLength(6),
-          passwordValidator()
         ],
         asyncValidators: [
-        passwordAsyncValidator(this.authService) // Pasar `true` si es tienda, `false` si es usuario
+       
         ],
-       //updateOn: 'blur'
+       updateOn: 'change'
     }],
       role: ['user']
     });
@@ -59,30 +60,37 @@ export class LoginPageComponent {
     return this.myForm.get('email');
   }
 
- 
+   // Este método oculta el error si el formulario se vuelve válido
+   onInputChange(): void {
+    if (this.myForm.valid) {
+      this.showError = false; // Ocultar el error si los datos son correctos
+    }
+  }
 
+  
+  
+ 
 
   login(): void {
     if (this.myForm.invalid) {
-      this.toastr.error('Por favor, completa el formulario correctamente');
+      this.showError = true; // Muestra el mensaje de error
       return;
     }
+
     const { email, password } = this.myForm.value;
-  
+
     this.authService.login(email, password).subscribe(
       (response) => {
         if (response) {
           this.toastr.success('Inicio de sesión exitoso');
-          // Redirige o maneja el éxito
-          this.router.navigate(['/landing']); // Ajusta la ruta según tu aplicación
+          this.router.navigate(['/landing']);
         } else {
-          this.toastr.error('Correo o contraseña incorrectas');
+          this.showError = true; // Muestra el mensaje de error si la autenticación falla
         }
       },
-      (error) => {
-
-        this.toastr.error(error.message || 'Error al iniciar sesión. Por favor, intenta de nuevo más tarde.');
+      () => {
+        this.showError = true; // Maneja el error general
       }
     );
   }
-}  
+}
