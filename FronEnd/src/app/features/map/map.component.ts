@@ -177,15 +177,22 @@ export class MapComponent implements OnInit, OnDestroy {
         this.position = position;
         this.map = map;
         this.div = document.createElement('div');
+      
+        // Estilos de la bolita
         this.div.style.borderRadius = '50%';
         this.div.style.backgroundColor = status ? 'green' : 'red';
         this.div.style.width = '10px';
         this.div.style.height = '10px';
+      
+        // Contorno blanco (borde)
+        this.div.style.border = '1.8px solid white';  // Borde blanco de 1.8px
+        
+        // Posicionamiento y transformación
         this.div.style.position = 'absolute';
-        this.div.style.transform = 'translate(30%, -458%)';
-
+        this.div.style.transform = 'translate(70%, -458%)';
+      
         this.setMap(map);
-      }
+      }      
 
       updateStatus(status: boolean) {
         this.div.style.backgroundColor = status ? 'green' : 'red';
@@ -341,8 +348,8 @@ export class MapComponent implements OnInit, OnDestroy {
     return {
       lat: posicionInicial.lat + (posicionFinal.lat - posicionInicial.lat) * factor,
       lng: posicionInicial.lng + (posicionFinal.lng - posicionInicial.lng) * factor,
-    };
-  }
+    };
+  }
 
   // Actualiza rastrearUbicacionUsuario para recalcular la ruta y ajustar el zoom
   rastrearUbicacionUsuario() {
@@ -742,8 +749,8 @@ export class MapComponent implements OnInit, OnDestroy {
     );
   }
 
-  cancelArrive(modal: any): void {
-    modal.dismiss('cancel');
+  cancelArrive(): void {
+    this.modalRef.close();
     setTimeout(() => {
       this.openModal(this.arriveModal, this.destinationName, '', '', '');
     }, 10000); // 10 segundos

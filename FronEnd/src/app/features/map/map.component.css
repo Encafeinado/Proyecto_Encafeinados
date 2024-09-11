@@ -231,8 +231,6 @@
   background-color: #666666;
 }
 
-
-
 /* ------------------------------------------------------------------------------------------------- */
 .album {
   display: flex;
@@ -557,3 +555,179 @@
 }
 
 
+/* Contenedor de Detalles de la Ruta */
+.ruta-detalles {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}
+
+.titulo-detalles {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Estilo de la información de detalles de ruta */
+.detalle-info {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+/* Estilos de la lista de instrucciones */
+.instrucciones-lista {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.instruccion-item {
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 8px;
+  background-color: #fff;
+  padding: 10px;
+  border-left: 4px solid #007bff;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+}
+
+.instruction-icon {
+  font-size: 18px;
+  margin-right: 10px;
+  color: #007bff;
+}
+
+/* Estilos para Información adicional */
+.info-adicional {
+  margin-top: 20px;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.info-lista {
+  list-style-type: none;
+  padding-left: 0;
+  font-size: 14px;
+}
+
+.info-lista li {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.info-lista img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.modal-content-create {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  font-family: "Poppins", sans-serif;
+  max-width: 500px; /* Limita el ancho del modal */
+  margin: auto; /* Centra el modal horizontalmente */
+}
+
+.modal-header-create {
+  background-color: #0f1eee;
+  color: #ffffff;
+  padding: 15px;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-body-create {
+  padding: 20px;
+  background-color: #d4f1f7;
+  border-radius: 0 0 10px 10px;
+}
+
+.modal-info {
+  display: flex;
+  align-items: flex-start; /* Alinea el contenido desde la parte superior */
+}
+
+.img-cafe {
+  width: 150px;
+  height: auto;
+  margin-right: 20px;
+  border-radius: 8px;
+}
+
+.info-cafe {
+  flex-grow: 1;
+}
+
+.descripcion-cafe {
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #555;
+}
+
+.especialidades {
+  margin-top: 10px;
+}
+
+.especialidades p {
+  margin: 5px 0; /* Reduce el margen entre las especialidades */
+}
+
+.fa-star, .fa-store {
+  color: #ff9800;
+  margin-right: 8px;
+}
+
+.abierto {
+  color: #4caf50;
+}
+
+.cerrado {
+  color: #f44336; /* Rojo para estado cerrado */
+}
+
+.transport-selection {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.transport-label i {
+  font-size: 24px;
+}
+
+.modal-footer-create {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  border-top: none;
+}
+
+.btn-primary {
+  background-color: #2516f1;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: #676ed6;
+}
+
+.btn-secondary {
+  background-color: #cccccc;
+  color: #000000;
+}
+
+.btn-secondary:hover {
+  background-color: #999999;
+}
