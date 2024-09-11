@@ -22,16 +22,17 @@
       </div>
       <div class="col-md-4 sidebar">
         <p>¡Encuentra los mejores lugares de café en tu área!</p>
-        <div *ngIf="rutaActiva && instruccionesRuta.length > 0">
-          <h3>Detalles de la Ruta</h3>
-          <p>{{ routeDetails }}</p>
-          <ul>
-            <li *ngFor="let instruction of instruccionesRuta">{{ instruction }}</li>
+        <div *ngIf="rutaActiva && instruccionesRuta.length > 0" class="ruta-detalles">
+          <h3 class="titulo-detalles">Detalles de la Ruta</h3>
+          <p class="detalle-info">{{ routeDetails }}</p>
+
+          <!-- Lista de Instrucciones -->
+          <ul class="instrucciones-lista">
+            <li *ngFor="let instruction of instruccionesRuta" class="instruccion-item">
+              <span class="instruction-icon">➡️</span> <span [innerHTML]="instruction"></span>
+            </li>
           </ul>
         </div>
-        <div class="alert alert-info" *ngIf="showAlert" role="alert">
-        </div>
-
         <br>
 
         <!-- Información adicional -->
@@ -90,27 +91,34 @@
         <h4 class="modal-title-create">{{ destinationName }}</h4>
       </div>
       <div class="modal-body-create">
-        <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid" style="width: 100%;">
-        <p style="padding-top: 3%;">Información sobre el café...</p>
-        <p style="padding-top: 3%;">Nombre: {{ destinationName }}</p>
-        <p style="padding-top: 3%;">Especialidad 1: {{ specialties1 }}</p>
-        <p style="padding-top: 3%;">Especialidad 2: {{ specialties2 }}</p>
-        <p style="padding-top: 3%;">Estado de la tienda: {{ shopStatus ? 'Abierto' : 'Cerrado' }}</p>
-        <div class="transport-selection" style="margin-top: 15px;">
+        <div class="modal-info">
+          <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid img-cafe">
+          <div class="info-cafe">
+            <p class="descripcion-cafe">Información del café</p>
+            <div class="especialidades">
+              <p><i class="fa fa-star"></i> Especialidad 1: {{ specialties1 }}</p>
+              <p><i class="fa fa-star"></i> Especialidad 2: {{ specialties2 }}</p>
+              <p><i class="fa fa-store"></i> Estado de la tienda: <span [class.abierto]="shopStatus"
+                  [class.cerrado]="!shopStatus">{{ shopStatus ? 'Abierto' : 'Cerrado' }}</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="transport-selection">
           <label class="transport-label">
             <input type="radio" name="transport" [class.active]="modoTransporte === google.maps.TravelMode.DRIVING"
               (click)="seleccionarModoTransporte(google.maps.TravelMode.DRIVING)">
-            <i class="fa fa-car" aria-hidden="true"></i>
+            <i class="fa fa-car"></i>
           </label>
           <label class="transport-label">
             <input type="radio" name="transport" [class.active]="modoTransporte === google.maps.TravelMode.BICYCLING"
               (click)="seleccionarModoTransporte(google.maps.TravelMode.BICYCLING)">
-            <i class="fa fa-bicycle" aria-hidden="true"></i>
+            <i class="fa fa-bicycle"></i>
           </label>
           <label class="transport-label">
             <input type="radio" name="transport" [class.active]="modoTransporte === google.maps.TravelMode.WALKING"
               (click)="seleccionarModoTransporte(google.maps.TravelMode.WALKING)">
-            <i class="fa fa-blind" aria-hidden="true"></i>
+            <i class="fa fa-blind"></i>
           </label>
         </div>
       </div>
@@ -120,6 +128,7 @@
       </div>
     </div>
   </ng-template>
+
 
   <!-- Modal para cancelar la ruta -->
   <ng-template #cancelModal let-modal>
@@ -167,41 +176,28 @@
       </div>
     </div>
   </ng-template>
-  
-<!-- Modal calficar tienda -->
-<ng-template #modalReviewShop let-modal>
-  <div class="modal-content-review">
-    <div class="modal-header-review">
-      <h5 class="modal-title-review">Califica la aplicación</h5>
+
+  <!-- Modal calficar tienda -->
+  <ng-template #modalReviewShop let-modal>
+    <div class="modal-content-review">
+      <div class="modal-header-review">
+        <h5 class="modal-title-review">Califica la aplicación</h5>
+      </div>
+      <div class="modal-body-review">
+        <label for="reviewApp">Comentario o sugerencia:</label>
+        <input #codeInput type="text" id="reviewApp" class="form-control" [(ngModel)]="reviewApp"
+          placeholder="Ingresa tu comentario o sugerencia" (input)="updateButtonReviewState()">
+      </div>
+      <div class="modal-footer-review">
+        <button type="button" class="btn" (click)="addReviewToApp()" [disabled]="isButtonDisabled">
+          Enviar
+        </button>
+        <button type="button" class="btn" (click)="modal.dismiss('cancel')">
+          Cerrar
+        </button>
+      </div>
     </div>
-    <div class="modal-body-review">
-      <label for="reviewApp">Comentario o sugerencia:</label>
-      <input 
-        #codeInput 
-        type="text" 
-        id="reviewApp" 
-        class="form-control" 
-        [(ngModel)]="reviewApp"
-        placeholder="Ingresa tu comentario o sugerencia" 
-        (input)="updateButtonReviewState()">
-    </div>
-    <div class="modal-footer-review">
-      <button 
-        type="button" 
-        class="btn" 
-        (click)="addReviewToApp()" 
-        [disabled]="isButtonDisabled">
-        Enviar
-      </button>
-      <button 
-        type="button" 
-        class="btn" 
-        (click)="modal.dismiss('cancel')">
-        Cerrar
-      </button>
-    </div>
-  </div>
-</ng-template>
+  </ng-template>
 
   <!-- Modal álbum -->
   <ng-template #modalBook let-modal>
@@ -212,7 +208,7 @@
       <div class="modal-body">
         <div class="album-info">
           <div class="missing-stamps">
-            Estampitas obtenidas: {{ obtainedStamps }}/{{ totalStamps }}
+            Sellos obtenidos: {{ obtainedStamps }}/{{ totalStamps }}
           </div>
         </div>
         <div class="album">
