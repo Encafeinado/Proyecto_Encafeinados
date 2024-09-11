@@ -856,63 +856,28 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  // confirmarLlegada() {
-  //   // Evitar que se confirme la llegada más de una vez si el proceso ya se completó
-  //   if (this.hasArrived) {
-  //     return; // Salir si ya se ha confirmado la llegada
-  //   }
-
-  //   // Marca que la llegada fue confirmada
-  //   this.hasArrived = true;
-
-  //   // Cancela la ruta actual y limpia el mapa
-  //   this.cancelarRuta();
-
-  //   // Cierra el modal de llegada si está abierto
-  //   if (this.modalRef) {
-  //     this.modalRef.close();
-  //     this.openedModal = false; // Resetear el estado de openedModal
-  //   }
-
-  //   // Reiniciar el estado para permitir seleccionar una nueva ruta
-  //   this.hasArrived = false; // Permitir seleccionar nuevas rutas después de cerrar el modal
-  //   this.rutaActiva = false; // Reinicia la ruta activa
-  //   // No es necesario reiniciar el mapa, solo actualizar el estado
-  //   console.log('Ruta cancelada. Puedes seleccionar una nueva tienda.');
-  // }
-  cancelarYReabrirModal(modal: any) {
-    if (this.modalRef) {
-      this.modalRef.close(); // Cierra el modal
-      console.log('Modal cerrado. Se volverá a abrir en 10 segundos.');
-    }
-  
-    // Vuelve a abrir el modal en 10 segundos
-    setTimeout(() => {
-      console.log('Reabriendo modal después de 10 segundos.');
-      this.openModal(modal, this.destinationName, '', '', '');
-    }, 10000);
-  }
-  
   confirmarLlegada() {
     // Evitar que se confirme la llegada más de una vez si el proceso ya se completó
     if (this.hasArrived) {
       return; // Salir si ya se ha confirmado la llegada
     }
-  
+
     // Marca que la llegada fue confirmada
     this.hasArrived = true;
-  
+
     // Cancela la ruta actual y limpia el mapa
     this.cancelarRuta();
-  
+
     // Cierra el modal de llegada si está abierto
     if (this.modalRef) {
       this.modalRef.close();
       this.openedModal = false; // Resetear el estado de openedModal
     }
-  
+
     // Reiniciar el estado para permitir seleccionar una nueva ruta
+    this.hasArrived = false; // Permitir seleccionar nuevas rutas después de cerrar el modal
     this.rutaActiva = false; // Reinicia la ruta activa
+    // No es necesario reiniciar el mapa, solo actualizar el estado
     console.log('Ruta cancelada. Puedes seleccionar una nueva tienda.');
   }
 
