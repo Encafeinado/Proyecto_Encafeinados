@@ -706,6 +706,7 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Método para calcular la distancia entre dos puntos (en metros)
   calcularDistancia(
     lat1: number,
     lng1: number,
@@ -727,56 +728,91 @@ export class MapComponent implements OnInit, OnDestroy {
     return distancia;
   }
 
+  // Método para verificar cercanía al destino
   verificarCercaniaADestino() {
     if (this.markerPosition && this.destinationName) {
       console.log('Verificando cercanía al destino...', this.destinationName);
-      let lat2: number;
-      let lng2: number;
 
       if (
         typeof this.destinationName === 'object' &&
         'lat' in this.destinationName &&
         'lng' in this.destinationName
       ) {
-        const destinationCoords = this
-          .destinationName as google.maps.LatLngLiteral;
-        lat2 = destinationCoords.lat;
-        lng2 = destinationCoords.lng;
+        const lat2 = (this.destinationName as { lat: number; lng: number }).lat;
+        const lng2 = (this.destinationName as { lat: number; lng: number }).lng;
 
-        console.log('Coordenadas del destino:', lat2, lng2);
+        // Calcula la distancia y verifica cercanía
+        this.procesarVerificacionCercania(lat2, lng2);
       } else {
-        console.error('El destino no tiene coordenadas válidas.');
-        return;
-      }
-
-      console.log(
-        'Posición actual del usuario:',
-        this.markerPosition.lat,
-        this.markerPosition.lng
-      );
-
-      const distancia = this.calcularDistancia(
-        this.markerPosition.lat,
-        this.markerPosition.lng,
-        lat2,
-        lng2
-      );
-
-      console.log(`Distancia calculada: ${distancia} metros`);
-
-      if (distancia <= 50 && !this.hasArrived) {
-        // 80 metros como umbral
-        this.hasArrived = true;
-        console.log('Cerca del destino. Abriendo modal...');
-        this.openModal(this.arriveModal, this.destinationName, '', '', '');
-      } else {
-        console.log(
-          `Aún no cerca del destino. Distancia actual: ${distancia} metros`
-        );
+        // Si no hay coordenadas, usa el nombre del destino para obtenerlas
+        this.obtenerCoordenadasDestino(this.destinationName)
+          .then((coords) => {
+            console.log('Coordenadas obtenidas del destino:', coords);
+            this.procesarVerificacionCercania(coords.lat, coords.lng);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       }
     } else {
       console.error('Posición del marcador o destino no definidos.');
     }
+  }
+
+  // Método para procesar la verificación de cercanía
+  procesarVerificacionCercania(lat2: number, lng2: number) {
+    if (!this.markerPosition) {
+      console.error('Posición del marcador no está definida.');
+      return;
+    }
+
+    console.log(
+      'Posición actual del usuario:',
+      this.markerPosition?.lat,
+      this.markerPosition?.lng
+    );
+
+    // Calcular la distancia
+    const distancia = this.calcularDistancia(
+      this.markerPosition.lat,
+      this.markerPosition.lng,
+      lat2,
+      lng2
+    );
+
+    console.log(`Distancia calculada: ${distancia} metros`);
+
+    if (distancia <= 80) {
+      // Umbral de 80 metros
+      console.log('Cerca del destino. Abriendo modal...');
+      this.openModal(this.arriveModal, this.destinationName, '', '', '');
+    } else {
+      console.log(
+        `Aún no cerca del destino. Distancia actual: ${distancia} metros`
+      );
+    }
+  }
+
+  // Método para obtener las coordenadas del destino utilizando Google Maps Geocoding API
+  obtenerCoordenadasDestino(
+    destino: string
+  ): Promise<google.maps.LatLngLiteral> {
+    return new Promise((resolve, reject) => {
+      const geocoder = new google.maps.Geocoder();
+
+      geocoder.geocode({ address: destino }, (results, status) => {
+        if (status === 'OK' && results && results[0]) {
+          const location = results[0].geometry.location;
+          const coordinates: google.maps.LatLngLiteral = {
+            lat: location.lat(),
+            lng: location.lng(),
+          };
+          resolve(coordinates);
+        } else {
+          reject('No se pudieron obtener las coordenadas del destino');
+        }
+      });
+    });
   }
 
   confirmarLlegada() {
