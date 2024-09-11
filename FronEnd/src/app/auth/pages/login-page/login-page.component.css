@@ -1,6 +1,7 @@
 /* Estilos generales */
 body {
   font-family: 'Arial', sans-serif;
+  background-color: #ffffff; /* Fondo amarillo claro */
   margin: 0;
   padding: 0;
 }
@@ -19,7 +20,7 @@ header p {
 
 .txt1 {
   font-size: 1rem;
-  color: #000000; /* Gris */
+  color: #491a1a; /* Gris */
 }
 
 /* Estilos para las secciones */
@@ -30,7 +31,7 @@ section h2 {
 }
 
 section p {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #000000; /* Azul principal */
 }
 
@@ -47,20 +48,23 @@ footer p {
 }
 
 .main-content {
-  padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
+  padding-top: 100px; /* Ajusta este valor según la altura de tu navbar */
 }
 
-/* Estilos para el contenedor del formulario */
+
+
+/* Ajuste del tamaño máximo del contenedor del formulario */
 .form-container {
-  border: 2px solid #e0d9d9; /* Borde azul principal */
+  border: 2px solid #e0d9d9; /* Borde del contenedor */
   border-radius: 12px; /* Bordes redondeados */
-  padding: 20px; /* Espacio interior reducido */
-  background-color: #fff; /* Fondo blanco para el contenedor */
+  padding: 10px; /* Reduce el padding interno */
+  background-color: #fff; /* Fondo blanco */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
-  position: relative; /* Posicionamiento para efectos adicionales si es necesario */
-  max-width: 400px; /* Ajusta el tamaño máximo del formulario */
-  max-height: 650px; /* Ajusta el tamaño máximo del formulario */
-  margin: 0 auto; /* Centra el formulario horizontalmente */
+  position: relative;
+  max-width: 300px; /* Reduce el tamaño máximo del contenedor */
+  min-height: 100px; /* Ajusta según el tamaño necesario */
+  margin: 0 auto; /* Centra el contenedor */
+  
 }
 
 
@@ -91,6 +95,10 @@ footer p {
 
 /* Ajustes responsivos para pantallas pequeñas */
 @media (max-width: 768px) {
+  .main-content {
+    padding-top: 150px; /* Ajusta este valor según la altura de tu navbar */
+  }
+  
   .service-circle-container {
     width: 100px; /* Tamaño más pequeño en pantallas pequeñas */
     height: 100px; /* Tamaño más pequeño en pantallas pequeñas */
@@ -111,17 +119,18 @@ footer p {
   }
 }
 
-/* Ajustes para el card */
+/* Ajuste del tamaño del card */
 .card {
-  background-color: #fff; /* Fondo blanco */
-  border-radius: 12px; /* Bordes redondeados */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
-  border: 1px solid #ddd; /* Borde gris claro */
-  padding: 10px; /* Espacio interior reducido */
-  margin: 10px; /* Espacio exterior reducido */
-  position: relative; /* Para posicionar elementos en el contorno si es necesario */
-  max-width: 400px; /* Tamaño máximo del card */
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  padding: 10px; /* Reduce el padding interno */
+  margin: 10px; /* Reduce el margen exterior */
+  position: relative;
+  max-width: 350px; /* Reduce el tamaño máximo del card */
 }
+
 
 
 
@@ -131,7 +140,7 @@ footer p {
   background: radial-gradient(circle, rgba(129, 227, 240, 0.5), rgba(224, 247, 250, 0)); /* Degradado difuminado del azul claro */
   border-radius: 100%;
   padding: 20px; /* Espacio alrededor del contenido */
-  height: 700px; /* Tamaño del círculo */
+  height: auto; /* Permite que el contenedor ajuste su altura según el contenido */
   width: 100%; /* Ancho completo */
   display: flex;
   align-items: center;

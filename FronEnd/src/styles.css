@@ -374,6 +374,7 @@ button:hover {
 
 .input-with-eye {
   position: relative;
+
 }
 
 .input100 {
@@ -444,6 +445,7 @@ button:hover {
 
 .login100-form {
   width: 100%;
+  
 }
 
 .login100-form-title {
@@ -472,6 +474,7 @@ button:hover {
 .wrap-input100 {
   position: relative;
   margin-bottom: 1rem; /* Espacio entre los campos */
+ 
 }
 
 .label-input100 {

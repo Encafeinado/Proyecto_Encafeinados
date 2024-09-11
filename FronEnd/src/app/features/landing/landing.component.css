@@ -125,7 +125,7 @@ header p {
 
 
 .main-content[_ngcontent-ng-c3212078885] {
-  padding-top: 100px;
+  padding-top: 120px;
 }
 
 
@@ -204,9 +204,6 @@ footer p {
 
 
 
-.main-content {
-  padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
-}
 
 /* Estilos para los enlaces sociales */
 .social-link {
