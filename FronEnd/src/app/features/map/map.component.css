@@ -24,7 +24,7 @@
 
 .alert-info {
   --bs-alert-color: #007bff; /* Color del texto dentro de la alerta */
-  --bs-alert-bg: #ffffff;    /* Color de fondo de la alerta */
+  --bs-alert-bg: #ffffff; /* Color de fondo de la alerta */
   --bs-alert-border-color: #ffffff; /* Color del borde de la alerta */
   --bs-alert-link-color: #0056b3; /* Color de los enlaces dentro de la alerta */
 }
@@ -72,22 +72,19 @@
   max-width: 1200px;
 }
 
-
 .sidebar {
   background-color: #d4f1f7;
   padding: 20px;
   border-radius: 20px;
-
 }
 
-.sidebar h2, .sidebar p {
+.sidebar h2,
+.sidebar p {
   position: relative;
   color: #0c0c0c;
   border-radius: 5px;
   padding: 5px;
 }
-
-
 
 .sidebar img {
   margin-bottom: 15px;
@@ -112,7 +109,6 @@
 /* Estilos específicos para cada botón */
 .button-book {
   margin-right: 10px; /* Espacio entre los botones */
-  
 }
 
 .button-camera {
@@ -121,7 +117,8 @@
 
 .modal-content-code,
 .modal-content-create,
-.modal-content-cancelR {
+.modal-content-cancelR,
+.modal-content-arrive {
   background-color: #ffffff;
   border-radius: 10px;
   padding: 20px;
@@ -132,7 +129,8 @@
 
 .modal-header-code,
 .modal-header-create,
-.modal-header-cancelR {
+.modal-header-cancelR,
+.modal-header-arrive {
   background-color: #0f1eee;
   color: #ffffff;
   padding: 15px;
@@ -143,7 +141,8 @@
 
 .modal-body-code,
 .modal-body-create,
-.modal-body-cancelR {
+.modal-body-cancelR,
+.modal-body-arrive {
   padding: 20px;
   background-color: #d4f1f7;
   border-radius: 0 0 10px 10px;
@@ -151,7 +150,8 @@
 
 .modal-footer-code,
 .modal-footer-create,
-.modal-footer-cancelR {
+.modal-footer-cancelR,
+.modal-footer-arrive {
   display: flex;
   justify-content: center;
   padding: 20px;
@@ -160,7 +160,8 @@
 
 .modal-footer-code .btn,
 .modal-footer-create .btn,
-.modal-footer-cancelR .btn {
+.modal-footer-cancelR .btn,
+.modal-footer-arrive .btn {
   margin: 0 10px;
   background-color: #2516f1;
   color: #ffffff;
@@ -168,16 +169,17 @@
 
 .modal-footer-code .btn:hover,
 .modal-footer-create .btn:hover,
-.modal-footer-cancelR .btn:hover {
+.modal-footer-cancelR .btn:hover,
+.modal-footer-arrive .btn:hover {
   background-color: #676ed6;
 }
 
 .modal-footer-code .btn:disabled,
 .modal-footer-create .btn:disabled,
-.modal-footer-cancelR .btn:disabled {
+.modal-footer-cancelR .btn:disabled,
+.modal-footer-arrive .btn:disabled{
   background-color: #666666;
 }
-
 
 /* Estilos generales para el contenido del modal */
 .modal-content-review {
@@ -404,7 +406,9 @@
 
 /* Estilo para las imágenes coloreadas */
 .album-page img.colored {
-  filter: grayscale(0%); /* Quita el filtro grayscale para imágenes coloreadas */
+  filter: grayscale(
+    0%
+  ); /* Quita el filtro grayscale para imágenes coloreadas */
 }
 
 .album-info {
@@ -432,8 +436,6 @@
   font-family: "Poppins", sans-serif;
   overflow: hidden;
 }
-
-
 
 .modal-header-coffee {
   background-color: #03aed2;
@@ -489,7 +491,6 @@
   background-color: #feefad;
 }
 
-
 /* ------------------------------------------------------------------------------- */
 .transport-selection {
   display: flex;
@@ -539,7 +540,7 @@
 
 .star-rating {
   font-size: 32px; /* Tamaño de las estrellas */
-  color: #FFD700; /* Color dorado */
+  color: #ffd700; /* Color dorado */
 }
 
 .star-rating .star-empty {
@@ -547,13 +548,12 @@
 }
 
 .star-rating .star-filled {
-  color: #FFD700; /* Color dorado para estrellas seleccionadas */
+  color: #ffd700; /* Color dorado para estrellas seleccionadas */
 }
 
 .star-rating span {
   cursor: pointer;
 }
-
 
 /* Contenedor de Detalles de la Ruta */
 .ruta-detalles {
@@ -684,7 +684,8 @@
   margin: 5px 0; /* Reduce el margen entre las especialidades */
 }
 
-.fa-star, .fa-store {
+.fa-star,
+.fa-store {
   color: #ff9800;
   margin-right: 8px;
 }

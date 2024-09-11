@@ -177,22 +177,22 @@ export class MapComponent implements OnInit, OnDestroy {
         this.position = position;
         this.map = map;
         this.div = document.createElement('div');
-      
+
         // Estilos de la bolita
         this.div.style.borderRadius = '50%';
         this.div.style.backgroundColor = status ? 'green' : 'red';
         this.div.style.width = '10px';
         this.div.style.height = '10px';
-      
+
         // Contorno blanco (borde)
-        this.div.style.border = '1.8px solid white';  // Borde blanco de 1.8px
-        
+        this.div.style.border = '1.8px solid white'; // Borde blanco de 1.8px
+
         // Posicionamiento y transformación
         this.div.style.position = 'absolute';
         this.div.style.transform = 'translate(70%, -458%)';
-      
+
         this.setMap(map);
-      }      
+      }
 
       updateStatus(status: boolean) {
         this.div.style.backgroundColor = status ? 'green' : 'red';
@@ -346,161 +346,199 @@ export class MapComponent implements OnInit, OnDestroy {
     factor: number
   ): google.maps.LatLngLiteral {
     return {
-      lat: posicionInicial.lat + (posicionFinal.lat - posicionInicial.lat) * factor,
-      lng: posicionInicial.lng + (posicionFinal.lng - posicionInicial.lng) * factor,
+      lat:
+        posicionInicial.lat +
+        (posicionFinal.lat - posicionInicial.lat) * factor,
+      lng:
+        posicionInicial.lng +
+        (posicionFinal.lng - posicionInicial.lng) * factor,
     };
   }
 
-rastrearUbicacionUsuario() {
-  if (navigator.geolocation) {
-    this.watchId = navigator.geolocation.watchPosition(
-      (position) => {
-        const nuevaPosicion = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
+  rastrearUbicacionUsuario() {
+    if (navigator.geolocation) {
+      this.watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          const nuevaPosicion = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
 
-        // Si ya tienes una posición previa, realiza la interpolación
-        if (this.markerPosition) {
-          const pasos = 10; // Cuantos más pasos, más suave será la transición
-          const duracion = 1000; // Tiempo total de la interpolación en milisegundos
-          const intervalo = duracion / pasos;
-          let pasoActual = 0;
+          // Si ya tienes una posición previa, realiza la interpolación
+          if (this.markerPosition) {
+            const pasos = 10; // Cuantos más pasos, más suave será la transición
+            const duracion = 1000; // Tiempo total de la interpolación en milisegundos
+            const intervalo = duracion / pasos;
+            let pasoActual = 0;
 
-          const intervaloId = setInterval(() => {
-            pasoActual++;
-            const factor = pasoActual / pasos;
-            const posicionInterpolada = this.interpolarPosicion(
-              this.markerPosition!,
-              nuevaPosicion,
-              factor
-            );
+            const intervaloId = setInterval(() => {
+              pasoActual++;
+              const factor = pasoActual / pasos;
+              const posicionInterpolada = this.interpolarPosicion(
+                this.markerPosition!,
+                nuevaPosicion,
+                factor
+              );
 
-            // Actualiza la posición del marcador en el mapa
-            this.markerUsuario?.setPosition(posicionInterpolada);
+              // Actualiza la posición del marcador en el mapa
+              this.markerUsuario?.setPosition(posicionInterpolada);
 
-            if (pasoActual >= pasos) {
-              clearInterval(intervaloId);
-              this.markerPosition = nuevaPosicion;
-              this.verificarCercaniaADestino(); // Verifica cercanía una vez se completa la interpolación
+              if (pasoActual >= pasos) {
+                clearInterval(intervaloId);
+                this.markerPosition = nuevaPosicion;
+                this.verificarCercaniaADestino(); // Verifica cercanía una vez se completa la interpolación
+              }
+            }, intervalo);
+          } else {
+            // Si es la primera vez que obtienes la posición
+            this.markerPosition = nuevaPosicion;
+            this.markerUsuario?.setPosition(this.markerPosition);
+            this.verificarCercaniaADestino(); // Verifica cercanía
+          }
+          if (!this.hasZoomed) {
+            const map = this.directionsRendererInstance.getMap();
+            if (map) {
+              map.setZoom(17);  // Zoom inicial en la ubicación del usuario
+              map.panTo(this.markerPosition);
+              this.hasZoomed = true;  // Evitar futuros zooms automáticos
             }
-          }, intervalo);
-        } else {
-          // Si es la primera vez que obtienes la posición
-          this.markerPosition = nuevaPosicion;
-          this.markerUsuario?.setPosition(this.markerPosition);
-          this.verificarCercaniaADestino(); // Verifica cercanía
+          }
+          console.log(
+            'Ubicación del usuario actualizada:',
+            this.markerPosition
+          );
+          this.actualizarMarcadorUbicacionUsuario();
+          this.solicitarPermisoOrientacion();
+        },
+        (error) => {
+          console.error('Error rastreando la ubicación', error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
         }
-
-        console.log('Ubicación del usuario actualizada:', this.markerPosition);
-        this.actualizarMarcadorUbicacionUsuario();
-        this.solicitarPermisoOrientacion();
-      },
-      (error) => {
-        console.error('Error rastreando la ubicación', error);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
-      }
-    );
-  } else {
-    console.error('Geolocalización no es soportada por este navegador.');
-  }
-}
-
-// Método para calcular la distancia entre dos puntos (en metros)
-calcularDistancia(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const R = 6371e3; // Radio de la Tierra en metros
-  const φ1 = (lat1 * Math.PI) / 180; // lat1 en radianes
-  const φ2 = (lat2 * Math.PI) / 180; // lat2 en radianes
-  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-  const Δλ = ((lng2 - lng1) * Math.PI) / 180;
-
-  const a =
-    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  const distancia = R * c; // En metros
-  return distancia;
-}
-
-// Método para verificar cercanía al destino
-verificarCercaniaADestino() {
-  if (this.markerPosition && this.destinationName && this.rutaActiva && !this.hasArrived) {
-    console.log('Verificando cercanía al destino...', this.destinationName);
-
-    if (typeof this.destinationName === 'object' && 'lat' in this.destinationName && 'lng' in this.destinationName) {
-      const lat2 = (this.destinationName as { lat: number; lng: number }).lat;
-      const lng2 = (this.destinationName as { lat: number; lng: number }).lng;
-
-      // Calcula la distancia y verifica cercanía
-      this.procesarVerificacionCercania(lat2, lng2);
+      );
     } else {
-      // Si no hay coordenadas, usa el nombre del destino para obtenerlas
-      this.obtenerCoordenadasDestino(this.destinationName)
-        .then((coords) => {
-          console.log('Coordenadas obtenidas del destino:', coords);
-          this.procesarVerificacionCercania(coords.lat, coords.lng);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      console.error('Geolocalización no es soportada por este navegador.');
     }
-  } else {
-    console.error('Posición del marcador, destino o ruta no definidos, o ya se ha llegado.');
-  }
-}
-
-
-// Método para procesar la verificación de cercanía
-procesarVerificacionCercania(lat2: number, lng2: number) {
-  if (!this.markerPosition) {
-    console.error('Posición del marcador no está definida.');
-    return;
   }
 
-  console.log('Posición actual del usuario:', this.markerPosition?.lat, this.markerPosition?.lng);
+  // Método para calcular la distancia entre dos puntos (en metros)
+  calcularDistancia(
+    lat1: number,
+    lng1: number,
+    lat2: number,
+    lng2: number
+  ): number {
+    const R = 6371e3; // Radio de la Tierra en metros
+    const φ1 = (lat1 * Math.PI) / 180; // lat1 en radianes
+    const φ2 = (lat2 * Math.PI) / 180; // lat2 en radianes
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lng2 - lng1) * Math.PI) / 180;
 
-  // Calcular la distancia
-  const distancia = this.calcularDistancia(
-    this.markerPosition.lat,
-    this.markerPosition.lng,
-    lat2,
-    lng2
-  );
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  console.log(`Distancia calculada: ${distancia} metros`);
-
-  if (distancia <= 80) { // Umbral de 80 metros
-    console.log('Cerca del destino. Abriendo modal...');
-    this.openModal(this.arriveModal, this.destinationName, '', '', '');
-  } else {
-    console.log(`Aún no cerca del destino. Distancia actual: ${distancia} metros`);
+    const distancia = R * c; // En metros
+    return distancia;
   }
-}
 
-// Método para obtener las coordenadas del destino utilizando Google Maps Geocoding API
-obtenerCoordenadasDestino(destino: string): Promise<google.maps.LatLngLiteral> {
-  return new Promise((resolve, reject) => {
-    const geocoder = new google.maps.Geocoder();
+  // Método para verificar cercanía al destino
+  verificarCercaniaADestino() {
+    if (
+      this.markerPosition &&
+      this.destinationName &&
+      this.rutaActiva &&
+      !this.hasArrived
+    ) {
+      console.log('Verificando cercanía al destino...', this.destinationName);
 
-    geocoder.geocode({ address: destino }, (results, status) => {
-      if (status === 'OK' && results && results[0]) {
-        const location = results[0].geometry.location;
-        const coordinates: google.maps.LatLngLiteral = {
-          lat: location.lat(),
-          lng: location.lng(),
-        };
-        resolve(coordinates);
+      if (
+        typeof this.destinationName === 'object' &&
+        'lat' in this.destinationName &&
+        'lng' in this.destinationName
+      ) {
+        const lat2 = (this.destinationName as { lat: number; lng: number }).lat;
+        const lng2 = (this.destinationName as { lat: number; lng: number }).lng;
+
+        // Calcula la distancia y verifica cercanía
+        this.procesarVerificacionCercania(lat2, lng2);
       } else {
-        reject('No se pudieron obtener las coordenadas del destino');
+        // Si no hay coordenadas, usa el nombre del destino para obtenerlas
+        this.obtenerCoordenadasDestino(this.destinationName)
+          .then((coords) => {
+            console.log('Coordenadas obtenidas del destino:', coords);
+            this.procesarVerificacionCercania(coords.lat, coords.lng);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       }
-    });
-  });
-}
+    } else {
+      console.error(
+        'Posición del marcador, destino o ruta no definidos, o ya se ha llegado.'
+      );
+    }
+  }
+
+  // Método para procesar la verificación de cercanía
+  procesarVerificacionCercania(lat2: number, lng2: number) {
+    if (!this.markerPosition) {
+      console.error('Posición del marcador no está definida.');
+      return;
+    }
+
+    console.log(
+      'Posición actual del usuario:',
+      this.markerPosition?.lat,
+      this.markerPosition?.lng
+    );
+
+    // Calcular la distancia
+    const distancia = this.calcularDistancia(
+      this.markerPosition.lat,
+      this.markerPosition.lng,
+      lat2,
+      lng2
+    );
+
+    console.log(`Distancia calculada: ${distancia} metros`);
+
+    if (distancia <= 80) {
+      // Umbral de 80 metros
+      console.log('Cerca del destino. Abriendo modal...');
+      this.openModal(this.arriveModal, this.destinationName, '', '', '');
+    } else {
+      console.log(
+        `Aún no cerca del destino. Distancia actual: ${distancia} metros`
+      );
+    }
+  }
+
+  // Método para obtener las coordenadas del destino utilizando Google Maps Geocoding API
+  obtenerCoordenadasDestino(
+    destino: string
+  ): Promise<google.maps.LatLngLiteral> {
+    return new Promise((resolve, reject) => {
+      const geocoder = new google.maps.Geocoder();
+
+      geocoder.geocode({ address: destino }, (results, status) => {
+        if (status === 'OK' && results && results[0]) {
+          const location = results[0].geometry.location;
+          const coordinates: google.maps.LatLngLiteral = {
+            lat: location.lat(),
+            lng: location.lng(),
+          };
+          resolve(coordinates);
+        } else {
+          reject('No se pudieron obtener las coordenadas del destino');
+        }
+      });
+    });
+  }
 
   // Método para determinar si la ruta debe ser recalculada
   debeRecalcularRuta(nuevaPosicion: google.maps.LatLngLiteral): boolean {
@@ -547,7 +585,7 @@ obtenerCoordenadasDestino(destino: string): Promise<google.maps.LatLngLiteral> {
         if (this.rutaActiva) {
           // Solo ajustar el zoom si hay una ruta activa
           setTimeout(() => {
-            map.setZoom(17); // Ajusta el nivel de zoom según sea necesario
+            map.setZoom(20); // Ajusta el nivel de zoom según sea necesario
           }, 300);
         }
       }
@@ -818,6 +856,43 @@ obtenerCoordenadasDestino(destino: string): Promise<google.maps.LatLngLiteral> {
     }
   }
 
+  // confirmarLlegada() {
+  //   // Evitar que se confirme la llegada más de una vez si el proceso ya se completó
+  //   if (this.hasArrived) {
+  //     return; // Salir si ya se ha confirmado la llegada
+  //   }
+
+  //   // Marca que la llegada fue confirmada
+  //   this.hasArrived = true;
+
+  //   // Cancela la ruta actual y limpia el mapa
+  //   this.cancelarRuta();
+
+  //   // Cierra el modal de llegada si está abierto
+  //   if (this.modalRef) {
+  //     this.modalRef.close();
+  //     this.openedModal = false; // Resetear el estado de openedModal
+  //   }
+
+  //   // Reiniciar el estado para permitir seleccionar una nueva ruta
+  //   this.hasArrived = false; // Permitir seleccionar nuevas rutas después de cerrar el modal
+  //   this.rutaActiva = false; // Reinicia la ruta activa
+  //   // No es necesario reiniciar el mapa, solo actualizar el estado
+  //   console.log('Ruta cancelada. Puedes seleccionar una nueva tienda.');
+  // }
+  cancelarYReabrirModal(modal: any) {
+    if (this.modalRef) {
+      this.modalRef.close(); // Cierra el modal
+      console.log('Modal cerrado. Se volverá a abrir en 10 segundos.');
+    }
+  
+    // Vuelve a abrir el modal en 10 segundos
+    setTimeout(() => {
+      console.log('Reabriendo modal después de 10 segundos.');
+      this.openModal(modal, this.destinationName, '', '', '');
+    }, 10000);
+  }
+  
   confirmarLlegada() {
     // Evitar que se confirme la llegada más de una vez si el proceso ya se completó
     if (this.hasArrived) {
@@ -837,17 +912,9 @@ obtenerCoordenadasDestino(destino: string): Promise<google.maps.LatLngLiteral> {
     }
   
     // Reiniciar el estado para permitir seleccionar una nueva ruta
-    this.hasArrived = false; // Permitir seleccionar nuevas rutas después de cerrar el modal
     this.rutaActiva = false; // Reinicia la ruta activa
-    // No es necesario reiniciar el mapa, solo actualizar el estado
     console.log('Ruta cancelada. Puedes seleccionar una nueva tienda.');
   }
-  
-  
-  
-  
-  
-  
 
   closeAlert(): void {
     this.showAlert = false;
@@ -866,8 +933,6 @@ obtenerCoordenadasDestino(destino: string): Promise<google.maps.LatLngLiteral> {
     );
   }
 
-  
-  
   openModal(
     content: any,
     destinationName: string,
@@ -879,27 +944,25 @@ obtenerCoordenadasDestino(destino: string): Promise<google.maps.LatLngLiteral> {
     if (this.openedModal || this.hasArrived) {
       return; // No abrir el modal si ya está abierto o si el usuario ya ha llegado
     }
-  
+
     // Marcar como abierto y configurar las propiedades del modal
     this.destinationName = destinationName;
     this.shopStatus = status;
     this.specialties1 = specialties1;
     this.specialties2 = specialties2;
     this.openedModal = true;
-  
+
     // Abrir el modal
     this.modalRef = this.modalService.open(content, {
       centered: true,
       backdrop: 'static',
     });
-  
+
     // Cerrar el modal y resetear el estado cuando se cierre
     this.modalRef.result.finally(() => {
       this.openedModal = false; // Reiniciar el estado del modal
     });
   }
-  
-  
 
   updateButtonReviewState() {
     this.isButtonDisabled = this.reviewApp.trim().length === 0;
@@ -934,7 +997,7 @@ obtenerCoordenadasDestino(destino: string): Promise<google.maps.LatLngLiteral> {
   openModalAlbum(): void {
     this.openModal(this.modalBook, '', '', '', '');
   }
-  
+
   openModalReviewShop(): void {
     this.resetModalFields();
     this.openModal(this.modalReviewShop, '', 'statusValue', '', '');

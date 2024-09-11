@@ -226,23 +226,27 @@
 
   <!-- Modal de llegada al café -->
   <ng-template #arriveModal let-modal>
-    <div class="modal-content-coffee modal-coffee">
-      <div class="modal-header-coffee">
-        <h4 class="modal-title-coffee" id="modal-title-coffee">¡¡Llegaste a {{ destinationName }}!!</h4>
+    <div class="modal-content-arrive">
+      <div class="modal-header-arrive">
+        <h4 class="modal-title-arrive" id="modal-title-arrive">¡¡Llegaste a {{ destinationName }}!!</h4>
       </div>
-      <div class="modal-body-coffee">
+      <div class="modal-body-arrive">
         <div class="image-gallery-coffee">
           <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
           <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
           <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
         </div>
-        <p class="description-coffee">
-          Información sobre el café...
-        </p>
+        <p class="descripcion-cafe">Información del café</p>
+            <div class="especialidades">
+              <p><i class="fa fa-star"></i> Especialidad 1: {{ specialties1 }}</p>
+              <p><i class="fa fa-star"></i> Especialidad 2: {{ specialties2 }}</p>
+              <p><i class="fa fa-store"></i> Estado de la tienda: <span [class.abierto]="shopStatus"
+                  [class.cerrado]="!shopStatus">{{ shopStatus ? 'Abierto' : 'Cerrado' }}</span></p>
+            </div>
       </div>
-      <div class="modal-footer-coffee">
+      <div class="modal-footer-arrive">
         <button type="button" class="btn" (click)="confirmarLlegada()">Si, he llegado</button>
-        
+        <button type="button" class="btn" (click)="cancelarYReabrirModal(modal)">Cancelar</button>
       </div>
     </div>
   </ng-template>
