@@ -726,7 +726,7 @@ export class MapComponent implements OnInit, OnDestroy {
   
   verificarCercaniaADestino() {
     if (this.markerPosition && this.destinationName) {
-        console.log('Verificando cercanía al destino...');
+        console.log('Verificando cercanía al destino...', this.destinationName);
         let lat2: number;
         let lng2: number;
 
@@ -748,7 +748,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
         console.log(`Distancia calculada: ${distancia} metros`);
 
-        if (distancia <= 50 && !this.hasArrived) { // 50 metros como umbral
+        if (distancia <= 80 && !this.hasArrived) { // 50 metros como umbral
             this.hasArrived = true;
             console.log('Cerca del destino. Abriendo modal...');
             this.openModal(this.arriveModal, this.destinationName, '', '', '');
