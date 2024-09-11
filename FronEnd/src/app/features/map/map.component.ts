@@ -706,19 +706,37 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  private modalAbierto: boolean = false;
-  private tiempoUltimaAperturaModal: number | null = null; // Para controlar el tiempo entre aperturas del modal
-  private intervaloModal: number = 30000; // 30 segundos de intervalo para abrir el modal nuevamente
+  // Método para calcular la distancia entre dos puntos (en metros)
+  calcularDistancia(
+    lat1: number,
+    lng1: number,
+    lat2: number,
+    lng2: number
+  ): number {
+    const R = 6371e3; // Radio de la Tierra en metros
+    const φ1 = (lat1 * Math.PI) / 180; // lat1 en radianes
+    const φ2 = (lat2 * Math.PI) / 180; // lat2 en radianes
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lng2 - lng1) * Math.PI) / 180;
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    const distancia = R * c; // En metros
+    return distancia;
+  }
 
   // Método para verificar cercanía al destino
   verificarCercaniaADestino() {
     if (this.markerPosition && this.destinationName) {
       console.log('Verificando cercanía al destino...', this.destinationName);
-      this.toastr.info('Verificando cercanía al destino...', this.destinationName)
+
       if (
         typeof this.destinationName === 'object' &&
         'lat' in this.destinationName &&
-        'lat' in this.destinationName
+        'lng' in this.destinationName
       ) {
         const lat2 = (this.destinationName as { lat: number; lng: number }).lat;
         const lng2 = (this.destinationName as { lat: number; lng: number }).lng;
@@ -742,95 +760,52 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   // Método para procesar la verificación de cercanía
-  procesarVerificacionCercania(lat2: number, lng2: number) {
-    if (!this.markerPosition) {
-      console.error('Posición del marcador no está definida.');
-      return;
-    }
+    // Variable para controlar si ya se mostró el modal
+    private modalMostrado: boolean = false;
 
-    const ahora = Date.now();
-
-    // Verifica si ha pasado suficiente tiempo desde la última vez que se mostró el modal
-    if (this.tiempoUltimaAperturaModal && (ahora - this.tiempoUltimaAperturaModal) < this.intervaloModal) {
-      return; // Si no han pasado 30 segundos, no abrir el modal nuevamente
-    }
-    console.log(
-      'Posición actual del usuario:',
-      this.markerPosition?.lat,
-      this.markerPosition?.lng
-    );
-
-    // Calcular la distancia
-    const distancia = this.calcularDistancia(
-      this.markerPosition.lat,
-      this.markerPosition.lng,
-      lat2,
-      lng2
-    );
-
-    console.log(`Distancia calculada: ${distancia} metros`);
-    this.toastr.info(`Distancia calculada: ${distancia} metros`)
-
-    if (distancia <= 80 && !this.modalAbierto) { // Umbral de 50 metros
-      console.log('Cerca del destino. Abriendo modal...');
-      this.toastr.show('Cerca del destino. Abriendo modal...')
-      this.modalAbierto = true; // Evitar que el modal se abra repetidamente
-      this.tiempoUltimaAperturaModal = ahora; // Registra el tiempo en que se abrió el modal
-      this.openModal(this.arriveModal, this.destinationName, '', '', '');
-    } else {
-      console.log(
-        `Aún no cerca del destino. Distancia actual: ${distancia} metros`
-      );
-      this.toastr.show(
-        `Aún no cerca del destino. Distancia actual: ${distancia} metros`
-      );
-    }
-  }
-
-  // Método que se llama al confirmar que el usuario ha llegado al destino
-  confirmarLlegada() {
-    this.modalRef?.close(); // Cierra el modal
-    this.hasArrived = true; // Marca que ya has llegado
-    this.modalAbierto = false; // Permite que el modal pueda abrirse nuevamente en el futuro
-    console.log('Ruta cancelada. Has llegado al destino.');
-    this.cancelarRuta(); // Cancela la ruta como has indicado
-  }
-
-  // Método que se llama cuando se cancela el modal
-  cancelArrive(modal: any): void {
-    modal.dismiss('cancel'); // Cierra el modal actual
-    this.modalAbierto = false; // Permite que el modal pueda abrirse nuevamente
-    console.log('Modal cancelado, esperando para volver a abrir.');
-    // Abre el modal nuevamente después de un intervalo de 10 segundos
-    setTimeout(() => {
-      this.openModal(this.arriveModal, this.destinationName, '', '', '');
-    }, 10000); // 10 segundos
-  }
+    procesarVerificacionCercania(lat2: number, lng2: number) {
+      if (!this.markerPosition) {
+        console.error('Posición del marcador no está definida.');
+        return;
+      }
   
-  // Método para calcular la distancia entre dos puntos (en metros)
-  calcularDistancia(
-    lat1: number,
-    lng1: number,
-    lat2: number,
-    lng2: number
-  ): number {
-    const R = 6371e3; // Radio de la Tierra en metros
-    const φ1 = (lat1 * Math.PI) / 180; // lat1 en radianes
-    const φ2 = (lat2 * Math.PI) / 180; // lat2 en radianes
-    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-    const Δλ = ((lng2 - lng1) * Math.PI) / 180;
-
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    const distancia = R * c; // En metros
-    return distancia;
-  }
+      console.log(
+        'Posición actual del usuario:',
+        this.markerPosition?.lat,
+        this.markerPosition?.lng
+      );
+  
+      // Calcular la distancia
+      const distancia = this.calcularDistancia(
+        this.markerPosition.lat,
+        this.markerPosition.lng,
+        lat2,
+        lng2
+      );
+  
+      console.log(`Distancia calculada: ${distancia} metros`);
+  
+      const umbralDistancia = 80; // Umbral de 80 metros
+  
+      if (distancia <= umbralDistancia && !this.modalMostrado) {
+        // Abre el modal solo si no se ha mostrado antes
+        console.log('Cerca del destino. Abriendo modal...');
+        this.toastr.info('Cerca del destino')
+        this.openModal(this.arriveModal, this.destinationName, '', '', '');
+        this.modalMostrado = true; // Marca el modal como mostrado
+      } else if (distancia > umbralDistancia && this.modalMostrado) {
+        // Si el usuario se aleja, puedes reiniciar el estado del modal si es necesario
+        console.log(`Aún no cerca del destino. Distancia actual: ${distancia} metros`);
+        this.toastr.info(`Aún no cerca del destino. Distancia actual: ${distancia} metros`);
+        this.modalMostrado = false; // Reinicia el estado si se aleja del destino
+      }
+    }
+  
 
   // Método para obtener las coordenadas del destino utilizando Google Maps Geocoding API
-  obtenerCoordenadasDestino(destino: string): Promise<google.maps.LatLngLiteral> {
+  obtenerCoordenadasDestino(
+    destino: string
+  ): Promise<google.maps.LatLngLiteral> {
     return new Promise((resolve, reject) => {
       const geocoder = new google.maps.Geocoder();
 
@@ -849,6 +824,13 @@ export class MapComponent implements OnInit, OnDestroy {
     });
   }
 
+  confirmarLlegada() {
+    this.cancelarRuta();
+    this.modalRef?.close(); // Cierra el modal
+    this.hasArrived = true; // Marca que ya has llegado
+    console.log('Ruta cancelada. Has llegado al destino.');
+  }
+
   closeAlert(): void {
     this.showAlert = false;
   }
@@ -864,6 +846,13 @@ export class MapComponent implements OnInit, OnDestroy {
       this.enteredReview &&
       this.enteredRating > 0
     );
+  }
+
+  cancelArrive(modal: any): void {
+    modal.dismiss('cancel');
+    setTimeout(() => {
+      this.openModal(this.arriveModal, this.destinationName, '', '', '');
+    }, 10000); // 10 segundos
   }
 
   openModal(
