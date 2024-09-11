@@ -22,6 +22,13 @@
       </div>
       <div class="col-md-4 sidebar">
         <p>¡Encuentra los mejores lugares de café en tu área!</p>
+        <div *ngIf="rutaActiva && instruccionesRuta.length > 0">
+          <h3>Detalles de la Ruta</h3>
+          <p>{{ routeDetails }}</p>
+          <ul>
+            <li *ngFor="let instruction of instruccionesRuta">{{ instruction }}</li>
+          </ul>
+        </div>
         <div class="alert alert-info" *ngIf="showAlert" role="alert">
         </div>
 
