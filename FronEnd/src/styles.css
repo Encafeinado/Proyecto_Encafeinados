@@ -342,7 +342,7 @@ button:hover {
 /* Estilo para el input de texto */
 .input100 {
   /* Estilos de tu input de texto actual */
-  width: 100%; /* Ajusta el ancho según tus necesidades */
+  width: 150%; /* Ajusta el ancho según tus necesidades */
   padding: 10px;
   box-sizing: border-box;
 }
