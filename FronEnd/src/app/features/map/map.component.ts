@@ -290,7 +290,7 @@ export class MapComponent implements OnInit, OnDestroy {
       // Actualización periódica de los estados
       setInterval(() => {
         this.actualizarEstadosTiendas();
-        console.log('Actualizado los estados');
+        // console.log('Actualizado los estados');
       }, 10000);
     } else {
       console.error('Elemento del mapa no encontrado.');
@@ -313,7 +313,7 @@ export class MapComponent implements OnInit, OnDestroy {
           const tiendaActualizada = data.find((d: any) => d.name === shop.name);
           if (tiendaActualizada) {
             shop.statusShop = tiendaActualizada.statusShop;
-            console.log('Holaaaa1');
+            // console.log('Holaaaa1');
           }
         });
 
@@ -324,7 +324,7 @@ export class MapComponent implements OnInit, OnDestroy {
           );
           if (shop) {
             overlayData.overlay.updateStatus(shop.statusShop);
-            console.log('Holaaaa');
+            // console.log('Holaaaa');
           }
         });
       },
@@ -726,34 +726,35 @@ export class MapComponent implements OnInit, OnDestroy {
   
   verificarCercaniaADestino() {
     if (this.markerPosition && this.destinationName) {
-      let lat2: number;
-      let lng2: number;
-  
-      if (typeof this.destinationName === 'object' && 'lat' in this.destinationName && 'lng' in this.destinationName) {
-        // Convertir explícitamente this.destinationName al tipo LatLngLiteral
-        const destinationCoords = this.destinationName as google.maps.LatLngLiteral;
-        lat2 = destinationCoords.lat;
-        lng2 = destinationCoords.lng;
-      } else {
-        console.error('El destino no tiene coordenadas válidas.');
-        return;
-      }
-  
-      const distancia = this.calcularDistancia(
-        this.markerPosition.lat,
-        this.markerPosition.lng,
-        lat2,
-        lng2
-      );
-  
-      console.log(`Distancia al destino: ${distancia} metros`);
-  
-      if (distancia <= 12 && !this.hasArrived) { // 100 metros como umbral
-        this.hasArrived = true;
-        this.openModal(this.arriveModal, this.destinationName, '', '', '');
-      }
+        console.log('Verificando cercanía al destino...');
+        let lat2: number;
+        let lng2: number;
+
+        if (typeof this.destinationName === 'object' && 'lat' in this.destinationName && 'lng' in this.destinationName) {
+            const destinationCoords = this.destinationName as google.maps.LatLngLiteral;
+            lat2 = destinationCoords.lat;
+            lng2 = destinationCoords.lng;
+        } else {
+            console.error('El destino no tiene coordenadas válidas.');
+            return;
+        }
+
+        const distancia = this.calcularDistancia(
+            this.markerPosition.lat,
+            this.markerPosition.lng,
+            lat2,
+            lng2
+        );
+
+        console.log(`Distancia calculada: ${distancia} metros`);
+
+        if (distancia <= 50 && !this.hasArrived) { // 50 metros como umbral
+            this.hasArrived = true;
+            console.log('Cerca del destino. Abriendo modal...');
+            this.openModal(this.arriveModal, this.destinationName, '', '', '');
+        }
     }
-  }
+}
 
   confirmarLlegada() {
     this.cancelarRuta();
@@ -852,7 +853,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   verifyCode() {
-    console.log('Primer bloque');
+    // console.log('Primer bloque');
     this.storeService
       .verifyCodeCode(this.enteredCode, this.enteredReview, this.enteredRating)
       .subscribe(
