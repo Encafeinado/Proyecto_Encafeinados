@@ -25,14 +25,14 @@
         <div *ngIf="rutaActiva && instruccionesRuta.length > 0" class="ruta-detalles">
           <h3 class="titulo-detalles">Detalles de la Ruta</h3>
           <p class="detalle-info">{{ routeDetails }}</p>
-        
+
           <!-- Lista de Instrucciones: solo se muestran 2 a la vez -->
           <ul class="instrucciones-lista">
             <li *ngFor="let instruction of instruccionesActuales" class="instruccion-item">
               <span class="instruction-icon">➡️</span> <span [innerHTML]="instruction"></span>
             </li>
           </ul>
-        </div>        
+        </div>
         <br>
 
         <!-- Información adicional -->
