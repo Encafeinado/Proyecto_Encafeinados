@@ -50,3 +50,100 @@
   padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
 }
 
+.reviews-section {
+  margin-top: 20px;
+  text-align: center;   
+}
+
+.reviews-container {
+  max-height: 200px; /* Altura máxima de la sección de reviews */
+  overflow-y: auto;  /* Habilita el scrollbar vertical */
+  background-color: #e8f5e9; /* Color de fondo suave para resaltar la sección */
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1); /* Sombra interna */
+}
+
+.review-item {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  color: #333;
+}
+
+.review-item:last-child {
+  border-bottom: none;
+}
+.stats-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem; /* Añade un espacio entre los cuadros */
+}
+
+/* Para hacer que cada cuadro tenga el mismo tamaño */
+.stat-box {
+  flex: 1; /* Hacer que cada cuadro ocupe el mismo espacio */
+  padding: 1rem;
+}
+
+/* Asegúrate de que las tarjetas tengan un borde redondeado */
+.card {
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añadir sombra para dar profundidad */
+}
+
+/* Mejorar la presentación del texto */
+.block {
+  font-size: 14px;
+  color: #666;
+}
+.text-xl {
+  font-size: 24px;
+  font-weight: bold;
+}
+/* Contenedor de todas las tiendas */
+.shops-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Esto crea una cuadrícula adaptable */
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Tarjeta de cada tienda */
+.shop-card {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shop-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilo para los detalles dentro de cada tarjeta */
+.shop-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.shop-name {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.shop-info {
+  font-size: 0.875rem;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shop-info i {
+  color: #ffbf00; /* Color de icono de estrellas */
+}

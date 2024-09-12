@@ -1,6 +1,74 @@
 <div class="main-content">
-  <div *ngIf="userRole === 'admin' && userData" class="profile-container">
-    <h2 class="profile-header">Mi Perfil</h2>
+  <div class="profile-container">
+
+    <!-- Total de clientes -->
+    <div class="stats-container">
+      <!-- Total de clientes -->
+      <div class="card mb-0 stat-box">
+        <div class="flex justify-content-between mb-3">
+          <div>
+            <span class="block text-500 font-medium mb-3">Total Clientes</span>
+            <div class="text-900 font-medium text-xl">{{ totalClients }}</div>
+          </div>
+          <div class="flex align-items-center justify-content-center bg-blue-100 border-round"
+               [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+            <i class="pi pi-users text-blue-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total de cafecoins -->
+      <div class="card mb-0 stat-box">
+        <div class="flex justify-content-between mb-3">
+          <div>
+            <span class="block text-500 font-medium mb-3">Total Cafecoins</span>
+            <div class="text-900 font-medium text-xl">{{ totalCafecoins }}</div>
+          </div>
+          <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
+               [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+            <i class="pi pi-coins text-orange-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total de tiendas registradas -->
+      <div class="card mb-0 stat-box">
+        <div class="flex justify-content-between mb-3">
+          <div>
+            <span class="block text-500 font-medium mb-3">Total Tiendas Registradas</span>
+            <div class="text-900 font-medium text-xl">{{ totalShops }}</div>
+          </div>
+          <div class="flex align-items-center justify-content-center bg-green-100 border-round"
+               [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+            <i class="pi pi-check-circle text-green-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+   <!-- Listado de tiendas con promedio de calificaciones y codeUsage -->
+<div class="shops-container">
+  <div *ngFor="let shop of shopsWithAverageRatings" class="shop-card">
+    <div class="shop-details">
+      <span class="shop-name">{{ shop.name }}</span>
+
+      <!-- Mostrar el promedio de calificaciones -->
+      <div class="shop-info">
+        <i class="pi pi-star"></i>
+        Promedio de calificaciones: {{ shop.averageRating | number:'1.1-1' }}
+      </div>
+
+      <!-- Mostrar el codeUsage de la tienda -->
+      <div class="shop-info">
+        <i class="pi pi-users"></i>
+        Veces que se ha usado el código: {{ shop.codeUsage }}
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Información del perfil de administrador
+    <h2 class="profile-header">Mi Perfil (Administrador)</h2>
     <div class="profile-details">
       <div class="profile-item">
         <label>Email:</label>
@@ -22,19 +90,23 @@
         <label>Roles:</label>
         <p>{{ userData.roles.join(', ') }}</p>
       </div>
-    </div>
+    </div> -->
     
     <!-- Mostrar las reviews -->
     <div class="reviews-section">
-      <h3>Reviews de Usuarios</h3>
-      <ul *ngIf="reviews.length > 0; else noReviews">
-        <li *ngFor="let review of reviews">
-          {{ review.review }}
-        </li>
-      </ul>
-      <ng-template #noReviews>
-        <p>No hay reviews disponibles.</p>
-      </ng-template>
+      <h1><b>Comentarios y feedback</b></h1>
+      <br>
+      <div class="reviews-container">
+        <ul *ngIf="reviews.length > 0; else noReviews">
+          <li *ngFor="let review of reviews" class="review-item">
+            {{ review.review }}
+          </li>
+        </ul>
+        <ng-template #noReviews>
+          <p>No hay reviews disponibles.</p>
+        </ng-template>
+      </div>
     </div>
+
   </div>
 </div>
