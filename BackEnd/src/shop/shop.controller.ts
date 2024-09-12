@@ -53,8 +53,8 @@ async verifyCodeByUser(
     return this.shopService.login(loginDto);
   }
 
-  @UseGuards(AuthGuard)
-  @Get()
+
+  @Get('/allShops')
   findAll(@Request() req: Request) {
     return this.shopService.findAll();
   }
