@@ -25,18 +25,18 @@
         <div *ngIf="rutaActiva && instruccionesRuta.length > 0" class="ruta-detalles">
           <h3 class="titulo-detalles">Detalles de la Ruta</h3>
           <p class="detalle-info">{{ routeDetails }}</p>
-
-          <!-- Lista de Instrucciones -->
+        
+          <!-- Lista de Instrucciones: solo se muestran 2 a la vez -->
           <ul class="instrucciones-lista">
-            <li *ngFor="let instruction of instruccionesRuta" class="instruccion-item">
+            <li *ngFor="let instruction of instruccionesActuales" class="instruccion-item">
               <span class="instruction-icon">➡️</span> <span [innerHTML]="instruction"></span>
             </li>
           </ul>
-        </div>
+        </div>        
         <br>
 
         <!-- Información adicional -->
-        <div style="margin-top: 20px; background-color: #f8f9fa; padding: 10px; border-radius: 5px;">
+        <div style="margin-top: 15px; background-color: #f8f9fa; padding: 10px; border-radius: 5px;">
           <h3 style="margin-bottom: 10px;">Información adicional</h3>
           <ul style="list-style-type: none; padding-left: 0;">
             <li style="margin-bottom: 10px;">
@@ -63,14 +63,6 @@
     </div>
   </div>
 
-  <div *ngIf="rutaActiva && instruccionesRuta.length > 0">
-    <h3>Detalles de la Ruta</h3>
-    <p>{{ routeDetails }}</p>
-    <ul>
-      <li *ngFor="let instruction of instruccionesRuta">{{ instruction }}</li>
-    </ul>
-  </div>
-
   <!-- Botón del librito -->
   <div class="button-container-footer">
     <button class="floating-button button-book" (click)="openModalAlbum()">
@@ -80,9 +72,6 @@
       <i class="fas fa-coffee text-white"></i>
     </button>
   </div>
-
-
-
 
   <!-- Modal para confirmar la ruta -->
   <ng-template #createModal let-modal>
@@ -237,12 +226,12 @@
           <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
         </div>
         <p class="descripcion-cafe">Información del café</p>
-            <div class="especialidades">
-              <p><i class="fa fa-star"></i> Especialidad 1: {{ specialties1 }}</p>
-              <p><i class="fa fa-star"></i> Especialidad 2: {{ specialties2 }}</p>
-              <p><i class="fa fa-store"></i> Estado de la tienda: <span [class.abierto]="shopStatus"
-                  [class.cerrado]="!shopStatus">{{ shopStatus ? 'Abierto' : 'Cerrado' }}</span></p>
-            </div>
+        <div class="especialidades">
+          <p><i class="fa fa-star"></i> Especialidad 1: {{ specialties1 }}</p>
+          <p><i class="fa fa-star"></i> Especialidad 2: {{ specialties2 }}</p>
+          <p><i class="fa fa-store"></i> Estado de la tienda: <span [class.abierto]="shopStatus"
+              [class.cerrado]="!shopStatus">{{ shopStatus ? 'Abierto' : 'Cerrado' }}</span></p>
+        </div>
       </div>
       <div class="modal-footer-arrive">
         <button type="button" class="btn" (click)="confirmarLlegada()">Si, he llegado</button>

@@ -66,7 +66,8 @@ export class MapComponent implements OnInit, OnDestroy {
   routeDetails: string | undefined;
   markerPosition: google.maps.LatLngLiteral | undefined;
   watchId: number | undefined;
-  instruccionesRuta: string[] = [];
+  instruccionesRuta: string[] = []; // Lista completa de instrucciones
+  instruccionesActuales: string[] = []; // Instrucciones que se mostrarán de a 2
   private directionsService: google.maps.DirectionsService =
     new google.maps.DirectionsService();
   private directionsRendererInstance: google.maps.DirectionsRenderer =
@@ -383,6 +384,7 @@ export class MapComponent implements OnInit, OnDestroy {
               // Actualiza la posición del marcador en el mapa
               this.markerUsuario?.setPosition(posicionInterpolada);
 
+              this.verificarAvanceInstrucciones();
               if (pasoActual >= pasos) {
                 clearInterval(intervaloId);
                 this.markerPosition = nuevaPosicion;
@@ -820,25 +822,68 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  obtenerDetallesRuta(result: google.maps.DirectionsResult) {
-    if (result.routes.length > 0) {
-      const route = result.routes[0];
-      if (route.legs.length > 0) {
-        const leg = route.legs[0];
-        const duration = leg.duration?.text;
-        const distance = leg.distance?.text;
-        const destination = leg.end_address;
+  currentInstructionIndex: number = 0;
 
-        this.routeDetails = `Distancia: ${distance}, Tiempo estimado: ${duration}, Destino: ${destination}`;
-        console.log(this.routeDetails);
+// Guardar las instrucciones iniciales de la ruta
+obtenerDetallesRuta(result: google.maps.DirectionsResult) {
+  if (result.routes.length > 0) {
+    const route = result.routes[0];
+    if (route.legs.length > 0) {
+      const leg = route.legs[0];
 
-        this.instruccionesRuta = [];
-        leg.steps.forEach((step) => {
-          this.instruccionesRuta.push(step.instructions);
-        });
-      }
+      // Aquí obtienes la distancia, duración y el nombre del destino
+      const distance = leg.distance?.text || 'Distancia no disponible';
+      const duration = leg.duration?.text || 'Duración no disponible';
+      const destination = leg.end_address || 'Destino no disponible';
+
+      // Almacenar los detalles de la ruta
+      this.routeDetails = `Distancia: ${distance}, Tiempo estimado: ${duration}, Destino: ${destination}`;
+      console.log(this.routeDetails);
+
+      // Limpiar y resetear las instrucciones
+      this.instruccionesRuta = [];
+      this.currentInstructionIndex = 0;
+
+      // Guardar todas las instrucciones de la ruta
+      leg.steps.forEach((step) => {
+        this.instruccionesRuta.push(step.instructions);
+      });
+
+      // Mostrar las primeras 2 instrucciones
+      this.mostrarInstrucciones();
     }
   }
+}
+
+// Método para mostrar siempre 2 instrucciones
+mostrarInstrucciones() {
+  // Mostrar solo dos instrucciones a la vez
+  const nextInstructions = this.instruccionesRuta.slice(
+    this.currentInstructionIndex,
+    this.currentInstructionIndex + 2
+  );
+  
+  console.log('Instrucciones actuales:', nextInstructions);
+
+  // Actualizar la vista con las instrucciones actuales
+  this.instruccionesActuales = nextInstructions;
+}
+
+// Avanzar en las instrucciones de a 2
+avanzarInstrucciones() {
+  if (this.currentInstructionIndex < this.instruccionesRuta.length - 2) {
+    this.currentInstructionIndex += 2;
+    this.mostrarInstrucciones();
+  }
+}
+
+// Nueva versión sin dependencia de la distancia
+verificarAvanceInstrucciones() {
+  // Aquí avanzamos siempre que el usuario se mueva y haya más instrucciones disponibles
+  if (this.currentInstructionIndex < this.instruccionesRuta.length - 2) {
+    this.avanzarInstrucciones();
+  }
+}
 
   cancelarRuta() {
     if (this.directionsRendererInstance) {
