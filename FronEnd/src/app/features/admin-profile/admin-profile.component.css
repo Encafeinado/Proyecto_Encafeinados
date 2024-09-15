@@ -1,5 +1,6 @@
+/* Contenedor principal para centrar y limitar el ancho */
 .profile-container {
-  max-width: 600px;
+  max-width: 1200px; /* Ajuste para un mayor ancho en pantalla grande */
   margin: 0 auto;
   padding: 20px;
   background-color: #f9f9f9;
@@ -7,6 +8,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Encabezado del perfil */
 .profile-header {
   text-align: center;
   font-size: 2em;
@@ -14,6 +16,7 @@
   color: #333;
 }
 
+/* Sección de detalles del perfil */
 .profile-details {
   display: flex;
   flex-direction: column;
@@ -40,16 +43,19 @@
   margin: 0;
 }
 
+/* Ajustar tamaño del logo de las tiendas */
 .shop-logo {
   max-width: 150px; /* Ajusta el tamaño máximo del logo */
   max-height: 150px; /* Ajusta la altura máxima del logo */
   border-radius: 8px; /* Opcional: agrega bordes redondeados */
 }
 
+/* Ajuste de contenido principal con padding adicional para el navbar */
 .main-content {
   padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
 }
 
+/* Sección de reseñas */
 .reviews-section {
   margin-top: 20px;
   text-align: center;   
@@ -73,22 +79,25 @@
 .review-item:last-child {
   border-bottom: none;
 }
+
+/* Contenedor para estadísticas con espacio entre cuadros */
 .stats-container {
   display: flex;
   justify-content: space-between;
   gap: 1rem; /* Añade un espacio entre los cuadros */
+  flex-wrap: wrap; /* Para que los cuadros bajen en pantallas pequeñas */
 }
 
-/* Para hacer que cada cuadro tenga el mismo tamaño */
+/* Cuadros de estadísticas */
 .stat-box {
   flex: 1; /* Hacer que cada cuadro ocupe el mismo espacio */
   padding: 1rem;
-}
-
-/* Asegúrate de que las tarjetas tengan un borde redondeado */
-.card {
+  background-color: white; /* Asegúrate de que tengan fondo blanco */
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añadir sombra para dar profundidad */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* Mejorar la presentación del texto */
@@ -96,10 +105,12 @@
   font-size: 14px;
   color: #666;
 }
+
 .text-xl {
   font-size: 24px;
   font-weight: bold;
 }
+
 /* Contenedor de todas las tiendas */
 .shops-container {
   display: grid;
@@ -146,4 +157,14 @@
 
 .shop-info i {
   color: #ffbf00; /* Color de icono de estrellas */
+}
+
+/* Ajustes generales de layout para un mejor uso del espacio */
+body {
+  background: linear-gradient(to right, #e6e9f0, #eef1f5); /* Degradado suave */
+}
+
+.card {
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

@@ -8,7 +8,8 @@
         <div class="flex justify-content-between mb-3">
           <div>
             <span class="block text-500 font-medium mb-3">Total Clientes</span>
-            <div class="text-900 font-medium text-xl">{{ totalClients }}</div>
+            <br>
+            <div class="text-900 font-medium text-xl" style="padding-top: 5%;">{{ totalClients }}</div>
           </div>
           <div class="flex align-items-center justify-content-center bg-blue-100 border-round"
                [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
@@ -22,7 +23,8 @@
         <div class="flex justify-content-between mb-3">
           <div>
             <span class="block text-500 font-medium mb-3">Total Cafecoins</span>
-            <div class="text-900 font-medium text-xl">{{ totalCafecoins }}</div>
+            <br>
+            <div class="text-900 font-medium text-xl" style="padding-top: 5%;">{{ totalCafecoins }}</div>
           </div>
           <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
                [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
@@ -36,7 +38,8 @@
         <div class="flex justify-content-between mb-3">
           <div>
             <span class="block text-500 font-medium mb-3">Total Tiendas Registradas</span>
-            <div class="text-900 font-medium text-xl">{{ totalShops }}</div>
+            <br>
+            <div class="text-900 font-medium text-xl" style="padding-top: 5%;">{{ totalShops }}</div>
           </div>
           <div class="flex align-items-center justify-content-center bg-green-100 border-round"
                [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
@@ -55,46 +58,23 @@
       <!-- Mostrar el promedio de calificaciones -->
       <div class="shop-info">
         <i class="pi pi-star"></i>
-        Promedio de calificaciones: {{ shop.averageRating | number:'1.1-1' }}
+        Promedio de estrellas: {{ shop.averageRating | number:'1.1-1' }}
       </div>
 
       <!-- Mostrar el codeUsage de la tienda -->
       <div class="shop-info">
         <i class="pi pi-users"></i>
-        Veces que se ha usado el código: {{ shop.codeUsage }}
+        Usos del código: {{ shop.codeUsage }}
       </div>
     </div>
   </div>
 </div>
 
-    <!-- Información del perfil de administrador
-    <h2 class="profile-header">Mi Perfil (Administrador)</h2>
-    <div class="profile-details">
-      <div class="profile-item">
-        <label>Email:</label>
-        <p>{{ userData.email }}</p>
-      </div>
-      <div class="profile-item">
-        <label>Nombre:</label>
-        <p>{{ userData.name }}</p>
-      </div>
-      <div class="profile-item">
-        <label>Teléfono:</label>
-        <p *ngIf="userData.phone && userData.phone.length > 0">{{ userData.phone }}</p>
-      </div>
-      <div class="profile-item">
-        <label>Coffee Coins:</label>
-        <p>{{ userData.cafecoin }}</p>
-      </div>
-      <div class="profile-item">
-        <label>Roles:</label>
-        <p>{{ userData.roles.join(', ') }}</p>
-      </div>
-    </div> -->
+
     
     <!-- Mostrar las reviews -->
     <div class="reviews-section">
-      <h1><b>Comentarios y feedback</b></h1>
+      <h1><b>Comentarios</b></h1>
       <br>
       <div class="reviews-container">
         <ul *ngIf="reviews.length > 0; else noReviews">
