@@ -54,10 +54,7 @@ async verifyCodeByUser(
   }
 
 
-  @Get('/allShops')
-  findAll(@Request() req: Request) {
-    return this.shopService.findAll();
-  }
+
 
   @UseGuards(ShopGuard)
   @Get('check-token')
@@ -79,7 +76,14 @@ async verifyCodeByUser(
     return { valid: isValid };
   }
   
-
+  @Get('/allShops')
+  findAllShops(@Request() req: Request) {
+    return this.shopService.findAll();
+  }  
+  @Get()
+  findAll(@Request() req: Request) {
+    return this.shopService.findAll();
+  }
   @Post('/check-email-existence')
   async checkEmailExistence(@Body('email') email: string): Promise<{ message: string }> {
     try {
