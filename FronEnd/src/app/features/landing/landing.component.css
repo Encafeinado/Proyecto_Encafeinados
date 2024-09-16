@@ -131,7 +131,7 @@ header p {
 .section-dividerr {
   height: 45px; /* Reduce el espacio entre secciones en móviles */
 }
-.text-content[_ngcontent-ng-c3036793321] .subtitle[_ngcontent-ng-c3036793321] {
+.text-content[_ngcontent-ng-c2524210291] .subtitle[_ngcontent-ng-c2524210291] {
   font-size: 2em;
   color: #000000;
   white-space: pre-line;
@@ -141,7 +141,7 @@ header p {
   text-align: center; /* Centra el texto horizontalmente */
 }
 
-.text-content[_ngcontent-ng-c3036793321] .title[_ngcontent-ng-c3036793321] {
+.text-content[_ngcontent-ng-c2524210291] .title[_ngcontent-ng-c2524210291] {
   font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
   font-weight: 600; /* Peso Semibold */
   font-size: 2.7em; /* Tamaño de fuente */
@@ -259,6 +259,10 @@ footer p {
 /* Ajustes responsivos para pantallas pequeñas */
 @media (max-width: 768px) {
 
+  .main-content{
+    padding-top: 100px;
+  }
+  
   .contact-action-content {
     flex-direction: column; /* Cambia la dirección a columna en pantallas pequeñas */
     gap: 10px; /* Reduce el espacio entre las columnas */
@@ -361,6 +365,9 @@ footer p {
 }
 
 @media (max-width: 576px) {
+  .main-content{
+    padding-top: 100px;
+  }
 
   .contact-info h2,
   .action-info h2 {
