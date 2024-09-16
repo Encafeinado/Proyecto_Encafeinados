@@ -4,11 +4,9 @@
       <div class="col-md-8 position-relative">
         <div id="map">
           <google-map height="600px" width="100%" [center]="center" [zoom]="zoom" [options]="opcionesMapa">
-
             <!-- Marcador para la ubicación actual con icono personalizado -->
             <map-marker *ngIf="markerPosition" [position]="markerPosition" [icon]="iconoUbicacionUsuario">
             </map-marker>
-
           </google-map>
         </div>
         <!-- En tu plantilla HTML -->
@@ -59,8 +57,6 @@
         </div>
         <br>
         <button class="btn btn-primary align-right" (click)="openModalReviewShop()">Califica la aplicación</button>
-
-
       </div>
     </div>
   </div>
@@ -73,7 +69,6 @@
     <button class="floating-button button-camera" (click)="openModalWithCodigo()">
       <i class="fas fa-coffee text-white"></i>
     </button>
-    
   </div>
 
   <!-- Modal para confirmar la ruta -->
@@ -110,8 +105,8 @@
           <label class="transport-label">
             <input type="radio" name="transport" [class.active]="modoTransporte === google.maps.TravelMode.WALKING"
               (click)="seleccionarModoTransporte(google.maps.TravelMode.WALKING)">
-            <i class="fa fa-blind"></i>
-          </label>
+              <i class="fas fa-walking"></i>
+            </label>
         </div>
       </div>
       <div class="modal-footer-create">
@@ -120,7 +115,6 @@
       </div>
     </div>
   </ng-template>
-
 
   <!-- Modal para cancelar la ruta -->
   <ng-template #cancelModal let-modal>
