@@ -128,7 +128,9 @@ header p {
   padding-top: 40px;
 }
 
-
+.section-dividerr {
+  height: 45px; /* Reduce el espacio entre secciones en móviles */
+}
 .text-content[_ngcontent-ng-c3036793321] .subtitle[_ngcontent-ng-c3036793321] {
   font-size: 2em;
   color: #000000;
