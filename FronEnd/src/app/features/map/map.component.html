@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-8 position-relative">
         <div id="map">
-          <google-map height="600px" width="100%" [center]="center" [zoom]="zoom" [options]="opcionesMapa">
+          <google-map  width="100%" [center]="center" [zoom]="zoom" [options]="opcionesMapa">
 
             <!-- Marcador para la ubicación actual con icono personalizado -->
             <map-marker *ngIf="markerPosition" [position]="markerPosition" [icon]="iconoUbicacionUsuario">
