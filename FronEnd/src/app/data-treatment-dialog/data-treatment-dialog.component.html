@@ -13,8 +13,7 @@
     <button *ngIf="!showPdf" class="btn" (click)="showPdfDocument()">Ver Tratamiento de Datos</button>
   </div>
   <div class="modal-footer-datos">
-    <button type="button" class="btn" (click)="onNoClick()">Cancelar</button>
     <button type="button" class="btn" (click)="onYesClick()" [disabled]="!isPdfViewed">Aceptar</button>
-
+    <button type="button" class="btn" (click)="onNoClick()">Cancelar</button>
   </div>
 </div>

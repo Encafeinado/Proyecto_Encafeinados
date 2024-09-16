@@ -90,10 +90,6 @@ a:focus {
     outline: none !important;
 }
 
-a:hover {
-    text-decoration: none;
-  color: #a64bf4;
-}
 
 /*---------------------------------------------*/
 h1,h2,h3,h4,h5,h6 {
@@ -3267,9 +3263,7 @@ align-items: center;
   transition: all 0.3s ease;
 }
 
-.como-iniciar-menu a:hover {
-  border-bottom: 2px solid #0f1eee;
-}
+
 
 .como-iniciar-main {
   display: flex;

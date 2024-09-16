@@ -2,12 +2,17 @@
 #map {
   height: 600px; /* Altura predeterminada para pantallas grandes */
   width: 100%; /* Asegura que el mapa ocupe el ancho completo */
+  border-radius: 15px; /* Bordes redondeados */
+  overflow: hidden; /* Para asegurar que el contenido del mapa respete el borde redondeado */
 }
+
 
 /* Ajustes para pantallas más pequeñas */
 @media (max-width: 768px) {
   #map {
     height: 50vh; /* Reduce la altura a 50vh en pantallas más pequeñas */
+    border-radius: 10px; /* Ajusta el radio en pantallas más pequeñas */
+
   }
 }
 
@@ -15,11 +20,13 @@
 @media (max-width: 480px) {
   #map {
     height: 40vh; /* Reduce aún más la altura en pantallas muy pequeñas */
+    border-radius: 8px; /* Ajusta el radio para pantallas más pequeñas */
+
   }
 }
 
 .main-content {
-  padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
+  padding-top: 110px; /* Ajusta este valor según la altura de tu navbar */
 }
 
 .alert-info {
@@ -97,6 +104,7 @@
 .floating-button i {
   font-size: 24px;
 }
+
 
 /* Contenedor para los botones */
 .button-container-footer {
@@ -215,6 +223,7 @@
   padding: 20px;
   border-top: none;
 }
+
 
 /* Estilos para los botones del pie del modal */
 .modal-footer-review .btn {

@@ -124,12 +124,12 @@ header p {
 
 
 
-.main-content[_ngcontent-ng-c3212078885] {
-  padding-top: 120px;
+.main-content{
+  padding-top: 40px;
 }
 
 
-.text-content[_ngcontent-ng-c3212078885] .subtitle[_ngcontent-ng-c3212078885] {
+.text-content[_ngcontent-ng-c3036793321] .subtitle[_ngcontent-ng-c3036793321] {
   font-size: 2em;
   color: #000000;
   white-space: pre-line;
@@ -139,7 +139,7 @@ header p {
   text-align: center; /* Centra el texto horizontalmente */
 }
 
-.text-content[_ngcontent-ng-c3212078885] .title[_ngcontent-ng-c3212078885] {
+.text-content[_ngcontent-ng-c3036793321] .title[_ngcontent-ng-c3036793321] {
   font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
   font-weight: 600; /* Peso Semibold */
   font-size: 2.7em; /* Tamaño de fuente */
