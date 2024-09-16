@@ -55,6 +55,12 @@ async verifyCodeByUser(
 
 
   @Get('/allShops')
+  findAllShops(@Request() req: Request) {
+    return this.shopService.findAll();
+  }
+
+  @UseGuards(AuthGuard)
+  @Get()
   findAll(@Request() req: Request) {
     return this.shopService.findAll();
   }
