@@ -10,11 +10,18 @@
 /* Ajustes para pantallas más pequeñas */
 @media (max-width: 768px) {
   #map {
-    height: 50vh; /* Reduce la altura a 50vh en pantallas más pequeñas */
+    height: 50px; /* Reduce la altura a 50vh en pantallas más pequeñas */
     border-radius: 10px; /* Ajusta el radio en pantallas más pequeñas */
 
+    
+
   }
-}
+  .main-content {
+    padding-top: 300px; /* Ajusta este valor según la altura de tu navbar */
+  }
+}   
+ 
+
 
 /* Ajustes adicionales para pantallas muy pequeñas (por ejemplo, teléfonos) */
 @media (max-width: 480px) {
@@ -23,7 +30,11 @@
     border-radius: 8px; /* Ajusta el radio para pantallas más pequeñas */
 
   }
-}
+  .main-content {
+    padding-top: 300px; /* Ajusta este valor según la altura de tu navbar */
+  }
+}   
+
 
 .main-content {
   padding-top: 110px; /* Ajusta este valor según la altura de tu navbar */

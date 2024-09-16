@@ -96,8 +96,8 @@ export class MapComponent implements OnInit, OnDestroy {
     zoomControl: false,
   };
   iconoUbicacionUsuario = {
-    url: 'assets/IconsMarker/cosechaUser.png', // Ruta desde la raíz pública
-    scaledSize: new google.maps.Size(40, 40),
+    url: 'assets/IconsMarker/cafeino.png', // Ruta desde la raíz pública
+    scaledSize: new google.maps.Size(50, 50),
     rotation: 0,
   };
   iconoTienda = {

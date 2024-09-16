@@ -14,7 +14,7 @@
               <div class="wrap-input100 m-b-23 form-outline mb-4">
                   <!-- Mensaje de error personalizado -->
                   <div *ngIf="showError" class="custom-error">
-                    Correo y/o contraseña invalidas
+                    Correo y/o contraseña incorrectas
                   </div>
                 <span class="label-input100">Correo</span>
               
@@ -35,7 +35,7 @@
                   El campo correo es obligatorio.
                 </div>
                 <div *ngIf="myForm.get('email')?.touched && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidEmailFormat')" class="error-message">
-                  El formato del correo electrónico es inválido.
+                  El formato del correo electrónico es incorrecto.
                 </div>
                 <div *ngIf="myForm.get('email')?.touched && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidDomain')" class="error-message">
                   El formato del correo electrónico no es válido.
