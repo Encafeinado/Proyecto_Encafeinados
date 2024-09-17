@@ -657,20 +657,26 @@ export class MapComponent implements OnInit, OnDestroy {
   }
   
   calcularHeading(event: DeviceOrientationEvent): number | null {
-    if (event.alpha === null) {
+    if (event.alpha === null || event.beta === null || event.gamma === null) {
       return null;
     }
   
-    // Obtiene el heading en grados basado en el evento alpha
+    // Obtiene el heading en grados basado en el evento alpha (orientación alrededor del eje Z)
     let heading = event.alpha;
   
     // Aplica la orientación del dispositivo según la orientación de la pantalla
     const orientacion = window.screen.orientation.angle || 0;
   
-    // Ajusta el heading aplicando la orientación del dispositivo
-    heading = (heading - orientacion + 360) % 360;
+    // Calcula el heading ajustando la orientación de la pantalla
+    if (window.screen.orientation.type.startsWith('landscape')) {
+      // Si estamos en modo paisaje, ajustamos dependiendo de la orientación
+      heading = (heading + orientacion + 90) % 360;
+    } else {
+      // Si estamos en modo retrato, solo ajustamos la orientación
+      heading = (heading + orientacion) % 360;
+    }
   
-    // Invierte el heading si es necesario (esto puede depender del dispositivo)
+    // Invierte el heading para asegurarnos que el giro sea correcto
     heading = 360 - heading;
   
     return heading;
