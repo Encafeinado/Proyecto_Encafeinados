@@ -390,11 +390,6 @@ export class MapComponent implements OnInit, OnDestroy {
                 clearInterval(intervaloId);
                 this.markerPosition = nuevaPosicion;
                 this.verificarCercaniaADestino(); // Verifica cercanía una vez se completa la interpolación
-  
-                // Verifica si debe recalcular la ruta
-                if (this.debeRecalcularRuta(this.markerPosition)) {
-                  this.calcularRuta(); // Recalcula la ruta si es necesario
-                }
               }
             }, intervalo);
           } else {
@@ -402,11 +397,6 @@ export class MapComponent implements OnInit, OnDestroy {
             this.markerPosition = nuevaPosicion;
             this.markerUsuario?.setPosition(this.markerPosition);
             this.verificarCercaniaADestino(); // Verifica cercanía
-  
-            // Verifica si debe recalcular la ruta
-            if (this.debeRecalcularRuta(this.markerPosition)) {
-              this.calcularRuta(); // Recalcula la ruta si es necesario
-            }
           }
   
           if (!this.hasZoomed) {
@@ -572,10 +562,19 @@ export class MapComponent implements OnInit, OnDestroy {
 
   // Método para determinar si la ruta debe ser recalculada
   debeRecalcularRuta(nuevaPosicion: google.maps.LatLngLiteral): boolean {
-    // Implementa una lógica para determinar si la ruta debe ser recalculada
-    // Por ejemplo, podrías comparar con la última posición conocida y verificar si ha cambiado significativamente
-    return true; // Cambia esto según tu lógica
+    if (!this.markerPosition) return false;
+  
+    const distancia = this.calcularDistancia(
+      this.markerPosition.lat,
+      this.markerPosition.lng,
+      nuevaPosicion.lat,
+      nuevaPosicion.lng
+    );
+  
+    // Si el usuario se ha movido más de 20 metros, recalcular la ruta
+    return distancia > 20; 
   }
+  
 
   // Método para actualizar la ubicación del marcador cuando se hace clic en el botón
   actualizarMarcadorUbicacionUsuario() {
@@ -897,8 +896,8 @@ export class MapComponent implements OnInit, OnDestroy {
 
   // Avanzar en las instrucciones de a 2
   avanzarInstrucciones() {
-    if (this.currentInstructionIndex < this.instruccionesRuta.length - 2) {
-      this.currentInstructionIndex += 2;
+    if (this.currentInstructionIndex < this.instruccionesRuta.length - 1) {
+      this.currentInstructionIndex += 1;
       this.mostrarInstrucciones();
     }
   }
@@ -906,7 +905,7 @@ export class MapComponent implements OnInit, OnDestroy {
   // Nueva versión sin dependencia de la distancia
   verificarAvanceInstrucciones() {
     // Aquí avanzamos siempre que el usuario se mueva y haya más instrucciones disponibles
-    if (this.currentInstructionIndex < this.instruccionesRuta.length - 2) {
+    if (this.currentInstructionIndex < this.instruccionesRuta.length - 1) {
       this.avanzarInstrucciones();
     }
   }
