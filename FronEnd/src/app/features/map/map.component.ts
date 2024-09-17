@@ -65,6 +65,7 @@ export class MapComponent implements OnInit, OnDestroy {
   rutaActiva: boolean = false;
   routeDetails: string | undefined;
   markerPosition: google.maps.LatLngLiteral | undefined;
+  directionsResult: google.maps.DirectionsResult | null = null;
   watchId: number | undefined;
   instruccionesRuta: string[] = []; // Lista completa de instrucciones
   instruccionesActuales: string[] = []; // Instrucciones que se mostrarán de a 2
@@ -390,6 +391,17 @@ export class MapComponent implements OnInit, OnDestroy {
                 clearInterval(intervaloId);
                 this.markerPosition = nuevaPosicion;
                 this.verificarCercaniaADestino(); // Verifica cercanía una vez se completa la interpolación
+  
+                // Actualización de la ruta si está activa
+                if (this.rutaActiva) {
+                  const map = this.directionsRendererInstance.getMap();
+                  if (map) {
+                    map.panTo(this.markerPosition);
+                    if (this.debeRecalcularRuta(this.markerPosition)) {
+                      this.calcularRuta(); // Recalcular la ruta
+                    }
+                  }
+                }
               }
             }, intervalo);
           } else {
@@ -408,27 +420,14 @@ export class MapComponent implements OnInit, OnDestroy {
             }
           }
   
-          // Verifica si la ruta está activa y realiza pan en el mapa
-          const map = this.directionsRendererInstance.getMap();
-          if (map) {
-            if (this.rutaActiva) {
-              map.panTo(this.markerPosition);
-              
-              if (this.debeRecalcularRuta(this.markerPosition)) {
-                this.calcularRuta(); // Recalcula la ruta si es necesario
-              }
-            } else {
-              // Si no hay una ruta activa, permite arrastrar y usar la rueda
-              map.setOptions({
-                draggable: true,
-                scrollwheel: true,
-              });
-            }
-          }
-  
           console.log('Ubicación del usuario actualizada:', this.markerPosition);
           this.actualizarMarcadorUbicacionUsuario();
           this.solicitarPermisoOrientacion();
+  
+          // Actualizar detalles de la ruta si la ruta está activa
+          if (this.rutaActiva && this.directionsResult) {
+            this.obtenerDetallesRuta(this.directionsResult);
+          }
         },
         (error) => {
           console.error('Error rastreando la ubicación', error);
@@ -443,7 +442,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Geolocalización no es soportada por este navegador.');
     }
   }
-
+    
   // Método para calcular la distancia entre dos puntos (en metros)
   calcularDistancia(
     lat1: number,
@@ -562,19 +561,10 @@ export class MapComponent implements OnInit, OnDestroy {
 
   // Método para determinar si la ruta debe ser recalculada
   debeRecalcularRuta(nuevaPosicion: google.maps.LatLngLiteral): boolean {
-    if (!this.markerPosition) return false;
-  
-    const distancia = this.calcularDistancia(
-      this.markerPosition.lat,
-      this.markerPosition.lng,
-      nuevaPosicion.lat,
-      nuevaPosicion.lng
-    );
-  
-    // Si el usuario se ha movido más de 20 metros, recalcular la ruta
-    return distancia > 20; 
+    // Implementa una lógica para determinar si la ruta debe ser recalculada
+    // Por ejemplo, podrías comparar con la última posición conocida y verificar si ha cambiado significativamente
+    return true; // Cambia esto según tu lógica
   }
-  
 
   // Método para actualizar la ubicación del marcador cuando se hace clic en el botón
   actualizarMarcadorUbicacionUsuario() {
@@ -765,25 +755,22 @@ export class MapComponent implements OnInit, OnDestroy {
   // Método para calcular la ruta
   calcularRuta() {
     if (!this.modoTransporte) {
-      this.toastr.warning(
-        'Por favor, selecciona un modo de transporte.',
-        'Advertencia'
-      );
+      this.toastr.warning('Por favor, selecciona un modo de transporte.', 'Advertencia');
       return;
     }
-
+  
     if (!this.markerPosition) {
       console.error('La posición del marcador no está definida.');
       return;
     }
-
+  
     if (!this.destinationName) {
       console.error('El destino no está definido.');
       return;
     }
-
+  
     let destination: google.maps.LatLngLiteral | string;
-
+  
     if (
       typeof this.destinationName === 'object' &&
       'lat' in this.destinationName &&
@@ -796,28 +783,29 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('El destino proporcionado no es válido.');
       return;
     }
-
+  
     const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
-
+  
     const request: google.maps.DirectionsRequest = {
       origin: this.markerPosition,
       destination: destination,
       travelMode: travelMode,
       unitSystem: google.maps.UnitSystem.METRIC,
     };
-
+  
     this.directionsRendererInstance.setOptions({
       suppressMarkers: true,
       preserveViewport: true,
     });
-
+  
     this.directionsService.route(request, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK && result) {
+        this.directionsResult = result; // Almacena el resultado aquí
         this.directionsRendererInstance.setDirections(result);
         this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
         this.centrarMapaEnMarcador();
-
+  
         if (this.modalRef) {
           this.modalRef.close();
         }
@@ -825,10 +813,7 @@ export class MapComponent implements OnInit, OnDestroy {
       } else {
         this.rutaActiva = false;
         console.error('Error al calcular la ruta:', status, result);
-        this.toastr.warning(
-          'La ruta en este medio de transporte no está disponible',
-          'Advertencia'
-        );
+        this.toastr.warning('La ruta en este medio de transporte no está disponible', 'Advertencia');
       }
     });
   }
@@ -885,7 +870,7 @@ export class MapComponent implements OnInit, OnDestroy {
     // Mostrar solo dos instrucciones a la vez
     const nextInstructions = this.instruccionesRuta.slice(
       this.currentInstructionIndex,
-      this.currentInstructionIndex + 2
+      this.currentInstructionIndex + 1
     );
 
     console.log('Instrucciones actuales:', nextInstructions);
