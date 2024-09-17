@@ -530,7 +530,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
     console.log(`Distancia calculada: ${distancia} metros`);
 
-    if (distancia <= 30) {
+    if (distancia <= 12) {
       // Umbral de 80 metros
       console.log('Cerca del destino. Abriendo modal...');
       this.openModal(this.arriveModal, this.destinationName, '', '', '');
@@ -668,7 +668,10 @@ export class MapComponent implements OnInit, OnDestroy {
     const orientacion = window.screen.orientation.angle || 0;
   
     // Ajusta el heading aplicando la orientación del dispositivo
-    heading = (heading + orientacion + 360) % 360;
+    heading = (heading - orientacion + 360) % 360;
+  
+    // Invierte el heading si es necesario (esto puede depender del dispositivo)
+    heading = 360 - heading;
   
     return heading;
   }
