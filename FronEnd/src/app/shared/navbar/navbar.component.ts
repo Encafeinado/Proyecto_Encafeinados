@@ -63,6 +63,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     return (
       this.isUserLanding() || 
       this.isUserLandingTienda() || 
+      
       (this.userName.trim().length > 0 && this.authService.isAuthenticated())
     );
   }
@@ -121,6 +122,11 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   isOnRequestPage(): boolean {
     return this.router.url === '/auth/forgot-password';
   }
+
+  isOnResetPage(): boolean {
+    return this.router.url.split('?')[0] === '/auth/reset-password';
+}
+
 
   isUserShop(): boolean {
     return this.authService.rolUser() === 'shop';

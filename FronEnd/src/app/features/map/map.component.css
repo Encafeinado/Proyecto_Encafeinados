@@ -1,6 +1,6 @@
 /* Estilos generales para el mapa */
 #map {
-  height: 600px; /* Altura predeterminada para pantallas grandes */
+  height: 450px; /* Altura predeterminada para pantallas grandes */
   width: 100%; /* Asegura que el mapa ocupe el ancho completo */
   border-radius: 15px; /* Bordes redondeados */
   overflow: hidden; /* Para asegurar que el contenido del mapa respete el borde redondeado */

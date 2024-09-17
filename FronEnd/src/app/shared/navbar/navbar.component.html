@@ -13,10 +13,10 @@
         <li *ngIf="isUserLanding()"><a class="dropdown-item" routerLink="/landing-tienda">Tiendas Aliadas</a></li>
         <li *ngIf="isUserLanding()"><a class="dropdown-item" routerLink="/auth/login">Iniciar sesión</a></li>
         <li *ngIf="isUserLandingTienda()"><a class="dropdown-item">Iniciar sesión Tienda</a></li>
-        <li *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRequestPage()">
+        <li *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRegisterPage() && !isOnRequestPage()  && !isOnResetPage()">
           <a *ngIf="userName" class="dropdown-item" routerLink="/perfil"><i class="fas fa-user"></i> {{ userName }}</a>
         </li>
-        <li *ngIf="authService.isAuthenticated() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRequestPage()">
+        <li *ngIf="authService.isAuthenticated() && !isOnLoginPage() && !isOnRegisterPage() && !isOnResetPage() && !isOnRequestPage() ">
           <a class="dropdown-item" (click)="openLogoutModal(sesionModal)"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
         </li>
       </ul>
@@ -38,7 +38,7 @@
         <a class="btn btn-outline-light">Iniciar sesión Tienda</a>
       </ng-container>
     
-      <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRequestPage()">
+      <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage()">
         <div *ngIf="userName" class="dropdown">
           <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fas fa-user" style="font-size: 1.5rem"></i>

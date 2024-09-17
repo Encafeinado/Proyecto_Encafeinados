@@ -31,14 +31,14 @@
                 </div>
 
                 <!-- Mensajes de error aparecen solo si el campo ha sido tocado y la validación asíncrona ha terminado -->
-                <div *ngIf="myForm.get('email')?.touched && !myForm.get('email')?.pending && myForm.get('email')?.hasError('required')" class="error-message">
+                <div *ngIf="myForm.get('email')?.dirty && !myForm.get('email')?.pending && myForm.get('email')?.hasError('required')" class="error-message">
                   El campo correo es obligatorio.
                 </div>
-                <div *ngIf="myForm.get('email')?.touched && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidEmailFormat')" class="error-message">
-                  El formato del correo electrónico es incorrecto.
+                <div *ngIf="myForm.get('email')?.dirty && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidEmailFormat')" class="error-message">
+                  El formato del correo  es incorrecto.
                 </div>
-                <div *ngIf="myForm.get('email')?.touched && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidDomain')" class="error-message">
-                  El formato del correo electrónico no es válido.
+                <div *ngIf="myForm.get('email')?.dirty && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidDomain')" class="error-message">
+                  El formato del correo  no es válido.
                 </div>
                 
                 
@@ -60,11 +60,11 @@
                   </div>
                 </div>
                 
-                <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('required')" class="error-message">
+                <div *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('required')" class="error-message">
                   El campo contraseña es obligatorio.
                 </div>
                
-                <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('invalidPassword')" class="error-message">
+                <div *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('invalidPassword')" class="error-message">
                   La contraseña es incorrecta.
                 </div>
               </div>
