@@ -10,7 +10,7 @@
             </div>
             <p class="h5 mb-4 text-center">Registro de Usuario</p>
             <div *ngIf="showError" class="custom-error">
-              El correo electrónico ya está en uso o hubo un error en el registro.
+              El correo electrónico ya está en uso.
             </div>
 
             <!--  Opciones de tipo de registro 
@@ -60,15 +60,15 @@
                   placeholder="Correo electrónico" autocomplete="email" (input)="onInputChanged()" >
                 <span class="focus-input100"></span>
               </div>
-              <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('required')"
+              <div *ngIf="myForm.get('email')?.dirty && myForm.get('email')?.hasError('required')"
                 class="error-message">
                 El campo correo es obligatorio.
               </div>
-              <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('invalidEmailFormat')"
+              <div *ngIf="myForm.get('email')?.dirty && myForm.get('email')?.hasError('invalidEmailFormat')"
                 class="error-message">
                 El formato del correo electrónico es inválido.
               </div>
-              <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('invalidDomain')"
+              <div *ngIf="myForm.get('email')?.dirty && myForm.get('email')?.hasError('invalidDomain')"
                 class="error-message">
                 El formato del correo electrónico no es válido.
               </div>
@@ -86,15 +86,15 @@
                   <i class="fa" [ngClass]="{'fa-eye': hidePassword, 'fa-eye-slash': !hidePassword}"></i>
                 </div>
               </div>
-              <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('required')"
+              <div *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('required')"
                 class="error-message">
                 El campo contraseña es obligatorio.
               </div>
-              <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('minlength')"
+              <div *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('minlength')"
                 class="error-message">
                 La contraseña debe tener al menos 8 caracteres.
               </div>
-              <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('passwordInvalid')"
+              <div *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('passwordInvalid')"
                 class="error-message">
                 La contraseña debe contener al menos una letra mayúscula, un número y un carácter especial.
               </div>
@@ -111,10 +111,10 @@
                   <i class="fa" [ngClass]="{'fa-eye': hidePasswordconfirm, 'fa-eye-slash': !hidePasswordconfirm}"></i>
                 </div>
               </div>
-              <div *ngIf="myForm.hasError('mismatch') && myForm.get('confirmPassword')?.touched" class="error-message">
+              <div *ngIf="myForm.hasError('mismatch') && myForm.get('confirmPassword')?.dirty" class="error-message">
                 Las contraseñas no coinciden.
               </div>
-              <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('required')"
+              <div *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('required')"
                 class="error-message">
                 El campo confirmar contraseña es obligatorio.
               </div>
@@ -128,11 +128,11 @@
                 placeholder="Celular" autocomplete="tel" min="1000000000" max="999999999999999">
                 <span class="focus-input100"></span>
               </div>
-              <div *ngIf="myForm.get('phone')?.hasError('invalidPhoneNumber') && myForm.get('phone')?.touched"
+              <div *ngIf="myForm.get('phone')?.hasError('invalidPhoneNumber') && myForm.get('phone')?.dirty"
                 class="error-message">
                 El número de celular debe contener solo números y tener 10 dígitos.
               </div>
-              <div *ngIf="myForm.get('phone')?.touched && myForm.get('phone')?.hasError('required')" class="error-message">
+              <div *ngIf="myForm.get('phone')?.dirty && myForm.get('phone')?.hasError('required')" class="error-message">
                 El campo celular es obligatorio.
               </div>
             </div>

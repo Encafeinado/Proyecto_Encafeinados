@@ -58,7 +58,6 @@ export class RegisterPageComponent {
             Validators.required,
           ], 
           asyncValidators: [
-            validateEmail(this.authService),
             emailDomainValidator(this.validDomains)
           ],
           updateOn: 'change'  // Se actualiza cuando pierde el foco
@@ -72,14 +71,14 @@ export class RegisterPageComponent {
             Validators.minLength(8),
             passwordValidator()
           ],
-          updateOn: 'blur'  // Se actualiza cuando pierde el foco
+          updateOn: 'change'  // Se actualiza cuando pierde el foco
         }
       ],
     
       confirmPassword: ['', 
         {
           validators: [Validators.required],
-          updateOn: 'blur'  // Se actualiza cuando pierde el foco
+          updateOn: 'change'  // Se actualiza cuando pierde el foco
         }
       ],
     
@@ -89,7 +88,7 @@ export class RegisterPageComponent {
             Validators.required,
             phoneNumberValidator()
           ],
-          updateOn: 'blur'  // Se actualiza cuando pierde el foco
+          updateOn: 'change'  // Se actualiza cuando pierde el foco
         }
       ],
     
@@ -178,10 +177,12 @@ export class RegisterPageComponent {
   }
 
   onInputChanged(): void {
+    this.myForm.updateValueAndValidity(); // Forzar validación después de cada cambio
     if (this.myForm.valid) {
-      this.showError = false; // Ocultar el error si los datos son correctos
+      this.showError = false; // Ocultar el error si el formulario es válido
     }
   }
+  
 
   register() {
     if (this.myForm.invalid) {
@@ -234,7 +235,6 @@ export class RegisterPageComponent {
               },
               error: (err) => {
                 console.error('Error al registrar usuario:', err);
-                this.toastr.error('Error al registrar usuario', 'Error');
                 this.showError = true;
               }
             });
