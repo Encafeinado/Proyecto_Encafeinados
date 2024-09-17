@@ -37,52 +37,69 @@ export class RegisterPageComponent {
     "yahoo.mx", "gmail.com.co", "hotmail.com.co", "outlook.com.co", "yahoo.com.co", "gmail.com.es", "hotmail.com.es", "outlook.com.es", "yahoo.com.es", "gmail.com.mx", "hotmail.com.mx", "outlook.com.mx",
     "yahoo.com.mx","yopmail.com","@icloud.com"];
 
-  public myForm: FormGroup = this.fb.group({
-    name: ['', [
-      Validators.required,
-      Validators.maxLength(30),
-      Validators.minLength(3)
-    ], [validateNameSimbolAndNumber()]],
-
-    email: ['', 
-      {
-        validators: [
-      Validators.required,
-    ], 
-    asyncValidators: [
-     
-         // emailFormatAsyncValidator(),
-          validateEmail(this.authService),
-          emailDomainValidator(this.validDomains)
-        ],
-        updateOn: 'blur'
-      }
-    ],
-      
-    password: ['', [
-      Validators.required,
-      Validators.minLength(8),
-      passwordValidator()
-    ]],
-
-    confirmPassword: ['', [
-      Validators.required
-    ]],
-
-    phone: ['', [ // Cambia el nombre del campo a 'phone'
-      Validators.required,
-      phoneNumberValidator()
-    ]],
-
-    specialties1: [''],
-    specialties2: [''],
-    address: [''],
-    logo: [''],
-    statusShop: [false]  // Campo oculto con valor predeterminado
-  }, {
-    validators: this.passwordMatchValidator
-  });
-
+    public myForm: FormGroup = this.fb.group({
+      name: ['', 
+        {
+          validators: [
+            Validators.required,
+            Validators.maxLength(30),
+            Validators.minLength(3),
+            validateNameSimbolAndNumber()  // Validación síncrona
+        ], 
+          updateOn: 'change'  // Se actualiza cuando pierde el foco
+        }
+      ],
+    
+      email: ['', 
+        {
+          validators: [
+            Validators.required,
+          ], 
+          asyncValidators: [
+            validateEmail(this.authService),
+            emailDomainValidator(this.validDomains)
+          ],
+          updateOn: 'blur'  // Se actualiza cuando pierde el foco
+        }
+      ],
+    
+      password: ['', 
+        {
+          validators: [
+            Validators.required,
+            Validators.minLength(8),
+            passwordValidator()
+          ],
+          updateOn: 'blur'  // Se actualiza cuando pierde el foco
+        }
+      ],
+    
+      confirmPassword: ['', 
+        {
+          validators: [Validators.required],
+          updateOn: 'blur'  // Se actualiza cuando pierde el foco
+        }
+      ],
+    
+      phone: ['', 
+        {
+          validators: [
+            Validators.required,
+            phoneNumberValidator()
+          ],
+          updateOn: 'blur'  // Se actualiza cuando pierde el foco
+        }
+      ],
+    
+      specialties1: ['', { updateOn: 'blur' }],
+      specialties2: ['', { updateOn: 'blur' }],
+      address: ['', { updateOn: 'blur' }],
+      logo: ['', { updateOn: 'blur' }],
+      statusShop: [false]  // Campo oculto con valor predeterminado, sin `updateOn`
+    }, {
+      validators: this.passwordMatchValidator
+    });
+    
 
   public isUser: boolean = true;
   public isStore: boolean = false;

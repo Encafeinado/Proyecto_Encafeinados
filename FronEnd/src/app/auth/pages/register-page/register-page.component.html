@@ -24,30 +24,29 @@
                   </div>
                 </div>
               </div> -->
-            <div class="wrap-input100 m-b-23 form-outline mb-4">
-              <span class="label-input100">Nombre</span>
-              <div class="input-with-eye">
-                <input class="input100 small-placeholder form-control" type="text" formControlName="name"
-                  placeholder="Nombre completo" autocomplete="name">
-                <span class="focus-input100"></span>
+              <div class="wrap-input100 m-b-23 form-outline mb-4">
+                <span class="label-input100">Nombre</span>
+                <div class="input-with-eye">
+                  <input class="input100 small-placeholder form-control" type="text" formControlName="name"
+                    placeholder="Nombre completo" autocomplete="name">
+                  <span class="focus-input100"></span>
+                </div>
+              
+                <!-- Mostrar errores cuando el campo sea "dirty" o "touched" -->
+                <div *ngIf="myForm.get('name')?.dirty && myForm.get('name')?.hasError('required')" class="error-message">
+                  El campo nombre es obligatorio.
+                </div>
+                <div *ngIf="myForm.get('name')?.dirty && myForm.get('name')?.hasError('invalidName')" class="error-message">
+                  El nombre no es válido. Debe contener solo letras y no permite caracteres especiales ni espacios.
+                </div>
+                <div *ngIf="myForm.get('name')?.dirty && myForm.get('name')?.hasError('minlength')" class="error-message">
+                  Mínimo debe ser 3 letras.
+                </div>
+                <div *ngIf="myForm.get('name')?.dirty && myForm.get('name')?.hasError('maxlength')" class="error-message">
+                  El campo nombre no puede superar los 30 caracteres.
+                </div>
               </div>
-              <div *ngIf="myForm.get('name')?.touched && myForm.get('name')?.hasError('required')"
-                class="error-message">
-                El campo nombre es obligatorio.
-              </div>
-              <div *ngIf="myForm.get('name')?.touched && myForm.get('name')?.hasError('invalidName')"
-                class="error-message">
-                El nombre no es válido. Debe contener solo letras y no permite caracteres especiales ni espacios.
-              </div>
-              <div *ngIf="myForm.get('name')?.touched && myForm.get('name')?.hasError('minlength')"
-                class="error-message">
-                Mínimo debe ser 3 letras.
-              </div>
-              <div *ngIf="myForm.get('name')?.touched && myForm.get('name')?.hasError('maxlength')"
-                class="error-message">
-                El campo nombre no puede superar los 30 caracteres.
-              </div>
-            </div>
+              
 
             <!-- Correo -->
             <div class="wrap-input100 m-b-23 form-outline mb-4">
@@ -124,7 +123,7 @@
             <div class="wrap-input100 m-b-23 form-outline mb-4">
               <span class="label-input100">Celular</span>
               <div class="input-with-eye">
-                <input class="input100 small-placeholder form-control" type="number" formControlName="phone"
+                <input class="input100 small-placeholder form-control" type="text" formControlName="phone"
                 placeholder="Celular" autocomplete="tel" min="1000000000" max="999999999999999">
                 <span class="focus-input100"></span>
               </div>

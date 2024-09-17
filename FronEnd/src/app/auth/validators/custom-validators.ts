@@ -149,27 +149,24 @@ export function validateEmailForLogin(authService: AuthService): AsyncValidatorF
 
 
 // Validador de nombre con símbolos y números
-export function validateNameSimbolAndNumber(): AsyncValidatorFn {
-  return (control: AbstractControl): Observable<{ [key: string]: boolean } | null> => {
+export function validateNameSimbolAndNumber(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
     const nameValue = control.value || '';
     // Patrón actualizado para permitir solo letras y espacios
     const combinedPattern = /^(?!.*\s{2})[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*[a-zA-ZáéíóúÁÉÍÓÚñÑ]$/;
 
-    return new Observable(observer => {
-      setTimeout(() => {
-        if (combinedPattern.test(nameValue)) {
-          // No se permiten números en el nombre
-          const numberCount = (nameValue.match(/\d/g) || []).length;
-          if (numberCount === 0) {
-            observer.next(null); // Válido
-          } else {
-            observer.next({ invalidName: true }); // No válido
-          }
-        } else {
-          observer.next({ invalidName: true }); // No válido
-        }
-        observer.complete();
-      }, 0);
-    });
-  };  
+    // Validar que el valor cumpla con el patrón
+    if (!combinedPattern.test(nameValue)) {
+      return { invalidName: true }; // No válido
+    }
+
+    // Verificar que no tenga números
+    const numberCount = (nameValue.match(/\d/g) || []).length;
+    if (numberCount > 0) {
+      return { invalidName: true }; // No válido si tiene números
+    }
+
+    return null; // Válido
+  };
 }
+
