@@ -153,6 +153,7 @@
 }
 
 /* Contenedor que abarca las columnas de comentarios y calificaciones */
+/* Contenedor que abarca las columnas de comentarios y calificaciones */
 .scrollable-container {
   max-height: 300px; /* Ajusta la altura máxima según tus necesidades */
   overflow-y: auto;  /* Habilita el scroll vertical */
@@ -161,18 +162,73 @@
   background-color: #fafafa; /* Fondo claro */
 }
 
+/* Diseño general de las columnas */
 .review-rating-container {
   display: flex;
   justify-content: space-between;
   gap: 20px; /* Espacio entre las columnas */
 }
 
-.reviews-column, 
-.ratings-column {
+.reviews-column {
   flex: 1; /* Cada columna ocupa un ancho igual */
 }
 
-.review,
-.rating {
-  margin-bottom: 5px; /* Espacio entre las reseñas y las calificaciones */
+/* Estilo para las tarjetas de reseñas y calificaciones */
+/* Contenedor general que permite el scroll */
+.scrollable-container {
+  max-height: 300px; /* Ajusta la altura máxima según sea necesario */
+  overflow-y: auto;  /* Habilita el scroll vertical */
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: #fafafa;
+}
+
+/* Estilo para el contenedor de las reseñas y calificaciones */
+.review-rating-container {
+  display: flex;
+  flex-wrap: wrap; /* Permite que las tarjetas se ajusten en varias filas */
+  gap: 20px; /* Espacio entre las tarjetas */
+}
+
+/* Estilo de la columna de las reseñas */
+.reviews-column {
+  flex: 1 1 200px; /* Cada tarjeta ocupa un mínimo de 200px */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* Acomoda las tarjetas a lo largo del contenedor */
+}
+
+/* Estilo para las tarjetas de reseñas y calificaciones */
+.review-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  width: 200px; /* Establece un ancho fijo para cada tarjeta */
+  transition: transform 0.2s ease;
+  margin-bottom: 15px;
+}
+
+.review-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilo para el encabezado y cuerpo de las tarjetas */
+.card-header {
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.card-body {
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Sección de calificación dentro de cada tarjeta */
+.rating-section {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #666;
 }

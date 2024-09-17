@@ -62,12 +62,32 @@
 }
 
 .reviews-container {
-  max-height: 200px; /* Altura máxima de la sección de reviews */
-  overflow-y: auto;  /* Habilita el scrollbar vertical */
-  background-color: #e8f5e9; /* Color de fondo suave para resaltar la sección */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Diseño de cuadrícula adaptable */
+  gap: 1rem;
+  margin-top: 20px;
   padding: 10px;
+  background-color: #f0f0f0;
   border-radius: 8px;
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1); /* Sombra interna */
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+.review-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidad */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Mayor profundidad al pasar el cursor */
+}
+
+/* Estilo para el contenido dentro de la tarjeta */
+.review-content {
+  font-size: 1rem;
+  color: #333;
 }
 
 .review-item {
