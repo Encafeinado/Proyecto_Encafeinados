@@ -85,4 +85,8 @@ header[_ngcontent-ng-c1097974527] h1[_ngcontent-ng-c1097974527] {
   .carousel-image-container img:hover {
     transform: none; /* No aplicar transformación en dispositivos móviles */
   }
+
+  .main-content{
+    padding-top: 120px;
+  }
 }
