@@ -38,7 +38,7 @@
 
               <!-- Solo se muestra un error a la vez, en este orden: requerido, minlength, maxlength, invalidName -->
               <div *ngIf="myForm.get('name')?.dirty && myForm.get('name')?.hasError('required')" class="error-message">
-                El campo nombre es obligatorio.
+                El campo es obligatorio.
               </div>
               <div
                 *ngIf="myForm.get('name')?.dirty && myForm.get('name')?.hasError('minlength') && !myForm.get('name')?.hasError('required')"
@@ -48,12 +48,12 @@
               <div
                 *ngIf="myForm.get('name')?.dirty && myForm.get('name')?.hasError('maxlength') && !myForm.get('name')?.hasError('required') && !myForm.get('name')?.hasError('minlength')"
                 class="error-message">
-                El campo nombre no puede superar los 30 caracteres.
+                No puede superar los 30 caracteres.
               </div>
               <div
                 *ngIf="myForm.get('name')?.dirty && myForm.get('name')?.hasError('invalidName') && !myForm.get('name')?.hasError('required') && !myForm.get('name')?.hasError('minlength') && !myForm.get('name')?.hasError('maxlength')"
                 class="error-message">
-                El nombre no es válido. Debe contener solo letras y no permite caracteres especiales ni espacios.
+                Solo letras,sin espacios ni símbolos.
               </div>
             </div>
 
@@ -70,17 +70,17 @@
               <!-- Solo se muestra un error a la vez, en este orden: requerido, invalidEmailFormat, invalidDomain -->
               <div *ngIf="myForm.get('email')?.dirty && myForm.get('email')?.hasError('required')"
                 class="error-message">
-                El campo correo es obligatorio.
+                El campo es obligatorio.
               </div>
               <div
                 *ngIf="myForm.get('email')?.dirty && myForm.get('email')?.hasError('invalidEmailFormat') && !myForm.get('email')?.hasError('required')"
                 class="error-message">
-                El formato del correo electrónico es inválido.
+                El formato del correo es inválido.
               </div>
               <div
                 *ngIf="myForm.get('email')?.dirty && myForm.get('email')?.hasError('invalidDomain') && !myForm.get('email')?.hasError('required') && !myForm.get('email')?.hasError('invalidEmailFormat')"
                 class="error-message">
-                El formato del correo electrónico no es válido.
+                El formato del correo no es válido.
               </div>
             </div>
             <!-- Contraseña -->
@@ -103,12 +103,12 @@
               <div
                 *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('minlength') && !myForm.get('password')?.hasError('required')"
                 class="error-message">
-                La contraseña debe tener al menos 8 caracteres.
+                Minimo debe tener 8 caracteres.
               </div>
               <div
                 *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('passwordInvalid') && !myForm.get('password')?.hasError('required') && !myForm.get('password')?.hasError('minlength')"
                 class="error-message">
-                La contraseña debe contener al menos una letra mayúscula, un número y un carácter especial.
+                Debe incluir mayúscula, número y carácter especial
               </div>
             </div>
 
@@ -159,12 +159,12 @@
               <div
               *ngIf="myForm.get('phone')?.dirty && myForm.get('phone')?.hasError('minlength') && !myForm.get('phone')?.hasError('required')"
               class="error-message">
-              Mínimo debe ser 10 numeros.
+              Mínimo debe tener 10 numeros.
             </div>
             <div
               *ngIf="myForm.get('phone')?.dirty && myForm.get('phone')?.hasError('maxlength') && !myForm.get('phone')?.hasError('required')"
               class="error-message">
-              Maximo debe ser 10 numeros.
+              Maximo debe tener 10 numeros.
             </div>
             </div>
 
