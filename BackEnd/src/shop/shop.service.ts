@@ -250,9 +250,11 @@ export class ShopService {
   findAll(): Promise<ShopDocument[]> {
     return this.shopModel.find().exec();
   }
+
   findAllShops(): Promise<ShopDocument[]> {
     return this.shopModel.find().exec();
   }
+
   findOne(id: number) {
     return `This action returns a #${id} auth`;
   }
