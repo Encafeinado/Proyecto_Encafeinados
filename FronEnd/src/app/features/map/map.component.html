@@ -11,7 +11,7 @@
           </google-map>
         </div>
         <!-- En tu plantilla HTML -->
-        <button *ngIf="rutaActiva" class="floating-button-cancel" (click)="cancelarRuta()">
+        <button *ngIf="rutaActiva" class="floating-button-cancel" (click)="openModalCancelRuta()">
           <i class="fas fa-times text-white"></i>
         </button>
         <button class="floating-button-location" (click)="centerOnUserLocation(true)">
@@ -121,13 +121,13 @@
   <ng-template #cancelModal let-modal>
     <div class="modal-content-cancelR">
       <div class="modal-header-cancelR">
-        <h4 class="modal-title-cancelR">Cancelar Rutas</h4>
+        <h4 class="modal-title-cancelR">Cancelar Ruta</h4>
       </div>
       <div class="modal-body-cancelR">
-        <p>¿Estás seguro de que quieres cancelar las rutas?</p>
+        <p>¿Estás seguro de que quieres cancelar la ruta actual?</p>
       </div>
       <div class="modal-footer-cancelR">
-        <!-- <button type="button" class="btn" (click)="confirmCancelRoute()">Confirmar</button> -->
+        <button type="button" class="btn" (click)="confirmarRutaCancelada()">Si, seguro</button>
         <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
       </div>
     </div>

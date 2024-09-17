@@ -530,7 +530,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
     console.log(`Distancia calculada: ${distancia} metros`);
 
-    if (distancia <= 80) {
+    if (distancia <= 30) {
       // Umbral de 80 metros
       console.log('Cerca del destino. Abriendo modal...');
       this.openModal(this.arriveModal, this.destinationName, '', '', '');
@@ -609,7 +609,7 @@ export class MapComponent implements OnInit, OnDestroy {
         // Si se activó por el clic del botón, ajusta el zoom
         if (clickTriggered || this.rutaActiva) {
           setTimeout(() => {
-            map.setZoom(20); // Ajusta el nivel de zoom según sea necesario
+            map.setZoom(18); // Ajusta el nivel de zoom según sea necesario
           }, 300);
         }
       }
@@ -914,6 +914,15 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
+  openModalCancelRuta(): void {
+    this.openModal(this.cancelModal, '', '', '', '');
+  }
+
+  confirmarRutaCancelada(){
+    this.cancelarRuta();  // Llama al método para cancelar la ruta
+    this.modalRef.close();
+  }
+
   cancelarRuta() {
     if (this.directionsRendererInstance) {
       this.directionsRendererInstance.setMap(null); // Elimina el renderer del mapa
@@ -921,10 +930,21 @@ export class MapComponent implements OnInit, OnDestroy {
       this.rutaActiva = false; // Marca que la ruta ya no está activa
       this.instruccionesRuta = []; // Limpia las instrucciones de la ruta
       this.routeDetails = undefined; // Limpia los detalles de la ruta
-
+  
       // Vuelve a iniciar el mapa y mostrar los marcadores
       this.iniciarMapa();
-      console.log('Ruta cancelada y mapa actualizado.');
+      if (this.markerPosition) {
+        const map = this.directionsRendererInstance.getMap();
+        if (map) {
+          // Centra el mapa en la posición del marcador del usuario
+          map.panTo(this.markerPosition);
+    
+          setTimeout(() => {
+            map.setZoom(17); // Ajusta el nivel de zoom según sea necesario
+          }, 300);
+        }
+      }
+      console.log('Ruta cancelada, mapa actualizado y centrado en el usuario.');
     } else {
       console.error('No se encontró la instancia de DirectionsRenderer.');
     }
