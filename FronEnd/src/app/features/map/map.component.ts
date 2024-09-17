@@ -418,6 +418,8 @@ export class MapComponent implements OnInit, OnDestroy {
               map.setZoom(17); // Zoom inicial en la ubicación del usuario
               map.panTo(this.markerPosition);
               this.hasZoomed = true; // Evitar futuros zooms automáticos
+              this.solicitarPermisoOrientacion();
+
             }
           }
 
@@ -658,24 +660,24 @@ export class MapComponent implements OnInit, OnDestroy {
   
   calcularHeading(event: DeviceOrientationEvent): number | null {
     if (event.alpha === null) {
-      return null;
+        return null;
     }
-  
+
     // Obtiene el heading en grados basado en el evento alpha
     let heading = event.alpha;
-  
+
     // Aplica la orientación del dispositivo según la orientación de la pantalla
     const orientacion = window.screen.orientation.angle || 0;
-  
+
     // Ajusta el heading aplicando la orientación del dispositivo
-    heading = (heading - orientacion + 360) % 360;
-  
-    // Invierte el heading si es necesario (esto puede depender del dispositivo)
+    heading = (heading + orientacion + 360) % 360;
+
+    // Invierte el heading para que la dirección sea correcta
     heading = 360 - heading;
-  
+
     return heading;
-  }
-  
+}
+
   actualizarRotacionMarcador(
     heading: number,
     result?: google.maps.DirectionsResult
