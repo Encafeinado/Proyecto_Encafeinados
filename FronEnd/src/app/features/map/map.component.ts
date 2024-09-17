@@ -98,7 +98,7 @@ export class MapComponent implements OnInit, OnDestroy {
     zoomControl: false,
   };
   iconoUbicacionUsuario = {
-    url: 'assets/IconsMarker/cosechaUser.png', // Ruta desde la raíz pública
+    url: 'assets/IconsMarker/cafeino.png', // Ruta desde la raíz pública
     scaledSize: new google.maps.Size(40, 40),
     rotation: 0,
   };
@@ -599,14 +599,15 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  centerOnUserLocation() {
+  centerOnUserLocation(clickTriggered: boolean = false) {
     if (this.markerPosition) {
       const map = this.directionsRendererInstance.getMap();
       if (map) {
+        // Centra el mapa en la posición del marcador del usuario
         map.panTo(this.markerPosition);
-
-        if (this.rutaActiva) {
-          // Solo ajustar el zoom si hay una ruta activa
+  
+        // Si se activó por el clic del botón, ajusta el zoom
+        if (clickTriggered || this.rutaActiva) {
           setTimeout(() => {
             map.setZoom(20); // Ajusta el nivel de zoom según sea necesario
           }, 300);
@@ -615,7 +616,7 @@ export class MapComponent implements OnInit, OnDestroy {
     } else {
       console.error('La ubicación del usuario no está disponible.');
     }
-  }
+  }  
 
   solicitarPermisoOrientacion() {
     const deviceOrientationEvent = DeviceOrientationEvent as any;
@@ -647,36 +648,31 @@ export class MapComponent implements OnInit, OnDestroy {
           if (heading !== null) {
             this.actualizarRotacionMarcador(heading);
           } else {
-            console.error(
-              'No se pudo obtener una orientación válida del dispositivo.'
-            );
+            console.error('No se pudo obtener una orientación válida del dispositivo.');
           }
         }
       },
       true
     );
   }
-
+  
   calcularHeading(event: DeviceOrientationEvent): number | null {
     if (event.alpha === null) {
       return null;
     }
-
+  
     // Obtiene el heading en grados basado en el evento alpha
     let heading = event.alpha;
-
-    // Aplica la orientación del dispositivo
+  
+    // Aplica la orientación del dispositivo según la orientación de la pantalla
     const orientacion = window.screen.orientation.angle || 0;
-
-    // Ajusta el heading aplicando la orientación del dispositivo y corrige el signo
-    heading = (heading - orientacion + 360) % 360;
-
-    // Si la orientación sigue al revés, invierte el heading
-    heading = (360 - heading) % 360;
-
+  
+    // Ajusta el heading aplicando la orientación del dispositivo
+    heading = (heading + orientacion + 360) % 360;
+  
     return heading;
   }
-
+  
   actualizarRotacionMarcador(
     heading: number,
     result?: google.maps.DirectionsResult
@@ -686,7 +682,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('El mapa no está definido.');
       return;
     }
-
+  
     // Definir el icono basado en si la ruta está activa o no
     const iconoRotado = this.rutaActiva
       ? {
@@ -704,24 +700,22 @@ export class MapComponent implements OnInit, OnDestroy {
           scaledSize: new google.maps.Size(40, 40),
           anchor: new google.maps.Point(25, 25),
         };
-
+  
     if (this.markerUsuario) {
       this.markerUsuario.setIcon(iconoRotado);
     } else {
       console.error('El marcador del usuario no está definido.');
     }
-
+  
     if (result) {
-      // Actualiza la posición y rotación del marcador de flecha
       const route = result.routes[0];
       const legs = route.legs;
-      const step = legs[0].steps[0]; // Asume que quieres el primer paso
-
+      const step = legs[0].steps[0];
+  
       if (step) {
         const position = step.start_location;
-
+  
         if (this.markerUsuario) {
-          // Actualiza el marcador de flecha existente
           this.markerUsuario.setPosition(position);
           this.markerUsuario.setIcon({
             path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
@@ -732,7 +726,6 @@ export class MapComponent implements OnInit, OnDestroy {
             strokeWeight: 2,
           });
         } else {
-          // Crea un nuevo marcador de flecha si no existe
           this.markerUsuario = new google.maps.Marker({
             position: position,
             map: map,
@@ -897,8 +890,6 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Nueva versión sin dependencia de la distancia
-  // Nueva versión de verificarAvanceInstrucciones con umbral de distancia
   // Método para verificar si el usuario ha avanzado más de 50 metros
   verificarAvanceInstrucciones() {
     if (this.markerPosition && this.ultimaPosicion) {
