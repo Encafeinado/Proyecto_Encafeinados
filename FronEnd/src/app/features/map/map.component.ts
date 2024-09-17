@@ -668,7 +668,10 @@ export class MapComponent implements OnInit, OnDestroy {
     const orientacion = window.screen.orientation.angle || 0;
   
     // Ajusta el heading aplicando la orientación del dispositivo
-    heading = (heading + orientacion + 360) % 360;
+    heading = (heading - orientacion + 360) % 360;
+  
+    // Invierte el heading si es necesario (esto puede depender del dispositivo)
+    heading = 360 - heading;
   
     return heading;
   }
