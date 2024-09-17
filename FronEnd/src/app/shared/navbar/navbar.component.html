@@ -16,7 +16,7 @@
         <li *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRegisterPage() && !isOnRequestPage()  && !isOnResetPage()">
           <a *ngIf="userName" class="dropdown-item" routerLink="/perfil"><i class="fas fa-user"></i> {{ userName }}</a>
         </li>
-        <li *ngIf="authService.isAuthenticated() && !isOnLoginPage() && !isOnRegisterPage() && !isOnResetPage()">
+        <li *ngIf="authService.isAuthenticated() && !isOnLoginPage() && !isOnRegisterPage() && !isOnResetPage() && !isOnRequestPage() ">
           <a class="dropdown-item" (click)="openLogoutModal(sesionModal)"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
         </li>
       </ul>
