@@ -29,13 +29,6 @@
   padding-top: 110px; /* Ajusta este valor según la altura de tu navbar */
 }
 
-.alert-info {
-  --bs-alert-color: #007bff; /* Color del texto dentro de la alerta */
-  --bs-alert-bg: #ffffff; /* Color de fondo de la alerta */
-  --bs-alert-border-color: #ffffff; /* Color del borde de la alerta */
-  --bs-alert-link-color: #0056b3; /* Color de los enlaces dentro de la alerta */
-}
-
 /* Estilos comunes para ambos botones */
 .floating-button-location,
 .floating-button-cancel {
@@ -460,7 +453,8 @@
 .modal-title-create,
 .modal-title-code,
 .modal-title,
-.modal-title-arrive {
+.modal-title-arrive,
+.modal-title-cancelR {
   font-size: 1.5em;
   margin: 0;
 }
