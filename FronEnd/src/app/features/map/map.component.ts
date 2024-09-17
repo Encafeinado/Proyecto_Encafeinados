@@ -530,7 +530,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
     console.log(`Distancia calculada: ${distancia} metros`);
 
-    if (distancia <= 30) {
+    if (distancia <= 12) {
       // Umbral de 80 metros
       console.log('Cerca del destino. Abriendo modal...');
       this.openModal(this.arriveModal, this.destinationName, '', '', '');
