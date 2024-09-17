@@ -50,6 +50,9 @@
 
             <!-- Correo -->
             <div class="wrap-input100 m-b-23 form-outline mb-4">
+              <div *ngIf="showError" class="custom-error">
+                Correo y/o contraseña incorrectas
+              </div>
               <span class="label-input100">Correo</span>
               <div class="input-with-eye">
                 <input class="input100 small-placeholder form-control" type="email" formControlName="email"
