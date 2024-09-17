@@ -63,6 +63,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     return (
       this.isUserLanding() || 
       this.isUserLandingTienda() || 
+      
       (this.userName.trim().length > 0 && this.authService.isAuthenticated())
     );
   }
