@@ -33,6 +33,7 @@ export class MapComponent implements OnInit, OnDestroy {
   modalRef!: NgbModalRef;
   reviewApp: string = '';
   openedModal = false;
+  modalAbierto = false; // Flag para verificar si el modal ya ha sido mostrado
   verifiedcode: boolean = false;
   destinationName!: string;
   specialties1!: string;
@@ -418,6 +419,7 @@ export class MapComponent implements OnInit, OnDestroy {
               map.setZoom(17); // Zoom inicial en la ubicación del usuario
               map.panTo(this.markerPosition);
               this.hasZoomed = true; // Evitar futuros zooms automáticos
+              this.solicitarPermisoOrientacion();
             }
           }
 
@@ -426,7 +428,7 @@ export class MapComponent implements OnInit, OnDestroy {
             this.markerPosition
           );
           this.actualizarMarcadorUbicacionUsuario();
-          this.solicitarPermisoOrientacion();
+          // this.solicitarPermisoOrientacion();
 
           // Actualizar detalles de la ruta si la ruta está activa
           if (this.rutaActiva && this.directionsResult) {
@@ -478,7 +480,7 @@ export class MapComponent implements OnInit, OnDestroy {
       !this.hasArrived
     ) {
       console.log('Verificando cercanía al destino...', this.destinationName);
-
+  
       if (
         typeof this.destinationName === 'object' &&
         'lat' in this.destinationName &&
@@ -486,7 +488,7 @@ export class MapComponent implements OnInit, OnDestroy {
       ) {
         const lat2 = (this.destinationName as { lat: number; lng: number }).lat;
         const lng2 = (this.destinationName as { lat: number; lng: number }).lng;
-
+  
         // Calcula la distancia y verifica cercanía
         this.procesarVerificacionCercania(lat2, lng2);
       } else {
@@ -513,13 +515,13 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Posición del marcador no está definida.');
       return;
     }
-
+  
     console.log(
       'Posición actual del usuario:',
       this.markerPosition?.lat,
       this.markerPosition?.lng
     );
-
+  
     // Calcular la distancia
     const distancia = this.calcularDistancia(
       this.markerPosition.lat,
@@ -527,14 +529,19 @@ export class MapComponent implements OnInit, OnDestroy {
       lat2,
       lng2
     );
-
+  
     console.log(`Distancia calculada: ${distancia} metros`);
-
+  
     if (distancia <= 12) {
-      // Umbral de 80 metros
-      console.log('Cerca del destino. Abriendo modal...');
-      this.openModal(this.arriveModal, this.destinationName, '', '', '');
+      // Umbral de 12 metros
+      if (!this.modalAbierto) {
+        console.log('Cerca del destino. Abriendo modal...');
+        this.openModal(this.arriveModal, this.destinationName, '', '', '');
+        this.modalAbierto = true; // Marca que el modal ha sido mostrado
+      }
     } else {
+      // Resetear el flag si el usuario se aleja
+      this.modalAbierto = false;
       console.log(
         `Aún no cerca del destino. Distancia actual: ${distancia} metros`
       );
