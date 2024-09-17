@@ -86,7 +86,9 @@ export class RegisterPageComponent {
         {
           validators: [
             Validators.required,
-            phoneNumberValidator()
+            phoneNumberValidator(),
+            Validators.minLength(10),
+            Validators.maxLength(10),
           ],
           updateOn: 'change'  // Se actualiza cuando pierde el foco
         }
