@@ -96,8 +96,8 @@ export class MapComponent implements OnInit, OnDestroy {
     zoomControl: false,
   };
   iconoUbicacionUsuario = {
-    url: 'assets/IconsMarker/cafeino.png', // Ruta desde la raíz pública
-    scaledSize: new google.maps.Size(50, 50),
+    url: 'assets/IconsMarker/cosechaUser.png', // Ruta desde la raíz pública
+    scaledSize: new google.maps.Size(40, 40),
     rotation: 0,
   };
   iconoTienda = {
@@ -365,14 +365,14 @@ export class MapComponent implements OnInit, OnDestroy {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-  
+
           // Si ya tienes una posición previa, realiza la interpolación
           if (this.markerPosition) {
             const pasos = 10; // Cuantos más pasos, más suave será la transición
             const duracion = 1000; // Tiempo total de la interpolación en milisegundos
             const intervalo = duracion / pasos;
             let pasoActual = 0;
-  
+
             const intervaloId = setInterval(() => {
               pasoActual++;
               const factor = pasoActual / pasos;
@@ -381,22 +381,15 @@ export class MapComponent implements OnInit, OnDestroy {
                 nuevaPosicion,
                 factor
               );
-  
+
               // Actualiza la posición del marcador en el mapa
               this.markerUsuario?.setPosition(posicionInterpolada);
-  
-              // Verificar y actualizar las instrucciones de la ruta
+
               this.verificarAvanceInstrucciones();
-  
               if (pasoActual >= pasos) {
                 clearInterval(intervaloId);
                 this.markerPosition = nuevaPosicion;
                 this.verificarCercaniaADestino(); // Verifica cercanía una vez se completa la interpolación
-                
-                // Aquí puedes verificar si la ruta debe recalcularse y actualizarla
-                if (this.debeRecalcularRuta(nuevaPosicion)) {
-                  this.calcularRuta(); // Recalcular la ruta con la nueva posición
-                }
               }
             }, intervalo);
           } else {
@@ -404,22 +397,19 @@ export class MapComponent implements OnInit, OnDestroy {
             this.markerPosition = nuevaPosicion;
             this.markerUsuario?.setPosition(this.markerPosition);
             this.verificarCercaniaADestino(); // Verifica cercanía
-  
-            // Si no se ha hecho zoom antes, hacer zoom inicial
-            if (!this.hasZoomed) {
-              const map = this.directionsRendererInstance.getMap();
-              if (map) {
-                map.setZoom(17); // Zoom inicial en la ubicación del usuario
-                map.panTo(this.markerPosition);
-                this.hasZoomed = true; // Evitar futuros zooms automáticos
-              }
+          }
+          if (!this.hasZoomed) {
+            const map = this.directionsRendererInstance.getMap();
+            if (map) {
+              map.setZoom(17); // Zoom inicial en la ubicación del usuario
+              map.panTo(this.markerPosition);
+              this.hasZoomed = true; // Evitar futuros zooms automáticos
             }
           }
-  
-          // Consola para depurar
-          console.log('Ubicación del usuario actualizada:', this.markerPosition);
-          
-          // Actualizar el marcador y solicitar permisos de orientación
+          console.log(
+            'Ubicación del usuario actualizada:',
+            this.markerPosition
+          );
           this.actualizarMarcadorUbicacionUsuario();
           this.solicitarPermisoOrientacion();
         },
@@ -436,7 +426,6 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Geolocalización no es soportada por este navegador.');
     }
   }
-  
 
   // Método para calcular la distancia entre dos puntos (en metros)
   calcularDistancia(
@@ -521,7 +510,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
     console.log(`Distancia calculada: ${distancia} metros`);
 
-    if (distancia <= 12) {
+    if (distancia <= 80) {
       // Umbral de 80 metros
       console.log('Cerca del destino. Abriendo modal...');
       this.openModal(this.arriveModal, this.destinationName, '', '', '');
@@ -556,16 +545,9 @@ export class MapComponent implements OnInit, OnDestroy {
 
   // Método para determinar si la ruta debe ser recalculada
   debeRecalcularRuta(nuevaPosicion: google.maps.LatLngLiteral): boolean {
-    if (!this.markerPosition) return true;
-  
-    const distancia = this.calcularDistancia(
-      this.markerPosition.lat,
-      this.markerPosition.lng,
-      nuevaPosicion.lat,
-      nuevaPosicion.lng
-    );
-  
-    return distancia > 10; // Recalcular si se ha movido más de 20 metros
+    // Implementa una lógica para determinar si la ruta debe ser recalculada
+    // Por ejemplo, podrías comparar con la última posición conocida y verificar si ha cambiado significativamente
+    return true; // Cambia esto según tu lógica
   }
 
   // Método para actualizar la ubicación del marcador cuando se hace clic en el botón
