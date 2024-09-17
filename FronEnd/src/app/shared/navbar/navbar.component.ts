@@ -122,6 +122,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     return this.router.url === '/auth/forgot-password';
   }
 
+  isOnResetPage(): boolean {
+    return this.router.url === '/auth/reset-password';
+  }
+
   isUserShop(): boolean {
     return this.authService.rolUser() === 'shop';
   }
