@@ -66,6 +66,7 @@ export class MapComponent implements OnInit, OnDestroy {
   routeDetails: string | undefined;
   markerPosition: google.maps.LatLngLiteral | undefined;
   directionsResult: google.maps.DirectionsResult | null = null;
+  ultimaPosicion: google.maps.LatLngLiteral | null = null; // Para almacenar la última posición
   watchId: number | undefined;
   instruccionesRuta: string[] = []; // Lista completa de instrucciones
   instruccionesActuales: string[] = []; // Instrucciones que se mostrarán de a 2
@@ -366,14 +367,14 @@ export class MapComponent implements OnInit, OnDestroy {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-  
+
           // Si ya tienes una posición previa, realiza la interpolación
           if (this.markerPosition) {
             const pasos = 10; // Cuantos más pasos, más suave será la transición
             const duracion = 1000; // Tiempo total de la interpolación en milisegundos
             const intervalo = duracion / pasos;
             let pasoActual = 0;
-  
+
             const intervaloId = setInterval(() => {
               pasoActual++;
               const factor = pasoActual / pasos;
@@ -382,16 +383,16 @@ export class MapComponent implements OnInit, OnDestroy {
                 nuevaPosicion,
                 factor
               );
-  
+
               // Actualiza la posición del marcador en el mapa
               this.markerUsuario?.setPosition(posicionInterpolada);
-  
+
               this.verificarAvanceInstrucciones();
               if (pasoActual >= pasos) {
                 clearInterval(intervaloId);
                 this.markerPosition = nuevaPosicion;
                 this.verificarCercaniaADestino(); // Verifica cercanía una vez se completa la interpolación
-  
+
                 // Actualización de la ruta si está activa
                 if (this.rutaActiva) {
                   const map = this.directionsRendererInstance.getMap();
@@ -410,7 +411,7 @@ export class MapComponent implements OnInit, OnDestroy {
             this.markerUsuario?.setPosition(this.markerPosition);
             this.verificarCercaniaADestino(); // Verifica cercanía
           }
-  
+
           if (!this.hasZoomed) {
             const map = this.directionsRendererInstance.getMap();
             if (map) {
@@ -419,11 +420,14 @@ export class MapComponent implements OnInit, OnDestroy {
               this.hasZoomed = true; // Evitar futuros zooms automáticos
             }
           }
-  
-          console.log('Ubicación del usuario actualizada:', this.markerPosition);
+
+          console.log(
+            'Ubicación del usuario actualizada:',
+            this.markerPosition
+          );
           this.actualizarMarcadorUbicacionUsuario();
           this.solicitarPermisoOrientacion();
-  
+
           // Actualizar detalles de la ruta si la ruta está activa
           if (this.rutaActiva && this.directionsResult) {
             this.obtenerDetallesRuta(this.directionsResult);
@@ -442,7 +446,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Geolocalización no es soportada por este navegador.');
     }
   }
-    
+
   // Método para calcular la distancia entre dos puntos (en metros)
   calcularDistancia(
     lat1: number,
@@ -755,22 +759,25 @@ export class MapComponent implements OnInit, OnDestroy {
   // Método para calcular la ruta
   calcularRuta() {
     if (!this.modoTransporte) {
-      this.toastr.warning('Por favor, selecciona un modo de transporte.', 'Advertencia');
+      this.toastr.warning(
+        'Por favor, selecciona un modo de transporte.',
+        'Advertencia'
+      );
       return;
     }
-  
+
     if (!this.markerPosition) {
       console.error('La posición del marcador no está definida.');
       return;
     }
-  
+
     if (!this.destinationName) {
       console.error('El destino no está definido.');
       return;
     }
-  
+
     let destination: google.maps.LatLngLiteral | string;
-  
+
     if (
       typeof this.destinationName === 'object' &&
       'lat' in this.destinationName &&
@@ -783,21 +790,21 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('El destino proporcionado no es válido.');
       return;
     }
-  
+
     const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
-  
+
     const request: google.maps.DirectionsRequest = {
       origin: this.markerPosition,
       destination: destination,
       travelMode: travelMode,
       unitSystem: google.maps.UnitSystem.METRIC,
     };
-  
+
     this.directionsRendererInstance.setOptions({
       suppressMarkers: true,
       preserveViewport: true,
     });
-  
+
     this.directionsService.route(request, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK && result) {
         this.directionsResult = result; // Almacena el resultado aquí
@@ -805,7 +812,7 @@ export class MapComponent implements OnInit, OnDestroy {
         this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
         this.centrarMapaEnMarcador();
-  
+
         if (this.modalRef) {
           this.modalRef.close();
         }
@@ -813,7 +820,10 @@ export class MapComponent implements OnInit, OnDestroy {
       } else {
         this.rutaActiva = false;
         console.error('Error al calcular la ruta:', status, result);
-        this.toastr.warning('La ruta en este medio de transporte no está disponible', 'Advertencia');
+        this.toastr.warning(
+          'La ruta en este medio de transporte no está disponible',
+          'Advertencia'
+        );
       }
     });
   }
@@ -888,10 +898,28 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   // Nueva versión sin dependencia de la distancia
+  // Nueva versión de verificarAvanceInstrucciones con umbral de distancia
+  // Método para verificar si el usuario ha avanzado más de 50 metros
   verificarAvanceInstrucciones() {
-    // Aquí avanzamos siempre que el usuario se mueva y haya más instrucciones disponibles
-    if (this.currentInstructionIndex < this.instruccionesRuta.length - 1) {
-      this.avanzarInstrucciones();
+    if (this.markerPosition && this.ultimaPosicion) {
+      const distanciaRecorrida = this.calcularDistancia(
+        this.markerPosition.lat,
+        this.markerPosition.lng,
+        this.ultimaPosicion.lat,
+        this.ultimaPosicion.lng
+      );
+
+      // Si la distancia recorrida supera el umbral de 50 metros, avanzamos a la siguiente instrucción
+      if (distanciaRecorrida >= 20) {
+        if (this.currentInstructionIndex < this.instruccionesRuta.length - 1) {
+          this.avanzarInstrucciones();
+        }
+        // Actualizamos la última posición para futuras comparaciones
+        this.ultimaPosicion = this.markerPosition;
+      }
+    } else {
+      // Si es la primera vez que se llama, inicializamos ultimaPosicion
+      this.ultimaPosicion = this.markerPosition || null;
     }
   }
 
