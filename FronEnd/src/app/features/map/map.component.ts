@@ -63,6 +63,7 @@ export class MapComponent implements OnInit, OnDestroy {
     lng: -75.61905204382627,
   };
   zoom = 15;
+  currentImageUrl!: string; 
   rutaActiva: boolean = false;
   routeDetails: string | undefined;
   markerPosition: google.maps.LatLngLiteral | undefined;
@@ -100,7 +101,7 @@ export class MapComponent implements OnInit, OnDestroy {
   };
   iconoUbicacionUsuario = {
     url: 'assets/IconsMarker/cafeino.png', // Ruta desde la raíz pública
-    scaledSize: new google.maps.Size(40, 40),
+    scaledSize: new google.maps.Size(50, 50),
     rotation: 0,
   };
   iconoTienda = {
@@ -129,6 +130,7 @@ export class MapComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    
     this.rastrearUbicacionUsuario();
     this.fetchUserData();
     this.fetchShopData();
@@ -242,6 +244,7 @@ export class MapComponent implements OnInit, OnDestroy {
       status: shop.statusShop,
       specialties1: shop.specialties1,
       specialties2: shop.specialties2,
+      imageUrl: this.getShopImageUrl(shop.name)
     }));
 
     const mapElement = document.getElementById('map') as HTMLElement;
@@ -289,7 +292,8 @@ export class MapComponent implements OnInit, OnDestroy {
               markerData.title,
               markerData.status,
               markerData.specialties1,
-              markerData.specialties2
+              markerData.specialties2,
+              markerData.imageUrl
             );
           });
         } else {
@@ -308,6 +312,23 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Elemento del mapa no encontrado.');
     }
   }
+
+  getShopImageUrl(destinationName: string): string {
+    switch (destinationName.toLowerCase()) {
+      case 'vibrante café':
+        return 'assets/images/ruta-vibrante.jpg';
+      case 'aroma':
+        return 'assets/images/ruta-aroma.jpg';
+      case 'saudade':
+        return 'assets/images/ruta-saudade.jpg';
+      case 'milagro coffee shop':
+        return 'assets/images/ruta-milagro.jpg';
+      default:
+        return 'assets/images/default-image.jpg'; // Imagen por defecto si no coincide el nombre
+    }
+  }
+  
+  
 
   // Método para actualizar los estados de las tiendas
   actualizarEstadosTiendas(): void {
@@ -508,7 +529,7 @@ export class MapComponent implements OnInit, OnDestroy {
       );
     }
   }
-
+  
   // Método para procesar la verificación de cercanía
   procesarVerificacionCercania(lat2: number, lng2: number) {
     if (!this.markerPosition) {
@@ -516,37 +537,20 @@ export class MapComponent implements OnInit, OnDestroy {
       return;
     }
   
-    console.log(
-      'Posición actual del usuario:',
-      this.markerPosition?.lat,
-      this.markerPosition?.lng
-    );
+    const distancia = this.calcularDistancia(this.markerPosition.lat, this.markerPosition.lng, lat2, lng2);
+  console.log(`Distancia calculada: ${distancia} metros`);
   
-    // Calcular la distancia
-    const distancia = this.calcularDistancia(
-      this.markerPosition.lat,
-      this.markerPosition.lng,
-      lat2,
-      lng2
-    );
-  
-    console.log(`Distancia calculada: ${distancia} metros`);
-  
-    if (distancia <= 12) {
-      // Umbral de 12 metros
-      if (!this.modalAbierto) {
-        console.log('Cerca del destino. Abriendo modal...');
-        this.openModal(this.arriveModal, this.destinationName, '', '', '');
-        this.modalAbierto = true; // Marca que el modal ha sido mostrado
-      }
-    } else {
-      // Resetear el flag si el usuario se aleja
-      this.modalAbierto = false;
-      console.log(
-        `Aún no cerca del destino. Distancia actual: ${distancia} metros`
-      );
-    }
+  // Solo abrir el modal si está dentro del rango y no ha llegado antes
+  if (distancia <= 80 && !this.modalAbierto && !this.hasArrived) {
+    console.log('Cerca del destino. Abriendo modal...');
+    this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
+    this.modalAbierto = true; // Marca que el modal está abierto
+  } else if (distancia > 80 && this.hasArrived) {
+    console.log('Aún no cerca del destino.');
+    this.modalAbierto = false; // Permitir que se abra de nuevo si se acerca al destino
   }
+}
+  
 
   // Método para obtener las coordenadas del destino utilizando Google Maps Geocoding API
   obtenerCoordenadasDestino(
@@ -761,6 +765,10 @@ export class MapComponent implements OnInit, OnDestroy {
 
   // Método para calcular la ruta
   calcularRuta() {
+    this.hasArrived = false;
+    this.modalAbierto = false;
+    this.openedModal = false;
+    
     if (!this.modoTransporte) {
       this.toastr.warning(
         'Por favor, selecciona un modo de transporte.',
@@ -798,35 +806,32 @@ export class MapComponent implements OnInit, OnDestroy {
 
     const request: google.maps.DirectionsRequest = {
       origin: this.markerPosition,
-      destination: destination,
-      travelMode: travelMode,
+      destination: this.destinationName,
+      travelMode: this.modoTransporte ?? google.maps.TravelMode.DRIVING,
       unitSystem: google.maps.UnitSystem.METRIC,
     };
-
+  
     this.directionsRendererInstance.setOptions({
       suppressMarkers: true,
       preserveViewport: true,
     });
-
+  
     this.directionsService.route(request, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK && result) {
-        this.directionsResult = result; // Almacena el resultado aquí
+        this.directionsResult = result; // Guardar el resultado de la ruta
         this.directionsRendererInstance.setDirections(result);
-        this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
-        this.centrarMapaEnMarcador();
-
+  
         if (this.modalRef) {
-          this.modalRef.close();
+          this.modalRef.close(); // Cerrar cualquier modal previo
         }
-        this.actualizarRotacionMarcador(0, result); // Actualiza la rotación y la flecha
+        this.actualizarRotacionMarcador(0, result); // Actualizar la rotación
+  
+        this.centrarMapaEnMarcador(); // Centrar el mapa en el marcador
       } else {
         this.rutaActiva = false;
+        this.toastr.warning('La ruta en este medio de transporte no está disponible', 'Advertencia');
         console.error('Error al calcular la ruta:', status, result);
-        this.toastr.warning(
-          'La ruta en este medio de transporte no está disponible',
-          'Advertencia'
-        );
       }
     });
   }
@@ -925,7 +930,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   openModalCancelRuta(): void {
-    this.openModal(this.cancelModal, '', '', '', '');
+    this.openModal(this.cancelModal, '', '', '', '','');
   }
 
   confirmarRutaCancelada(){
@@ -961,29 +966,24 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   confirmarLlegada() {
-    // Evitar que se confirme la llegada más de una vez si el proceso ya se completó
     if (this.hasArrived) {
       return; // Salir si ya se ha confirmado la llegada
     }
-
-    // Marca que la llegada fue confirmada
+  
     this.hasArrived = true;
-
+    this.cancelarRuta(); // Cancela la ruta actual
     // Cancela la ruta actual y limpia el mapa
-    this.cancelarRuta();
-
-    // Cierra el modal de llegada si está abierto
+  
     if (this.modalRef) {
       this.modalRef.close();
-      this.openedModal = false; // Resetear el estado de openedModal
     }
-
-    // Reiniciar el estado para permitir seleccionar una nueva ruta
-    this.hasArrived = false; // Permitir seleccionar nuevas rutas después de cerrar el modal
-    this.rutaActiva = false; // Reinicia la ruta activa
-    // No es necesario reiniciar el mapa, solo actualizar el estado
+  
+    // Permitir seleccionar nuevas rutas
+    this.hasArrived = false;
+    this.modalAbierto = false; 
     console.log('Ruta cancelada. Puedes seleccionar una nueva tienda.');
   }
+  
 
   closeAlert(): void {
     this.showAlert = false;
@@ -1002,16 +1002,9 @@ export class MapComponent implements OnInit, OnDestroy {
     );
   }
 
-  openModal(
-    content: any,
-    destinationName: string,
-    status: string,
-    specialties1: string,
-    specialties2: string
-  ): void {
-    // Evitar abrir múltiples modales o abrir modal si ya se ha llegado
+  openModal(content: any, destinationName: string, status: string, specialties1: string, specialties2: string, imageUrl: string) {
     if (this.openedModal || this.hasArrived) {
-      return; // No abrir el modal si ya está abierto o si el usuario ya ha llegado
+      return; // No abrir el modal si ya está abierto o si ya ha llegado
     }
 
     // Marcar como abierto y configurar las propiedades del modal
@@ -1019,7 +1012,9 @@ export class MapComponent implements OnInit, OnDestroy {
     this.shopStatus = status;
     this.specialties1 = specialties1;
     this.specialties2 = specialties2;
+    this.currentImageUrl = imageUrl;
     this.openedModal = true;
+    
 
     // Abrir el modal
     this.modalRef = this.modalService.open(content, {
@@ -1060,16 +1055,16 @@ export class MapComponent implements OnInit, OnDestroy {
 
   openModalWithCodigo(): void {
     this.resetModalFields();
-    this.openModal(this.codeModal, '', '', '', '');
+    this.openModal(this.codeModal, '', '', '', '','');
   }
 
   openModalAlbum(): void {
-    this.openModal(this.modalBook, '', '', '', '');
+    this.openModal(this.modalBook, '', '', '', '','');
   }
 
   openModalReviewShop(): void {
     this.resetModalFields();
-    this.openModal(this.modalReviewShop, '', 'statusValue', '', '');
+    this.openModal(this.modalReviewShop, '', 'statusValue', '', '','');
   }
 
   verifyCode() {

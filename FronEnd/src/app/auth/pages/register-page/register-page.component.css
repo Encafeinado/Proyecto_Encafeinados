@@ -122,7 +122,10 @@ body {
     color: #333;
   }
 
-  
+  .input-with-eye input {
+    width: 230px;
+    padding-right: 2.5rem;
+}
   
   /* Ajustes responsivos para pantallas pequeñas */
   @media (max-width: 768px) {
