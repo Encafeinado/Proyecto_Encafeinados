@@ -529,7 +529,7 @@ export class MapComponent implements OnInit, OnDestroy {
       );
     }
   }
-  
+
   // Método para procesar la verificación de cercanía
   procesarVerificacionCercania(lat2: number, lng2: number) {
     if (!this.markerPosition) {
@@ -537,20 +537,37 @@ export class MapComponent implements OnInit, OnDestroy {
       return;
     }
   
-    const distancia = this.calcularDistancia(this.markerPosition.lat, this.markerPosition.lng, lat2, lng2);
-  console.log(`Distancia calculada: ${distancia} metros`);
+    console.log(
+      'Posición actual del usuario:',
+      this.markerPosition?.lat,
+      this.markerPosition?.lng
+    );
   
-  // Solo abrir el modal si está dentro del rango y no ha llegado antes
-  if (distancia <= 80 && !this.modalAbierto && !this.hasArrived) {
-    console.log('Cerca del destino. Abriendo modal...');
-    this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
-    this.modalAbierto = true; // Marca que el modal está abierto
-  } else if (distancia > 80 && this.hasArrived) {
-    console.log('Aún no cerca del destino.');
-    this.modalAbierto = false; // Permitir que se abra de nuevo si se acerca al destino
+    // Calcular la distancia
+    const distancia = this.calcularDistancia(
+      this.markerPosition.lat,
+      this.markerPosition.lng,
+      lat2,
+      lng2
+    );
+  
+    console.log(`Distancia calculada: ${distancia} metros`);
+  
+    if (distancia <= 12) {
+      // Umbral de 12 metros
+      if (!this.modalAbierto) {
+        console.log('Abriendo modal de llegada...');
+        this.openModal(this.arriveModal, this.destinationName, '', '', '','');
+        this.modalAbierto = true; // Marca que el modal ha sido mostrado
+      }
+    } else {
+      // Resetear el flag si el usuario se aleja
+      this.modalAbierto = false;
+      console.log(
+        `Aún no cerca del destino. Distancia actual: ${distancia} metros`
+      );
+    }
   }
-}
-  
 
   // Método para obtener las coordenadas del destino utilizando Google Maps Geocoding API
   obtenerCoordenadasDestino(
@@ -765,10 +782,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
   // Método para calcular la ruta
   calcularRuta() {
-    this.hasArrived = false;
-    this.modalAbierto = false;
-    this.openedModal = false;
-    
     if (!this.modoTransporte) {
       this.toastr.warning(
         'Por favor, selecciona un modo de transporte.',
@@ -806,32 +819,35 @@ export class MapComponent implements OnInit, OnDestroy {
 
     const request: google.maps.DirectionsRequest = {
       origin: this.markerPosition,
-      destination: this.destinationName,
-      travelMode: this.modoTransporte ?? google.maps.TravelMode.DRIVING,
+      destination: destination,
+      travelMode: travelMode,
       unitSystem: google.maps.UnitSystem.METRIC,
     };
-  
+
     this.directionsRendererInstance.setOptions({
       suppressMarkers: true,
       preserveViewport: true,
     });
-  
+
     this.directionsService.route(request, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK && result) {
-        this.directionsResult = result; // Guardar el resultado de la ruta
+        this.directionsResult = result; // Almacena el resultado aquí
         this.directionsRendererInstance.setDirections(result);
+        this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
-  
+        this.centrarMapaEnMarcador();
+
         if (this.modalRef) {
-          this.modalRef.close(); // Cerrar cualquier modal previo
+          this.modalRef.close();
         }
-        this.actualizarRotacionMarcador(0, result); // Actualizar la rotación
-  
-        this.centrarMapaEnMarcador(); // Centrar el mapa en el marcador
+        this.actualizarRotacionMarcador(0, result); // Actualiza la rotación y la flecha
       } else {
         this.rutaActiva = false;
-        this.toastr.warning('La ruta en este medio de transporte no está disponible', 'Advertencia');
         console.error('Error al calcular la ruta:', status, result);
+        this.toastr.warning(
+          'La ruta en este medio de transporte no está disponible',
+          'Advertencia'
+        );
       }
     });
   }
@@ -966,24 +982,29 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   confirmarLlegada() {
+    // Evitar que se confirme la llegada más de una vez si el proceso ya se completó
     if (this.hasArrived) {
       return; // Salir si ya se ha confirmado la llegada
     }
-  
+
+    // Marca que la llegada fue confirmada
     this.hasArrived = true;
-    this.cancelarRuta(); // Cancela la ruta actual
+
     // Cancela la ruta actual y limpia el mapa
-  
+    this.cancelarRuta();
+
+    // Cierra el modal de llegada si está abierto
     if (this.modalRef) {
       this.modalRef.close();
+      this.openedModal = false; // Resetear el estado de openedModal
     }
-  
-    // Permitir seleccionar nuevas rutas
-    this.hasArrived = false;
-    this.modalAbierto = false; 
+
+    // Reiniciar el estado para permitir seleccionar una nueva ruta
+    this.hasArrived = false; // Permitir seleccionar nuevas rutas después de cerrar el modal
+    this.rutaActiva = false; // Reinicia la ruta activa
+    // No es necesario reiniciar el mapa, solo actualizar el estado
     console.log('Ruta cancelada. Puedes seleccionar una nueva tienda.');
   }
-  
 
   closeAlert(): void {
     this.showAlert = false;
@@ -1002,9 +1023,17 @@ export class MapComponent implements OnInit, OnDestroy {
     );
   }
 
-  openModal(content: any, destinationName: string, status: string, specialties1: string, specialties2: string, imageUrl: string) {
+  openModal(
+    content: any,
+    destinationName: string,
+    status: string,
+    specialties1: string,
+    specialties2: string,
+    imageUrl: string
+  ): void {
+    // Evitar abrir múltiples modales o abrir modal si ya se ha llegado
     if (this.openedModal || this.hasArrived) {
-      return; // No abrir el modal si ya está abierto o si ya ha llegado
+      return; // No abrir el modal si ya está abierto o si el usuario ya ha llegado
     }
 
     // Marcar como abierto y configurar las propiedades del modal
