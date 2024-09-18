@@ -696,32 +696,32 @@ export class MapComponent implements OnInit, OnDestroy {
   
     // Ajusta el heading basado en los ejes del dispositivo
     let heading = event.alpha; // Alpha determina el heading (norte-sur)
-    const beta = event.beta; // Beta determina la inclinación hacia adelante o atrás
-    const gamma = event.gamma; // Gamma determina la inclinación lateral (derecha-izquierda)
   
     if (isIOS) {
-      // Invertir el valor de alpha para que coincida con Android
+      // En iOS, el eje "alpha" está invertido
       heading = 360 - heading;
   
-      // Ajuste cuando el dispositivo está en orientación horizontal
-      if (orientacion === 90 || orientacion === -90) {
-        heading = (heading + 180) % 360; // Invertir eje este-oeste
+      // Ajuste cuando el dispositivo está en modo horizontal (pantalla rotada) en iOS
+      if (orientacion === 90) {
+        heading = (heading + 270) % 360; // Rotación a la derecha
+      } else if (orientacion === -90) {
+        heading = (heading + 90) % 360; // Rotación a la izquierda
       }
-  
-      // En iOS, ajustamos también la rotación lateral para correcciones de gamma
-      if (gamma > 0) {
-        heading = (heading + gamma + 360) % 360;
+    } else {
+      // Ajustes para Android
+      if (orientacion === 90) {
+        heading = (heading + 90) % 360; // Rotación a la derecha en Android
+      } else if (orientacion === -90) {
+        heading = (heading + 270) % 360; // Rotación a la izquierda en Android
       }
     }
   
     // Aplica la orientación del dispositivo en ambos sistemas
     heading = (heading + orientacion + 360) % 360;
   
-    // Invertimos el heading para corregir la dirección
-    heading = 360 - heading;
-  
     return heading;
   }
+  
 
   actualizarRotacionMarcador(
     heading: number,
