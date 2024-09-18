@@ -53,9 +53,6 @@ async verifyCodeByUser(
     return this.shopService.login(loginDto);
   }
 
-
-
-
   @UseGuards(ShopGuard)
   @Get('check-token')
   checkToken(@Request() req: Request): LoginResponce {

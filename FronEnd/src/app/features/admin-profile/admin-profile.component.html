@@ -7,7 +7,7 @@
       <div class="card mb-0 stat-box">
         <div class="flex justify-content-between mb-3">
           <div>
-            <span class="block text-500 font-medium mb-3">Total Clientes</span>
+            <span class="block text-500 font-medium mb-3">Total CoffeLovers</span>
             <br>
             <div class="text-900 font-medium text-xl" style="padding-top: 5%;">{{ totalClients }}</div>
           </div>
@@ -22,7 +22,7 @@
       <div class="card mb-0 stat-box">
         <div class="flex justify-content-between mb-3">
           <div>
-            <span class="block text-500 font-medium mb-3">Total Cafecoins</span>
+            <span class="block text-500 font-medium mb-3">Total CoffeCoins</span>
             <br>
             <div class="text-900 font-medium text-xl" style="padding-top: 5%;">{{ totalCafecoins }}</div>
           </div>
@@ -77,16 +77,17 @@
       <h1><b>Comentarios</b></h1>
       <br>
       <div class="reviews-container">
-        <ul *ngIf="reviews.length > 0; else noReviews">
-          <li *ngFor="let review of reviews" class="review-item">
+        <div class="review-card" *ngFor="let review of reviews">
+          <div class="review-content">
             {{ review.review }}
-          </li>
-        </ul>
+          </div>
+        </div>
         <ng-template #noReviews>
           <p>No hay reviews disponibles.</p>
         </ng-template>
       </div>
     </div>
+    
 
   </div>
 </div>

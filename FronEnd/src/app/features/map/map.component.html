@@ -154,8 +154,9 @@
         </div>
         <br>
         <label for="review">Reseña:</label>
-        <textarea id="review" class="form-control" [(ngModel)]="enteredReview" placeholder="Escribe tu reseña"
-          (input)="updateButtonState()"></textarea>
+        <!-- Cambiado el textarea por un input -->
+        <input id="review" type="text" class="form-control small-input" [(ngModel)]="enteredReview" 
+          placeholder="Escribe tu reseña" (input)="updateButtonState()">
       </div>
       <div class="modal-footer-code">
         <button type="button" class="btn" (click)="verifyCode()" [disabled]="isButtonDisabled">Verificar</button>
@@ -163,6 +164,7 @@
       </div>
     </div>
   </ng-template>
+  
 
   <!-- Modal calficar tienda -->
   <ng-template #modalReviewShop let-modal>
