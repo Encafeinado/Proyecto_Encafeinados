@@ -427,6 +427,7 @@ button:hover {
 
 .input100::placeholder {
   transition: opacity 0.3s ease;
+  width: 100%;
 }
 
 .input100:focus::placeholder {

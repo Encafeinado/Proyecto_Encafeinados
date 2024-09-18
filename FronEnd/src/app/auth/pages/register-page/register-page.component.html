@@ -37,7 +37,7 @@
               </div>
 
               <!-- Solo se muestra un error a la vez, en este orden: requerido, minlength, maxlength, invalidName -->
-              <div *ngIf="myForm.get('name')?.dirty && myForm.get('name')?.hasError('required')" class="error-message">
+              <div *ngIf="myForm.get('name')?.touched && myForm.get('name')?.hasError('required')" class="error-message">
                 El campo es obligatorio.
               </div>
               <div
@@ -68,7 +68,7 @@
               </div>
 
               <!-- Solo se muestra un error a la vez, en este orden: requerido, invalidEmailFormat, invalidDomain -->
-              <div *ngIf="myForm.get('email')?.dirty && myForm.get('email')?.hasError('required')"
+              <div *ngIf="myForm.get('email')?.touched && myForm.get('email')?.hasError('required')"
                 class="error-message">
                 El campo es obligatorio.
               </div>
@@ -96,7 +96,7 @@
               </div>
 
               <!-- Solo se muestra un error a la vez, en este orden: requerido, minlength, passwordInvalid -->
-              <div *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('required')"
+              <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('required')"
                 class="error-message">
                 El campo contraseña es obligatorio.
               </div>
@@ -126,9 +126,9 @@
               </div>
 
               <!-- Mostrar un error a la vez -->
-              <div *ngIf="myForm.get('confirmPassword')?.dirty && myForm.get('confirmPassword')?.hasError('required')"
+              <div *ngIf="myForm.get('confirmPassword')?.touched && myForm.get('confirmPassword')?.hasError('required')"
                 class="error-message">
-                El campo confirmar contraseña es obligatorio.
+                El campo confirmar es obligatorio.
               </div>
               <div
                 *ngIf="myForm.hasError('mismatch') && myForm.get('confirmPassword')?.dirty && !myForm.get('confirmPassword')?.hasError('required')"
@@ -147,7 +147,7 @@
               </div>
 
               <!-- Mostrar un error a la vez -->
-              <div *ngIf="myForm.get('phone')?.dirty && myForm.get('phone')?.hasError('required')"
+              <div *ngIf="myForm.get('phone')?.touched && myForm.get('phone')?.hasError('required')"
                 class="error-message">
                 El campo celular es obligatorio.
               </div>

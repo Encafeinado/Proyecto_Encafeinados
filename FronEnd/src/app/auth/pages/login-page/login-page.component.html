@@ -9,10 +9,9 @@
                 <img src="../../../../assets/images/logosinfondo.png" alt="Logo" style="width: 100px; height: auto;">
               </div>
               <p class="h5 mb-4 text-center">Iniciar Sesión</p>
-
               <!-- Campo de correo -->
               <div class="wrap-input100 m-b-23 form-outline mb-4">
-                  <!-- Mensaje de error personalizado -->
+               
                   <div *ngIf="showError" class="custom-error">
                     Correo y/o contraseña incorrectas
                   </div>
@@ -31,7 +30,7 @@
                 </div>
 
                 <!-- Mensajes de error aparecen solo si el campo ha sido tocado y la validación asíncrona ha terminado -->
-                <div *ngIf="myForm.get('email')?.dirty && !myForm.get('email')?.pending && myForm.get('email')?.hasError('required')" class="error-message">
+                <div *ngIf="myForm.get('email')?.touched && !myForm.get('email')?.pending && myForm.get('email')?.hasError('required')" class="error-message">
                   El campo correo es obligatorio.
                 </div>
                 <div *ngIf="myForm.get('email')?.dirty && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidEmailFormat')" class="error-message">
@@ -45,7 +44,7 @@
               </div>
               <div class="form-outline mb-4">
                 <span class="label-input100">Contraseña</span>
-                <div class="input-with-eye">
+                <div class="wrap-input100">
                   <input 
                     class="input100 small-placeholder form-control" 
                     type="{{ hidePassword ? 'password' : 'text' }}" 
@@ -60,7 +59,7 @@
                   </div>
                 </div>
                 
-                <div *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('required')" class="error-message">
+                <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('required')" class="error-message">
                   El campo contraseña es obligatorio.
                 </div>
                
