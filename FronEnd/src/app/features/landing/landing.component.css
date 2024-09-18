@@ -338,8 +338,10 @@ footer p {
   
 
   .carousel-item img {
-    height: 300px; /* Altura máxima para evitar que el carrusel se vuelva muy grande */
-    width: 100%; /* Asegura que la imagen se ajuste al ancho del carrusel */
+    height: 100%;
+    width: 100%;
+    object-fit: cover; /* Ajusta la imagen para que cubra el contenedor sin distorsionarse */
+    border-radius: 20px;
   }
 
   .carousel-inner {
@@ -490,6 +492,28 @@ footer p {
 
 .carousel-indicators .active {
   background-color: #0f1eee; /* Color azul para el indicador activo */
+}
+/* Estilos específicos para iOS */
+@supports (-webkit-touch-callout: none) {
+  /* Aplicamos cambios solo para Safari en iOS */
+
+  .carousel-item img {
+    height: 100%; /* Asegura que la imagen ocupe el contenedor */
+    width: 100%; /* Asegura que la imagen se ajuste al ancho del carrusel */
+    object-fit: cover; /* Ajusta la imagen para cubrir el contenedor sin distorsión */
+    border-radius: 20px; /* Bordes redondeados */
+  }
+
+  .carousel-inner {
+    height: auto; /* Ajuste automático de la altura en iOS */
+  }
+
+  .carousel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto; /* Ajuste automático para iOS */
+  }
 }
 
 
