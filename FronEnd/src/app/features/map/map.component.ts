@@ -684,35 +684,42 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   calcularHeading(event: DeviceOrientationEvent): number | null {
-    if (event.alpha === null) {
+    if (event.alpha === null || event.beta === null || event.gamma === null) {
       return null;
     }
-
-    // Obtiene el heading en grados basado en el evento alpha
-    let heading = event.alpha;
-
+  
     // Detecta si el dispositivo es iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-
-    // Detecta la orientación del dispositivo
+  
+    // Detecta la orientación del dispositivo (por si la pantalla está en modo horizontal)
     const orientacion = window.screen.orientation?.angle || 0;
-
+  
+    // Ajusta el heading basado en los ejes del dispositivo
+    let heading = event.alpha; // Alpha determina el heading (norte-sur)
+    const beta = event.beta; // Beta determina la inclinación hacia adelante o atrás
+    const gamma = event.gamma; // Gamma determina la inclinación lateral (derecha-izquierda)
+  
     if (isIOS) {
-      // En iOS, hay que invertir el valor de alpha para que coincida con Android
+      // Invertir el valor de alpha para que coincida con Android
       heading = 360 - heading;
-
-      // Ajuste adicional para iOS cuando el dispositivo está en orientación horizontal
+  
+      // Ajuste cuando el dispositivo está en orientación horizontal
       if (orientacion === 90 || orientacion === -90) {
-        heading = (heading + 180) % 360; // Ajuste para ejes este-oeste
+        heading = (heading + 180) % 360; // Invertir eje este-oeste
+      }
+  
+      // En iOS, ajustamos también la rotación lateral para correcciones de gamma
+      if (gamma > 0) {
+        heading = (heading + gamma + 360) % 360;
       }
     }
-
-    // Aplica la orientación del dispositivo según la orientación de la pantalla en ambos sistemas
+  
+    // Aplica la orientación del dispositivo en ambos sistemas
     heading = (heading + orientacion + 360) % 360;
-
-    // Invierte el heading para que la dirección sea correcta
+  
+    // Invertimos el heading para corregir la dirección
     heading = 360 - heading;
-
+  
     return heading;
   }
 
