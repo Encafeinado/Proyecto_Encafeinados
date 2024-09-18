@@ -686,11 +686,19 @@ export class MapComponent implements OnInit, OnDestroy {
   
   calcularHeading(event: DeviceOrientationEvent): number | null {
     if (event.alpha === null) {
-        return null;
+      return null;
     }
 
     // Obtiene el heading en grados basado en el evento alpha
     let heading = event.alpha;
+
+    // Detecta si el dispositivo es iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+    if (isIOS) {
+      // En iOS, hay que invertir el valor de alpha para que coincida con Android
+      heading = 360 - heading;
+    }
 
     // Aplica la orientación del dispositivo según la orientación de la pantalla
     const orientacion = window.screen.orientation.angle || 0;
@@ -702,8 +710,8 @@ export class MapComponent implements OnInit, OnDestroy {
     heading = 360 - heading;
 
     return heading;
-}
-
+  }
+  
   actualizarRotacionMarcador(
     heading: number,
     result?: google.maps.DirectionsResult
