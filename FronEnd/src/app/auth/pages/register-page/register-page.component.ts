@@ -40,7 +40,7 @@ export class RegisterPageComponent {
     "yahoo.com.mx","yopmail.com","@icloud.com"];
 
     public myForm: FormGroup = this.fb.group({
-      name: ['sdfsdfsdf', 
+      name: ['', 
         {
           validators: [
             Validators.required,
@@ -52,7 +52,7 @@ export class RegisterPageComponent {
         }
       ],
     
-      email: ['sdfsdfsdf@gmail.com', 
+      email: ['', 
         {
           validators: [
             Validators.required,
@@ -64,7 +64,7 @@ export class RegisterPageComponent {
         }
       ],
     
-      password: ['Julian90*', 
+      password: ['', 
         {
           validators: [
             Validators.required,
@@ -75,14 +75,14 @@ export class RegisterPageComponent {
         }
       ],
     
-      confirmPassword: ['Julian90*', 
+      confirmPassword: ['', 
         {
           validators: [Validators.required],
           updateOn: 'change'  // Se actualiza cuando pierde el foco
         }
       ],
     
-      phone: ['3158099913', 
+      phone: ['', 
         {
           validators: [
             Validators.required,
