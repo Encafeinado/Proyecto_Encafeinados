@@ -5,49 +5,35 @@
     <div class="stats-container">
       <!-- Total de clientes -->
       <div class="card mb-0 stat-box">
-        <div class="flex justify-content-between mb-3">
-          <div>
-            <span class="block text-500 font-medium mb-3">Total CoffeLovers</span>
-            <br>
-            <div class="text-900 font-medium text-xl" style="padding-top: 5%;">{{ totalClients }}</div>
-          </div>
-          <div class="flex align-items-center justify-content-center bg-blue-100 border-round"
-               [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
-            <i class="pi pi-users text-blue-500 text-xl"></i>
-          </div>
+        <h2>Total CoffeLovers</h2>
+        <div class="text-xl">{{ totalClients }}</div>
+        <div class="flex align-items-center justify-content-center bg-blue-100 border-round"
+             [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+          <i class="pi pi-users text-blue-500 text-xl"></i>
         </div>
       </div>
-
+    
       <!-- Total de cafecoins -->
       <div class="card mb-0 stat-box">
-        <div class="flex justify-content-between mb-3">
-          <div>
-            <span class="block text-500 font-medium mb-3">Total CoffeCoins</span>
-            <br>
-            <div class="text-900 font-medium text-xl" style="padding-top: 5%;">{{ totalCafecoins }}</div>
-          </div>
-          <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
-               [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
-            <i class="pi pi-coins text-orange-500 text-xl"></i>
-          </div>
+        <h2>Total CoffeCoins</h2>
+        <div class="text-xl">{{ totalCafecoins }}</div>
+        <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
+             [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+          <i class="pi pi-coins text-orange-500 text-xl"></i>
         </div>
       </div>
-
+    
       <!-- Total de tiendas registradas -->
       <div class="card mb-0 stat-box">
-        <div class="flex justify-content-between mb-3">
-          <div>
-            <span class="block text-500 font-medium mb-3">Total Tiendas Registradas</span>
-            <br>
-            <div class="text-900 font-medium text-xl" style="padding-top: 5%;">{{ totalShops }}</div>
-          </div>
-          <div class="flex align-items-center justify-content-center bg-green-100 border-round"
-               [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
-            <i class="pi pi-check-circle text-green-500 text-xl"></i>
-          </div>
+        <h2>Total Tiendas Registradas</h2>
+        <div class="text-xl">{{ totalShops }}</div>
+        <div class="flex align-items-center justify-content-center bg-green-100 border-round"
+             [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+          <i class="pi pi-check-circle text-green-500 text-xl"></i>
         </div>
       </div>
     </div>
+    
 
    <!-- Listado de tiendas con promedio de calificaciones y codeUsage -->
 <div class="shops-container">
@@ -58,24 +44,25 @@
       <!-- Mostrar el promedio de calificaciones -->
       <div class="shop-info">
         <i class="pi pi-star"></i>
-        Promedio de estrellas: {{ shop.averageRating | number:'1.1-1' }}
+        <span class="title-bold">Promedio de estrellas:</span> {{ shop.averageRating | number:'1.1-1' }}
       </div>
-
-      <!-- Mostrar el codeUsage de la tienda -->
+      
       <div class="shop-info">
         <i class="pi pi-users"></i>
-        Usos del código: {{ shop.codeUsage }}
+        <span class="title-bold">Usos del código:</span> {{ shop.codeUsage }}
       </div>
+      
+      
     </div>
   </div>
 </div>
-
+<br>
 
     
     <!-- Mostrar las reviews -->
     <div class="reviews-section">
       <h1><b>Comentarios</b></h1>
-      <br>
+
       <div class="reviews-container">
         <div class="review-card" *ngFor="let review of reviews">
           <div class="review-content">

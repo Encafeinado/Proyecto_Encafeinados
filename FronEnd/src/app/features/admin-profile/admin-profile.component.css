@@ -8,48 +8,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Encabezado del perfil */
-.profile-header {
-  text-align: center;
-  font-size: 2em;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-/* Sección de detalles del perfil */
-.profile-details {
-  display: flex;
-  flex-direction: column;
-}
-
-.profile-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.profile-item:last-child {
-  border-bottom: none;
-}
-
-.profile-item label {
-  font-weight: bold;
-  color: #555;
-}
-
-.profile-item p {
-  color: #666;
-  margin: 0;
-}
-
-/* Ajustar tamaño del logo de las tiendas */
-.shop-logo {
-  max-width: 150px; /* Ajusta el tamaño máximo del logo */
-  max-height: 150px; /* Ajusta la altura máxima del logo */
-  border-radius: 8px; /* Opcional: agrega bordes redondeados */
-}
-
 /* Ajuste de contenido principal con padding adicional para el navbar */
 .main-content {
   padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
@@ -104,22 +62,41 @@
 .stats-container {
   display: flex;
   justify-content: space-between;
-  gap: 1rem; /* Añade un espacio entre los cuadros */
-  flex-wrap: wrap; /* Para que los cuadros bajen en pantallas pequeñas */
+  gap: 1rem;
+  flex-wrap: wrap; /* Esto permitirá que los cuadros se ajusten en pantallas pequeñas */
 }
 
 /* Cuadros de estadísticas */
 .stat-box {
-  flex: 1; /* Hacer que cada cuadro ocupe el mismo espacio */
+  flex: 1;
   padding: 1rem;
-  background-color: white; /* Asegúrate de que tengan fondo blanco */
+  background-color: white;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añadir sombra para dar profundidad */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column; /* Para que el contenido se organice verticalmente */
+  align-items: center; /* Centra los elementos */
+  text-align: center; /* Asegura que el texto esté centrado */
+  max-width: 300px; /* Añade un límite de ancho para pantallas más grandes */
+  margin: 0 auto; /* Centra las tarjetas en pantallas pequeñas */
 }
-
+.stat-box h2 {
+  margin: 0;
+  font-size: 1.25rem; /* Ajusta el tamaño del título */
+  font-weight: bold;
+  color: #333;
+}
+.stat-box .text-xl {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000;
+  margin-top: 10px;
+}
+@media (max-width: 768px) {
+  .stat-box {
+    max-width: 100%; /* Deja que ocupen todo el ancho disponible en pantallas pequeñas */
+  }
+}
 /* Mejorar la presentación del texto */
 .block {
   font-size: 14px;
@@ -173,8 +150,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-weight: normal; /* Asegura que el número no sea negrita */
 }
-
 .shop-info i {
   color: #ffbf00; /* Color de icono de estrellas */
 }
@@ -187,4 +164,8 @@ body {
 .card {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.title-bold {
+  font-weight: bold;
+  color: #333; /* O el color que prefieras para los títulos */
 }
