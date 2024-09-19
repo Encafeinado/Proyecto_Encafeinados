@@ -235,6 +235,7 @@
       </div>
       <div class="modal-footer-arrive">
         <button type="button" class="btn" (click)="confirmarLlegada()">Si, he llegado</button>
+        <button *ngIf="rutaActiva" type="button" class="btn" (click)="cancelarLLegada(modal)">No, he llegado</button>
       </div>
     </div>
   </ng-template>
