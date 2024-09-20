@@ -354,6 +354,7 @@ button:hover {
   cursor: pointer;
 }
 
+
 /* Estilo para la etiqueta del archivo seleccionado */
 .file-input-label {
   display: block;
@@ -372,6 +373,7 @@ button:hover {
   position: relative;
 
 }
+
 
 .input100 {
   width: 100%; /* Ocupa el ancho completo del contenedor */
