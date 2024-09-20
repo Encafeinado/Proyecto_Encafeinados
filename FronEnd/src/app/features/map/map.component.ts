@@ -383,10 +383,10 @@ export class MapComponent implements OnInit, OnDestroy {
       this.watchId = navigator.geolocation.watchPosition(
         (position) => {
           const nuevaPosicion = {
-            lat: 6.151364610197416,
-            lng: -75.613817981302,
-            // lat: position.coords.latitude,
-            // lng: position.coords.longitude,
+            // lat: 6.151364610197416,
+            // lng: -75.613817981302,
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
           };
 
           // Si ya tienes una posición previa, realiza la interpolación
