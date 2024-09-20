@@ -85,6 +85,8 @@
   font-size: 1.25rem; /* Ajusta el tamaño del título */
   font-weight: bold;
   color: #333;
+  text-align: center; /* Centra el texto dentro de stat-box */
+
 }
 .stat-box .text-xl {
   font-size: 1.5rem;
@@ -96,6 +98,14 @@
   .stat-box {
     max-width: 100%; /* Deja que ocupen todo el ancho disponible en pantallas pequeñas */
   }
+}
+
+.stat-box h2 {
+  display: inline-block; /* O usa flex si es adecuado */
+  font-size: 1rem;
+  padding: 0;
+  margin: 0;
+  border: 1px solid transparent; /* Este truco evita el colapso de márgenes */
 }
 /* Mejorar la presentación del texto */
 .block {
