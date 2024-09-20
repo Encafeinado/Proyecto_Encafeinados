@@ -382,20 +382,27 @@ export class MapComponent implements OnInit, OnDestroy {
     if (navigator.geolocation) {
       this.watchId = navigator.geolocation.watchPosition(
         (position) => {
+          // Verificar si el modal está abierto; si lo está, detener el seguimiento de la ubicación
+          if (this.modalAbierto) {
+            console.log('El modal está abierto, se detiene el cálculo de la ubicación.');
+            if (this.watchId !== undefined) {
+              navigator.geolocation.clearWatch(this.watchId); // Solo limpiar si watchId tiene valor
+            }
+            return; // Salir de la función y evitar recalcular mientras el modal esté abierto
+          }
+  
           const nuevaPosicion = {
-            // lat: 6.151364610197416,
-            // lng: -75.613817981302,
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-
+  
           // Si ya tienes una posición previa, realiza la interpolación
           if (this.markerPosition) {
             const pasos = 10; // Cuantos más pasos, más suave será la transición
             const duracion = 1000; // Tiempo total de la interpolación en milisegundos
             const intervalo = duracion / pasos;
             let pasoActual = 0;
-
+  
             const intervaloId = setInterval(() => {
               pasoActual++;
               const factor = pasoActual / pasos;
@@ -404,20 +411,20 @@ export class MapComponent implements OnInit, OnDestroy {
                 nuevaPosicion,
                 factor
               );
-
+  
               // Actualiza la posición del marcador en el mapa
               this.markerUsuario?.setPosition(posicionInterpolada);
-
+  
               this.verificarAvanceInstrucciones();
               if (pasoActual >= pasos) {
                 clearInterval(intervaloId);
                 this.markerPosition = nuevaPosicion;
-
+  
                 // Verificar cercanía al destino solo si el modal no está abierto
                 if (!this.modalAbierto) {
                   this.verificarCercaniaADestino();
                 }
-
+  
                 // Actualización de la ruta si está activa
                 if (this.rutaActiva) {
                   const map = this.directionsRendererInstance.getMap();
@@ -434,12 +441,13 @@ export class MapComponent implements OnInit, OnDestroy {
             // Si es la primera vez que obtienes la posición
             this.markerPosition = nuevaPosicion;
             this.markerUsuario?.setPosition(this.markerPosition);
+            
             // Verificar cercanía al destino solo si el modal no está abierto
             if (!this.modalAbierto) {
               this.verificarCercaniaADestino();
             }
           }
-
+  
           if (!this.hasZoomed) {
             const map = this.directionsRendererInstance.getMap();
             if (map) {
@@ -449,14 +457,10 @@ export class MapComponent implements OnInit, OnDestroy {
               this.solicitarPermisoOrientacion();
             }
           }
-
-          console.log(
-            'Ubicación del usuario actualizada:',
-            this.markerPosition
-          );
+  
+          console.log('Ubicación del usuario actualizada:', this.markerPosition);
           this.actualizarMarcadorUbicacionUsuario();
-          // this.solicitarPermisoOrientacion();
-
+  
           // Actualizar detalles de la ruta si la ruta está activa
           if (this.rutaActiva && this.directionsResult) {
             this.obtenerDetallesRuta(this.directionsResult);
@@ -936,23 +940,6 @@ export class MapComponent implements OnInit, OnDestroy {
         this.routeDetails = `Distancia: ${distance} metros, Tiempo estimado: ${duration}, Destino: ${destination}`;
         console.log(this.routeDetails);
 
-        // if (distance <= 10 && !this.modalAbierto) {
-        //   console.log('Abriendo modal de llegada...');
-        //   this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
-        //   this.modalAbierto = true; // Marcar que el modal ha sido mostrado
-        // }
-    
-        // // No volver a cerrar el modal si ya está abierto
-        // if (this.modalAbierto) {
-        //   console.log(
-        //     `El modal ya está abierto. Distancia actual: ${distance} metros`
-        //   );
-        // } else {
-        //   console.log(
-        //     `Aún no cerca del destino. Distancia actual: ${distance} metros`
-        //   );
-        // }
-
         // Limpiar y resetear las instrucciones
         this.instruccionesRuta = [];
         this.currentInstructionIndex = 0;
@@ -1073,6 +1060,10 @@ export class MapComponent implements OnInit, OnDestroy {
     this.hasArrived = false; // Permitir seleccionar nuevas rutas después de cerrar el modal
     this.rutaActiva = false; // Reinicia la ruta activa
     this.modalAbierto = false;
+    if (!this.modalAbierto) {
+      console.log('Reanudando el cálculo de la ubicación.');
+      this.rastrearUbicacionUsuario(); // Reanudar el rastreo de la ubicación
+    }
     // No es necesario reiniciar el mapa, solo actualizar el estado
     console.log('Ruta cancelada. Puedes seleccionar una nueva tienda.');
   }
