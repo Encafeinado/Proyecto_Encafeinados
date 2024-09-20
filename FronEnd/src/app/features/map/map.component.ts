@@ -485,44 +485,16 @@ export class MapComponent implements OnInit, OnDestroy {
   ): number {
     const origen = new google.maps.LatLng(lat1, lng1);
     const destino = new google.maps.LatLng(lat2, lng2);
-
+  
     const distancia = google.maps.geometry.spherical.computeDistanceBetween(
       origen,
       destino
     );
-
+  
     return distancia; // Devuelve la distancia en metros
-  }
+  }  
 
-  // Método para obtener la distancia entre el marcador y el destino usando Google Maps Directions API
-  obtenerDistanciaConDirecciones(
-    origen: google.maps.LatLngLiteral,
-    destino: google.maps.LatLngLiteral
-  ): Promise<number> {
-    return new Promise((resolve, reject) => {
-      const directionsService = new google.maps.DirectionsService();
-
-      const request: google.maps.DirectionsRequest = {
-        origin: origen,
-        destination: destino,
-        travelMode: google.maps.TravelMode.DRIVING,
-      };
-
-      directionsService.route(request, (result, status) => {
-        // Verificar que el resultado y las propiedades necesarias no sean undefined
-        if (
-          status === google.maps.DirectionsStatus.OK &&
-          result?.routes?.[0]?.legs?.[0]?.distance?.value
-        ) {
-          const distancia = result.routes[0].legs[0].distance.value; // Distancia en metros
-          resolve(distancia);
-        } else {
-          reject('No se pudo obtener la distancia');
-        }
-      });
-    });
-  }
-
+  // // Método para verificar cercanía al destino
   verificarCercaniaADestino() {
     if (
       this.markerPosition &&
@@ -577,7 +549,7 @@ export class MapComponent implements OnInit, OnDestroy {
     console.log(`Distancia calculada: ${distancia} metros`);
 
     // Si la distancia es menor o igual a 12 metros, abrir el modal
-    if (distancia > 0 && distancia < 20  && !this.modalAbierto) {
+    if (distancia <= 30 && !this.modalAbierto) {
       console.log('Abriendo modal de llegada...');
       this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
       this.modalAbierto = true; // Marcar que el modal ha sido mostrado
