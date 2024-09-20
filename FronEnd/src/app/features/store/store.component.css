@@ -3,8 +3,10 @@
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  max-width: 1200px; /* Ajusta el ancho máximo según sea necesario */
-  margin: 0 auto; /* Centra el contenedor horizontalmente */
+  max-width: 1200px;
+  /* Ajusta el ancho máximo según sea necesario */
+  margin: 0 auto;
+  /* Centra el contenedor horizontalmente */
 }
 
 .header {
@@ -14,24 +16,30 @@
 
 .main-content {
   display: flex;
-  justify-content: space-between; /* Alinea los elementos en la fila */
-  gap: 20px; /* Espacio entre los elementos */
-  
-  
+  justify-content: space-between;
+  /* Alinea los elementos en la fila */
+  gap: 20px;
+  /* Espacio entre los elementos */
+
+
 }
 
-.main-content1{
-  padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
-  
+.main-content1 {
+  padding-top: 160px;
+  /* Ajusta este valor según la altura de tu navbar */
+
 }
 
-.info, .activation-section {
-  flex: 1; /* Permite que las secciones se expandan igualmente */
+.info,
+.activation-section {
+  flex: 1;
+  /* Permite que las secciones se expandan igualmente */
   padding: 20px;
   background-color: #d4f1f7;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: center; /* Centro el contenido dentro de las secciones */
+  text-align: center;
+  /* Centro el contenido dentro de las secciones */
   max-height: 1000px;
 }
 
@@ -40,31 +48,44 @@
   width: 2px;
   background-color: #FDDE55;
   margin: 0 20px;
-  display: none; /* Ocultar por defecto */
+  display: none;
+  /* Ocultar por defecto */
 }
 
 /* Media Queries para pantallas grandes */
 @media (min-width: 768px) {
   .separator {
-    display: block; /* Mostrar en pantallas grandes */
-    height: 100%; /* Altura del separador igual al contenido */
+    display: block;
+    /* Mostrar en pantallas grandes */
+    height: 100%;
+    /* Altura del separador igual al contenido */
   }
 }
 
 /* Media Queries para dispositivos móviles */
 @media (max-width: 768px) {
   .main-content {
-    flex-direction: column; /* Acomoda los elementos en columna en lugar de fila */
+    flex-direction: column;
+    /* Acomoda los elementos en columna en lugar de fila */
   }
 
-  .info, .activation-section {
-    margin-bottom: 20px; /* Espacio entre secciones */
-    flex: 1 1 100%; /* Toma el 100% del ancho en dispositivos móviles */
+  .info,
+  .activation-section {
+    margin-bottom: 20px;
+    /* Espacio entre secciones */
+    flex: 1 1 100%;
+    /* Toma el 100% del ancho en dispositivos móviles */
   }
 
   .separator {
-    display: none; /* Asegúrate de que el separador esté oculto en pantallas pequeñas */
+    display: none;
+    /* Asegúrate de que el separador esté oculto en pantallas pequeñas */
   }
+}
+
+.info p strong {
+  color: #000000;
+  /* Forza el color negro */
 }
 
 .info p {
@@ -137,9 +158,11 @@
   display: flex;
   justify-content: center;
 }
-.h1{
+
+.h1 {
   background-color: #2516f1;
 }
+
 .modal-footer .btn {
   margin: 0 10px;
   background-color: #2516f1;
@@ -155,47 +178,58 @@
 /* Contenedor que abarca las columnas de comentarios y calificaciones */
 /* Contenedor que abarca las columnas de comentarios y calificaciones */
 .scrollable-container {
-  max-height: 300px; /* Ajusta la altura máxima según tus necesidades */
-  overflow-y: auto;  /* Habilita el scroll vertical */
-  border: 1px solid #ccc; /* Borde opcional */
+  max-height: 300px;
+  /* Ajusta la altura máxima según tus necesidades */
+  overflow-y: auto;
+  /* Habilita el scroll vertical */
+  border: 1px solid #ccc;
+  /* Borde opcional */
   padding: 10px;
-  background-color: #fafafa; /* Fondo claro */
+  background-color: #fafafa;
+  /* Fondo claro */
 }
 
 /* Diseño general de las columnas */
 .review-rating-container {
   display: flex;
   justify-content: space-between;
-  gap: 20px; /* Espacio entre las columnas */
+  gap: 20px;
+  /* Espacio entre las columnas */
 }
 
 .reviews-column {
-  flex: 1; /* Cada columna ocupa un ancho igual */
+  flex: 1;
+  /* Cada columna ocupa un ancho igual */
 }
 
 /* Estilo para las tarjetas de reseñas y calificaciones */
 /* Contenedor general que permite el scroll */
 .scrollable-container {
-  max-height: 300px; /* Ajusta la altura máxima según sea necesario */
-  overflow-y: auto;  /* Habilita el scroll vertical */
+  max-height: 300px;
+  overflow-y: auto;
   border: 1px solid #ccc;
   padding: 10px;
   background-color: #fafafa;
+  width: 100%; /* Asegura que no haya desbordamiento horizontal */
+  box-sizing: border-box; /* Considera el padding dentro del tamaño del contenedor */
 }
 
 /* Estilo para el contenedor de las reseñas y calificaciones */
 .review-rating-container {
   display: flex;
-  flex-wrap: wrap; /* Permite que las tarjetas se ajusten en varias filas */
-  gap: 20px; /* Espacio entre las tarjetas */
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: flex-start; /* Alinea las tarjetas sin dejar espacio extra */
 }
 
 /* Estilo de la columna de las reseñas */
 .reviews-column {
-  flex: 1 1 200px; /* Cada tarjeta ocupa un mínimo de 200px */
+  flex: 1 1 200px;
+  /* Cada tarjeta ocupa un mínimo de 200px */
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between; /* Acomoda las tarjetas a lo largo del contenedor */
+  justify-content: space-between;
+  /* Acomoda las tarjetas a lo largo del contenedor */
 }
 
 /* Estilo para las tarjetas de reseñas y calificaciones */
@@ -204,9 +238,26 @@
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 15px;
-  width: 200px; /* Establece un ancho fijo para cada tarjeta */
+  flex-basis: calc(100% / 3 - 20px); /* Hace que quepan tres tarjetas por fila, pero es flexible */
   transition: transform 0.2s ease;
   margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+  .review-card {
+    flex-basis: calc(100% / 2 - 20px); /* Dos tarjetas por fila en pantallas medianas */
+  }
+}
+
+@media (max-width: 480px) {
+  .review-card {
+    flex-basis: 100%; /* Una tarjeta por fila en pantallas pequeñas */
+  }
+}
+@media (max-width: 480px) {
+  .scrollable-container {
+    margin: 0; /* Elimina el margen en pantallas pequeñas */
+  }
 }
 
 .review-card:hover {
