@@ -495,7 +495,6 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   // Método para obtener la distancia entre el marcador y el destino usando Google Maps Directions API
-  // Método para obtener la distancia entre el marcador y el destino usando Google Maps Directions API
   obtenerDistanciaConDirecciones(
     origen: google.maps.LatLngLiteral,
     destino: google.maps.LatLngLiteral
@@ -541,37 +540,14 @@ export class MapComponent implements OnInit, OnDestroy {
         const lat2 = (this.destinationName as { lat: number; lng: number }).lat;
         const lng2 = (this.destinationName as { lat: number; lng: number }).lng;
 
-        // Obtén la distancia usando la API de direcciones
-        if (this.markerPosition) {
-          this.obtenerDistanciaConDirecciones(this.markerPosition, {
-            lat: lat2,
-            lng: lng2,
-          })
-            .then((distancia) => {
-              this.procesarVerificacionCercania(distancia);
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        } else {
-          console.error('Posición del marcador no está definida.');
-        }
+        // Calcula la distancia y verifica cercanía
+        this.procesarVerificacionCercania(lat2, lng2);
       } else {
         // Si no hay coordenadas, usa el nombre del destino para obtenerlas
         this.obtenerCoordenadasDestino(this.destinationName)
           .then((coords) => {
             console.log('Coordenadas obtenidas del destino:', coords);
-            if (this.markerPosition && coords) {
-              this.obtenerDistanciaConDirecciones(this.markerPosition, coords)
-                .then((distancia) => {
-                  this.procesarVerificacionCercania(distancia);
-                })
-                .catch((error) => {
-                  console.error(error);
-                });
-            } else {
-              console.error('Coordenadas del marcador o destino no definidas.');
-            }
+            this.procesarVerificacionCercania(coords.lat, coords.lng);
           })
           .catch((error) => {
             console.error(error);
@@ -584,15 +560,23 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  procesarVerificacionCercania(distancia: number) {
+  procesarVerificacionCercania(lat2: number, lng2: number) {
     if (!this.markerPosition) {
       console.error('Posición del marcador no está definida.');
       return;
     }
 
+    // Calcular la distancia en tiempo real
+    const distancia = this.calcularDistancia(
+      this.markerPosition.lat,
+      this.markerPosition.lng,
+      lat2,
+      lng2
+    );
+
     console.log(`Distancia calculada: ${distancia} metros`);
 
-    // Si la distancia es menor o igual a 20 metros, abrir el modal
+    // Si la distancia es menor o igual a 12 metros, abrir el modal
     if (distancia <= 20 && !this.modalAbierto) {
       console.log('Abriendo modal de llegada...');
       this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
