@@ -414,9 +414,9 @@ export class MapComponent implements OnInit, OnDestroy {
                 this.markerPosition = nuevaPosicion;
 
                 // Verificar cercanía al destino solo si el modal no está abierto
-                // if (!this.modalAbierto) {
-                //   this.verificarCercaniaADestino();
-                // }
+                if (!this.modalAbierto) {
+                  this.verificarCercaniaADestino();
+                }
 
                 // Actualización de la ruta si está activa
                 if (this.rutaActiva) {
@@ -435,9 +435,9 @@ export class MapComponent implements OnInit, OnDestroy {
             this.markerPosition = nuevaPosicion;
             this.markerUsuario?.setPosition(this.markerPosition);
             // Verificar cercanía al destino solo si el modal no está abierto
-            // if (!this.modalAbierto) {
-            //   this.verificarCercaniaADestino();
-            // }
+            if (!this.modalAbierto) {
+              this.verificarCercaniaADestino();
+            }
           }
 
           if (!this.hasZoomed) {
@@ -494,78 +494,118 @@ export class MapComponent implements OnInit, OnDestroy {
     return distancia; // Devuelve la distancia en metros
   }  
 
+  // Método para obtener la distancia entre el marcador y el destino usando Google Maps Directions API
+obtenerDistanciaConDirecciones(
+  origen: google.maps.LatLngLiteral,
+  destino: google.maps.LatLngLiteral
+): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const directionsService = new google.maps.DirectionsService();
+
+    const request: google.maps.DirectionsRequest = {
+      origin: origen,
+      destination: destino,
+      travelMode: google.maps.TravelMode.DRIVING,
+    };
+
+    directionsService.route(request, (result, status) => {
+      // Verificar que el resultado y las propiedades necesarias no sean undefined
+      if (status === google.maps.DirectionsStatus.OK &&
+          result?.routes?.[0]?.legs?.[0]?.distance?.value) {
+        const distancia = result.routes[0].legs[0].distance.value; // Distancia en metros
+        resolve(distancia);
+      } else {
+        reject('No se pudo obtener la distancia');
+      }
+    });
+  });
+}
+
   // // Método para verificar cercanía al destino
-  // verificarCercaniaADestino() {
-  //   if (
-  //     this.markerPosition &&
-  //     this.destinationName &&
-  //     this.rutaActiva &&
-  //     !this.hasArrived
-  //   ) {
-  //     console.log('Verificando cercanía al destino...', this.destinationName);
+  verificarCercaniaADestino() {
+    if (
+      this.markerPosition &&
+      this.destinationName &&
+      this.rutaActiva &&
+      !this.hasArrived
+    ) {
+      console.log('Verificando cercanía al destino...', this.destinationName);
+  
+      if (
+        typeof this.destinationName === 'object' &&
+        'lat' in this.destinationName &&
+        'lng' in this.destinationName
+      ) {
+        const lat2 = (this.destinationName as { lat: number; lng: number }).lat;
+        const lng2 = (this.destinationName as { lat: number; lng: number }).lng;
+  
+        // Obtén la distancia usando la API de direcciones
+        if (this.markerPosition) {
+          this.obtenerDistanciaConDirecciones(this.markerPosition, { lat: lat2, lng: lng2 })
+            .then((distancia) => {
+              this.procesarVerificacionCercania(distancia);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        } else {
+          console.error('Posición del marcador no está definida.');
+        }
+      } else {
+        // Si no hay coordenadas, usa el nombre del destino para obtenerlas
+        this.obtenerCoordenadasDestino(this.destinationName)
+          .then((coords) => {
+            console.log('Coordenadas obtenidas del destino:', coords);
+            if (this.markerPosition && coords) {
+              this.obtenerDistanciaConDirecciones(this.markerPosition, coords)
+                .then((distancia) => {
+                  this.procesarVerificacionCercania(distancia);
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            } else {
+              console.error('Coordenadas del marcador o destino no definidas.');
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    } else {
+      console.error(
+        'Posición del marcador, destino o ruta no definidos, o ya se ha llegado.'
+      );
+    }
+  }  
 
-  //     if (
-  //       typeof this.destinationName === 'object' &&
-  //       'lat' in this.destinationName &&
-  //       'lng' in this.destinationName
-  //     ) {
-  //       const lat2 = (this.destinationName as { lat: number; lng: number }).lat;
-  //       const lng2 = (this.destinationName as { lat: number; lng: number }).lng;
-
-  //       // Calcula la distancia y verifica cercanía
-  //       this.procesarVerificacionCercania(lat2, lng2);
-  //     } else {
-  //       // Si no hay coordenadas, usa el nombre del destino para obtenerlas
-  //       this.obtenerCoordenadasDestino(this.destinationName)
-  //         .then((coords) => {
-  //           console.log('Coordenadas obtenidas del destino:', coords);
-  //           this.procesarVerificacionCercania(coords.lat, coords.lng);
-  //         })
-  //         .catch((error) => {
-  //           console.error(error);
-  //         });
-  //     }
-  //   } else {
-  //     console.error(
-  //       'Posición del marcador, destino o ruta no definidos, o ya se ha llegado.'
-  //     );
-  //   }
-  // }
-
-  // procesarVerificacionCercania(lat2: number, lng2: number) {
-  //   if (!this.markerPosition) {
-  //     console.error('Posición del marcador no está definida.');
-  //     return;
-  //   }
-
-  //   // Calcular la distancia en tiempo real
-  //   const distancia = this.calcularDistancia(
-  //     this.markerPosition.lat,
-  //     this.markerPosition.lng,
-  //     lat2,
-  //     lng2
-  //   );
-
-  //   console.log(`Distancia calculada: ${distancia} metros`);
-
-  //   // Si la distancia es menor o igual a 12 metros, abrir el modal
-  //   if (distancia <= 30 && !this.modalAbierto) {
-  //     console.log('Abriendo modal de llegada...');
-  //     this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
-  //     this.modalAbierto = true; // Marcar que el modal ha sido mostrado
-  //   }
-
-  //   // No volver a cerrar el modal si ya está abierto
-  //   if (this.modalAbierto) {
-  //     console.log(
-  //       `El modal ya está abierto. Distancia actual: ${distancia} metros`
-  //     );
-  //   } else {
-  //     console.log(
-  //       `Aún no cerca del destino. Distancia actual: ${distancia} metros`
-  //     );
-  //   }
-  // }
+  procesarVerificacionCercania(distancia: number) {
+    if (!this.markerPosition) {
+      console.error('Posición del marcador no está definida.');
+      return;
+    }
+  
+    console.log(`Distancia calculada: ${distancia} metros`);
+  
+    // Si la distancia es menor o igual a 20 metros, abrir el modal
+    if (distancia <= 20 && !this.modalAbierto) {
+      console.log('Abriendo modal de llegada...');
+      this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
+      this.modalAbierto = true; // Marcar que el modal ha sido mostrado
+    }
+  
+    // No volver a cerrar el modal si ya está abierto
+    if (this.modalAbierto) {
+      console.log(
+        `El modal ya está abierto. Distancia actual: ${distancia} metros`
+      );
+    } else {
+      console.log(
+        `Aún no cerca del destino. Distancia actual: ${distancia} metros`
+      );
+    }
+  }
+  
 
   // Método para obtener las coordenadas del destino utilizando Google Maps Geocoding API
   obtenerCoordenadasDestino(
@@ -861,9 +901,9 @@ export class MapComponent implements OnInit, OnDestroy {
         }
         this.actualizarRotacionMarcador(0, result); // Actualiza la rotación y la flecha
 
-        // if (this.rutaActiva && this.markerPosition) {
-        //   this.verificarCercaniaADestino();
-        // }
+        if (this.rutaActiva && this.markerPosition) {
+          this.verificarCercaniaADestino();
+        }
       } else {
         this.rutaActiva = false;
         console.error('Error al calcular la ruta:', status, result);
@@ -907,22 +947,22 @@ export class MapComponent implements OnInit, OnDestroy {
         this.routeDetails = `Distancia: ${distance} metros, Tiempo estimado: ${duration}, Destino: ${destination}`;
         console.log(this.routeDetails);
 
-        if (distance <= 10 && !this.modalAbierto) {
-          console.log('Abriendo modal de llegada...');
-          this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
-          this.modalAbierto = true; // Marcar que el modal ha sido mostrado
-        }
+        // if (distance <= 10 && !this.modalAbierto) {
+        //   console.log('Abriendo modal de llegada...');
+        //   this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
+        //   this.modalAbierto = true; // Marcar que el modal ha sido mostrado
+        // }
     
-        // No volver a cerrar el modal si ya está abierto
-        if (this.modalAbierto) {
-          console.log(
-            `El modal ya está abierto. Distancia actual: ${distance} metros`
-          );
-        } else {
-          console.log(
-            `Aún no cerca del destino. Distancia actual: ${distance} metros`
-          );
-        }
+        // // No volver a cerrar el modal si ya está abierto
+        // if (this.modalAbierto) {
+        //   console.log(
+        //     `El modal ya está abierto. Distancia actual: ${distance} metros`
+        //   );
+        // } else {
+        //   console.log(
+        //     `Aún no cerca del destino. Distancia actual: ${distance} metros`
+        //   );
+        // }
 
         // Limpiar y resetear las instrucciones
         this.instruccionesRuta = [];
