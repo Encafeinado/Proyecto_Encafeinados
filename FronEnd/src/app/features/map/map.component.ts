@@ -383,10 +383,10 @@ export class MapComponent implements OnInit, OnDestroy {
       this.watchId = navigator.geolocation.watchPosition(
         (position) => {
           const nuevaPosicion = {
-            // lat: 6.341592033727337,
-            // lng: -75.5134079617246,
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
+            lat: 6.341592033727337,
+            lng: -75.5134079617246,
+            // lat: position.coords.latitude,
+            // lng: position.coords.longitude,
           };
 
           // Si ya tienes una posición previa, realiza la interpolación
@@ -483,22 +483,47 @@ export class MapComponent implements OnInit, OnDestroy {
     lat2: number,
     lng2: number
   ): number {
-    const R = 6371e3; // Radio de la Tierra en metros
-    const φ1 = (lat1 * Math.PI) / 180; // lat1 en radianes
-    const φ2 = (lat2 * Math.PI) / 180; // lat2 en radianes
-    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-    const Δλ = ((lng2 - lng1) * Math.PI) / 180;
+    const origen = new google.maps.LatLng(lat1, lng1);
+    const destino = new google.maps.LatLng(lat2, lng2);
 
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distancia = google.maps.geometry.spherical.computeDistanceBetween(
+      origen,
+      destino
+    );
 
-    const distancia = R * c; // En metros
-    return distancia;
+    return distancia; // Devuelve la distancia en metros
   }
 
-  // // Método para verificar cercanía al destino
+  // Método para obtener la distancia entre el marcador y el destino usando Google Maps Directions API
+  // Método para obtener la distancia entre el marcador y el destino usando Google Maps Directions API
+  obtenerDistanciaConDirecciones(
+    origen: google.maps.LatLngLiteral,
+    destino: google.maps.LatLngLiteral
+  ): Promise<number> {
+    return new Promise((resolve, reject) => {
+      const directionsService = new google.maps.DirectionsService();
+
+      const request: google.maps.DirectionsRequest = {
+        origin: origen,
+        destination: destino,
+        travelMode: google.maps.TravelMode.DRIVING,
+      };
+
+      directionsService.route(request, (result, status) => {
+        // Verificar que el resultado y las propiedades necesarias no sean undefined
+        if (
+          status === google.maps.DirectionsStatus.OK &&
+          result?.routes?.[0]?.legs?.[0]?.distance?.value
+        ) {
+          const distancia = result.routes[0].legs[0].distance.value; // Distancia en metros
+          resolve(distancia);
+        } else {
+          reject('No se pudo obtener la distancia');
+        }
+      });
+    });
+  }
+
   verificarCercaniaADestino() {
     if (
       this.markerPosition &&
@@ -516,14 +541,37 @@ export class MapComponent implements OnInit, OnDestroy {
         const lat2 = (this.destinationName as { lat: number; lng: number }).lat;
         const lng2 = (this.destinationName as { lat: number; lng: number }).lng;
 
-        // Calcula la distancia y verifica cercanía
-        this.procesarVerificacionCercania(lat2, lng2);
+        // Obtén la distancia usando la API de direcciones
+        if (this.markerPosition) {
+          this.obtenerDistanciaConDirecciones(this.markerPosition, {
+            lat: lat2,
+            lng: lng2,
+          })
+            .then((distancia) => {
+              this.procesarVerificacionCercania(distancia);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        } else {
+          console.error('Posición del marcador no está definida.');
+        }
       } else {
         // Si no hay coordenadas, usa el nombre del destino para obtenerlas
         this.obtenerCoordenadasDestino(this.destinationName)
           .then((coords) => {
             console.log('Coordenadas obtenidas del destino:', coords);
-            this.procesarVerificacionCercania(coords.lat, coords.lng);
+            if (this.markerPosition && coords) {
+              this.obtenerDistanciaConDirecciones(this.markerPosition, coords)
+                .then((distancia) => {
+                  this.procesarVerificacionCercania(distancia);
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            } else {
+              console.error('Coordenadas del marcador o destino no definidas.');
+            }
           })
           .catch((error) => {
             console.error(error);
@@ -536,24 +584,16 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  procesarVerificacionCercania(lat2: number, lng2: number) {
+  procesarVerificacionCercania(distancia: number) {
     if (!this.markerPosition) {
       console.error('Posición del marcador no está definida.');
       return;
     }
 
-    // Calcular la distancia en tiempo real
-    const distancia = this.calcularDistancia(
-      this.markerPosition.lat,
-      this.markerPosition.lng,
-      lat2,
-      lng2
-    );
-
     console.log(`Distancia calculada: ${distancia} metros`);
 
-    // Si la distancia es menor o igual a 12 metros, abrir el modal
-    if (distancia <= 18 && !this.modalAbierto) {
+    // Si la distancia es menor o igual a 20 metros, abrir el modal
+    if (distancia <= 20 && !this.modalAbierto) {
       console.log('Abriendo modal de llegada...');
       this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
       this.modalAbierto = true; // Marcar que el modal ha sido mostrado
@@ -908,7 +948,7 @@ export class MapComponent implements OnInit, OnDestroy {
         const destination = leg.end_address || 'Destino no disponible';
 
         // Almacenar los detalles de la ruta
-        this.routeDetails = `Distancia: ${distance}, Tiempo estimado: ${duration}, Destino: ${destination}`;
+        this.routeDetails = `Distancia: ${distance} metros, Tiempo estimado: ${duration}, Destino: ${destination}`;
         console.log(this.routeDetails);
 
         // Limpiar y resetear las instrucciones
