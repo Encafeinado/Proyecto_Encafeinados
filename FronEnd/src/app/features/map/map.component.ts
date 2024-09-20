@@ -383,7 +383,7 @@ export class MapComponent implements OnInit, OnDestroy {
       this.watchId = navigator.geolocation.watchPosition(
         (position) => {
           // Verificar si el modal está abierto; si lo está, detener el seguimiento de la ubicación
-          if (this.modalAbierto) {
+          if (this.modalAbierto && this.rutaActiva) {
             console.log('El modal está abierto, se detiene el cálculo de la ubicación.');
             if (this.watchId !== undefined) {
               navigator.geolocation.clearWatch(this.watchId); // Solo limpiar si watchId tiene valor
@@ -1060,10 +1060,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.hasArrived = false; // Permitir seleccionar nuevas rutas después de cerrar el modal
     this.rutaActiva = false; // Reinicia la ruta activa
     this.modalAbierto = false;
-    if (!this.modalAbierto) {
-      console.log('Reanudando el cálculo de la ubicación.');
-      this.rastrearUbicacionUsuario(); // Reanudar el rastreo de la ubicación
-    }
+    this.rastrearUbicacionUsuario();
     // No es necesario reiniciar el mapa, solo actualizar el estado
     console.log('Ruta cancelada. Puedes seleccionar una nueva tienda.');
   }
