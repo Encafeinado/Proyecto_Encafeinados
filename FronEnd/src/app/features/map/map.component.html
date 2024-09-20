@@ -155,8 +155,11 @@
         <br>
         <label for="review">Reseña:</label>
         <!-- Cambiado el textarea por un input -->
-        <input id="review" type="text" class="form-control small-input" [(ngModel)]="enteredReview" 
-          placeholder="Escribe tu reseña" (input)="updateButtonState()">
+      
+          <textarea #codeInput id="review" class="form-control review-textarea" [(ngModel)]="enteredReview"
+          placeholder="Escribe tu reseña" (input)="updateButtonState()" rows="4">
+        </textarea>
+
       </div>
       <div class="modal-footer-code">
         <button type="button" class="btn" (click)="verifyCode()" [disabled]="isButtonDisabled">Verificar</button>
@@ -166,16 +169,16 @@
   </ng-template>
   
 
-  <!-- Modal calficar tienda -->
   <ng-template #modalReviewShop let-modal>
     <div class="modal-content-review">
       <div class="modal-header-review">
-        <h5 class="modal-title-review">Califica la aplicación</h5>
+        <h5 class="modal-title-review-j">Califica la aplicación</h5>
       </div>
       <div class="modal-body-review">
         <label for="reviewApp">Comentario o sugerencia:</label>
-        <input #codeInput type="text" id="reviewApp" class="form-control" [(ngModel)]="reviewApp"
-          placeholder="Ingresa tu comentario o sugerencia" (input)="updateButtonReviewState()">
+        <textarea #codeInput id="reviewApp" class="form-control review-textarea" [(ngModel)]="reviewApp"
+          placeholder="Ingresa tu comentario o sugerencia" (input)="updateButtonReviewState()" rows="4">
+        </textarea>
       </div>
       <div class="modal-footer-review">
         <button type="button" class="btn" (click)="addReviewToApp()" [disabled]="isButtonDisabled">
@@ -187,6 +190,7 @@
       </div>
     </div>
   </ng-template>
+  
 
   <!-- Modal álbum -->
   <ng-template #modalBook let-modal>

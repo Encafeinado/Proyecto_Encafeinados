@@ -255,6 +255,8 @@
   margin-bottom: 10px;
 }
 
+
+
 .button-container {
   display: flex;
   gap: 10px; /* Espacio entre los botones */
@@ -458,6 +460,8 @@
   font-size: 1.5em;
   margin: 0;
 }
+
+
 
 .modal-body-coffee {
   padding: 20px;
@@ -725,6 +729,16 @@
 
 .cerrado {
   color: #f44336; /* Rojo para estado cerrado */
+}
+
+label {
+  display: block; /* Asegúrate de que el label sea un bloque para aplicar el margen correctamente */
+  margin-bottom: 10px; /* Añade espacio debajo del label */
+}
+textarea.form-control {
+  min-height: calc(1.5em + .75rem + calc(var(--bs-border-width)* 2));
+  resize: none; /* Evita que el usuario cambie el tamaño del textarea */
+  height: auto; /* Mantén el tamaño automático del textarea */
 }
 
 .transport-selection {
