@@ -14,6 +14,8 @@
     border-radius: 10px; /* Ajusta el radio en pantallas más pequeñas */
 
   }
+
+  
 }
 
 /* Ajustes adicionales para pantallas muy pequeñas (por ejemplo, teléfonos) */
@@ -30,10 +32,10 @@
 }
 
 /* Estilos comunes para ambos botones */
-.floating-button-location,
-.floating-button-cancel {
+.floating-button-location{
   position: absolute;
-  right: 20px; /* Coloca los botones en la misma posición lateral */
+  right: 360px; /* Coloca los botones en la misma posición lateral */
+  top: 85%; /* Ajusta este valor para subir o bajar el botón */
   background-color: #0f1eee; /* Color de fondo azul */
   color: #ffffff;
   border: none;
@@ -48,6 +50,26 @@
   transition: background-color 0.3s;
   z-index: 1000; /* Asegura que el botón esté por encima del mapa */
 }
+
+.floating-button-cancel {
+  position: absolute;
+  right: 360px; /* Coloca los botones en la misma posición lateral */
+  top: 78%; /* Ajusta este valor para subir o bajar el botón */
+  background-color: #0f1eee; /* Color de fondo azul */
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 40px; /* Tamaño más pequeño */
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  z-index: 1000; /* Asegura que el botón esté por encima del mapa */
+}
+
 
 .floating-button-location:hover,
 .floating-button-cancel:hover {
@@ -111,6 +133,8 @@
 .button-book {
   margin-right: 10px; /* Espacio entre los botones */
 }
+
+
 
 .button-camera {
   margin-left: 60px; /* Espacio entre los botones */
@@ -239,7 +263,50 @@
 @media only screen and (max-width: 768px) {
   #reviewApp::placeholder {
     font-size: 12px; /* Ajusta el tamaño del texto del placeholder */
+
   }
+
+.floating-button-location
+{
+  position: absolute;
+  right: 20px; /* Coloca los botones en la misma posición lateral */
+  top: 48%; /* Ajusta este valor para subir o bajar el botón */
+  background-color: #0f1eee; /* Color de fondo azul */
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 40px; /* Tamaño más pequeño */
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  z-index: 1000; /* Asegura que el botón esté por encima del mapa */
+}
+
+
+
+.floating-button-cancel {
+  position: absolute;
+  right: 20px; /* Coloca los botones en la misma posición lateral */
+  top: 42%; /* Ajusta este valor para subir o bajar el botón */
+  background-color: #0f1eee; /* Color de fondo azul */
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 40px; /* Tamaño más pequeño */
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  z-index: 1000; /* Asegura que el botón esté por encima del mapa */
+}
+
 }
 
 /* ------------------------------------------------------------------------------------------------- */

@@ -12,12 +12,9 @@
           </google-map>
         </div>
         <!-- En tu plantilla HTML -->
-        <button *ngIf="rutaActiva" class="floating-button-cancel" (click)="openModalCancelRuta()">
-          <i class="fas fa-times text-white"></i>
-        </button>
-        <button class="floating-button-location" (click)="centerOnUserLocation(true)">
-          <i class="fa fa-location-arrow" aria-hidden="true"></i>
-        </button>
+     
+
+        
 
       </div>
       <div class="col-md-4 sidebar">
@@ -70,6 +67,12 @@
     </button>
     <button class="floating-button button-camera" (click)="openModalWithCodigo()">
       <i class="fas fa-coffee text-white"></i>
+    </button>
+    <button *ngIf="rutaActiva" class="floating-button-cancel" (click)="openModalCancelRuta()">
+      <i class="fas fa-times text-white"></i>
+    </button>
+    <button class="floating-button-location" (click)="centerOnUserLocation(true)">
+      <i class="fa fa-location-arrow" aria-hidden="true"></i>
     </button>
   </div>
 
