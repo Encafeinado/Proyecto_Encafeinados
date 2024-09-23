@@ -6,15 +6,15 @@
     <p>Antes de registrarte, por favor lee el tratamiento de datos...</p>
 
     <!-- Mostrar el texto del PDF -->
-    <div *ngIf="showPdf" style="width: 100%; height: 300px; overflow-y: auto; background-color: white;">
+    <div *ngIf="showPdf" class="pdf-container">
       <pre>{{ pdfText }}</pre>
     </div>
+    
     <!-- Botón para mostrar el texto del PDF -->
-    <button *ngIf="!showPdf" class="btn" (click)="showPdfDocument()">Ver Tratamiento de Datos</button>
+    <button *ngIf="!showPdf" class="btn-trata" (click)="showPdfDocument()">Ver Tratamiento de Datos</button>
   </div>
   <div class="modal-footer-datos">
-    <button type="button" class="btn" (click)="onNoClick()">Cancelar</button>
     <button type="button" class="btn" (click)="onYesClick()" [disabled]="!isPdfViewed">Aceptar</button>
-
+    <button type="button" class="btn" (click)="onNoClick()">Cancelar</button>
   </div>
 </div>

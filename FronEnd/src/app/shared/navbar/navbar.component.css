@@ -173,10 +173,14 @@
 .modal-base .modal-footer {
   padding: 15px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center; /* Cambiado a 'center' para centrar los botones */
   border-top: 1px solid #E0E0E0;
 }
 
+.modal-title {
+  font-size: 1.5em;
+  margin: 0;
+}
 
 /* Ocultar el toggler en dispositivos móviles */
 .navbar-toggler {

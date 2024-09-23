@@ -3,19 +3,18 @@
     <div class="row">
       <div class="col-md-8 position-relative">
         <div id="map">
-          <google-map id="map" height="600px" width="100%" [center]="center" [zoom]="zoom" [options]="opcionesMapa">
+          <google-map  width="100%" [center]="center" [zoom]="zoom" [options]="opcionesMapa">
 
             <!-- Marcador para la ubicación actual con icono personalizado -->
             <map-marker *ngIf="markerPosition" [position]="markerPosition" [icon]="iconoUbicacionUsuario">
             </map-marker>
-
           </google-map>
         </div>
         <!-- En tu plantilla HTML -->
-        <button *ngIf="rutaActiva" class="floating-button-cancel" (click)="cancelarRuta()">
+        <button *ngIf="rutaActiva" class="floating-button-cancel" (click)="openModalCancelRuta()">
           <i class="fas fa-times text-white"></i>
         </button>
-        <button class="floating-button-location" (click)="centerOnUserLocation()">
+        <button class="floating-button-location" (click)="centerOnUserLocation(true)">
           <i class="fa fa-location-arrow" aria-hidden="true"></i>
         </button>
 
@@ -40,13 +39,13 @@
           <h3 style="margin-bottom: 10px;">Información adicional</h3>
           <ul style="list-style-type: none; padding-left: 0;">
             <li style="margin-bottom: 10px;">
-              <img src="assets/IconsMarker/cosechaUser.png" alt="Icono de persona"
-                style="width: 20px; height: 20px; margin-right: 10px;">
+              <img src="assets/IconsMarker/cafeino.png" alt="Icono de persona"
+                style="width: 35px; height: 35px; margin-right: 10px;">
               <span style="font-size: 16px;">Eres tú</span>
             </li>
             <li style="margin-bottom: 10px;">
               <img src="assets/IconsMarker/cafeteriaAroma.png" alt="Icono de persona"
-                style="width: 20px; height: 20px; margin-right: 10px;">
+                style="width: 25px; height: 25px; margin-right: 16px;">
               <span style="font-size: 16px;">Tienda de café</span>
             </li>
             <li style="margin-bottom: 10px;">
@@ -59,8 +58,6 @@
         </div>
         <br>
         <button class="btn btn-primary align-right" (click)="openModalReviewShop()">Califica la aplicación</button>
-
-
       </div>
     </div>
   </div>
@@ -73,7 +70,6 @@
     <button class="floating-button button-camera" (click)="openModalWithCodigo()">
       <i class="fas fa-coffee text-white"></i>
     </button>
-    
   </div>
 
   <!-- Modal para confirmar la ruta -->
@@ -84,7 +80,7 @@
       </div>
       <div class="modal-body-create">
         <div class="modal-info">
-          <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid img-cafe">
+          <img [src]="currentImageUrl" alt="Imagen de la tienda" class="img-fluid img-cafe">
           <div class="info-cafe">
             <p class="descripcion-cafe">Información del café</p>
             <div class="especialidades">
@@ -110,8 +106,8 @@
           <label class="transport-label">
             <input type="radio" name="transport" [class.active]="modoTransporte === google.maps.TravelMode.WALKING"
               (click)="seleccionarModoTransporte(google.maps.TravelMode.WALKING)">
-            <i class="fa fa-blind"></i>
-          </label>
+              <i class="fas fa-walking"></i>
+            </label>
         </div>
       </div>
       <div class="modal-footer-create">
@@ -121,18 +117,17 @@
     </div>
   </ng-template>
 
-
   <!-- Modal para cancelar la ruta -->
   <ng-template #cancelModal let-modal>
     <div class="modal-content-cancelR">
       <div class="modal-header-cancelR">
-        <h4 class="modal-title-cancelR">Cancelar Rutas</h4>
+        <h4 class="modal-title-cancelR">Cancelar Ruta</h4>
       </div>
       <div class="modal-body-cancelR">
-        <p>¿Estás seguro de que quieres cancelar las rutas?</p>
+        <p>¿Estás seguro de que quieres cancelar la ruta actual?</p>
       </div>
       <div class="modal-footer-cancelR">
-        <!-- <button type="button" class="btn" (click)="confirmCancelRoute()">Confirmar</button> -->
+        <button type="button" class="btn" (click)="confirmarRutaCancelada()">Si, seguro</button>
         <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
       </div>
     </div>
@@ -160,8 +155,11 @@
         <br>
         <label for="review">Reseña:</label>
         <!-- Cambiado el textarea por un input -->
-        <input id="review" type="text" class="form-control small-input" [(ngModel)]="enteredReview" 
-          placeholder="Escribe tu reseña" (input)="updateButtonState()">
+      
+          <textarea #codeInput id="review" class="form-control review-textarea" [(ngModel)]="enteredReview"
+          placeholder="Escribe tu reseña" (input)="updateButtonState()" rows="4">
+        </textarea>
+
       </div>
       <div class="modal-footer-code">
         <button type="button" class="btn" (click)="verifyCode()" [disabled]="isButtonDisabled">Verificar</button>
@@ -171,16 +169,16 @@
   </ng-template>
   
 
-  <!-- Modal calficar tienda -->
   <ng-template #modalReviewShop let-modal>
     <div class="modal-content-review">
       <div class="modal-header-review">
-        <h5 class="modal-title-review">Califica la aplicación</h5>
+        <h5 class="modal-title-review-j">Califica la aplicación</h5>
       </div>
       <div class="modal-body-review">
         <label for="reviewApp">Comentario o sugerencia:</label>
-        <input #codeInput type="text" id="reviewApp" class="form-control" [(ngModel)]="reviewApp"
-          placeholder="Ingresa tu comentario o sugerencia" (input)="updateButtonReviewState()">
+        <textarea #codeInput id="reviewApp" class="form-control review-textarea" [(ngModel)]="reviewApp"
+          placeholder="Ingresa tu comentario o sugerencia" (input)="updateButtonReviewState()" rows="4">
+        </textarea>
       </div>
       <div class="modal-footer-review">
         <button type="button" class="btn" (click)="addReviewToApp()" [disabled]="isButtonDisabled">
@@ -192,6 +190,7 @@
       </div>
     </div>
   </ng-template>
+  
 
   <!-- Modal álbum -->
   <ng-template #modalBook let-modal>
@@ -230,17 +229,10 @@
           <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
           <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
         </div>
-        <p class="descripcion-cafe">Información del café</p>
-        <div class="especialidades">
-          <p><i class="fa fa-star"></i> Especialidad 1: {{ specialties1 }}</p>
-          <p><i class="fa fa-star"></i> Especialidad 2: {{ specialties2 }}</p>
-          <p><i class="fa fa-store"></i> Estado de la tienda: <span [class.abierto]="shopStatus"
-              [class.cerrado]="!shopStatus">{{ shopStatus ? 'Abierto' : 'Cerrado' }}</span></p>
-        </div>
       </div>
       <div class="modal-footer-arrive">
         <button type="button" class="btn" (click)="confirmarLlegada()">Si, he llegado</button>
+        <button *ngIf="rutaActiva" type="button" class="btn" (click)="cancelarLLegada(modal)">No, he llegado</button>
       </div>
     </div>
   </ng-template>
-</div>

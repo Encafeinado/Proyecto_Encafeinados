@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 })
 export class RequestResetPasswordComponent {
   public requestResetForm: FormGroup;
+  public showError = false; // Controla cuándo mostrar el mensaje de error
   validDomains = [
     "gmail.com", "gmail.co","yopmail.com", "gmail.es", "gmail.mx", "hotmail.com", "hotmail.co", "hotmail.es", "hotmail.mx",
     "outlook.com", "outlook.co", "outlook.es", "outlook.mx", "yahoo.com", "yahoo.co", "yahoo.es", "yahoo.mx",
@@ -32,14 +33,18 @@ export class RequestResetPasswordComponent {
           Validators.required,    // Verifica que sea un correo válido
         ],
         asyncValidators: [
-          validateEmailForLogin(this.authService),
           emailDomainValidator(this.validDomains)
         ],
-        //updateOn: 'blur'  // Para que los validadores asíncronos se apliquen cuando el campo pierde el enfoque
+        updateOn: 'change'  // Para que los validadores asíncronos se apliquen cuando el campo pierde el enfoque
       }]
     });
   }
 
+  onInputChange(): void {
+    if (this.requestResetForm.valid) {
+      this.showError = false; // Ocultar el error si los datos son correctos
+    }
+  }
   requestReset(): void {
     if (this.requestResetForm.valid) {
       this.authService.forgotPassword(this.requestResetForm.value.email)
@@ -51,9 +56,9 @@ export class RequestResetPasswordComponent {
           error: (error) => {
             // Manejo de errores específicos basados en el código de estado
             if (error.status === 404) {
-              this.toastr.error('Correo electrónico no registrado');
+              this.showError = true;
             } else {
-              this.toastr.error('Error al enviar el correo de restablecimiento');
+              
             }
           }
         });
