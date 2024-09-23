@@ -97,10 +97,10 @@ export class MapComponent implements OnInit, OnDestroy {
     streetViewControl: false, // Elimina el control de Street View
     mapTypeControl: false, // Elimina el botón de "Mapa/Satélite"
     fullscreenControl: false, // Elimina el botón de pantalla completa
-    zoomControl: false,
-    rotateControl: true, // Habilita el botón para rotar el mapa
-    mapTypeId: google.maps.MapTypeId.SATELLITE, // Utiliza la vista satélite (si quieres que sea rotatable)
-    tilt: 45, // Define el ángulo de inclinación del mapa (para vista 3D)
+    zoomControl: false, // Elimina el control de zoom
+    rotateControl: true, // Habilita el control de rotación
+    tilt: 45, // Activa la inclinación del mapa
+    gestureHandling: 'greedy', // Permite rotar y hacer zoom con gestos (como en móviles)
   };
   iconoUbicacionUsuario = {
     url: 'assets/IconsMarker/cafeino.png', // Ruta desde la raíz pública
