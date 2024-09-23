@@ -1,8 +1,10 @@
 <nav class="navbar navbar-expand-lg bg-coffee">
-  <img src="../../../../assets/images/logosinfondo.png" alt="Logo de Encafeinados" class="navbar-logo">
-  <div class="container-fluid">  
-
-    <a class="navbar-brand" routerLink="/landing">Encafeinados</a>
+  <div class="container-fluid d-flex justify-content-between align-items-center">  
+    <!-- Contenedor para el logo y el texto "Encafeinados" -->
+    <div class="d-flex align-items-center logo-container">
+      <img src="../../../../assets/images/logosinfondo.png" alt="Logo de Encafeinados" class="navbar-logo">
+      <a class="navbar-brand ms-2" routerLink="/landing">Encafeinados</a>
+    </div>
 
     <!-- Dropdown para móviles (visible solo en pantallas pequeñas) -->
     <div class="dropdown d-lg-none" *ngIf="shouldShowMobileDropdown()">
@@ -13,7 +15,7 @@
         <li *ngIf="isUserLanding()"><a class="dropdown-item" routerLink="/landing-tienda">Tiendas Aliadas</a></li>
         <li *ngIf="isUserLanding()"><a class="dropdown-item" routerLink="/auth/login">Iniciar sesión</a></li>
         <li *ngIf="isUserLandingTienda()"><a class="dropdown-item">Iniciar sesión Tienda</a></li>
-        <li *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRegisterPage() && !isOnRequestPage()  && !isOnResetPage()">
+        <li *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage()">
           <a *ngIf="userName" class="dropdown-item" routerLink="/perfil"><i class="fas fa-user"></i> {{ userName }}</a>
         </li>
         <li *ngIf="authService.isAuthenticated() && !isOnLoginPage() && !isOnRegisterPage() && !isOnResetPage() && !isOnRequestPage() ">
@@ -22,49 +24,50 @@
       </ul>
     </div>
 
-    <!-- Menú para pantallas grandes -->
-    <div class="navbar-collapse collapse" id="navbarText">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">        
-        <li class="nav-item" *ngIf="isUserLanding()">
-          <a class="btn btn-outline-light2" routerLink="/landing-tienda">Tiendas Aliadas</a>
-        </li>
-      </ul>
-      
-      <ng-container *ngIf="isUserLanding()">
-        <a class="btn btn-outline-light" routerLink="/auth/login">Iniciar sesión</a>
-      </ng-container>
-    
-      <ng-container *ngIf="isUserLandingTienda()">
-        <a class="btn btn-outline-light">Iniciar sesión Tienda</a>
-      </ng-container>
-    
-      <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage()">
-        <div *ngIf="userName" class="dropdown">
-          <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-user" style="font-size: 1.5rem"></i>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-            <li><button class="dropdown-item" routerLink="/perfil"><i class="fas fa-user"></i> {{ userName }}</button></li>
-            <li *ngIf="shouldShowLogout()"><button class="dropdown-item" (click)="openLogoutModal(sesionModal)"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button></li>
-          </ul>
-        </div>
-      </ng-container>
-    </div>
+<!-- Menú para pantallas grandes -->
+<div class="navbar-collapse collapse" id="navbarText">
+  <ul class="navbar-nav me-auto mb-2 mb-lg-0">        
+    <li class="nav-item" *ngIf="isUserLanding()">
+      <a class="btn btn-outline-light2" routerLink="/landing-tienda">Tiendas Aliadas</a>
+    </li>
+  </ul>
+  
+  <ng-container *ngIf="isUserLanding()">
+    <a class="btn btn-outline-light" routerLink="/auth/login">Iniciar sesión</a>
+  </ng-container>
 
-    <!-- Modal para confirmar el cierre de sesión -->
-    <ng-template #sesionModal let-modal>
-      <div class="modal-base">
-        <div class="modal-header">
-          <h4 class="modal-title">Cerrar sesión</h4>
-        </div>
-        <div class="modal-body">
-          <p>¿Estás seguro de que quieres cerrar sesión?</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" (click)="confirmLogout()">Sí, Seguro</button>
-          <button type="button" class="btn btn-primary" (click)="modal.dismiss('cancel')">Cancelar</button>
-        </div>
-      </div>
-    </ng-template>
+  <ng-container *ngIf="isUserLandingTienda()">
+    <a class="btn btn-outline-light">Iniciar sesión Tienda</a>
+  </ng-container>
+
+  <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage()">
+    <div *ngIf="userName" class="dropdown">
+      <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-user" style="font-size: 1.5rem"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+        <li><button class="dropdown-item" routerLink="/perfil"><i class="fas fa-user"></i> {{ userName }}</button></li>
+        <li *ngIf="shouldShowLogout()"><button class="dropdown-item" (click)="openLogoutModal(sesionModal)"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button></li>
+      </ul>
+    </div>
+  </ng-container>
+</div>
+
+<!-- Modal para confirmar el cierre de sesión -->
+<ng-template #sesionModal let-modal>
+  <div class="modal-base">
+    <div class="modal-header">
+      <h4 class="modal-title">Cerrar sesión</h4>
+    </div>
+    <div class="modal-body">
+      <p>¿Estás seguro de que quieres cerrar sesión?</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="confirmLogout()">Sí, Seguro</button>
+      <button type="button" class="btn btn-primary" (click)="modal.dismiss('cancel')">Cancelar</button>
+    </div>
   </div>
+</ng-template>
+</div>
 </nav>
+
