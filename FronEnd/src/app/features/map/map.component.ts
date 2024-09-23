@@ -387,25 +387,27 @@ export class MapComponent implements OnInit, OnDestroy {
         (position) => {
           // Verificar si el modal está abierto; si lo está, detener el seguimiento de la ubicación
           if (this.modalAbierto && this.rutaActiva) {
-            console.log('El modal está abierto, se detiene el cálculo de la ubicación.');
+            console.log(
+              'El modal está abierto, se detiene el cálculo de la ubicación.'
+            );
             if (this.watchId !== undefined) {
               navigator.geolocation.clearWatch(this.watchId); // Solo limpiar si watchId tiene valor
             }
             return; // Salir de la función y evitar recalcular mientras el modal esté abierto
           }
-  
+
           const nuevaPosicion = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-  
+
           // Si ya tienes una posición previa, realiza la interpolación
           if (this.markerPosition) {
             const pasos = 10; // Cuantos más pasos, más suave será la transición
             const duracion = 1000; // Tiempo total de la interpolación en milisegundos
             const intervalo = duracion / pasos;
             let pasoActual = 0;
-  
+
             const intervaloId = setInterval(() => {
               pasoActual++;
               const factor = pasoActual / pasos;
@@ -414,20 +416,20 @@ export class MapComponent implements OnInit, OnDestroy {
                 nuevaPosicion,
                 factor
               );
-  
+
               // Actualiza la posición del marcador en el mapa
               this.markerUsuario?.setPosition(posicionInterpolada);
-  
+
               this.verificarAvanceInstrucciones();
               if (pasoActual >= pasos) {
                 clearInterval(intervaloId);
                 this.markerPosition = nuevaPosicion;
-  
+
                 // Verificar cercanía al destino solo si el modal no está abierto
                 if (!this.modalAbierto) {
                   this.verificarCercaniaADestino();
                 }
-  
+
                 // Actualización de la ruta si está activa
                 if (this.rutaActiva) {
                   const map = this.directionsRendererInstance.getMap();
@@ -444,13 +446,13 @@ export class MapComponent implements OnInit, OnDestroy {
             // Si es la primera vez que obtienes la posición
             this.markerPosition = nuevaPosicion;
             this.markerUsuario?.setPosition(this.markerPosition);
-            
+
             // Verificar cercanía al destino solo si el modal no está abierto
             if (!this.modalAbierto) {
               this.verificarCercaniaADestino();
             }
           }
-  
+
           if (!this.hasZoomed) {
             const map = this.directionsRendererInstance.getMap();
             if (map) {
@@ -460,10 +462,13 @@ export class MapComponent implements OnInit, OnDestroy {
               this.solicitarPermisoOrientacion();
             }
           }
-  
-          console.log('Ubicación del usuario actualizada:', this.markerPosition);
+
+          console.log(
+            'Ubicación del usuario actualizada:',
+            this.markerPosition
+          );
           this.actualizarMarcadorUbicacionUsuario();
-  
+
           // Actualizar detalles de la ruta si la ruta está activa
           if (this.rutaActiva && this.directionsResult) {
             this.obtenerDetallesRuta(this.directionsResult);
@@ -492,14 +497,14 @@ export class MapComponent implements OnInit, OnDestroy {
   ): number {
     const origen = new google.maps.LatLng(lat1, lng1);
     const destino = new google.maps.LatLng(lat2, lng2);
-  
+
     const distancia = google.maps.geometry.spherical.computeDistanceBetween(
       origen,
       destino
     );
-  
+
     return distancia; // Devuelve la distancia en metros
-  }  
+  }
 
   // Método para obtener la distancia entre el marcador y el destino usando Google Maps Directions API
   obtenerDistanciaConDirecciones(
@@ -572,30 +577,33 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Posición del marcador no está definida.');
       return;
     }
-  
+
     const distancia = this.calcularDistancia(
       this.markerPosition.lat,
       this.markerPosition.lng,
       lat2,
       lng2
     );
-  
+
     console.log(`Distancia calculada: ${distancia} metros`);
-  
+
     // Verificar si hay ruta activa antes de abrir el modal
     if (distancia < 45 && !this.modalAbierto && this.rutaActiva) {
       console.log('Abriendo modal de llegada...');
       this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
       this.modalAbierto = true; // Marcar que el modal ha sido mostrado
     }
-  
+
     if (this.modalAbierto) {
-      console.log(`El modal ya está abierto. Distancia actual: ${distancia} metros`);
+      console.log(
+        `El modal ya está abierto. Distancia actual: ${distancia} metros`
+      );
     } else {
-      console.log(`Aún no cerca del destino. Distancia actual: ${distancia} metros`);
+      console.log(
+        `Aún no cerca del destino. Distancia actual: ${distancia} metros`
+      );
     }
   }
-  
 
   // Método para obtener las coordenadas del destino utilizando Google Maps Geocoding API
   obtenerCoordenadasDestino(
@@ -829,14 +837,20 @@ export class MapComponent implements OnInit, OnDestroy {
     this.modoTransporte = modo;
   }
 
+  modosDisponibles: { [key: string]: boolean } = {
+    [google.maps.TravelMode.DRIVING]: true,
+    [google.maps.TravelMode.BICYCLING]: true,
+    [google.maps.TravelMode.WALKING]: true,
+  };
+
   // Método para calcular la ruta
   calcularRuta() {
-    // Verificar si el modal está abierto, si lo está, no recalcular la ruta
+    // Verificar si el modal está abierto
     if (this.modalAbierto) {
       console.log('El modal está abierto, no se recalcula la ruta.');
       return;
     }
-  
+
     if (!this.modoTransporte) {
       this.toastr.warning(
         'Por favor, selecciona un modo de transporte.',
@@ -844,19 +858,21 @@ export class MapComponent implements OnInit, OnDestroy {
       );
       return;
     }
-  
+
+    // Verificar que la posición del marcador y el destino estén definidos
     if (!this.markerPosition) {
       console.error('La posición del marcador no está definida.');
       return;
     }
-  
+
     if (!this.destinationName) {
       console.error('El destino no está definido.');
       return;
     }
-  
+
     let destination: google.maps.LatLngLiteral | string;
-  
+
+    // Validar el destino
     if (
       typeof this.destinationName === 'object' &&
       'lat' in this.destinationName &&
@@ -869,44 +885,68 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('El destino proporcionado no es válido.');
       return;
     }
-  
+
     const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
-  
+
     const request: google.maps.DirectionsRequest = {
       origin: this.markerPosition,
       destination: destination,
       travelMode: travelMode,
       unitSystem: google.maps.UnitSystem.METRIC,
     };
-  
+
+    // Configurar el DirectionsRenderer para no mostrar marcadores
     this.directionsRendererInstance.setOptions({
       suppressMarkers: true,
       preserveViewport: true,
     });
-  
+
     this.directionsService.route(request, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK && result) {
-        this.directionsResult = result; // Almacena el resultado aquí
+        // Ruta disponible
         this.directionsRendererInstance.setDirections(result);
         this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
+        this.modosDisponibles[this.modoTransporte] = true; // Habilitar el modo de transporte actual
+
+        // Centrar el mapa en el marcador
         this.centrarMapaEnMarcador();
-  
+
         if (this.modalRef) {
           this.modalRef.close();
         }
-        this.actualizarRotacionMarcador(0, result); // Actualiza la rotación y la flecha
-  
+
+        // Actualizar la rotación y la flecha
+        this.actualizarRotacionMarcador(0, result);
+
+        // Verificar cercanía al destino
         if (this.rutaActiva && this.markerPosition) {
           this.verificarCercaniaADestino();
         }
       } else {
+        // Ruta no disponible
         this.rutaActiva = false;
         console.error('Error al calcular la ruta:', status, result);
         this.toastr.warning(
           'La ruta en este medio de transporte no está disponible',
           'Advertencia'
         );
+        this.modosDisponibles[this.modoTransporte] = false; // Inhabilitar el modo de transporte actual
+
+        // Cambiar a otro modo de transporte habilitado
+        const availableModes = Object.keys(this.modosDisponibles).filter(
+          (mode) => this.modosDisponibles[mode]
+        );
+        if (availableModes.length > 0) {
+          // Cambiar al primer modo disponible
+          this.modoTransporte = availableModes[0] as google.maps.TravelMode;
+        } else {
+          // Si no hay modos disponibles, desactivar todos los botones
+          this.toastr.warning(
+            'No hay modos de transporte disponibles.',
+            'Advertencia'
+          );
+        }
       }
     });
   }
@@ -1068,21 +1108,23 @@ export class MapComponent implements OnInit, OnDestroy {
     console.log('Ruta cancelada. Puedes seleccionar una nueva tienda.');
   }
 
-  cancelarLLegada(modal: any): void { 
+  cancelarLLegada(modal: any): void {
     if (!this.rutaActiva) {
       console.warn('No hay una ruta activa, no se puede cancelar la llegada.');
       return;
     }
-  
+
     modal.dismiss('cancel');
-    
+
     setTimeout(() => {
       if (this.rutaActiva && this.destinationName) {
         console.log('Reabriendo modal de llegada después de la cancelación.');
         this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
         this.modalAbierto = true;
       } else {
-        console.warn('No se puede abrir el modal de llegada, no hay una ruta activa o el destino no está definido.');
+        console.warn(
+          'No se puede abrir el modal de llegada, no hay una ruta activa o el destino no está definido.'
+        );
       }
     }, 10000); // 10 segundos
   }
@@ -1120,7 +1162,11 @@ export class MapComponent implements OnInit, OnDestroy {
     this.specialties2 = specialties2;
     this.currentImageUrl = imageUrl;
     this.openedModal = true;
-
+    this.modosDisponibles = {
+      [google.maps.TravelMode.DRIVING]: true,
+      [google.maps.TravelMode.BICYCLING]: true,
+      [google.maps.TravelMode.WALKING]: true,
+    };
     // Abrir el modal
     this.modalRef = this.modalService.open(content, {
       centered: true,

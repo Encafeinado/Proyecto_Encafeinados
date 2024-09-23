@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-8 position-relative">
         <div id="map">
-          <google-map  width="100%" [center]="center" [zoom]="zoom" [options]="opcionesMapa">
+          <google-map width="100%" [center]="center" [zoom]="zoom" [options]="opcionesMapa">
 
             <!-- Marcador para la ubicación actual con icono personalizado -->
             <map-marker *ngIf="markerPosition" [position]="markerPosition" [icon]="iconoUbicacionUsuario">
@@ -40,12 +40,12 @@
           <ul style="list-style-type: none; padding-left: 0;">
             <li style="margin-bottom: 10px;">
               <img src="assets/IconsMarker/cafeino.png" alt="Icono de persona"
-                style="width: 35px; height: 35px; margin-right: 10px;">
+                style="width: 20px; height: 20px; margin-right: 10px;">
               <span style="font-size: 16px;">Eres tú</span>
             </li>
             <li style="margin-bottom: 10px;">
               <img src="assets/IconsMarker/cafeteriaAroma.png" alt="Icono de persona"
-                style="width: 25px; height: 25px; margin-right: 16px;">
+                style="width: 20px; height: 20px; margin-right: 10px;">
               <span style="font-size: 16px;">Tienda de café</span>
             </li>
             <li style="margin-bottom: 10px;">
@@ -91,23 +91,25 @@
             </div>
           </div>
         </div>
-
         <div class="transport-selection">
           <label class="transport-label">
-            <input type="radio" name="transport" [class.active]="modoTransporte === google.maps.TravelMode.DRIVING"
+            <input type="radio" name="transport" [checked]="modoTransporte === google.maps.TravelMode.DRIVING"
+              [disabled]="!modosDisponibles[google.maps.TravelMode.DRIVING]"
               (click)="seleccionarModoTransporte(google.maps.TravelMode.DRIVING)">
             <i class="fa fa-car"></i>
           </label>
           <label class="transport-label">
-            <input type="radio" name="transport" [class.active]="modoTransporte === google.maps.TravelMode.BICYCLING"
+            <input type="radio" name="transport" [checked]="modoTransporte === google.maps.TravelMode.BICYCLING"
+              [disabled]="!modosDisponibles[google.maps.TravelMode.BICYCLING]"
               (click)="seleccionarModoTransporte(google.maps.TravelMode.BICYCLING)">
             <i class="fa fa-bicycle"></i>
           </label>
           <label class="transport-label">
-            <input type="radio" name="transport" [class.active]="modoTransporte === google.maps.TravelMode.WALKING"
+            <input type="radio" name="transport" [checked]="modoTransporte === google.maps.TravelMode.WALKING"
+              [disabled]="!modosDisponibles[google.maps.TravelMode.WALKING]"
               (click)="seleccionarModoTransporte(google.maps.TravelMode.WALKING)">
-              <i class="fas fa-walking"></i>
-            </label>
+            <i class="fas fa-walking"></i>
+          </label>
         </div>
       </div>
       <div class="modal-footer-create">
@@ -155,8 +157,8 @@
         <br>
         <label for="review">Reseña:</label>
         <!-- Cambiado el textarea por un input -->
-      
-          <textarea #codeInput id="review" class="form-control review-textarea" [(ngModel)]="enteredReview"
+
+        <textarea #codeInput id="review" class="form-control review-textarea" [(ngModel)]="enteredReview"
           placeholder="Escribe tu reseña" (input)="updateButtonState()" rows="4">
         </textarea>
 
@@ -167,7 +169,7 @@
       </div>
     </div>
   </ng-template>
-  
+
 
   <ng-template #modalReviewShop let-modal>
     <div class="modal-content-review">
@@ -190,7 +192,7 @@
       </div>
     </div>
   </ng-template>
-  
+
 
   <!-- Modal álbum -->
   <ng-template #modalBook let-modal>
