@@ -3,6 +3,7 @@
   position: fixed;
   top: 0;
   width: 100%;
+  align-items: center;
   background-color: #ffffff; /* Color de fondo principal del navbar */
   padding: 10px 20px;
   font-family: 'Poppins', sans-serif;
@@ -186,6 +187,22 @@
 .navbar-toggler {
   display: none;
 }
+.navbar-logo {
+  width: 80px;
+  height: auto;
+}
+
+/* Asegurar que los elementos estén alineados correctamente */
+.navbar .container-fluid {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo-container {
+  display: flex;
+  align-items: center;
+  margin-left: -15px; /* Mueve el contenedor del logo más a la izquierda */
+}   
 
 /* Mostrar el dropdown en móviles */
 @media (max-width: 991px) {
@@ -193,8 +210,24 @@
     display: none !important;
   }
 
+  .navbar-logo {
+    width: 70px; /* Ajusta el tamaño del logo para pantallas móviles */
+    height: auto;
+  }
+    /* Ajuste adicional del logo en móviles si es necesario */
+    .logo-container {
+      margin-left: -20px; /* Mueve más a la izquierda el logo en pantallas pequeñas */
+    }
+
   .dropdown {
     display: block;
+  }
+  .navbar .navbar-brand {
+    color: #0f1eee; /* Color del texto de la marca */
+    font-size: 1.2rem; /* Ajusta el tamaño de la fuente en móviles */
+    font-weight: bold;
+    margin: 0; /* Elimina márgenes para evitar que se baje */
+    white-space: nowrap; /* Evita que el título se divida en dos líneas */
   }
 }
 
