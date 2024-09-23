@@ -196,6 +196,11 @@
   .dropdown {
     display: block;
   }
+  .navbar .navbar-brand {
+    color: #0f1eee; /* Color del texto de la marca */
+    font-size: 1rem;
+    font-weight: bold;
+  }
 }
 
 /* Mostrar el menú normal en pantallas grandes */
