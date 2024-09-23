@@ -834,6 +834,12 @@ export class MapComponent implements OnInit, OnDestroy {
 
   // Método para calcular la ruta
   calcularRuta() {
+    // Verificar si el modal está abierto, si lo está, no recalcular la ruta
+    if (this.modalAbierto) {
+      console.log('El modal está abierto, no se recalcula la ruta.');
+      return;
+    }
+  
     if (!this.modoTransporte) {
       this.toastr.warning(
         'Por favor, selecciona un modo de transporte.',
@@ -841,19 +847,19 @@ export class MapComponent implements OnInit, OnDestroy {
       );
       return;
     }
-
+  
     if (!this.markerPosition) {
       console.error('La posición del marcador no está definida.');
       return;
     }
-
+  
     if (!this.destinationName) {
       console.error('El destino no está definido.');
       return;
     }
-
+  
     let destination: google.maps.LatLngLiteral | string;
-
+  
     if (
       typeof this.destinationName === 'object' &&
       'lat' in this.destinationName &&
@@ -866,21 +872,21 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('El destino proporcionado no es válido.');
       return;
     }
-
+  
     const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
-
+  
     const request: google.maps.DirectionsRequest = {
       origin: this.markerPosition,
       destination: destination,
       travelMode: travelMode,
       unitSystem: google.maps.UnitSystem.METRIC,
     };
-
+  
     this.directionsRendererInstance.setOptions({
       suppressMarkers: true,
       preserveViewport: true,
     });
-
+  
     this.directionsService.route(request, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK && result) {
         this.directionsResult = result; // Almacena el resultado aquí
@@ -888,12 +894,12 @@ export class MapComponent implements OnInit, OnDestroy {
         this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
         this.centrarMapaEnMarcador();
-
+  
         if (this.modalRef) {
           this.modalRef.close();
         }
         this.actualizarRotacionMarcador(0, result); // Actualiza la rotación y la flecha
-
+  
         if (this.rutaActiva && this.markerPosition) {
           this.verificarCercaniaADestino();
         }
