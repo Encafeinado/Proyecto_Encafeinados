@@ -581,7 +581,7 @@ export class MapComponent implements OnInit, OnDestroy {
     console.log(`Distancia calculada: ${distancia} metros`);
 
     // Si la distancia es menor o igual a 12 metros, abrir el modal
-    if (distancia < 80  && !this.modalAbierto) {
+    if (distancia < 45  && !this.modalAbierto) {
       console.log('Abriendo modal de llegada...');
       this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
       this.modalAbierto = true; // Marcar que el modal ha sido mostrado
