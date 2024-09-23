@@ -4,7 +4,6 @@
   width: 100%; /* Asegura que el mapa ocupe el ancho completo */
   border-radius: 15px; /* Bordes redondeados */
   overflow: hidden; /* Para asegurar que el contenido del mapa respete el borde redondeado */
-  position: relative;
 }
 
 
@@ -33,7 +32,7 @@
 /* Estilos comunes para ambos botones */
 .floating-button-location,
 .floating-button-cancel {
-  position:absolute;
+  position: absolute;
   right: 20px; /* Coloca los botones en la misma posición lateral */
   background-color: #0f1eee; /* Color de fondo azul */
   color: #ffffff;
