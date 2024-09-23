@@ -235,6 +235,13 @@
   background-color: #666666;
 }
 
+/* Estilo del placeholder para dispositivos móviles */
+@media only screen and (max-width: 768px) {
+  #reviewApp::placeholder {
+    font-size: 12px; /* Ajusta el tamaño del texto del placeholder */
+  }
+}
+
 /* ------------------------------------------------------------------------------------------------- */
 .album {
   display: flex;
@@ -451,6 +458,7 @@
   display: flex;
   justify-content: center;
 }
+
 .modal-title-review-j,
 .modal-title-create,
 .modal-title-code,
@@ -459,6 +467,21 @@
 .modal-title-cancelR {
   font-size: 1.5em;
   margin: 0;
+  text-align: center; /* Asegura que el texto esté centrado */
+}
+
+/* Si necesitas ajustes específicos para dispositivos móviles */
+@media only screen and (max-width: 768px) {
+  .modal-title-review-j,
+  .modal-title-create,
+  .modal-title-code,
+  .modal-title,
+  .modal-title-arrive,
+  .modal-title-cancelR {
+    /* Si quieres ajustar solo en móviles, puedes hacerlo aquí */
+    font-size: 1.2em; /* Ajusta el tamaño de la fuente en móviles si es necesario */
+    text-align: center; /* Asegura el centrado */
+  }
 }
 
 .modal-body-coffee {
