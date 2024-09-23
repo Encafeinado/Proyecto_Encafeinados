@@ -316,7 +316,7 @@ export class MapComponent implements OnInit, OnDestroy {
     switch (destinationName.toLowerCase()) {
       case 'vibrante café':
         return 'assets/images/ruta-vibrante.jpg';
-      case 'aroma':
+      case 'aroma café sabaneta':
         return 'assets/images/ruta-aroma.jpg';
       case 'saudade':
         return 'assets/images/ruta-saudade.jpg';
