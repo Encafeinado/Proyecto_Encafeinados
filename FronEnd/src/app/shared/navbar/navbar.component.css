@@ -8,7 +8,7 @@
   font-family: 'Poppins', sans-serif;
   border-bottom: 3px solid #ffffff; /* Añadimos un borde inferior */
   transition: top 0.3s; /* Transición suave al cambiar la posición */
-  z-index: 1000; /* Asegúrate de que el navbar esté sobre otros elementos */
+  z-index: 1100; /* Asegúrate de que el navbar esté sobre otros elementos */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
