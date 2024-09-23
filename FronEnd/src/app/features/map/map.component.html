@@ -229,13 +229,6 @@
           <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
           <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
         </div>
-        <p class="descripcion-cafe">Información del café</p>
-        <div class="especialidades">
-          <p><i class="fa fa-star"></i> Especialidad 1: {{ specialties1 }}</p>
-          <p><i class="fa fa-star"></i> Especialidad 2: {{ specialties2 }}</p>
-          <p><i class="fa fa-store"></i> Estado de la tienda: <span [class.abierto]="shopStatus"
-              [class.cerrado]="!shopStatus">{{ shopStatus ? 'Abierto' : 'Cerrado' }}</span></p>
-        </div>
       </div>
       <div class="modal-footer-arrive">
         <button type="button" class="btn" (click)="confirmarLlegada()">Si, he llegado</button>
