@@ -1,13 +1,18 @@
 /* Estilos generales para el mapa */
 #map {
-  height: 600px; /* Altura predeterminada para pantallas grandes */
+  height: 450px; /* Altura predeterminada para pantallas grandes */
   width: 100%; /* Asegura que el mapa ocupe el ancho completo */
+  border-radius: 15px; /* Bordes redondeados */
+  overflow: hidden; /* Para asegurar que el contenido del mapa respete el borde redondeado */
 }
+
 
 /* Ajustes para pantallas más pequeñas */
 @media (max-width: 768px) {
   #map {
     height: 50vh; /* Reduce la altura a 50vh en pantallas más pequeñas */
+    border-radius: 10px; /* Ajusta el radio en pantallas más pequeñas */
+
   }
 }
 
@@ -15,18 +20,13 @@
 @media (max-width: 480px) {
   #map {
     height: 40vh; /* Reduce aún más la altura en pantallas muy pequeñas */
+    border-radius: 8px; /* Ajusta el radio para pantallas más pequeñas */
+
   }
 }
 
 .main-content {
-  padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
-}
-
-.alert-info {
-  --bs-alert-color: #007bff; /* Color del texto dentro de la alerta */
-  --bs-alert-bg: #ffffff; /* Color de fondo de la alerta */
-  --bs-alert-border-color: #ffffff; /* Color del borde de la alerta */
-  --bs-alert-link-color: #0056b3; /* Color de los enlaces dentro de la alerta */
+  padding-top: 110px; /* Ajusta este valor según la altura de tu navbar */
 }
 
 /* Estilos comunes para ambos botones */
@@ -97,6 +97,7 @@
 .floating-button i {
   font-size: 24px;
 }
+
 
 /* Contenedor para los botones */
 .button-container-footer {
@@ -216,6 +217,7 @@
   border-top: none;
 }
 
+
 /* Estilos para los botones del pie del modal */
 .modal-footer-review .btn {
   margin: 0 10px;
@@ -252,6 +254,8 @@
   object-fit: cover; /* Hace que la imagen cubra el contenedor sin distorsionarse */
   margin-bottom: 10px;
 }
+
+
 
 .button-container {
   display: flex;
@@ -307,7 +311,9 @@
   left: -25px;
   transform: rotate(2deg);
 }
-
+.align-right {
+  float: right;
+}
 .modal-book::after {
   right: -25px;
   transform: rotate(-2deg);
@@ -446,10 +452,16 @@
   justify-content: center;
 }
 
-.modal-title-coffee {
+.modal-title-create,
+.modal-title-code,
+.modal-title,
+.modal-title-arrive,
+.modal-title-cancelR {
   font-size: 1.5em;
   margin: 0;
 }
+
+
 
 .modal-body-coffee {
   padding: 20px;
@@ -529,13 +541,6 @@
   color: #007bff; /* Color del icono seleccionado */
   background-color: #e2e6ea; /* Fondo más claro al pasar el ratón */
   border-radius: 50%;
-}
-
-.leaflet-routing-container {
-  width: 100%; /* Make it fit the sidebar */
-  max-height: 300px; /* Or another value depending on the available space */
-  overflow-y: auto; /* Scroll if content is too long */
-  margin-top: 20px; /* Add some space above */
 }
 
 .star-rating {
@@ -655,18 +660,46 @@
 
 .modal-info {
   display: flex;
-  align-items: flex-start; /* Alinea el contenido desde la parte superior */
+  align-items: flex-start;
+  justify-content: flex-start; /* Mantiene la imagen a la izquierda y la info a la derecha */
+  flex-direction: row; /* Asegura que estén en una fila en pantallas grandes */
+  flex-wrap: nowrap; /* No permite que los elementos se ajusten a otra línea en pantallas grandes */
 }
 
 .img-cafe {
-  width: 150px;
+  width: 150px; /* Tamaño de la imagen en pantallas grandes */
   height: auto;
-  margin-right: 20px;
+  margin-right: 20px; /* Espacio entre la imagen y la información */
   border-radius: 8px;
 }
 
 .info-cafe {
   flex-grow: 1;
+  min-width: 200px; /* Asegura que la información tenga un ancho mínimo */
+}
+
+/* Media query para pantallas pequeñas */
+@media (max-width: 768px) {
+  .modal-info {
+    flex-wrap: wrap; /* Mantiene los elementos en la misma línea pero permite que se ajusten */
+    align-items: center; /* Centra la imagen y la información en pantallas pequeñas */
+  }
+
+  .img-cafe {
+    width: 100%; /* Imagen ocupa todo el ancho disponible */
+    max-width: 170px; /* Tamaño máximo más pequeño para la imagen */
+    height: auto; /* Mantiene la proporción de la imagen */
+    margin-right: 0; /* Elimina el margen derecho */
+    margin-bottom: 10px; /* Añade un margen inferior */
+    display: block; /* Asegura que la imagen se comporte como un bloque */
+    margin-left: auto; /* Centra horizontalmente la imagen */
+    margin-right: auto; /* Centra horizontalmente la imagen */
+  }
+
+  .info-cafe {
+    width: 100%; /* Asegura que la información ocupe todo el ancho disponible */
+    text-align: center; /* Centra el texto en pantallas pequeñas */
+  }
 }
 
 .descripcion-cafe {
@@ -696,6 +729,16 @@
 
 .cerrado {
   color: #f44336; /* Rojo para estado cerrado */
+}
+
+label {
+  display: block; /* Asegúrate de que el label sea un bloque para aplicar el margen correctamente */
+  margin-bottom: 10px; /* Añade espacio debajo del label */
+}
+textarea.form-control {
+  min-height: calc(1.5em + .75rem + calc(var(--bs-border-width)* 2));
+  resize: none; /* Evita que el usuario cambie el tamaño del textarea */
+  height: auto; /* Mantén el tamaño automático del textarea */
 }
 
 .transport-selection {

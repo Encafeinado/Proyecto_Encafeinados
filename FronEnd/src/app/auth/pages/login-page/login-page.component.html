@@ -9,12 +9,11 @@
                 <img src="../../../../assets/images/logosinfondo.png" alt="Logo" style="width: 100px; height: auto;">
               </div>
               <p class="h5 mb-4 text-center">Iniciar Sesión</p>
-
               <!-- Campo de correo -->
               <div class="wrap-input100 m-b-23 form-outline mb-4">
-                  <!-- Mensaje de error personalizado -->
+               
                   <div *ngIf="showError" class="custom-error">
-                    Correo y/o contraseña invalidas
+                    Correo y/o contraseña incorrectas
                   </div>
                 <span class="label-input100">Correo</span>
               
@@ -34,18 +33,18 @@
                 <div *ngIf="myForm.get('email')?.touched && !myForm.get('email')?.pending && myForm.get('email')?.hasError('required')" class="error-message">
                   El campo correo es obligatorio.
                 </div>
-                <div *ngIf="myForm.get('email')?.touched && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidEmailFormat')" class="error-message">
-                  El formato del correo electrónico es inválido.
+                <div *ngIf="myForm.get('email')?.dirty && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidEmailFormat')" class="error-message">
+                  El formato del correo  es incorrecto.
                 </div>
-                <div *ngIf="myForm.get('email')?.touched && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidDomain')" class="error-message">
-                  El formato del correo electrónico no es válido.
+                <div *ngIf="myForm.get('email')?.dirty && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidDomain')" class="error-message">
+                  El formato del correo  no es válido.
                 </div>
                 
                 
               </div>
               <div class="form-outline mb-4">
                 <span class="label-input100">Contraseña</span>
-                <div class="input-with-eye">
+                <div class="wrap-input100">
                   <input 
                     class="input100 small-placeholder form-control" 
                     type="{{ hidePassword ? 'password' : 'text' }}" 
@@ -64,7 +63,7 @@
                   El campo contraseña es obligatorio.
                 </div>
                
-                <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('invalidPassword')" class="error-message">
+                <div *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('invalidPassword')" class="error-message">
                   La contraseña es incorrecta.
                 </div>
               </div>

@@ -1,5 +1,6 @@
+/* Contenedor principal para centrar y limitar el ancho */
 .profile-container {
-  max-width: 600px;
+  max-width: 1200px; /* Ajuste para un mayor ancho en pantalla grande */
   margin: 0 auto;
   padding: 20px;
   background-color: #f9f9f9;
@@ -7,46 +8,174 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.profile-header {
-  text-align: center;
-  font-size: 2em;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-.profile-details {
-  display: flex;
-  flex-direction: column;
-}
-
-.profile-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.profile-item:last-child {
-  border-bottom: none;
-}
-
-.profile-item label {
-  font-weight: bold;
-  color: #555;
-}
-
-.profile-item p {
-  color: #666;
-  margin: 0;
-}
-
-.shop-logo {
-  max-width: 150px; /* Ajusta el tamaño máximo del logo */
-  max-height: 150px; /* Ajusta la altura máxima del logo */
-  border-radius: 8px; /* Opcional: agrega bordes redondeados */
-}
-
+/* Ajuste de contenido principal con padding adicional para el navbar */
 .main-content {
   padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
 }
 
+/* Sección de reseñas */
+.reviews-section {
+  margin-top: 20px;
+  text-align: center;   
+}
+
+.reviews-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Diseño de cuadrícula adaptable */
+  gap: 1rem;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+.review-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidad */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Mayor profundidad al pasar el cursor */
+}
+
+/* Estilo para el contenido dentro de la tarjeta */
+.review-content {
+  font-size: 1rem;
+  color: #333;
+}
+
+.review-item {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  color: #333;
+}
+
+.review-item:last-child {
+  border-bottom: none;
+}
+
+/* Contenedor para estadísticas con espacio entre cuadros */
+.stats-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap; /* Esto permitirá que los cuadros se ajusten en pantallas pequeñas */
+}
+
+/* Cuadros de estadísticas */
+.stat-box {
+  flex: 1;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column; /* Para que el contenido se organice verticalmente */
+  align-items: center; /* Centra los elementos */
+  text-align: center; /* Asegura que el texto esté centrado */
+  max-width: 300px; /* Añade un límite de ancho para pantallas más grandes */
+  margin: 0 auto; /* Centra las tarjetas en pantallas pequeñas */
+}
+.stat-box h2 {
+  margin: 0;
+  font-size: 1.25rem; /* Ajusta el tamaño del título */
+  font-weight: bold;
+  color: #333;
+  text-align: center; /* Centra el texto dentro de stat-box */
+
+}
+.stat-box .text-xl {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000;
+  margin-top: 10px;
+}
+@media (max-width: 768px) {
+  .stat-box {
+    max-width: 100%; /* Deja que ocupen todo el ancho disponible en pantallas pequeñas */
+  }
+}
+
+.stat-box h2 {
+  display: inline-block; /* O usa flex si es adecuado */
+  font-size: 1rem;
+  padding: 0;
+  margin: 0;
+  border: 1px solid transparent; /* Este truco evita el colapso de márgenes */
+}
+/* Mejorar la presentación del texto */
+.block {
+  font-size: 14px;
+  color: #666;
+}
+
+.text-xl {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Contenedor de todas las tiendas */
+.shops-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Esto crea una cuadrícula adaptable */
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Tarjeta de cada tienda */
+.shop-card {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shop-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilo para los detalles dentro de cada tarjeta */
+.shop-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.shop-name {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.shop-info {
+  font-size: 0.875rem;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: normal; /* Asegura que el número no sea negrita */
+}
+.shop-info i {
+  color: #ffbf00; /* Color de icono de estrellas */
+}
+
+/* Ajustes generales de layout para un mejor uso del espacio */
+body {
+  background: linear-gradient(to right, #e6e9f0, #eef1f5); /* Degradado suave */
+}
+
+.card {
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.title-bold {
+  font-weight: bold;
+  color: #333; /* O el color que prefieras para los títulos */
+}

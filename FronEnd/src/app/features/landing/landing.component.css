@@ -124,12 +124,14 @@ header p {
 
 
 
-.main-content[_ngcontent-ng-c3212078885] {
-  padding-top: 120px;
+.main-content{
+  padding-top: 40px;
 }
 
-
-.text-content[_ngcontent-ng-c3212078885] .subtitle[_ngcontent-ng-c3212078885] {
+.section-dividerr {
+  height: 45px; /* Reduce el espacio entre secciones en móviles */
+}
+.text-content[_ngcontent-ng-c2524210291] .subtitle[_ngcontent-ng-c2524210291] {
   font-size: 2em;
   color: #000000;
   white-space: pre-line;
@@ -139,7 +141,7 @@ header p {
   text-align: center; /* Centra el texto horizontalmente */
 }
 
-.text-content[_ngcontent-ng-c3212078885] .title[_ngcontent-ng-c3212078885] {
+.text-content[_ngcontent-ng-c2524210291] .title[_ngcontent-ng-c2524210291] {
   font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
   font-weight: 600; /* Peso Semibold */
   font-size: 2.7em; /* Tamaño de fuente */
@@ -257,6 +259,10 @@ footer p {
 /* Ajustes responsivos para pantallas pequeñas */
 @media (max-width: 768px) {
 
+  .main-content{
+    padding-top: 100px;
+  }
+  
   .contact-action-content {
     flex-direction: column; /* Cambia la dirección a columna en pantallas pequeñas */
     gap: 10px; /* Reduce el espacio entre las columnas */
@@ -332,8 +338,10 @@ footer p {
   
 
   .carousel-item img {
-    height: 300px; /* Altura máxima para evitar que el carrusel se vuelva muy grande */
-    width: 100%; /* Asegura que la imagen se ajuste al ancho del carrusel */
+    height: 100%;
+    width: 100%;
+    object-fit: cover; /* Ajusta la imagen para que cubra el contenedor sin distorsionarse */
+    border-radius: 20px;
   }
 
   .carousel-inner {
@@ -359,6 +367,9 @@ footer p {
 }
 
 @media (max-width: 576px) {
+  .main-content{
+    padding-top: 130px;
+  }
 
   .contact-info h2,
   .action-info h2 {
@@ -481,6 +492,28 @@ footer p {
 
 .carousel-indicators .active {
   background-color: #0f1eee; /* Color azul para el indicador activo */
+}
+/* Estilos específicos para iOS */
+@supports (-webkit-touch-callout: none) {
+  /* Aplicamos cambios solo para Safari en iOS */
+
+  .carousel-item img {
+    height: 100%; /* Asegura que la imagen ocupe el contenedor */
+    width: 100%; /* Asegura que la imagen se ajuste al ancho del carrusel */
+    object-fit: cover; /* Ajusta la imagen para cubrir el contenedor sin distorsión */
+    border-radius: 20px; /* Bordes redondeados */
+  }
+
+  .carousel-inner {
+    height: auto; /* Ajuste automático de la altura en iOS */
+  }
+
+  .carousel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto; /* Ajuste automático para iOS */
+  }
 }
 
 
