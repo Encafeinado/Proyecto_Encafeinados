@@ -1,18 +1,19 @@
 <div class="main-content1">
   <div class="store-content">
     <div class="header">
-      <h1>Bienvenido a la tienda de cafés de especialidad</h1>
+      <h1><strong>Bienvenido a la página de tu café de especialidad</strong></h1>
     </div>
     <div class="main-content">
       
       <div class="info">
-        <h2>Código de la tienda</h2>
-        <p>Tu código aleatorio es: <strong>{{ codigo }}</strong></p>
-        <p>Número de personas que han ingresado el código: <strong>{{ codeEntries }}</strong></p>
+        <h2><strong>Código de la tienda</strong></h2>
+        <p><strong>Tu código aleatorio es:</strong> {{ codigo }}</p>
+        <p><strong>Número de personas que han ingresado el código:</strong> {{ codeEntries }}</p>
         <button class="btn" (click)="useCode()">Generar un nuevo código</button>
       </div>
+      
       <div class="activation-section">
-        <h2>Activar Tienda en el Mapa</h2>
+        <h2><strong>Activar Tienda en el Mapa</strong></h2>
         <button class="btn" (click)="openModal()">
           {{ isStoreOpen ? 'Cerrar Tienda' : 'Abrir Tienda' }}
         </button>
@@ -23,33 +24,41 @@
         </div>
       </div>
     </div>
+    <br>
     <div class="info">
       <div class="average-rating">
-        <h2>Promedio de Calificaciones</h2>
-        <p>{{ averageRating | number:'1.1-1' }} estrellas</p>
+        <h1><strong>Promedio de Calificaciones</strong></h1>
+        <h2> {{ averageRating | number:'1.1-1' }} estrellas</h2>
+      
         <div class="reviews-section">
-          <h2>Reseñas de Clientes</h2>
-          
-          <!-- Contenedor común para ambas columnas con scrollbar -->
+          <h2><strong>Reseñas de Clientes</strong></h2>
+        
+          <!-- Contenedor común con scrollbar -->
           <div class="scrollable-container">
             <div class="review-rating-container">
-              <div class="reviews-column">
-                <div *ngFor="let review of reviews" class="review">
-                  <p><strong>Comentario:</strong> {{ review.text }}</p>
+        
+              <!-- Sección de reseñas y calificaciones combinadas -->
+              <div *ngFor="let review of reviews; let i = index" class="review-card">
+                <div class="card-header">
+                  <strong>Comentario:</strong>
                 </div>
-              </div>
-              
-              <div class="ratings-column">
-                <div *ngFor="let rating of ratings" class="rating">
-                  <p><strong>Calificación:</strong> {{ rating.stars }} </p>
+                <div class="card-body">
+                  <p>{{ review.text }}</p>
+                  <div class="card-header">
+                    <strong>Calificación:</strong>
+                  </div>
+                  <div class="card-body">
+                    <p> {{ ratings[i]?.stars }} de 5 estrellas</p>
+                  </div>
                 </div>
-              </div>
+              </div>   
             </div>
           </div>
-          
         </div>
-      </div>
+        
+      </div>      
     </div>
+    
     
     
   

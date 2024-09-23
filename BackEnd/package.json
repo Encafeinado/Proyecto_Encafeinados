@@ -35,7 +35,7 @@
     "express": "^4.19.2",
     "express-fileupload": "^1.5.0",
     "install": "^0.13.0",
-    "mongoose": "^8.5.1",
+    "mongoose": "^8.6.2",
     "nest": "^0.1.6",
     "nodemailer": "^6.9.14",
     "npm": "^10.8.2",

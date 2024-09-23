@@ -33,6 +33,7 @@ export class MapComponent implements OnInit, OnDestroy {
   modalRef!: NgbModalRef;
   reviewApp: string = '';
   openedModal = false;
+  modalAbierto = false; // Flag para verificar si el modal ya ha sido mostrado
   verifiedcode: boolean = false;
   destinationName!: string;
   specialties1!: string;
@@ -62,11 +63,16 @@ export class MapComponent implements OnInit, OnDestroy {
     lng: -75.61905204382627,
   };
   zoom = 15;
+  currentImageUrl!: string;
   rutaActiva: boolean = false;
   routeDetails: string | undefined;
   markerPosition: google.maps.LatLngLiteral | undefined;
+  directionsResult: google.maps.DirectionsResult | null = null;
+  ultimaPosicion: google.maps.LatLngLiteral | null = null; // Para almacenar la última posición
   watchId: number | undefined;
-  instruccionesRuta: string[] = [];
+  instruccionesRuta: string[] = []; // Lista completa de instrucciones
+  instruccionesActuales: string[] = []; // Instrucciones que se mostrarán de a 2
+  currentInstructionIndex: number = 0;
   private directionsService: google.maps.DirectionsService =
     new google.maps.DirectionsService();
   private directionsRendererInstance: google.maps.DirectionsRenderer =
@@ -94,8 +100,8 @@ export class MapComponent implements OnInit, OnDestroy {
     zoomControl: false,
   };
   iconoUbicacionUsuario = {
-    url: 'assets/IconsMarker/cosechaUser.png', // Ruta desde la raíz pública
-    scaledSize: new google.maps.Size(40, 40),
+    url: 'assets/IconsMarker/cafeino.png', // Ruta desde la raíz pública
+    scaledSize: new google.maps.Size(50, 50),
     rotation: 0,
   };
   iconoTienda = {
@@ -177,12 +183,19 @@ export class MapComponent implements OnInit, OnDestroy {
         this.position = position;
         this.map = map;
         this.div = document.createElement('div');
+
+        // Estilos de la bolita
         this.div.style.borderRadius = '50%';
         this.div.style.backgroundColor = status ? 'green' : 'red';
         this.div.style.width = '10px';
         this.div.style.height = '10px';
+
+        // Contorno blanco (borde)
+        this.div.style.border = '1.8px solid white'; // Borde blanco de 1.8px
+
+        // Posicionamiento y transformación
         this.div.style.position = 'absolute';
-        this.div.style.transform = 'translate(30%, -458%)';
+        this.div.style.transform = 'translate(70%, -458%)';
 
         this.setMap(map);
       }
@@ -230,6 +243,7 @@ export class MapComponent implements OnInit, OnDestroy {
       status: shop.statusShop,
       specialties1: shop.specialties1,
       specialties2: shop.specialties2,
+      imageUrl: this.getShopImageUrl(shop.name),
     }));
 
     const mapElement = document.getElementById('map') as HTMLElement;
@@ -277,7 +291,8 @@ export class MapComponent implements OnInit, OnDestroy {
               markerData.title,
               markerData.status,
               markerData.specialties1,
-              markerData.specialties2
+              markerData.specialties2,
+              markerData.imageUrl
             );
           });
         } else {
@@ -290,13 +305,27 @@ export class MapComponent implements OnInit, OnDestroy {
       // Actualización periódica de los estados
       setInterval(() => {
         this.actualizarEstadosTiendas();
-        console.log('Actualizado los estados');
+        // console.log('Actualizado los estados');
       }, 10000);
     } else {
       console.error('Elemento del mapa no encontrado.');
     }
   }
-  
+
+  getShopImageUrl(destinationName: string): string {
+    switch (destinationName.toLowerCase()) {
+      case 'vibrante café':
+        return 'assets/images/ruta-vibrante.jpg';
+      case 'aroma':
+        return 'assets/images/ruta-aroma.jpg';
+      case 'saudade':
+        return 'assets/images/ruta-saudade.jpg';
+      case 'milagro coffee shop':
+        return 'assets/images/ruta-milagro.jpg';
+      default:
+        return 'assets/images/default-image.jpg'; // Imagen por defecto si no coincide el nombre
+    }
+  }
 
   // Método para actualizar los estados de las tiendas
   actualizarEstadosTiendas(): void {
@@ -313,7 +342,7 @@ export class MapComponent implements OnInit, OnDestroy {
           const tiendaActualizada = data.find((d: any) => d.name === shop.name);
           if (tiendaActualizada) {
             shop.statusShop = tiendaActualizada.statusShop;
-            console.log('Holaaaa1');
+            // console.log('Holaaaa1');
           }
         });
 
@@ -324,7 +353,7 @@ export class MapComponent implements OnInit, OnDestroy {
           );
           if (shop) {
             overlayData.overlay.updateStatus(shop.statusShop);
-            console.log('Holaaaa');
+            // console.log('Holaaaa');
           }
         });
       },
@@ -334,48 +363,108 @@ export class MapComponent implements OnInit, OnDestroy {
     );
   }
 
-  // Actualiza rastrearUbicacionUsuario para recalcular la ruta y ajustar el zoom
+  interpolarPosicion(
+    posicionInicial: google.maps.LatLngLiteral,
+    posicionFinal: google.maps.LatLngLiteral,
+    factor: number
+  ): google.maps.LatLngLiteral {
+    return {
+      lat:
+        posicionInicial.lat +
+        (posicionFinal.lat - posicionInicial.lat) * factor,
+      lng:
+        posicionInicial.lng +
+        (posicionFinal.lng - posicionInicial.lng) * factor,
+    };
+  }
+
   rastrearUbicacionUsuario() {
     if (navigator.geolocation) {
       this.watchId = navigator.geolocation.watchPosition(
         (position) => {
-          this.center = {
+          // Verificar si el modal está abierto; si lo está, detener el seguimiento de la ubicación
+          if (this.modalAbierto && this.rutaActiva) {
+            console.log('El modal está abierto, se detiene el cálculo de la ubicación.');
+            if (this.watchId !== undefined) {
+              navigator.geolocation.clearWatch(this.watchId); // Solo limpiar si watchId tiene valor
+            }
+            return; // Salir de la función y evitar recalcular mientras el modal esté abierto
+          }
+  
+          const nuevaPosicion = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-          this.markerPosition = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
   
-          console.log(
-            'Ubicación del usuario actualizada:',
-            this.markerPosition
-          );
+          // Si ya tienes una posición previa, realiza la interpolación
+          if (this.markerPosition) {
+            const pasos = 10; // Cuantos más pasos, más suave será la transición
+            const duracion = 1000; // Tiempo total de la interpolación en milisegundos
+            const intervalo = duracion / pasos;
+            let pasoActual = 0;
   
-          // Actualiza el marcador de ubicación del usuario
-          this.actualizarMarcadorUbicacionUsuario();
+            const intervaloId = setInterval(() => {
+              pasoActual++;
+              const factor = pasoActual / pasos;
+              const posicionInterpolada = this.interpolarPosicion(
+                this.markerPosition!,
+                nuevaPosicion,
+                factor
+              );
   
-          // Verifica si está cerca del destino
-          this.verificarCercaniaADestino();
+              // Actualiza la posición del marcador en el mapa
+              this.markerUsuario?.setPosition(posicionInterpolada);
   
-          const map = this.directionsRendererInstance.getMap();
-          if (map) {
-            if (this.rutaActiva) {
-              map.panTo(this.markerPosition);
+              this.verificarAvanceInstrucciones();
+              if (pasoActual >= pasos) {
+                clearInterval(intervaloId);
+                this.markerPosition = nuevaPosicion;
   
-              if (this.debeRecalcularRuta(this.markerPosition)) {
-                this.calcularRuta();
+                // Verificar cercanía al destino solo si el modal no está abierto
+                if (!this.modalAbierto) {
+                  this.verificarCercaniaADestino();
+                }
+  
+                // Actualización de la ruta si está activa
+                if (this.rutaActiva) {
+                  const map = this.directionsRendererInstance.getMap();
+                  if (map) {
+                    map.panTo(this.markerPosition);
+                    if (this.debeRecalcularRuta(this.markerPosition)) {
+                      this.calcularRuta(); // Recalcular la ruta
+                    }
+                  }
+                }
               }
-            } else {
-              map.setOptions({
-                draggable: true,
-                scrollwheel: true,
-              });
+            }, intervalo);
+          } else {
+            // Si es la primera vez que obtienes la posición
+            this.markerPosition = nuevaPosicion;
+            this.markerUsuario?.setPosition(this.markerPosition);
+            
+            // Verificar cercanía al destino solo si el modal no está abierto
+            if (!this.modalAbierto) {
+              this.verificarCercaniaADestino();
             }
           }
   
-          this.solicitarPermisoOrientacion();
+          if (!this.hasZoomed) {
+            const map = this.directionsRendererInstance.getMap();
+            if (map) {
+              map.setZoom(17); // Zoom inicial en la ubicación del usuario
+              map.panTo(this.markerPosition);
+              this.hasZoomed = true; // Evitar futuros zooms automáticos
+              this.solicitarPermisoOrientacion();
+            }
+          }
+  
+          console.log('Ubicación del usuario actualizada:', this.markerPosition);
+          this.actualizarMarcadorUbicacionUsuario();
+  
+          // Actualizar detalles de la ruta si la ruta está activa
+          if (this.rutaActiva && this.directionsResult) {
+            this.obtenerDetallesRuta(this.directionsResult);
+          }
         },
         (error) => {
           console.error('Error rastreando la ubicación', error);
@@ -390,7 +479,149 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Geolocalización no es soportada por este navegador.');
     }
   }
+
+  // Método para calcular la distancia entre dos puntos (en metros)
+  calcularDistancia(
+    lat1: number,
+    lng1: number,
+    lat2: number,
+    lng2: number
+  ): number {
+    const origen = new google.maps.LatLng(lat1, lng1);
+    const destino = new google.maps.LatLng(lat2, lng2);
   
+    const distancia = google.maps.geometry.spherical.computeDistanceBetween(
+      origen,
+      destino
+    );
+  
+    return distancia; // Devuelve la distancia en metros
+  }  
+
+  // Método para obtener la distancia entre el marcador y el destino usando Google Maps Directions API
+  obtenerDistanciaConDirecciones(
+    origen: google.maps.LatLngLiteral,
+    destino: google.maps.LatLngLiteral
+  ): Promise<number> {
+    return new Promise((resolve, reject) => {
+      const directionsService = new google.maps.DirectionsService();
+
+      const request: google.maps.DirectionsRequest = {
+        origin: origen,
+        destination: destino,
+        travelMode: google.maps.TravelMode.DRIVING,
+      };
+
+      directionsService.route(request, (result, status) => {
+        // Verificar que el resultado y las propiedades necesarias no sean undefined
+        if (
+          status === google.maps.DirectionsStatus.OK &&
+          result?.routes?.[0]?.legs?.[0]?.distance?.value
+        ) {
+          const distancia = result.routes[0].legs[0].distance.value; // Distancia en metros
+          resolve(distancia);
+        } else {
+          reject('No se pudo obtener la distancia');
+        }
+      });
+    });
+  }
+
+  verificarCercaniaADestino() {
+    if (
+      this.markerPosition &&
+      this.destinationName &&
+      this.rutaActiva &&
+      !this.hasArrived
+    ) {
+      console.log('Verificando cercanía al destino...', this.destinationName);
+
+      if (
+        typeof this.destinationName === 'object' &&
+        'lat' in this.destinationName &&
+        'lng' in this.destinationName
+      ) {
+        const lat2 = (this.destinationName as { lat: number; lng: number }).lat;
+        const lng2 = (this.destinationName as { lat: number; lng: number }).lng;
+
+        // Calcula la distancia y verifica cercanía
+        this.procesarVerificacionCercania(lat2, lng2);
+      } else {
+        // Si no hay coordenadas, usa el nombre del destino para obtenerlas
+        this.obtenerCoordenadasDestino(this.destinationName)
+          .then((coords) => {
+            console.log('Coordenadas obtenidas del destino:', coords);
+            this.procesarVerificacionCercania(coords.lat, coords.lng);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    } else {
+      console.error(
+        'Posición del marcador, destino o ruta no definidos, o ya se ha llegado.'
+      );
+    }
+  }
+
+  procesarVerificacionCercania(lat2: number, lng2: number) {
+    if (!this.markerPosition) {
+      console.error('Posición del marcador no está definida.');
+      return;
+    }
+
+    // Calcular la distancia en tiempo real
+    const distancia = this.calcularDistancia(
+      this.markerPosition.lat,
+      this.markerPosition.lng,
+      lat2,
+      lng2
+    );
+
+    console.log(`Distancia calculada: ${distancia} metros`);
+
+    // Si la distancia es menor o igual a 12 metros, abrir el modal
+    if (distancia < 80  && !this.modalAbierto) {
+      console.log('Abriendo modal de llegada...');
+      this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
+      this.modalAbierto = true; // Marcar que el modal ha sido mostrado
+    }
+
+    // No volver a cerrar el modal si ya está abierto
+    if (this.modalAbierto) {
+      console.log(
+        `El modal ya está abierto. Distancia actual: ${distancia} metros`
+      );
+    } else {
+      console.log(
+        `Aún no cerca del destino. Distancia actual: ${distancia} metros`
+      );
+    }
+  }
+  
+
+  // Método para obtener las coordenadas del destino utilizando Google Maps Geocoding API
+  obtenerCoordenadasDestino(
+    destino: string
+  ): Promise<google.maps.LatLngLiteral> {
+    return new Promise((resolve, reject) => {
+      const geocoder = new google.maps.Geocoder();
+
+      geocoder.geocode({ address: destino }, (results, status) => {
+        if (status === 'OK' && results && results[0]) {
+          const location = results[0].geometry.location;
+          const coordinates: google.maps.LatLngLiteral = {
+            lat: location.lat(),
+            lng: location.lng(),
+          };
+          resolve(coordinates);
+        } else {
+          reject('No se pudieron obtener las coordenadas del destino');
+        }
+      });
+    });
+  }
+
   // Método para determinar si la ruta debe ser recalculada
   debeRecalcularRuta(nuevaPosicion: google.maps.LatLngLiteral): boolean {
     // Implementa una lógica para determinar si la ruta debe ser recalculada
@@ -427,16 +658,17 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  centerOnUserLocation() {
+  centerOnUserLocation(clickTriggered: boolean = false) {
     if (this.markerPosition) {
       const map = this.directionsRendererInstance.getMap();
       if (map) {
+        // Centra el mapa en la posición del marcador del usuario
         map.panTo(this.markerPosition);
 
-        if (this.rutaActiva) {
-          // Solo ajustar el zoom si hay una ruta activa
+        // Si se activó por el clic del botón, ajusta el zoom
+        if (clickTriggered || this.rutaActiva) {
           setTimeout(() => {
-            map.setZoom(17); // Ajusta el nivel de zoom según sea necesario
+            map.setZoom(18); // Ajusta el nivel de zoom según sea necesario
           }, 300);
         }
       }
@@ -486,21 +718,40 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   calcularHeading(event: DeviceOrientationEvent): number | null {
-    if (event.alpha === null) {
+    if (event.alpha === null || event.beta === null || event.gamma === null) {
       return null;
     }
 
-    // Obtiene el heading en grados basado en el evento alpha
-    let heading = event.alpha;
+    // Detecta si el dispositivo es iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-    // Aplica la orientación del dispositivo
-    const orientacion = window.screen.orientation.angle || 0;
+    // Detecta la orientación del dispositivo (por si la pantalla está en modo horizontal)
+    const orientacion = window.screen.orientation?.angle || 0;
 
-    // Ajusta el heading aplicando la orientación del dispositivo y corrige el signo
-    heading = (heading - orientacion + 360) % 360;
+    // Ajusta el heading basado en los ejes del dispositivo
+    let heading = event.alpha; // Alpha determina el heading (norte-sur)
 
-    // Si la orientación sigue al revés, invierte el heading
-    heading = (360 - heading) % 360;
+    if (isIOS) {
+      // En iOS, el eje "alpha" está invertido
+      heading = 360 - heading;
+
+      // Ajuste cuando el dispositivo está en modo horizontal (pantalla rotada) en iOS
+      if (orientacion === 90) {
+        heading = (heading + 270) % 360; // Rotación a la derecha
+      } else if (orientacion === -90) {
+        heading = (heading + 90) % 360; // Rotación a la izquierda
+      }
+    } else {
+      // Ajustes para Android
+      if (orientacion === 90) {
+        heading = (heading + 90) % 360; // Rotación a la derecha en Android
+      } else if (orientacion === -90) {
+        heading = (heading + 270) % 360; // Rotación a la izquierda en Android
+      }
+    }
+
+    // Aplica la orientación del dispositivo en ambos sistemas
+    heading = (heading + orientacion + 360) % 360;
 
     return heading;
   }
@@ -540,16 +791,14 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     if (result) {
-      // Actualiza la posición y rotación del marcador de flecha
       const route = result.routes[0];
       const legs = route.legs;
-      const step = legs[0].steps[0]; // Asume que quieres el primer paso
+      const step = legs[0].steps[0];
 
       if (step) {
         const position = step.start_location;
 
         if (this.markerUsuario) {
-          // Actualiza el marcador de flecha existente
           this.markerUsuario.setPosition(position);
           this.markerUsuario.setIcon({
             path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
@@ -560,7 +809,6 @@ export class MapComponent implements OnInit, OnDestroy {
             strokeWeight: 2,
           });
         } else {
-          // Crea un nuevo marcador de flecha si no existe
           this.markerUsuario = new google.maps.Marker({
             position: position,
             map: map,
@@ -635,6 +883,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
     this.directionsService.route(request, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK && result) {
+        this.directionsResult = result; // Almacena el resultado aquí
         this.directionsRendererInstance.setDirections(result);
         this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
@@ -644,6 +893,10 @@ export class MapComponent implements OnInit, OnDestroy {
           this.modalRef.close();
         }
         this.actualizarRotacionMarcador(0, result); // Actualiza la rotación y la flecha
+
+        if (this.rutaActiva && this.markerPosition) {
+          this.verificarCercaniaADestino();
+        }
       } else {
         this.rutaActiva = false;
         console.error('Error al calcular la ruta:', status, result);
@@ -671,24 +924,90 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Guardar las instrucciones iniciales de la ruta
   obtenerDetallesRuta(result: google.maps.DirectionsResult) {
     if (result.routes.length > 0) {
       const route = result.routes[0];
       if (route.legs.length > 0) {
         const leg = route.legs[0];
-        const duration = leg.duration?.text;
-        const distance = leg.distance?.text;
-        const destination = leg.end_address;
 
-        this.routeDetails = `Distancia: ${distance}, Tiempo estimado: ${duration}, Destino: ${destination}`;
+        // Aquí obtienes la distancia, duración y el nombre del destino
+        const distance = leg.distance?.value || 0;
+        const duration = leg.duration?.text || 'Duración no disponible';
+        const destination = leg.end_address || 'Destino no disponible';
+
+        // Almacenar los detalles de la ruta
+        this.routeDetails = `Distancia: ${distance} metros, Tiempo estimado: ${duration}, Destino: ${destination}`;
         console.log(this.routeDetails);
 
+        // Limpiar y resetear las instrucciones
         this.instruccionesRuta = [];
+        this.currentInstructionIndex = 0;
+
+        // Guardar todas las instrucciones de la ruta
         leg.steps.forEach((step) => {
           this.instruccionesRuta.push(step.instructions);
         });
+
+        // Mostrar las primeras 2 instrucciones
+        this.mostrarInstrucciones();
       }
     }
+  }
+
+  // Método para mostrar siempre 2 instrucciones
+  mostrarInstrucciones() {
+    // Mostrar solo dos instrucciones a la vez
+    const nextInstructions = this.instruccionesRuta.slice(
+      this.currentInstructionIndex,
+      this.currentInstructionIndex + 1
+    );
+
+    console.log('Instrucciones actuales:', nextInstructions);
+
+    // Actualizar la vista con las instrucciones actuales
+    this.instruccionesActuales = nextInstructions;
+  }
+
+  // Avanzar en las instrucciones de a 2
+  avanzarInstrucciones() {
+    if (this.currentInstructionIndex < this.instruccionesRuta.length - 1) {
+      this.currentInstructionIndex += 1;
+      this.mostrarInstrucciones();
+    }
+  }
+
+  // Método para verificar si el usuario ha avanzado más de 50 metros
+  verificarAvanceInstrucciones() {
+    if (this.markerPosition && this.ultimaPosicion) {
+      const distanciaRecorrida = this.calcularDistancia(
+        this.markerPosition.lat,
+        this.markerPosition.lng,
+        this.ultimaPosicion.lat,
+        this.ultimaPosicion.lng
+      );
+
+      // Si la distancia recorrida supera el umbral de 50 metros, avanzamos a la siguiente instrucción
+      if (distanciaRecorrida >= 20) {
+        if (this.currentInstructionIndex < this.instruccionesRuta.length - 1) {
+          this.avanzarInstrucciones();
+        }
+        // Actualizamos la última posición para futuras comparaciones
+        this.ultimaPosicion = this.markerPosition;
+      }
+    } else {
+      // Si es la primera vez que se llama, inicializamos ultimaPosicion
+      this.ultimaPosicion = this.markerPosition || null;
+    }
+  }
+
+  openModalCancelRuta(): void {
+    this.openModal(this.cancelModal, '', '', '', '', '');
+  }
+
+  confirmarRutaCancelada() {
+    this.cancelarRuta(); // Llama al método para cancelar la ruta
+    this.modalRef.close();
   }
 
   cancelarRuta() {
@@ -701,69 +1020,62 @@ export class MapComponent implements OnInit, OnDestroy {
 
       // Vuelve a iniciar el mapa y mostrar los marcadores
       this.iniciarMapa();
-      console.log('Ruta cancelada y mapa actualizado.');
+      if (this.markerPosition) {
+        const map = this.directionsRendererInstance.getMap();
+        if (map) {
+          // Centra el mapa en la posición del marcador del usuario
+          map.panTo(this.markerPosition);
+
+          setTimeout(() => {
+            map.setZoom(17); // Ajusta el nivel de zoom según sea necesario
+          }, 300);
+        }
+      }
+      this.modalAbierto = false;
+      console.log('Ruta cancelada, mapa actualizado y centrado en el usuario.');
     } else {
       console.error('No se encontró la instancia de DirectionsRenderer.');
     }
   }
 
-  calcularDistancia(lat1: number, lng1: number, lat2: number, lng2: number): number {
-    const R = 6371e3; // Radio de la Tierra en metros
-    const φ1 = (lat1 * Math.PI) / 180; // lat1 en radianes
-    const φ2 = (lat2 * Math.PI) / 180; // lat2 en radianes
-    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-    const Δλ = ((lng2 - lng1) * Math.PI) / 180;
-  
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) *
-      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  
-    const distancia = R * c; // En metros
-    return distancia;
-  }
-  
-  verificarCercaniaADestino() {
-    if (this.markerPosition && this.destinationName) {
-      let lat2: number;
-      let lng2: number;
-  
-      if (typeof this.destinationName === 'object' && 'lat' in this.destinationName && 'lng' in this.destinationName) {
-        // Convertir explícitamente this.destinationName al tipo LatLngLiteral
-        const destinationCoords = this.destinationName as google.maps.LatLngLiteral;
-        lat2 = destinationCoords.lat;
-        lng2 = destinationCoords.lng;
-      } else {
-        console.error('El destino no tiene coordenadas válidas.');
-        return;
-      }
-  
-      const distancia = this.calcularDistancia(
-        this.markerPosition.lat,
-        this.markerPosition.lng,
-        lat2,
-        lng2
-      );
-  
-      console.log(`Distancia al destino: ${distancia} metros`);
-  
-      if (distancia <= 12 && !this.hasArrived) { // 100 metros como umbral
-        this.hasArrived = true;
-        this.openModal(this.arriveModal, this.destinationName, '', '', '');
-      }
-    }
-  }
-
   confirmarLlegada() {
+    // Evitar que se confirme la llegada más de una vez si el proceso ya se completó
+    if (this.hasArrived) {
+      return; // Salir si ya se ha confirmado la llegada
+    }
+
+    // Marca que la llegada fue confirmada
+    this.hasArrived = true;
+
+    // Cancela la ruta actual y limpia el mapa
     this.cancelarRuta();
-    this.modalRef?.close(); // Cierra el modal
-    this.hasArrived = true; // Marca que ya has llegado
-    console.log('Ruta cancelada. Has llegado al destino.');
+
+    // Cierra el modal de llegada si está abierto
+    if (this.modalRef) {
+      this.modalRef.close();
+      this.openedModal = false; // Resetear el estado de openedModal
+    }
+
+    // Reiniciar el estado para permitir seleccionar una nueva ruta
+    this.hasArrived = false; // Permitir seleccionar nuevas rutas después de cerrar el modal
+    this.rutaActiva = false; // Reinicia la ruta activa
+    this.modalAbierto = false;
+    this.rastrearUbicacionUsuario();
+    // No es necesario reiniciar el mapa, solo actualizar el estado
+    console.log('Ruta cancelada. Puedes seleccionar una nueva tienda.');
   }
 
-  closeAlert(): void {
-    this.showAlert = false;
+  cancelarLLegada(modal: any): void {
+    if (!this.rutaActiva) {
+      console.warn('No hay una ruta activa, no se puede cancelar la llegada.');
+      return;
+    }
+
+    modal.dismiss('cancel');
+    setTimeout(() => {
+      this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
+      this.modalAbierto = true;
+    }, 10000); // 10 segundos
   }
 
   setRating(rating: number): void {
@@ -779,51 +1091,51 @@ export class MapComponent implements OnInit, OnDestroy {
     );
   }
 
-  cancelArrive(modal: any): void {
-    modal.dismiss('cancel');
-    setTimeout(() => {
-      this.openModal(this.arriveModal, this.destinationName, '', '', '');
-    }, 10000); // 10 segundos
-  }
-
   openModal(
     content: any,
     destinationName: string,
     status: string,
     specialties1: string,
-    specialties2: string
+    specialties2: string,
+    imageUrl: string
   ): void {
-    if (!this.openedModal && !this.hasArrived) {
-      // Verifica que no se haya confirmado la llegada
-      this.destinationName = destinationName;
-      this.shopStatus = status;
-      this.specialties1 = specialties1;
-      this.specialties2 = specialties2;
-      this.openedModal = true;
-      this.modalRef = this.modalService.open(content, {
-        centered: true,
-        backdrop: 'static',
-      });
-      this.modalRef.result.finally(() => {
-        this.openedModal = false;
-      });
+    // Evitar abrir múltiples modales o abrir modal si ya se ha llegado
+    if (this.openedModal || this.hasArrived) {
+      return; // No abrir el modal si ya está abierto o si el usuario ya ha llegado
     }
+
+    // Marcar como abierto y configurar las propiedades del modal
+    this.destinationName = destinationName;
+    this.shopStatus = status;
+    this.specialties1 = specialties1;
+    this.specialties2 = specialties2;
+    this.currentImageUrl = imageUrl;
+    this.openedModal = true;
+
+    // Abrir el modal
+    this.modalRef = this.modalService.open(content, {
+      centered: true,
+      backdrop: 'static',
+    });
+
+    // Cerrar el modal y resetear el estado cuando se cierre
+    this.modalRef.result.finally(() => {
+      this.openedModal = false; // Reiniciar el estado del modal
+    });
   }
 
   updateButtonReviewState() {
-    
     this.isButtonDisabled = this.reviewApp.trim().length === 0;
   }
-  addReviewToApp(){
+
+  addReviewToApp() {
     this.reviewService.addReview(this.reviewApp).subscribe(
       (res) => {
-        toastr.success(
-          'Comentario añadido exitosamente'
-        );
+        toastr.success('Comentario añadido exitosamente');
         this.modalRef.close();
       },
       (err) => {
-          toastr.error('No se ha podido añadir el comentario');
+        toastr.error('No se ha podido añadir el comentario');
         this.modalRef.close();
       }
     );
@@ -839,20 +1151,20 @@ export class MapComponent implements OnInit, OnDestroy {
 
   openModalWithCodigo(): void {
     this.resetModalFields();
-    this.openModal(this.codeModal, '', '', '', '');
+    this.openModal(this.codeModal, '', '', '', '', '');
   }
 
   openModalAlbum(): void {
-    this.openModal(this.modalBook, '', '', '', '');
+    this.openModal(this.modalBook, '', '', '', '', '');
   }
+
   openModalReviewShop(): void {
     this.resetModalFields();
-    this.openModal(this.modalReviewShop, '', 'statusValue', "", "");
-
+    this.openModal(this.modalReviewShop, '', 'statusValue', '', '', '');
   }
 
   verifyCode() {
-    console.log('Primer bloque');
+    // console.log('Primer bloque');
     this.storeService
       .verifyCodeCode(this.enteredCode, this.enteredReview, this.enteredRating)
       .subscribe(

@@ -10,8 +10,8 @@ const routes: Routes = [
   { path: 'landing', loadChildren: () => import('./features/landing/landing.module').then(m => m.LandingModule), canActivate: [IsNotAuthenticatedGuard] },
   { path: 'perfil', loadChildren: () => import('./features/mi-perfil/mi-perfil.module').then(m => m.MiPerfilModule), canActivate: [IsAuthenticatedGuard] },
   { path: 'landing-tienda', loadChildren: () => import('./features/landing-tienda/landing-tienda.module').then(m => m.LandingTiendaModule), canActivate: [IsNotAuthenticatedGuard] },
-  { path: 'admin-profile', loadChildren: () => import('./features/admin-profile/admin-profile.module').then(m => m.AdminProfileModule),  data: { role: 'admin' } }, 
-  { path: '**', redirectTo: '/landing' }
+  { path: 'admin-profile', loadChildren: () => import('./features/admin-profile/admin-profile.module').then(m => m.AdminProfileModule)}, 
+  // { path: '**', redirectTo: '/landing' }
 ];
 
 @NgModule({
