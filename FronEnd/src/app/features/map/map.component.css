@@ -451,7 +451,7 @@
   display: flex;
   justify-content: center;
 }
-
+.modal-title-review-j,
 .modal-title-create,
 .modal-title-code,
 .modal-title,
@@ -460,8 +460,6 @@
   font-size: 1.5em;
   margin: 0;
 }
-
-
 
 .modal-body-coffee {
   padding: 20px;
