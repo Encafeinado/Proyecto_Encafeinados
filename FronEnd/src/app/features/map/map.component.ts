@@ -572,33 +572,27 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Posición del marcador no está definida.');
       return;
     }
-
-    // Calcular la distancia en tiempo real
+  
     const distancia = this.calcularDistancia(
       this.markerPosition.lat,
       this.markerPosition.lng,
       lat2,
       lng2
     );
-
+  
     console.log(`Distancia calculada: ${distancia} metros`);
-
-    // Si la distancia es menor o igual a 12 metros, abrir el modal
+  
+    // Verificar si hay ruta activa antes de abrir el modal
     if (distancia < 45 && !this.modalAbierto && this.rutaActiva) {
       console.log('Abriendo modal de llegada...');
       this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
       this.modalAbierto = true; // Marcar que el modal ha sido mostrado
     }
-
-    // No volver a cerrar el modal si ya está abierto
+  
     if (this.modalAbierto) {
-      console.log(
-        `El modal ya está abierto. Distancia actual: ${distancia} metros`
-      );
+      console.log(`El modal ya está abierto. Distancia actual: ${distancia} metros`);
     } else {
-      console.log(
-        `Aún no cerca del destino. Distancia actual: ${distancia} metros`
-      );
+      console.log(`Aún no cerca del destino. Distancia actual: ${distancia} metros`);
     }
   }
   
@@ -1074,16 +1068,22 @@ export class MapComponent implements OnInit, OnDestroy {
     console.log('Ruta cancelada. Puedes seleccionar una nueva tienda.');
   }
 
-  cancelarLLegada(modal: any): void {
+  cancelarLLegada(modal: any): void { 
     if (!this.rutaActiva) {
       console.warn('No hay una ruta activa, no se puede cancelar la llegada.');
       return;
     }
-
+  
     modal.dismiss('cancel');
+    
     setTimeout(() => {
-      this.openModal(this.arriveModal, this.destinationName, '', '','', '');
-      this.modalAbierto = true;
+      if (this.rutaActiva && this.destinationName) {
+        console.log('Reabriendo modal de llegada después de la cancelación.');
+        this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
+        this.modalAbierto = true;
+      } else {
+        console.warn('No se puede abrir el modal de llegada, no hay una ruta activa o el destino no está definido.');
+      }
     }, 10000); // 10 segundos
   }
 
