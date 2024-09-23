@@ -829,22 +829,26 @@ export class MapComponent implements OnInit, OnDestroy {
     this.modoTransporte = modo;
   }
 
+  modosDisponibles: { [key: string]: boolean } = {
+    [google.maps.TravelMode.DRIVING]: true,
+    [google.maps.TravelMode.BICYCLING]: true,
+    [google.maps.TravelMode.WALKING]: true,
+  };
+
   // Método para calcular la ruta
   calcularRuta() {
-    // Verificar si el modal está abierto, si lo está, no recalcular la ruta
+    // Verificar si el modal está abierto
     if (this.modalAbierto) {
       console.log('El modal está abierto, no se recalcula la ruta.');
       return;
     }
   
     if (!this.modoTransporte) {
-      this.toastr.warning(
-        'Por favor, selecciona un modo de transporte.',
-        'Advertencia'
-      );
+      this.toastr.warning('Por favor, selecciona un modo de transporte.', 'Advertencia');
       return;
     }
   
+    // Verificar que la posición del marcador y el destino estén definidos
     if (!this.markerPosition) {
       console.error('La posición del marcador no está definida.');
       return;
@@ -857,11 +861,8 @@ export class MapComponent implements OnInit, OnDestroy {
   
     let destination: google.maps.LatLngLiteral | string;
   
-    if (
-      typeof this.destinationName === 'object' &&
-      'lat' in this.destinationName &&
-      'lng' in this.destinationName
-    ) {
+    // Validar el destino
+    if (typeof this.destinationName === 'object' && 'lat' in this.destinationName && 'lng' in this.destinationName) {
       destination = this.destinationName as google.maps.LatLngLiteral;
     } else if (typeof this.destinationName === 'string') {
       destination = this.destinationName;
@@ -879,6 +880,7 @@ export class MapComponent implements OnInit, OnDestroy {
       unitSystem: google.maps.UnitSystem.METRIC,
     };
   
+    // Configurar el DirectionsRenderer para no mostrar marcadores
     this.directionsRendererInstance.setOptions({
       suppressMarkers: true,
       preserveViewport: true,
@@ -886,31 +888,46 @@ export class MapComponent implements OnInit, OnDestroy {
   
     this.directionsService.route(request, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK && result) {
-        this.directionsResult = result; // Almacena el resultado aquí
+        // Ruta disponible
         this.directionsRendererInstance.setDirections(result);
         this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
+        this.modosDisponibles[this.modoTransporte] = true; // Habilitar el modo de transporte actual
+  
+        // Centrar el mapa en el marcador
         this.centrarMapaEnMarcador();
   
         if (this.modalRef) {
           this.modalRef.close();
         }
-        this.actualizarRotacionMarcador(0, result); // Actualiza la rotación y la flecha
   
+        // Actualizar la rotación y la flecha
+        this.actualizarRotacionMarcador(0, result);
+  
+        // Verificar cercanía al destino
         if (this.rutaActiva && this.markerPosition) {
           this.verificarCercaniaADestino();
         }
       } else {
+        // Ruta no disponible
         this.rutaActiva = false;
         console.error('Error al calcular la ruta:', status, result);
-        this.toastr.warning(
-          'La ruta en este medio de transporte no está disponible',
-          'Advertencia'
-        );
+        this.toastr.warning('La ruta en este medio de transporte no está disponible', 'Advertencia');
+        this.modosDisponibles[this.modoTransporte] = false; // Inhabilitar el modo de transporte actual
+  
+        // Cambiar a otro modo de transporte habilitado
+        const availableModes = Object.keys(this.modosDisponibles).filter(mode => this.modosDisponibles[mode]);
+        if (availableModes.length > 0) {
+          // Cambiar al primer modo disponible
+          this.modoTransporte = availableModes[0] as google.maps.TravelMode;
+        } else {
+          // Si no hay modos disponibles, desactivar todos los botones
+          this.toastr.warning('No hay modos de transporte disponibles.', 'Advertencia');
+        }
       }
     });
-  }
-
+  }  
+    
   centrarMapaEnMarcador() {
     const map = this.directionsRendererInstance.getMap();
     if (map) {
@@ -1120,7 +1137,11 @@ export class MapComponent implements OnInit, OnDestroy {
     this.specialties2 = specialties2;
     this.currentImageUrl = imageUrl;
     this.openedModal = true;
-
+    this.modosDisponibles = {
+      [google.maps.TravelMode.DRIVING]: true,
+      [google.maps.TravelMode.BICYCLING]: true,
+      [google.maps.TravelMode.WALKING]: true,
+    };
     // Abrir el modal
     this.modalRef = this.modalService.open(content, {
       centered: true,
