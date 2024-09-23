@@ -13,7 +13,7 @@ export class StoreService {
   private isStoreOpen: boolean = localStorage.getItem('isStoreOpen') === 'true';
   private baseUrl = `${environment.baseUrl}/shop`; // Asegúrate de que esta URL coincida con tu backend
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getCodeEntries(): number {
     return this.codeEntries;
@@ -39,14 +39,16 @@ export class StoreService {
     return this.http.post<{ message: string }>(url, { code }, { headers });
   }
 
-// store.service.ts
-verifyCodeCode(code: string, review: string, rating: number): Observable<{ message: string, shop: Shop }> {
-  const token = localStorage.getItem('token');
-  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  const url = `${this.baseUrl}/verify-code`;
-  return this.http.post<{ message: string, shop: Shop }>(url, { code, review, rating: +rating }, { headers });
-}
-
+  // store.service.ts
+  verifyCodeCode(code: string, review: string, rating: number): Observable<{ message: string, shop: Shop }> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const url = `${this.baseUrl}/verify-code`;
+    return this.http.post<{ message: string, shop: Shop }>(url, { code, review, rating: +rating }, { headers });
+  }
+  getAllShops(): Observable<Shop[]> {
+    return this.http.get<Shop[]>(`${this.baseUrl}/allShops`);
+  }
 
   setStoreActivation(status: boolean): void {
     this.isStoreOpen = status;

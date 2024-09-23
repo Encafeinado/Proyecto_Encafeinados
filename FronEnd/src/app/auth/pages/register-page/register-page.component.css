@@ -17,10 +17,7 @@
   }
   
 
-  .main-content {
-    padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
-  }
-  
+
 
   /* Estilos generales */
 body {
@@ -73,13 +70,36 @@ body {
     font-size: 1rem;
     color: #7d6c75; /* Gris */
   }
-  
+  .custom-error {
+    color: rgb(148, 36, 36); /* Color del texto del mensaje de error */
+    font-size: 14px; /* Ajusta el tamaño del texto */
+    margin-bottom: 10px; /* Añade espacio debajo del error para mover el formulario */
+    padding: 5px 10px; /* Espaciado interno */
+    background-color: #f8d7da; /* Fondo rojo claro */
+    border: 1px solid #f5c6cb; /* Borde */
+    border-radius: 4px; /* Bordes redondeados */
+    text-align: center; /* Centra el texto */
+  }
   
   .main-content {
-    padding-top: 160px; /* Ajusta este valor según la altura de tu navbar */
+    padding-top: 100px; /* Ajusta este valor según la altura de tu navbar */
   }
+
+    /* Estilos para el contenedor del formulario */
+.form-container {
+  border: 2px solid #e0d9d9; /* Borde azul principal */
+  border-radius: 12px; /* Bordes redondeados */
+  padding: 10px; /* Espacio interior reducido */
+  background-color: #fff; /* Fondo blanco para el contenedor */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  position: relative; /* Posicionamiento para efectos adicionales si es necesario */
+  max-width: 300px; /* Ajusta el tamaño máximo del formulario */
+  min-height: 500px; /* Ajusta según el tamaño necesario */
+  margin: 0 auto; /* Centra el formulario horizontalmente */
+}
+
    /* Estilos para el círculo de servicio */
-  .service-circle-container {
+   .service-circle-container {
     width: 150px; /* Tamaño del círculo */
     height: 150px; /* Tamaño del círculo */
     border-radius: 50%; /* Círculo */
@@ -102,13 +122,21 @@ body {
     color: #333;
   }
 
-  
+  .input-with-eye input {
+    width: 230px;
+    padding-right: 2.5rem;
+}
   
   /* Ajustes responsivos para pantallas pequeñas */
   @media (max-width: 768px) {
+
+    .main-content {
+      padding-top: 150px; /* Ajusta este valor según la altura de tu navbar */
+    }
+    
     .service-circle-container {
-      width: 100px; /* Tamaño más pequeño en pantallas pequeñas */
-      height: 100px; /* Tamaño más pequeño en pantallas pequeñas */
+      width: 150px; /* Tamaño más pequeño en pantallas pequeñas */
+      height: 150px; /* Tamaño más pequeño en pantallas pequeñas */
     }
   
     .service-circle-text {
@@ -120,21 +148,27 @@ body {
     .background-circle {
       height: 300px; /* Ajusta el tamaño del círculo en pantallas pequeñas */
     }
+    .carousel-item {
+      height: 100px; /* Ajusta la altura del carrusel en pantallas pequeñas */
+    }
   
     
   }
 
-  /* Estilos para el contenedor del formulario */
-.form-container {
-  border: 2px solid #e0d9d9; /* Borde azul principal */
-  border-radius: 12px; /* Bordes redondeados */
-  padding: 20px; /* Espacio interior reducido */
-  background-color: #fff; /* Fondo blanco para el contenedor */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
-  position: relative; /* Posicionamiento para efectos adicionales si es necesario */
-  max-width: 400px; /* Ajusta el tamaño máximo del formulario */
-  margin: 0 auto; /* Centra el formulario horizontalmente */
-}
+  
+  .card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    padding: 10px; /* Reduce el padding interno */
+    margin: 10px; /* Reduce el margen exterior */
+    position: relative;
+    max-width: 350px; /* Reduce el tamaño máximo del card */
+  }
+
+
+
 
 
   
@@ -169,3 +203,4 @@ body {
     font-size: 2em; /* Tamaño de fuente grande */
     color: #0f1eee; /* Color negro */
   }
+  

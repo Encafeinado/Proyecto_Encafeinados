@@ -9,7 +9,9 @@
   border-bottom: 3px solid #ffffff; /* Añadimos un borde inferior */
   transition: top 0.3s; /* Transición suave al cambiar la posición */
   z-index: 1000; /* Asegúrate de que el navbar esté sobre otros elementos */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
+
 
 /* Clase para desplazar el navbar hacia abajo */
 .navbar-scroll {
@@ -171,10 +173,14 @@
 .modal-base .modal-footer {
   padding: 15px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center; /* Cambiado a 'center' para centrar los botones */
   border-top: 1px solid #E0E0E0;
 }
 
+.modal-title {
+  font-size: 1.5em;
+  margin: 0;
+}
 
 /* Ocultar el toggler en dispositivos móviles */
 .navbar-toggler {

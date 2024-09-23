@@ -1,63 +1,71 @@
-/* data-treatment-dialog.component.css */
-
+/* Contenedor principal del modal */
 .modal-content-datos {
   background-color: #ffffff;
   border-radius: 10px;
-  padding: 20px;
+  padding: 15px; /* Reduce el padding para hacer el modal más pequeño */
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   font-family: "Poppins", sans-serif;
-  max-width: 600px; /* Limita el ancho máximo del modal en pantallas grandes */
+  max-width: 500px; /* También puedes reducir el ancho si es necesario */
   margin: auto;
+}
 
- 
+/* Encabezado del modal */
+.modal-header-datos h5 {
+  font-size: 1.5em; /* Reduce el tamaño del título */
 }
 
 .modal-header-datos {
   background-color: #0f1eee;
   color: #ffffff;
-  padding: 15px;
+  padding: 10px; /* Reduce el padding en el encabezado */
   border-radius: 10px 10px 0 0;
   display: flex;
   justify-content: center;
 }
 
-.modal-body-datos{
-  padding: 20px;
+/* Cuerpo del modal */
+.modal-body-datos {
+  padding: 10px; /* Reduce el padding para hacer el cuerpo más compacto */
   background-color: #d4f1f7;
   border-radius: 0 0 10px 10px;
 }
-.modal-body-datos iframe {
-  border: none;
-}
 
+/* Contenedor del PDF */
 .pdf-container {
   width: 100%;
-  height: 300px;
-  margin-top: 20px;
+  height: 200px; /* Reduce la altura del contenedor del PDF */
+  overflow-y: auto;
+  background-color: white;
+  padding: 5px; /* Reduce el padding para que haya menos espacio alrededor del contenido */
   border: 1px solid #ccc;
   border-radius: 5px;
-  overflow: hidden;
 }
 
+/* Botón para ver el PDF (hipervínculo) */
+.btn-trata {
+  background: none;
+  border: none;
+  color: #0f1eee;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+}
+
+.btn-trata:hover {
+  text-decoration: none;
+  color: #84848a;
+}
+
+/* Pie de página del modal */
 .modal-footer-datos {
   display: flex;
   justify-content: center;
-  padding: 20px;
+  padding: 10px; /* Reduce el padding del pie de página */
   border-top: none;
 }
 
-.pdf-container { 
-  overflow: hidden;
-  border: 1px solid #ccc; /* Opcional: añade un borde alrededor del iframe */
-}
-
-.pdf-container iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
-.modal-footer-datos .btn{
+.modal-footer-datos .btn {
   margin: 0 10px;
   background-color: #0f1eee;
   color: #ffffff;
@@ -71,30 +79,61 @@
 .modal-footer-datos .btn:disabled {
   background-color: #666666;
 }
-
-
-
-/* Estilos específicos para móviles */
 @media (max-width: 768px) {
-  .modal-title-datos {
-    font-size: 18px;
+  .modal-content-datos {
+    max-width: 90%; /* El modal ocupará el 90% del ancho de la pantalla */
+    padding: 10px; /* Menos padding en móviles */
   }
 
-  .modal-body-datos iframe {
-    height: 300px; /* Ajusta la altura para pantallas más pequeñas */
+  .modal-header-datos h5 {
+    font-size: 1.2em; /* Reduce el tamaño del título */
+  }
+
+  .modal-header-datos {
+    padding: 8px; /* Reduce el padding en el encabezado */
+  }
+
+  .modal-body-datos {
+    padding: 8px; /* Menos padding en el cuerpo del modal */
   }
 
   .pdf-container {
-    height: 300px; /* Ajusta la altura para pantallas más pequeñas */
+    height: 150px; /* Reduce aún más la altura del contenedor del PDF en móviles */
+    padding: 5px;
   }
-  
+
+  .btn-trata {
+    font-size: 0.9em; /* Ajusta el tamaño del botón para móviles */
+  }
+
+  .modal-footer-datos {
+    padding: 8px; /* Reduce el padding del pie del modal */
+  }
+
+  .modal-footer-datos .btn {
+    margin: 0 5px; /* Reduce el margen entre los botones */
+  }
 }
 
+/* Estilos para pantallas muy pequeñas */
 @media (max-width: 480px) {
-  .modal-body-datos iframe {
-    height: 250px; /* Ajusta la altura para pantallas aún más pequeñas */
+  .modal-content-datos {
+    max-width: 100%; /* Ocupará el 95% del ancho en pantallas muy pequeñas */
   }
+
+  .modal-header-datos h5 {
+    font-size: 1em; /* Tamaño más pequeño para el título */
+  }
+
   .pdf-container {
-    height: 250px; /* Ajusta la altura para pantallas aún más pequeñas */
+    height: 120px; /* Altura más pequeña para el PDF en pantallas muy pequeñas */
+  }
+
+  .btn-trata {
+    font-size: 0.8em; /* Tamaño de fuente más pequeño en el botón */
+  }
+
+  .modal-footer-datos .btn {
+    font-size: 0.8em; /* Ajusta el tamaño de los botones */
   }
 }

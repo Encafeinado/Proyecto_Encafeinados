@@ -90,10 +90,6 @@ a:focus {
     outline: none !important;
 }
 
-a:hover {
-    text-decoration: none;
-  color: #a64bf4;
-}
 
 /*---------------------------------------------*/
 h1,h2,h3,h4,h5,h6 {
@@ -342,7 +338,7 @@ button:hover {
 /* Estilo para el input de texto */
 .input100 {
   /* Estilos de tu input de texto actual */
-  width: 100%; /* Ajusta el ancho según tus necesidades */
+  width: 150%; /* Ajusta el ancho según tus necesidades */
   padding: 10px;
   box-sizing: border-box;
 }
@@ -357,6 +353,7 @@ button:hover {
   opacity: 0;
   cursor: pointer;
 }
+
 
 /* Estilo para la etiqueta del archivo seleccionado */
 .file-input-label {
@@ -374,7 +371,9 @@ button:hover {
 
 .input-with-eye {
   position: relative;
+
 }
+
 
 .input100 {
   width: 100%; /* Ocupa el ancho completo del contenedor */
@@ -430,6 +429,7 @@ button:hover {
 
 .input100::placeholder {
   transition: opacity 0.3s ease;
+  width: 100%;
 }
 
 .input100:focus::placeholder {
@@ -444,6 +444,7 @@ button:hover {
 
 .login100-form {
   width: 100%;
+  
 }
 
 .login100-form-title {
@@ -471,7 +472,7 @@ button:hover {
 
 .wrap-input100 {
   position: relative;
-  margin-bottom: 1rem; /* Espacio entre los campos */
+  margin-bottom: 0; /* Espacio entre los campos */
 }
 
 .label-input100 {
@@ -495,6 +496,7 @@ button:hover {
   margin-left: 2px; /* Espacio adicional para compensar el ícono */
   overflow-x: auto; /* Agregar desplazamiento horizontal automático */
 }
+
 
 
 
@@ -3219,17 +3221,18 @@ align-items: center;
 
 .como-iniciar-contenedor {
   background-color: #fff;
-  width: 90%;
+  width: 80%;
   max-width: 1200px;
   margin: 40px auto;
-  padding: 40px;
+  padding: 20px;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  border: 1px solid #ddd; /* Borde gris claro */
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 400px;
+  min-height: 350px;
 }
 
 .como-iniciar-header {
@@ -3242,7 +3245,7 @@ align-items: center;
 
 .como-iniciar-logo {
   font-size: 25px;
-  font-weight: 600;
+  font-weight: 900;
   color: #0f1eee;
   text-decoration: none;
   margin: 0 auto;
@@ -3255,7 +3258,7 @@ align-items: center;
 }
 
 .como-iniciar-menu a {
-  font-size: 22px;
+  font-size: 20px;
   border-bottom: 2px solid transparent;
   margin-left: 40px;
   color: #000;
@@ -3263,9 +3266,7 @@ align-items: center;
   transition: all 0.3s ease;
 }
 
-.como-iniciar-menu a:hover {
-  border-bottom: 2px solid #0f1eee;
-}
+
 
 .como-iniciar-main {
   display: flex;
@@ -3276,6 +3277,8 @@ align-items: center;
   width: 100%;
   flex-grow: 1;
 }
+
+
 
 .como-iniciar-contenedor-img-placeholder {
   width: 100px;
@@ -3365,10 +3368,21 @@ align-items: center;
   background: #2516f1;
 }
 
+
+.section-divider {
+  height: 65px; /* Espacio entre secciones */
+}
+
+
 @media screen and (max-width: 768px) {
   .como-iniciar-menu {
     flex-direction: column;
     align-items: center;
+  }
+
+  
+  .section-dividerr {
+    height: 200px; /* Reduce el espacio entre secciones en móviles */
   }
 
   .como-iniciar-menu a {
@@ -3401,6 +3415,7 @@ align-items: center;
 
   .como-iniciar-contenedor {
     padding: 20px;
+    width: 100%;
     margin: 20px auto;
     min-height: 400px;
   }

@@ -32,57 +32,77 @@ export class RegisterPageComponent {
   private toastr = inject(ToastrService);
   private geocodingService = inject(GeocodingService); // Inyecta el servicio de geocodificación
   private MatDialogModule = inject(MatDialog);
+  public showError = false; // Controla cuándo mostrar el mensaje de error
+  public formSubmitted = false; // Nueva variable para controlar el envío del formulario
 
   validDomains = ["gmail.com", "gmail.co", "gmail.es", "gmail.mx", "hotmail.com", "hotmail.co", "hotmail.es", "hotmail.mx", "outlook.com", "outlook.co", "outlook.es", "outlook.mx", "yahoo.com", "yahoo.co", "yahoo.es",
     "yahoo.mx", "gmail.com.co", "hotmail.com.co", "outlook.com.co", "yahoo.com.co", "gmail.com.es", "hotmail.com.es", "outlook.com.es", "yahoo.com.es", "gmail.com.mx", "hotmail.com.mx", "outlook.com.mx",
     "yahoo.com.mx","yopmail.com","@icloud.com"];
 
-  public myForm: FormGroup = this.fb.group({
-    name: ['', [
-      Validators.required,
-      Validators.maxLength(30),
-      Validators.minLength(3)
-    ], [validateNameSimbolAndNumber()]],
-
-    email: ['', 
-      {
-        validators: [
-      Validators.required,
-    ], 
-    asyncValidators: [
-     
-         // emailFormatAsyncValidator(),
-          validateEmail(this.authService),
-          emailDomainValidator(this.validDomains)
-        ],
-        updateOn: 'blur'
-      }
-    ],
-      
-    password: ['', [
-      Validators.required,
-      Validators.minLength(8),
-      passwordValidator()
-    ]],
-
-    confirmPassword: ['', [
-      Validators.required
-    ]],
-
-    phone: ['', [ // Cambia el nombre del campo a 'phone'
-      Validators.required,
-      phoneNumberValidator()
-    ]],
-
-    specialties1: [''],
-    specialties2: [''],
-    address: [''],
-    logo: [''],
-    statusShop: [false]  // Campo oculto con valor predeterminado
-  }, {
-    validators: this.passwordMatchValidator
-  });
-
+    public myForm: FormGroup = this.fb.group({
+      name: ['', 
+        {
+          validators: [
+            Validators.required,
+            Validators.maxLength(30),
+            Validators.minLength(3),
+            validateNameSimbolAndNumber()  // Validación síncrona
+        ], 
+          updateOn: 'change'  // Se actualiza cuando pierde el foco
+        }
+      ],
+    
+      email: ['', 
+        {
+          validators: [
+            Validators.required,
+          ], 
+          asyncValidators: [
+            emailDomainValidator(this.validDomains)
+          ],
+          updateOn: 'change'  // Se actualiza cuando pierde el foco
+        }
+      ],
+    
+      password: ['', 
+        {
+          validators: [
+            Validators.required,
+            Validators.minLength(8),
+            passwordValidator()
+          ],
+          updateOn: 'change'  // Se actualiza cuando pierde el foco
+        }
+      ],
+    
+      confirmPassword: ['', 
+        {
+          validators: [Validators.required],
+          updateOn: 'change'  // Se actualiza cuando pierde el foco
+        }
+      ],
+    
+      phone: ['', 
+        {
+          validators: [
+            Validators.required,
+            phoneNumberValidator(),
+            Validators.minLength(10),
+            Validators.maxLength(10),
+          ],
+          updateOn: 'change'  // Se actualiza cuando pierde el foco
+        }
+      ],
+    
+      specialties1: ['', { updateOn: 'blur' }],
+      specialties2: ['', { updateOn: 'blur' }],
+      address: ['', { updateOn: 'blur' }],
+      logo: ['', { updateOn: 'blur' }],
+      statusShop: [false]  // Campo oculto con valor predeterminado, sin `updateOn`
+    }, {
+      validators: this.passwordMatchValidator
+    });
+    
 
   public isUser: boolean = true;
   public isStore: boolean = false;
@@ -158,10 +178,17 @@ export class RegisterPageComponent {
     this.suggestedAddresses = [];
   }
 
-
+  onInputChanged(): void {
+    this.myForm.updateValueAndValidity(); // Forzar validación después de cada cambio
+    if (this.myForm.valid) {
+      this.showError = false; // Ocultar el error si el formulario es válido
+    }
+  }
+  
 
   register() {
     if (this.myForm.invalid) {
+      this.showError = true;
       return;
     }
 
@@ -210,7 +237,7 @@ export class RegisterPageComponent {
               },
               error: (err) => {
                 console.error('Error al registrar usuario:', err);
-                this.toastr.error('Error al registrar usuario', 'Error');
+                this.showError = true;
               }
             });
         }

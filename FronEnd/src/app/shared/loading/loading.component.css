@@ -89,6 +89,8 @@ body {
   100% { top: 29px; height: 15px; width: 6px; opacity: 0; }
 }
 
+
+
 .loading-text {
   color: #03AED2; /* Color principal */
   font-size: 18px;
@@ -96,3 +98,13 @@ body {
   text-align: center;
 }
 
+.smoke-loader {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 1s ease-out, visibility 1s ease-out;
+}
+
+.smoke-loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
