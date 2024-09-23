@@ -98,6 +98,9 @@ export class MapComponent implements OnInit, OnDestroy {
     mapTypeControl: false, // Elimina el botón de "Mapa/Satélite"
     fullscreenControl: false, // Elimina el botón de pantalla completa
     zoomControl: false,
+    rotateControl: true, // Habilita el botón para rotar el mapa
+    mapTypeId: google.maps.MapTypeId.SATELLITE, // Utiliza la vista satélite (si quieres que sea rotatable)
+    tilt: 45, // Define el ángulo de inclinación del mapa (para vista 3D)
   };
   iconoUbicacionUsuario = {
     url: 'assets/IconsMarker/cafeino.png', // Ruta desde la raíz pública
@@ -581,9 +584,9 @@ export class MapComponent implements OnInit, OnDestroy {
     console.log(`Distancia calculada: ${distancia} metros`);
 
     // Si la distancia es menor o igual a 12 metros, abrir el modal
-    if (distancia < 45  && !this.modalAbierto) {
+    if (distancia < 45 && !this.modalAbierto && this.rutaActiva) {
       console.log('Abriendo modal de llegada...');
-      this.openModal(this.arriveModal, this.destinationName, this.specialties1, this.specialties2,'', this.shopStatus);
+      this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
       this.modalAbierto = true; // Marcar que el modal ha sido mostrado
     }
 
@@ -1079,7 +1082,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
     modal.dismiss('cancel');
     setTimeout(() => {
-      this.openModal(this.arriveModal, this.destinationName, this.specialties1, this.specialties2,'', this.shopStatus);
+      this.openModal(this.arriveModal, this.destinationName, '', '','', '');
       this.modalAbierto = true;
     }, 10000); // 10 segundos
   }
