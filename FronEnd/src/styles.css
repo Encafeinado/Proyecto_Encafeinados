@@ -3384,7 +3384,8 @@ align-items: center;
   .section-dividerr {
     height: 200px; /* Reduce el espacio entre secciones en móviles */
   }
-
+ 
+  
   .como-iniciar-menu a {
     font-size: 18px;
     margin-left: 0;

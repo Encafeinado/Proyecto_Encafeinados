@@ -66,7 +66,6 @@
   flex-wrap: wrap; /* Esto permitirá que los cuadros se ajusten en pantallas pequeñas */
 }
 
-/* Cuadros de estadísticas */
 .stat-box {
   flex: 1;
   padding: 1rem;
@@ -77,9 +76,11 @@
   flex-direction: column; /* Para que el contenido se organice verticalmente */
   align-items: center; /* Centra los elementos */
   text-align: center; /* Asegura que el texto esté centrado */
-  max-width: 300px; /* Añade un límite de ancho para pantallas más grandes */
-  margin: 0 auto; /* Centra las tarjetas en pantallas pequeñas */
+  max-width: 300px;
+  margin: 0 auto;
 }
+
+/* Ajustes para el título */
 .stat-box h2 {
   margin: 0;
   font-size: 1.25rem; /* Ajusta el tamaño del título */
@@ -88,15 +89,46 @@
   text-align: center; /* Centra el texto dentro de stat-box */
 
 }
+
+/* Ajustes para el número grande */
 .stat-box .text-xl {
   font-size: 1.5rem;
   font-weight: bold;
   color: #000;
   margin-top: 10px;
 }
+
+/* Ajustes responsivos para pantallas más pequeñas */
 @media (max-width: 768px) {
   .stat-box {
     max-width: 100%; /* Deja que ocupen todo el ancho disponible en pantallas pequeñas */
+  }
+
+  /* Ajustar tamaño de fuente para pantallas pequeñas */
+  .stat-box h2 {
+    font-size: 1rem; /* Reduce el tamaño del título */
+  }
+
+  .stat-box .text-xl {
+    font-size: 1.25rem; /* Reduce el tamaño del número grande */
+  }
+
+  .stat-box i {
+    font-size: 1.5rem; /* Ajusta el tamaño del ícono */
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-box h2 {
+    font-size: 0.9rem; /* Ajusta el tamaño del título aún más para pantallas pequeñas */
+  }
+
+  .stat-box .text-xl {
+    font-size: 1rem; /* Ajusta el tamaño del número aún más para pantallas pequeñas */
+  }
+
+  .stat-box i {
+    font-size: 1.25rem; /* Ajusta el tamaño del ícono en pantallas muy pequeñas */
   }
 }
 

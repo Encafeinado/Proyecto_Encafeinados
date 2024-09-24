@@ -131,25 +131,28 @@ header p {
 .section-dividerr {
   height: 45px; /* Reduce el espacio entre secciones en móviles */
 }
-.text-content[_ngcontent-ng-c2524210291] .subtitle[_ngcontent-ng-c2524210291] {
-  font-size: 2em;
+.text-content .subtitle {
+  font-size: 1.8em !important; /* Fuerza el estilo */
   color: #000000;
   white-space: pre-line;
   line-height: 1.2;
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  text-align: center; /* Centra el texto horizontalmente */
+  text-align: center;
 }
 
-.text-content[_ngcontent-ng-c2524210291] .title[_ngcontent-ng-c2524210291] {
-  font-family: 'Poppins', sans-serif; /* Aplica la fuente Poppins */
-  font-weight: 600; /* Peso Semibold */
-  font-size: 2.7em; /* Tamaño de fuente */
-  color: #0f1eee; /* Color negro */
-  white-space: pre-line; /* Permite saltos de línea */
-  line-height: 1.4; /* Espacio entre líneas */
-  text-align: center; /* Centra el texto horizontalmente */
+.text-content .title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 2.5em !important; /* Fuerza el estilo */
+  color: #0f1eee;
+  white-space: pre-line;
+  line-height: 1.4;
+  text-align: center;
 }
+
+
+
 
 
 
@@ -368,7 +371,7 @@ footer p {
 
 @media (max-width: 576px) {
   .main-content{
-    padding-top: 130px;
+    padding-top: 60px;
   }
 
   .contact-info h2,

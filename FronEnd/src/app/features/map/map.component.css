@@ -6,13 +6,11 @@
   overflow: hidden; /* Para asegurar que el contenido del mapa respete el borde redondeado */
 }
 
-
 /* Ajustes para pantallas más pequeñas */
 @media (max-width: 768px) {
   #map {
     height: 50vh; /* Reduce la altura a 50vh en pantallas más pequeñas */
     border-radius: 10px; /* Ajusta el radio en pantallas más pequeñas */
-
   }
 }
 
@@ -21,7 +19,6 @@
   #map {
     height: 40vh; /* Reduce aún más la altura en pantallas muy pequeñas */
     border-radius: 8px; /* Ajusta el radio para pantallas más pequeñas */
-
   }
 }
 
@@ -30,10 +27,29 @@
 }
 
 /* Estilos comunes para ambos botones */
-.floating-button-location,
+.floating-button-location {
+  position: absolute;
+  right: 38vw; /* Coloca los botones en la misma posición lateral */
+  top: 85vh; /* Ajusta este valor para subir o bajar el botón */
+  background-color: #0f1eee; /* Color de fondo azul */
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 40px; /* Tamaño más pequeño */
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  z-index: 1000; /* Asegura que el botón esté por encima del mapa */
+}
+
 .floating-button-cancel {
   position: absolute;
-  right: 20px; /* Coloca los botones en la misma posición lateral */
+  right: 38vw; /* Coloca los botones en la misma posición lateral */
+  top: 77vh; /* Ajusta este valor para subir o bajar el botón */
   background-color: #0f1eee; /* Color de fondo azul */
   color: #ffffff;
   border: none;
@@ -97,7 +113,6 @@
 .floating-button i {
   font-size: 24px;
 }
-
 
 /* Contenedor para los botones */
 .button-container-footer {
@@ -178,7 +193,7 @@
 .modal-footer-code .btn:disabled,
 .modal-footer-create .btn:disabled,
 .modal-footer-cancelR .btn:disabled,
-.modal-footer-arrive .btn:disabled{
+.modal-footer-arrive .btn:disabled {
   background-color: #666666;
 }
 
@@ -217,7 +232,6 @@
   border-top: none;
 }
 
-
 /* Estilos para los botones del pie del modal */
 .modal-footer-review .btn {
   margin: 0 10px;
@@ -233,6 +247,103 @@
 /* Estilo para los botones deshabilitados */
 .modal-footer-review .btn:disabled {
   background-color: #666666;
+}
+@media (max-width: 576px) {
+  
+  .floating-button-location {
+    position: absolute;
+    right: 20px; /* Coloca los botones en la misma posición lateral */
+    top: 60%; /* Ajusta este valor para subir o bajar el botón */
+    background-color: #0f1eee; /* Color de fondo azul */
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 40px; /* Tamaño más pequeño */
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    z-index: 2; /* Un valor bajo para que queden debajo del navbar */
+  }
+
+
+  .floating-button-cancel {
+    position: absolute;
+    right: 20px; /* Coloca los botones en la misma posición lateral */
+    top: 52%; /* Ajusta este valor para subir o bajar el botón */
+    background-color: #0f1eee; /* Color de fondo azul */
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 40px; /* Tamaño más pequeño */
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    z-index: 2; /* Un valor bajo para que queden debajo del navbar */
+  }
+
+  .modal-content-create {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-family: "Poppins", sans-serif;
+    width: 100%; /* Limita el ancho del modal */
+    margin: auto; /* Centra el modal horizontalmente */
+  }
+}
+  
+
+/* Estilo del placeholder para dispositivos móviles */
+@media only screen and (max-width: 768px) {
+  #reviewApp::placeholder {
+    font-size: 12px; /* Ajusta el tamaño del texto del placeholder */
+  }
+
+  .floating-button-location {
+    position: absolute;
+    right: 20px; /* Coloca los botones en la misma posición lateral */
+    top: 48%; /* Ajusta este valor para subir o bajar el botón */
+    background-color: #0f1eee; /* Color de fondo azul */
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 40px; /* Tamaño más pequeño */
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    z-index: 2; /* Un valor bajo para que queden debajo del navbar */
+  }
+
+  .floating-button-cancel {
+    position: absolute;
+    right: 20px; /* Coloca los botones en la misma posición lateral */
+    top: 42%; /* Ajusta este valor para subir o bajar el botón */
+    background-color: #0f1eee; /* Color de fondo azul */
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 40px; /* Tamaño más pequeño */
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    z-index: 2; /* Un valor bajo para que queden debajo del navbar */
+  }
 }
 
 /* ------------------------------------------------------------------------------------------------- */
@@ -254,8 +365,6 @@
   object-fit: cover; /* Hace que la imagen cubra el contenedor sin distorsionarse */
   margin-bottom: 10px;
 }
-
-
 
 .button-container {
   display: flex;
@@ -452,6 +561,7 @@
   justify-content: center;
 }
 
+.modal-title-review-j,
 .modal-title-create,
 .modal-title-code,
 .modal-title,
@@ -459,9 +569,22 @@
 .modal-title-cancelR {
   font-size: 1.5em;
   margin: 0;
+  text-align: center; /* Asegura que el texto esté centrado */
 }
 
-
+/* Si necesitas ajustes específicos para dispositivos móviles */
+@media only screen and (max-width: 768px) {
+  .modal-title-review-j,
+  .modal-title-create,
+  .modal-title-code,
+  .modal-title,
+  .modal-title-arrive,
+  .modal-title-cancelR {
+    /* Si quieres ajustar solo en móviles, puedes hacerlo aquí */
+    font-size: 1.2em; /* Ajusta el tamaño de la fuente en móviles si es necesario */
+    text-align: center; /* Asegura el centrado */
+  }
+}
 
 .modal-body-coffee {
   padding: 20px;
@@ -504,12 +627,6 @@
 }
 
 /* ------------------------------------------------------------------------------- */
-.transport-selection {
-  display: flex;
-  justify-content: center; /* Centra horizontalmente los elementos */
-  gap: 15px; /* Espacio entre los elementos */
-}
-
 .transport-label {
   display: flex;
   align-items: center;
@@ -517,8 +634,8 @@
   background-color: #f8f9fa;
   border: 2px solid #dee2e6;
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.3s;
 }
@@ -528,7 +645,7 @@
 }
 
 .transport-label i {
-  font-size: 24px; /* Aumenta el tamaño del icono */
+  font-size: 24px;
   color: #343a40;
 }
 
@@ -539,8 +656,22 @@
 
 .transport-label input[type="radio"]:checked + i {
   color: #007bff; /* Color del icono seleccionado */
-  background-color: #e2e6ea; /* Fondo más claro al pasar el ratón */
+}
+
+.transport-label input[type="radio"]:checked {
+  background-color: #e2e6ea; /* Fondo más claro al estar seleccionado */
   border-radius: 50%;
+}
+
+.transport-label input[type="radio"]:disabled + i {
+  color: #6c757d; /* Color gris para el icono */
+  background-color: transparent; /* Sin fondo */
+  border: none; /* Sin borde */
+  cursor: not-allowed; /* Cursor indicando que está deshabilitado */
+}
+
+.transport-label input[type="radio"]:disabled + i:hover {
+  background-color: transparent; /* Mantiene el fondo transparente al pasar el mouse */
 }
 
 .star-rating {
@@ -562,14 +693,16 @@
 
 /* Contenedor de Detalles de la Ruta */
 .ruta-detalles {
+  margin-top: 15px;
   background-color: #f8f9fa;
   padding: 15px;
-  border-radius: 10px;
-  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Estilo del título */
 .titulo-detalles {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   margin-bottom: 10px;
   color: #333;
@@ -577,8 +710,10 @@
 
 /* Estilo de la información de detalles de ruta */
 .detalle-info {
-  font-size: 14px;
-  color: #555;
+  font-size: 14px; /* Ajusta el tamaño para que sea más legible */
+  font-weight: 400; /* Elimina el efecto de negrita */
+  color: #555; /* Color gris suave para que se vea más elegante */
+  line-height: 1.6; /* Añade un espaciado más amplio entre las líneas */
   margin-bottom: 15px;
 }
 
@@ -601,6 +736,7 @@
   align-items: center;
 }
 
+/* Icono para las instrucciones */
 .instruction-icon {
   font-size: 18px;
   margin-right: 10px;
@@ -639,7 +775,7 @@
   padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   font-family: "Poppins", sans-serif;
-  max-width: 500px; /* Limita el ancho del modal */
+  width: 500px; /* Limita el ancho del modal */
   margin: auto; /* Centra el modal horizontalmente */
 }
 
@@ -667,7 +803,7 @@
 }
 
 .img-cafe {
-  width: 150px; /* Tamaño de la imagen en pantallas grandes */
+  width: 100px; /* Tamaño de la imagen en pantallas grandes */
   height: auto;
   margin-right: 20px; /* Espacio entre la imagen y la información */
   border-radius: 8px;
@@ -675,7 +811,7 @@
 
 .info-cafe {
   flex-grow: 1;
-  min-width: 200px; /* Asegura que la información tenga un ancho mínimo */
+  min-width: 220px; /* Asegura que la información tenga un ancho mínimo */
 }
 
 /* Media query para pantallas pequeñas */
@@ -683,6 +819,15 @@
   .modal-info {
     flex-wrap: wrap; /* Mantiene los elementos en la misma línea pero permite que se ajusten */
     align-items: center; /* Centra la imagen y la información en pantallas pequeñas */
+  }
+  .modal-content-create {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-family: "Poppins", sans-serif;
+    width: 100%; /* Limita el ancho del modal */
+    margin: auto; /* Centra el modal horizontalmente */
   }
 
   .img-cafe {
@@ -736,25 +881,25 @@ label {
   margin-bottom: 10px; /* Añade espacio debajo del label */
 }
 textarea.form-control {
-  min-height: calc(1.5em + .75rem + calc(var(--bs-border-width)* 2));
+  min-height: calc(1.5em + 0.75rem + calc(var(--bs-border-width) * 2));
   resize: none; /* Evita que el usuario cambie el tamaño del textarea */
   height: auto; /* Mantén el tamaño automático del textarea */
 }
 
 .transport-selection {
-  margin-top: 15px;
+  margin-top: 10px;
   display: flex;
   justify-content: space-around;
 }
 
 .transport-label i {
-  font-size: 24px;
+  font-size: 15px;
 }
 
 .modal-footer-create {
   display: flex;
   justify-content: center;
-  padding: 20px;
+  padding: 6px;
   border-top: none;
 }
 
