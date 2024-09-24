@@ -6,16 +6,12 @@
   overflow: hidden; /* Para asegurar que el contenido del mapa respete el borde redondeado */
 }
 
-
 /* Ajustes para pantallas más pequeñas */
 @media (max-width: 768px) {
   #map {
     height: 50vh; /* Reduce la altura a 50vh en pantallas más pequeñas */
     border-radius: 10px; /* Ajusta el radio en pantallas más pequeñas */
-
   }
-
-  
 }
 
 /* Ajustes adicionales para pantallas muy pequeñas (por ejemplo, teléfonos) */
@@ -23,7 +19,6 @@
   #map {
     height: 40vh; /* Reduce aún más la altura en pantallas muy pequeñas */
     border-radius: 8px; /* Ajusta el radio para pantallas más pequeñas */
-
   }
 }
 
@@ -32,10 +27,10 @@
 }
 
 /* Estilos comunes para ambos botones */
-.floating-button-location{
+.floating-button-location {
   position: absolute;
-  right: 360px; /* Coloca los botones en la misma posición lateral */
-  top: 85%; /* Ajusta este valor para subir o bajar el botón */
+  right: 38vw; /* Coloca los botones en la misma posición lateral */
+  top: 69vh; /* Ajusta este valor para subir o bajar el botón */
   background-color: #0f1eee; /* Color de fondo azul */
   color: #ffffff;
   border: none;
@@ -53,8 +48,8 @@
 
 .floating-button-cancel {
   position: absolute;
-  right: 360px; /* Coloca los botones en la misma posición lateral */
-  top: 78%; /* Ajusta este valor para subir o bajar el botón */
+  right: 38vw; /* Coloca los botones en la misma posición lateral */
+  top: 63vh; /* Ajusta este valor para subir o bajar el botón */
   background-color: #0f1eee; /* Color de fondo azul */
   color: #ffffff;
   border: none;
@@ -69,7 +64,6 @@
   transition: background-color 0.3s;
   z-index: 1000; /* Asegura que el botón esté por encima del mapa */
 }
-
 
 .floating-button-location:hover,
 .floating-button-cancel:hover {
@@ -120,7 +114,6 @@
   font-size: 24px;
 }
 
-
 /* Contenedor para los botones */
 .button-container-footer {
   display: flex;
@@ -133,8 +126,6 @@
 .button-book {
   margin-right: 10px; /* Espacio entre los botones */
 }
-
-
 
 .button-camera {
   margin-left: 60px; /* Espacio entre los botones */
@@ -202,7 +193,7 @@
 .modal-footer-code .btn:disabled,
 .modal-footer-create .btn:disabled,
 .modal-footer-cancelR .btn:disabled,
-.modal-footer-arrive .btn:disabled{
+.modal-footer-arrive .btn:disabled {
   background-color: #666666;
 }
 
@@ -241,7 +232,6 @@
   border-top: none;
 }
 
-
 /* Estilos para los botones del pie del modal */
 .modal-footer-review .btn {
   margin: 0 10px;
@@ -263,50 +253,45 @@
 @media only screen and (max-width: 768px) {
   #reviewApp::placeholder {
     font-size: 12px; /* Ajusta el tamaño del texto del placeholder */
-
   }
 
-.floating-button-location
-{
-  position: absolute;
-  right: 20px; /* Coloca los botones en la misma posición lateral */
-  top: 48%; /* Ajusta este valor para subir o bajar el botón */
-  background-color: #0f1eee; /* Color de fondo azul */
-  color: #ffffff;
-  border: none;
-  border-radius: 50%;
-  width: 40px; /* Tamaño más pequeño */
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition: background-color 0.3s;
-  z-index: 1000; /* Asegura que el botón esté por encima del mapa */
-}
+  .floating-button-location {
+    position: absolute;
+    right: 20px; /* Coloca los botones en la misma posición lateral */
+    top: 48%; /* Ajusta este valor para subir o bajar el botón */
+    background-color: #0f1eee; /* Color de fondo azul */
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 40px; /* Tamaño más pequeño */
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    z-index: 1000; /* Asegura que el botón esté por encima del mapa */
+  }
 
-
-
-.floating-button-cancel {
-  position: absolute;
-  right: 20px; /* Coloca los botones en la misma posición lateral */
-  top: 42%; /* Ajusta este valor para subir o bajar el botón */
-  background-color: #0f1eee; /* Color de fondo azul */
-  color: #ffffff;
-  border: none;
-  border-radius: 50%;
-  width: 40px; /* Tamaño más pequeño */
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition: background-color 0.3s;
-  z-index: 1000; /* Asegura que el botón esté por encima del mapa */
-}
-
+  .floating-button-cancel {
+    position: absolute;
+    right: 20px; /* Coloca los botones en la misma posición lateral */
+    top: 42%; /* Ajusta este valor para subir o bajar el botón */
+    background-color: #0f1eee; /* Color de fondo azul */
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 40px; /* Tamaño más pequeño */
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    z-index: 1000; /* Asegura que el botón esté por encima del mapa */
+  }
 }
 
 /* ------------------------------------------------------------------------------------------------- */
@@ -328,8 +313,6 @@
   object-fit: cover; /* Hace que la imagen cubra el contenedor sin distorsionarse */
   margin-bottom: 10px;
 }
-
-
 
 .button-container {
   display: flex;
@@ -610,7 +593,7 @@
 }
 
 .transport-label i {
-  font-size: 24px; 
+  font-size: 24px;
   color: #343a40;
 }
 
@@ -658,14 +641,16 @@
 
 /* Contenedor de Detalles de la Ruta */
 .ruta-detalles {
+  margin-top: 15px;
   background-color: #f8f9fa;
   padding: 15px;
-  border-radius: 10px;
-  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Estilo del título */
 .titulo-detalles {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   margin-bottom: 10px;
   color: #333;
@@ -673,8 +658,10 @@
 
 /* Estilo de la información de detalles de ruta */
 .detalle-info {
-  font-size: 14px;
-  color: #555;
+  font-size: 14px; /* Ajusta el tamaño para que sea más legible */
+  font-weight: 400; /* Elimina el efecto de negrita */
+  color: #555; /* Color gris suave para que se vea más elegante */
+  line-height: 1.6; /* Añade un espaciado más amplio entre las líneas */
   margin-bottom: 15px;
 }
 
@@ -697,6 +684,7 @@
   align-items: center;
 }
 
+/* Icono para las instrucciones */
 .instruction-icon {
   font-size: 18px;
   margin-right: 10px;
@@ -832,7 +820,7 @@ label {
   margin-bottom: 10px; /* Añade espacio debajo del label */
 }
 textarea.form-control {
-  min-height: calc(1.5em + .75rem + calc(var(--bs-border-width)* 2));
+  min-height: calc(1.5em + 0.75rem + calc(var(--bs-border-width) * 2));
   resize: none; /* Evita que el usuario cambie el tamaño del textarea */
   height: auto; /* Mantén el tamaño automático del textarea */
 }

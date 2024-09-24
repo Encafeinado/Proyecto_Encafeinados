@@ -1,7 +1,7 @@
 <div class="main-content">
   <div class="container">
     <div class="row">
-      
+
       <div class="col-md-8 position-relative">
         <div id="map">
           <google-map width="100%" [center]="center" [zoom]="zoom" [options]="opcionesMapa">
@@ -11,17 +11,12 @@
             </map-marker>
           </google-map>
         </div>
-        <!-- En tu plantilla HTML -->
-     
-
-        
-
       </div>
       <div class="col-md-4 sidebar">
         <p>¡Encuentra los mejores lugares de café en tu área!</p>
         <div *ngIf="rutaActiva && instruccionesRuta.length > 0" class="ruta-detalles">
           <h3 class="titulo-detalles">Detalles de la Ruta</h3>
-          <p class="detalle-info">{{ routeDetails }}</p>
+          <p class="detalle-info" style="color: #555">{{ routeDetails }}</p>
 
           <!-- Lista de Instrucciones: solo se muestran 2 a la vez -->
           <ul class="instrucciones-lista">
@@ -31,35 +26,33 @@
           </ul>
         </div>
         <br>
-
         <!-- Información adicional -->
-        <div style="margin-top: 15px; background-color: #f8f9fa; padding: 10px; border-radius: 5px;">
-          <h3 style="margin-bottom: 10px;">Información adicional</h3>
+        <div style="margin-top: 15px; background-color: #f8f9fa; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+          <h3 style="margin-bottom: 12px; font-weight: bold; font-size: 20px; color: #333;">Información adicional</h3>
           <ul style="list-style-type: none; padding-left: 0;">
-            <li style="margin-bottom: 10px;">
-              <img src="assets/IconsMarker/cafeino.png" alt="Icono de persona"
-                style="width: 20px; height: 20px; margin-right: 10px;">
-              <span style="font-size: 16px;">Eres tú</span>
+            <li style="margin-bottom: 12px; display: flex; align-items: center;">
+              <img src="assets/IconsMarker/cafeino.png" alt="Icono de persona" style="width: 24px; height: 24px; margin-right: 10px;">
+              <span style="font-size: 14px; color: #555; font-weight: 400;">Eres tú</span> <!-- Ajuste del tamaño y grosor del texto -->
             </li>
-            <li style="margin-bottom: 10px;">
-              <img src="assets/IconsMarker/cafeteriaAroma.png" alt="Icono de persona"
-                style="width: 20px; height: 20px; margin-right: 10px;">
-              <span style="font-size: 16px;">Tienda de café</span>
+            <li style="margin-bottom: 12px; display: flex; align-items: center;">
+              <img src="assets/IconsMarker/cafeteriaAroma.png" alt="Icono de tienda de café" style="width: 24px; height: 24px; margin-right: 10px;">
+              <span style="font-size: 14px; color: #555; font-weight: 400;">Tienda de café</span> <!-- Ajuste del tamaño y grosor del texto -->
             </li>
-            <li style="margin-bottom: 10px;">
-              <span style="color: green; font-size: 18px;">&#8226;</span> Tienda abierta
+            <li style="margin-bottom: 12px; display: flex; align-items: center;">
+              <span style="color: green; font-size: 18px;">&#8226;</span>
+              <span style="font-size: 14px; color: #555; font-weight: 400; margin-left: 10px;">Tienda abierta</span> <!-- Alineación y ajuste de texto -->
             </li>
-            <li style="margin-bottom: 10px;">
-              <span style="color: red; font-size: 18px;">&#8226;</span> Tienda cerrada
+            <li style="margin-bottom: 12px; display: flex; align-items: center;">
+              <span style="color: red; font-size: 18px;">&#8226;</span>
+              <span style="font-size: 14px; color: #555; font-weight: 400; margin-left: 10px;">Tienda cerrada</span> <!-- Alineación y ajuste de texto -->
             </li>
           </ul>
-        </div>
+        </div>                
         <br>
         <button class="btn btn-primary align-right" (click)="openModalReviewShop()">Califica la aplicación</button>
       </div>
     </div>
   </div>
-
   <!-- Botón del librito -->
   <div class="button-container-footer">
     <button class="floating-button button-book" (click)="openModalAlbum()">
@@ -174,7 +167,6 @@
     </div>
   </ng-template>
 
-
   <ng-template #modalReviewShop let-modal>
     <div class="modal-content-review">
       <div class="modal-header-review">
@@ -196,7 +188,6 @@
       </div>
     </div>
   </ng-template>
-
 
   <!-- Modal álbum -->
   <ng-template #modalBook let-modal>
