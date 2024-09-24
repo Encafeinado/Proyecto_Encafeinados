@@ -253,7 +253,7 @@
   .floating-button-location {
     position: absolute;
     right: 20px; /* Coloca los botones en la misma posición lateral */
-    top: 55%; /* Ajusta este valor para subir o bajar el botón */
+    top: 60%; /* Ajusta este valor para subir o bajar el botón */
     background-color: #0f1eee; /* Color de fondo azul */
     color: #ffffff;
     border: none;
@@ -273,7 +273,7 @@
   .floating-button-cancel {
     position: absolute;
     right: 20px; /* Coloca los botones en la misma posición lateral */
-    top: 48%; /* Ajusta este valor para subir o bajar el botón */
+    top: 52%; /* Ajusta este valor para subir o bajar el botón */
     background-color: #0f1eee; /* Color de fondo azul */
     color: #ffffff;
     border: none;
