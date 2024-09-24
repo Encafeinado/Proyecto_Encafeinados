@@ -321,7 +321,7 @@ export class MapComponent implements OnInit, OnDestroy {
         return 'assets/images/ruta-vibrante.jpg';
       case 'aroma café sabaneta':
         return 'assets/images/ruta-aroma.jpg';
-      case 'saudade':
+      case 'saudade café':
         return 'assets/images/ruta-saudade.jpg';
       case 'milagro coffee shop':
         return 'assets/images/ruta-milagro.jpg';
