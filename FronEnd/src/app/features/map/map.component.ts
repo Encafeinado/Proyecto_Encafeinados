@@ -590,7 +590,7 @@ export class MapComponent implements OnInit, OnDestroy {
     // Verificar si hay ruta activa antes de abrir el modal
     if (distancia < 45 && !this.modalAbierto && this.rutaActiva) {
       console.log('Abriendo modal de llegada...');
-      this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
+      this.openModal(this.arriveModal, this.destinationName, '', '', '', this.currentImageUrl);
       this.modalAbierto = true; // Marcar que el modal ha sido mostrado
     }
 
@@ -1119,7 +1119,7 @@ export class MapComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       if (this.rutaActiva && this.destinationName) {
         console.log('Reabriendo modal de llegada después de la cancelación.');
-        this.openModal(this.arriveModal, this.destinationName, '', '', '', '');
+        this.openModal(this.arriveModal, this.destinationName, '', '', '', this.currentImageUrl);
         this.modalAbierto = true;
       } else {
         console.warn(
