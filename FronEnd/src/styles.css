@@ -3410,7 +3410,12 @@ align-items: center;
 
   
   .section-dividerr {
-    height: 200px; /* Reduce el espacio entre secciones en móviles */
+    height: 10px; /* Reduce el espacio entre secciones en móviles */
+  }
+
+
+  .section-divider {
+    height: 0px; /* Espacio entre secciones */
   }
  
   
