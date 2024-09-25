@@ -80,6 +80,7 @@ export class MapComponent implements OnInit, OnDestroy {
   distanceMatrixService: google.maps.DistanceMatrixService =
     new google.maps.DistanceMatrixService();
   private hasZoomed: boolean = false;
+  private userZoomed = false; // Detecta cuando el usuario cambia el zoom manualmente
 
   opcionesMapa: google.maps.MapOptions = {
     styles: [
@@ -156,7 +157,13 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('No se encontró el ID del usuario.');
     }
     this.changeDetector.detectChanges();
-
+    const map = this.directionsRendererInstance.getMap();
+    if (map) {
+        // Escuchar cuando el usuario cambia el zoom manualmente
+        google.maps.event.addListener(map, 'zoom_changed', () => {
+            this.userZoomed = true; // Detecta cuando el usuario cambia el zoom manualmente
+        });
+    }
     // Actualiza los datos cada 10 segundos (10000 ms)
     setInterval(() => {
       // this.fetchShopData();
@@ -847,39 +854,34 @@ export class MapComponent implements OnInit, OnDestroy {
 
   // Método para calcular la ruta
   calcularRuta() {
-    // Verificar si el modal está abierto
     if (this.modalAbierto) {
       console.log('El modal está abierto, no se recalcula la ruta.');
       return;
     }
-
+  
     if (!this.modoTransporte) {
-      this.toastr.warning(
-        'Por favor, selecciona un modo de transporte.',
-        'Advertencia'
-      );
+      this.toastr.warning('Por favor, selecciona un modo de transporte.', 'Advertencia');
       return;
     }
-
-    // Verificar que la posición del marcador y el destino estén definidos
+  
     if (!this.markerPosition) {
       console.error('La posición del marcador no está definida.');
       return;
     }
 
+     // Solo reiniciar el zoom si el usuario no lo ha cambiado manualmente
+     if (!this.userZoomed) {
+      this.hasZoomed = false;  // Se permite el zoom automático si el usuario no lo ha modificado
+    }
+  
     if (!this.destinationName) {
       console.error('El destino no está definido.');
       return;
     }
-
+  
     let destination: google.maps.LatLngLiteral | string;
-
-    // Validar el destino
-    if (
-      typeof this.destinationName === 'object' &&
-      'lat' in this.destinationName &&
-      'lng' in this.destinationName
-    ) {
+  
+    if (typeof this.destinationName === 'object' && 'lat' in this.destinationName && 'lng' in this.destinationName) {
       destination = this.destinationName as google.maps.LatLngLiteral;
     } else if (typeof this.destinationName === 'string') {
       destination = this.destinationName;
@@ -887,87 +889,74 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('El destino proporcionado no es válido.');
       return;
     }
-
+  
     const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
-
+  
     const request: google.maps.DirectionsRequest = {
       origin: this.markerPosition,
       destination: destination,
       travelMode: travelMode,
       unitSystem: google.maps.UnitSystem.METRIC,
     };
-
-    // Configurar el DirectionsRenderer para no mostrar marcadores
+  
     this.directionsRendererInstance.setOptions({
       suppressMarkers: true,
-      preserveViewport: true,
+      preserveViewport: true,  // Evita que se cambie el viewport automáticamente
     });
-
+  
     this.directionsService.route(request, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK && result) {
-        // Ruta disponible
         this.directionsRendererInstance.setDirections(result);
         this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
-        this.modosDisponibles[this.modoTransporte] = true; // Habilitar el modo de transporte actual
-
-        // Centrar el mapa en el marcador
+        this.modosDisponibles[this.modoTransporte] = true;
+  
+        // Solo centra el mapa, el zoom lo controla la función centrarMapaEnMarcador
         this.centrarMapaEnMarcador();
-
+  
         if (this.modalRef) {
           this.modalRef.close();
         }
-
-        // Actualizar la rotación y la flecha
+  
         this.actualizarRotacionMarcador(0, result);
-
-        // Verificar cercanía al destino
+  
         if (this.rutaActiva && this.markerPosition) {
           this.verificarCercaniaADestino();
         }
       } else {
-        // Ruta no disponible
         this.rutaActiva = false;
         console.error('Error al calcular la ruta:', status, result);
-        this.toastr.warning(
-          'La ruta en este medio de transporte no está disponible',
-          'Advertencia'
-        );
-        this.modosDisponibles[this.modoTransporte] = false; // Inhabilitar el modo de transporte actual
-
-        // Cambiar a otro modo de transporte habilitado
-        const availableModes = Object.keys(this.modosDisponibles).filter(
-          (mode) => this.modosDisponibles[mode]
-        );
+        this.toastr.warning('La ruta en este medio de transporte no está disponible', 'Advertencia');
+        this.modosDisponibles[this.modoTransporte] = false;
+  
+        const availableModes = Object.keys(this.modosDisponibles).filter((mode) => this.modosDisponibles[mode]);
         if (availableModes.length > 0) {
-          // Cambiar al primer modo disponible
           this.modoTransporte = availableModes[0] as google.maps.TravelMode;
         } else {
-          // Si no hay modos disponibles, desactivar todos los botones
-          this.toastr.warning(
-            'No hay modos de transporte disponibles.',
-            'Advertencia'
-          );
+          this.toastr.warning('No hay modos de transporte disponibles.', 'Advertencia');
         }
       }
     });
-  }
+  }  
 
   centrarMapaEnMarcador() {
     const map = this.directionsRendererInstance.getMap();
     if (map) {
       if (this.markerPosition) {
-        // Ajusta el nivel de zoom y centra el mapa en el marcador del usuario
-        map.setZoom(17); // Ajusta el nivel de zoom a 17 o cualquier valor que prefieras
+        // Hacer zoom automático solo si no se ha hecho anteriormente y si el usuario no ha interactuado manualmente
+        if (!this.hasZoomed) {
+          map.setZoom(17); // Nivel de zoom inicial
+          this.hasZoomed = true; // Marcar que el zoom automático ya se ha realizado
+        }
+        // Siempre centrar el mapa en el marcador del usuario
         map.panTo(this.markerPosition);
-        this.hasZoomed = true; // Evita que el zoom cambie más adelante
       } else {
         console.error('La posición del marcador no está definida.');
       }
     } else {
       console.error('El mapa no está definido.');
     }
-  }
+} 
 
   // Guardar las instrucciones iniciales de la ruta
   obtenerDetallesRuta(result: google.maps.DirectionsResult) {
