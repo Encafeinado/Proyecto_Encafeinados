@@ -20,6 +20,65 @@
     height: 40vh; /* Reduce aún más la altura en pantallas muy pequeñas */
     border-radius: 8px; /* Ajusta el radio para pantallas más pequeñas */
   }
+  .modal-info {
+    display: flex;
+    flex-direction: row-reverse; /* Coloca la imagen a la derecha y el texto a la izquierda */
+    justify-content: flex-start; /* Alinea los elementos al inicio */
+    align-items: flex-start; /* Alinea verticalmente los elementos */
+    gap: 10px; /* Añade un espacio entre la imagen y el texto */
+  }
+
+  .modal-content-create {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-family: "Poppins", sans-serif;
+    width: 100%; /* Limita el ancho del modal */
+    margin: auto; /* Centra el modal horizontalmente */
+  }
+
+  .img-cafe {
+    width: 40%; /* Imagen ocupa todo el ancho disponible */
+    max-width: 170px; /* Tamaño máximo más pequeño para la imagen */
+    height: auto; /* Mantiene la proporción de la imagen */
+    margin-right: 0; /* Elimina el margen derecho */
+    margin-bottom: 10px; /* Añade un margen inferior */
+    display: block; /* Asegura que la imagen se comporte como un bloque */
+    margin-left: auto; /* Centra horizontalmente la imagen */
+    margin-right: auto; /* Centra horizontalmente la imagen */
+  }
+
+  .info-cafe {
+    flex: 1; /* Hace que la sección de información ocupe el espacio restante */
+    text-align: center; /* Alinea el texto a la izquierda */
+    max-width: calc(100% - 50px); /* Limita el ancho de la información para evitar que se desborde */
+    word-wrap: break-word; /* Permite que el texto largo se divida en varias líneas */
+    min-width: auto;
+  }
+
+  .especialidades {
+    margin-top: 10px;
+  }
+
+  .especialidades p {
+    margin: 5px 0; /* Reduce el margen entre las especialidades */
+    text-align: left; /* Alinea el texto a la izquierda */
+  }
+
+  .modal-footer-create {
+    display: flex;
+    justify-content: center;
+    padding: 6px;
+    border-top: none;
+  }
+
+  .descripcion-cafe {
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
+  }
 }
 
 .main-content {
@@ -814,12 +873,15 @@
   min-width: 220px; /* Asegura que la información tenga un ancho mínimo */
 }
 
-/* Media query para pantallas pequeñas */
 @media (max-width: 768px) {
   .modal-info {
-    flex-wrap: wrap; /* Mantiene los elementos en la misma línea pero permite que se ajusten */
-    align-items: center; /* Centra la imagen y la información en pantallas pequeñas */
+    display: flex;
+    flex-direction: row-reverse; /* Coloca la imagen a la derecha y el texto a la izquierda */
+    justify-content: flex-start; /* Alinea los elementos al inicio */
+    align-items: flex-start; /* Alinea verticalmente los elementos */
+    gap: 10px; /* Añade un espacio entre la imagen y el texto */
   }
+
   .modal-content-create {
     background-color: #ffffff;
     border-radius: 10px;
@@ -831,7 +893,7 @@
   }
 
   .img-cafe {
-    width: 100%; /* Imagen ocupa todo el ancho disponible */
+    width: 45%; /* Imagen ocupa todo el ancho disponible */
     max-width: 170px; /* Tamaño máximo más pequeño para la imagen */
     height: auto; /* Mantiene la proporción de la imagen */
     margin-right: 0; /* Elimina el margen derecho */
@@ -842,10 +904,38 @@
   }
 
   .info-cafe {
-    width: 100%; /* Asegura que la información ocupe todo el ancho disponible */
-    text-align: center; /* Centra el texto en pantallas pequeñas */
+    flex: 1; /* Hace que la sección de información ocupe el espacio restante */
+    text-align: center; /* Alinea el texto a la izquierda */
+    max-width: calc(100% - 50px); /* Limita el ancho de la información para evitar que se desborde */
+    word-wrap: break-word; /* Permite que el texto largo se divida en varias líneas */
+    min-width: 152px;
+  }
+
+  .especialidades {
+    margin-top: 10px;
+  }
+
+  .especialidades p {
+    margin: 5px 0; /* Reduce el margen entre las especialidades */
+    text-align: left; /* Alinea el texto a la izquierda */
+  }
+
+  .modal-footer-create {
+    display: flex;
+    justify-content: center;
+    padding: 6px;
+    border-top: none;
+  }
+
+  .descripcion-cafe {
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
   }
 }
+
+
 
 .descripcion-cafe {
   margin-bottom: 10px;
