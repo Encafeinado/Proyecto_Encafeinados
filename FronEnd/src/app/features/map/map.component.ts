@@ -590,14 +590,7 @@ export class MapComponent implements OnInit, OnDestroy {
     // Verificar si hay ruta activa antes de abrir el modal
     if (distancia < 45 && !this.modalAbierto && this.rutaActiva) {
       console.log('Abriendo modal de llegada...');
-      this.openModal(
-        this.arriveModal,
-        this.destinationName,
-        '',
-        '',
-        '',
-        this.currentImageUrl
-      );
+      this.openModal(this.arriveModal, this.destinationName, '', '', '', this.currentImageUrl);
       this.modalAbierto = true; // Marcar que el modal ha sido mostrado
     }
 
@@ -917,7 +910,11 @@ export class MapComponent implements OnInit, OnDestroy {
         this.modosDisponibles[this.modoTransporte] = true; // Habilitar el modo de transporte actual
 
         // Centrar el mapa en el marcador
+         // Centrar el mapa en el marcador solo la primera vez
+      if (!this.hasZoomed) {
         this.centrarMapaEnMarcador();
+        this.hasZoomed = true;  // Marca que el zoom ya se hizo
+      }
 
         if (this.modalRef) {
           this.modalRef.close();
@@ -962,12 +959,10 @@ export class MapComponent implements OnInit, OnDestroy {
     const map = this.directionsRendererInstance.getMap();
     if (map) {
       if (this.markerPosition) {
-        // Solo hacer zoom automático la primera vez
-        if (!this.hasZoomed) {
-          map.setZoom(17); // Hacer zoom la primera vez
-          this.hasZoomed = true; // Marca que ya se hizo zoom automático
-        }
-        map.panTo(this.markerPosition); // Siempre centra el mapa en el marcador
+        // Ajusta el nivel de zoom y centra el mapa en el marcador del usuario
+        map.setZoom(17); // Ajusta el nivel de zoom a 17 o cualquier valor que prefieras
+        map.panTo(this.markerPosition);
+        this.hasZoomed = true; // Evita que el zoom cambie más adelante
       } else {
         console.error('La posición del marcador no está definida.');
       }
@@ -1128,14 +1123,7 @@ export class MapComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       if (this.rutaActiva && this.destinationName) {
         console.log('Reabriendo modal de llegada después de la cancelación.');
-        this.openModal(
-          this.arriveModal,
-          this.destinationName,
-          '',
-          '',
-          '',
-          this.currentImageUrl
-        );
+        this.openModal(this.arriveModal, this.destinationName, '', '', '', this.currentImageUrl);
         this.modalAbierto = true;
       } else {
         console.warn(
