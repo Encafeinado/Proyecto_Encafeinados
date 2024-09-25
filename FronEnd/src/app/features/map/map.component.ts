@@ -850,7 +850,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.log('El modal está abierto, no se recalcula la ruta.');
       return;
     }
-
+  
     if (!this.modoTransporte) {
       this.toastr.warning(
         'Por favor, selecciona un modo de transporte.',
@@ -858,20 +858,20 @@ export class MapComponent implements OnInit, OnDestroy {
       );
       return;
     }
-
+  
     // Verificar que la posición del marcador y el destino estén definidos
     if (!this.markerPosition) {
       console.error('La posición del marcador no está definida.');
       return;
     }
-
+  
     if (!this.destinationName) {
       console.error('El destino no está definido.');
       return;
     }
-
+  
     let destination: google.maps.LatLngLiteral | string;
-
+  
     // Validar el destino
     if (
       typeof this.destinationName === 'object' &&
@@ -885,22 +885,22 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('El destino proporcionado no es válido.');
       return;
     }
-
+  
     const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
-
+  
     const request: google.maps.DirectionsRequest = {
       origin: this.markerPosition,
       destination: destination,
       travelMode: travelMode,
       unitSystem: google.maps.UnitSystem.METRIC,
     };
-
+  
     // Configurar el DirectionsRenderer para no mostrar marcadores
     this.directionsRendererInstance.setOptions({
       suppressMarkers: true,
-      preserveViewport: true,
+      preserveViewport: true, // Solo durante el cálculo inicial de la ruta
     });
-
+  
     this.directionsService.route(request, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK && result) {
         // Ruta disponible
@@ -908,21 +908,25 @@ export class MapComponent implements OnInit, OnDestroy {
         this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
         this.modosDisponibles[this.modoTransporte] = true; // Habilitar el modo de transporte actual
-
-        // Centrar el mapa en el marcador
-         // Centrar el mapa en el marcador solo la primera vez
-      if (!this.hasZoomed) {
-        this.centrarMapaEnMarcador();
-        this.hasZoomed = true;  // Marca que el zoom ya se hizo
-      }
-
+  
+        // Centrar el mapa en el marcador solo la primera vez
+        if (!this.hasZoomed) {
+          this.centrarMapaEnMarcador();
+          this.hasZoomed = true;  // Marca que el zoom ya se hizo
+  
+          // Desactivar preserveViewport después del primer zoom
+          this.directionsRendererInstance.setOptions({
+            preserveViewport: false,
+          });
+        }
+  
         if (this.modalRef) {
           this.modalRef.close();
         }
-
+  
         // Actualizar la rotación y la flecha
         this.actualizarRotacionMarcador(0, result);
-
+  
         // Verificar cercanía al destino
         if (this.rutaActiva && this.markerPosition) {
           this.verificarCercaniaADestino();
@@ -936,7 +940,7 @@ export class MapComponent implements OnInit, OnDestroy {
           'Advertencia'
         );
         this.modosDisponibles[this.modoTransporte] = false; // Inhabilitar el modo de transporte actual
-
+  
         // Cambiar a otro modo de transporte habilitado
         const availableModes = Object.keys(this.modosDisponibles).filter(
           (mode) => this.modosDisponibles[mode]
@@ -954,7 +958,7 @@ export class MapComponent implements OnInit, OnDestroy {
       }
     });
   }
-
+  
   centrarMapaEnMarcador() {
     const map = this.directionsRendererInstance.getMap();
     if (map) {
