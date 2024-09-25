@@ -159,10 +159,10 @@ export class MapComponent implements OnInit, OnDestroy {
     this.changeDetector.detectChanges();
     const map = this.directionsRendererInstance.getMap();
     if (map) {
-        // Escuchar cuando el usuario cambia el zoom manualmente
-        google.maps.event.addListener(map, 'zoom_changed', () => {
-            this.userZoomed = true; // Detecta cuando el usuario cambia el zoom manualmente
-        });
+      // Escuchar cuando el usuario cambia el zoom manualmente
+      google.maps.event.addListener(map, 'zoom_changed', () => {
+        this.userZoomed = true; // Detecta cuando el usuario cambia el zoom manualmente
+      });
     }
     // Actualiza los datos cada 10 segundos (10000 ms)
     setInterval(() => {
@@ -599,7 +599,14 @@ export class MapComponent implements OnInit, OnDestroy {
     // Verificar si hay ruta activa antes de abrir el modal
     if (distancia < 45 && !this.modalAbierto && this.rutaActiva) {
       console.log('Abriendo modal de llegada...');
-      this.openModal(this.arriveModal, this.destinationName, '', '', '', this.currentImageUrl);
+      this.openModal(
+        this.arriveModal,
+        this.destinationName,
+        '',
+        '',
+        '',
+        this.currentImageUrl
+      );
       this.modalAbierto = true; // Marcar que el modal ha sido mostrado
     }
 
@@ -858,30 +865,37 @@ export class MapComponent implements OnInit, OnDestroy {
       console.log('El modal está abierto, no se recalcula la ruta.');
       return;
     }
-  
+
     if (!this.modoTransporte) {
-      this.toastr.warning('Por favor, selecciona un modo de transporte.', 'Advertencia');
+      this.toastr.warning(
+        'Por favor, selecciona un modo de transporte.',
+        'Advertencia'
+      );
       return;
     }
-  
+
     if (!this.markerPosition) {
       console.error('La posición del marcador no está definida.');
       return;
     }
 
-     // Solo reiniciar el zoom si el usuario no lo ha cambiado manualmente
-     if (!this.userZoomed) {
-      this.hasZoomed = false;  // Se permite el zoom automático si el usuario no lo ha modificado
+    // Solo reiniciar el zoom si el usuario no lo ha cambiado manualmente
+    if (!this.userZoomed) {
+      this.hasZoomed = false; // Se permite el zoom automático si el usuario no lo ha modificado
     }
-  
+
     if (!this.destinationName) {
       console.error('El destino no está definido.');
       return;
     }
-  
+
     let destination: google.maps.LatLngLiteral | string;
-  
-    if (typeof this.destinationName === 'object' && 'lat' in this.destinationName && 'lng' in this.destinationName) {
+
+    if (
+      typeof this.destinationName === 'object' &&
+      'lat' in this.destinationName &&
+      'lng' in this.destinationName
+    ) {
       destination = this.destinationName as google.maps.LatLngLiteral;
     } else if (typeof this.destinationName === 'string') {
       destination = this.destinationName;
@@ -889,55 +903,63 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('El destino proporcionado no es válido.');
       return;
     }
-  
+
     const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
-  
+
     const request: google.maps.DirectionsRequest = {
       origin: this.markerPosition,
       destination: destination,
       travelMode: travelMode,
       unitSystem: google.maps.UnitSystem.METRIC,
     };
-  
+
     this.directionsRendererInstance.setOptions({
       suppressMarkers: true,
-      preserveViewport: true,  // Evita que se cambie el viewport automáticamente
+      preserveViewport: true, // Evita que se cambie el viewport automáticamente
     });
-  
+
     this.directionsService.route(request, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK && result) {
         this.directionsRendererInstance.setDirections(result);
         this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
         this.modosDisponibles[this.modoTransporte] = true;
-  
+
         // Solo centra el mapa, el zoom lo controla la función centrarMapaEnMarcador
         this.centrarMapaEnMarcador();
-  
+
         if (this.modalRef) {
           this.modalRef.close();
         }
-  
+
         this.actualizarRotacionMarcador(0, result);
-  
+
         if (this.rutaActiva && this.markerPosition) {
           this.verificarCercaniaADestino();
         }
       } else {
         this.rutaActiva = false;
         console.error('Error al calcular la ruta:', status, result);
-        this.toastr.warning('La ruta en este medio de transporte no está disponible', 'Advertencia');
+        this.toastr.warning(
+          'La ruta en este medio de transporte no está disponible',
+          'Advertencia'
+        );
         this.modosDisponibles[this.modoTransporte] = false;
-  
-        const availableModes = Object.keys(this.modosDisponibles).filter((mode) => this.modosDisponibles[mode]);
+
+        const availableModes = Object.keys(this.modosDisponibles).filter(
+          (mode) => this.modosDisponibles[mode]
+        );
         if (availableModes.length > 0) {
           this.modoTransporte = availableModes[0] as google.maps.TravelMode;
         } else {
-          this.toastr.warning('No hay modos de transporte disponibles.', 'Advertencia');
+          this.toastr.warning(
+            'No hay modos de transporte disponibles.',
+            'Advertencia'
+          );
         }
       }
     });
-  }  
+  }
 
   centrarMapaEnMarcador() {
     const map = this.directionsRendererInstance.getMap();
@@ -956,7 +978,7 @@ export class MapComponent implements OnInit, OnDestroy {
     } else {
       console.error('El mapa no está definido.');
     }
-} 
+  }
 
   // Guardar las instrucciones iniciales de la ruta
   obtenerDetallesRuta(result: google.maps.DirectionsResult) {
@@ -1110,7 +1132,14 @@ export class MapComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       if (this.rutaActiva && this.destinationName) {
         console.log('Reabriendo modal de llegada después de la cancelación.');
-        this.openModal(this.arriveModal, this.destinationName, '', '', '', this.currentImageUrl);
+        this.openModal(
+          this.arriveModal,
+          this.destinationName,
+          '',
+          '',
+          '',
+          this.currentImageUrl
+        );
         this.modalAbierto = true;
       } else {
         console.warn(
