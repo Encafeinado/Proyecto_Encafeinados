@@ -15,12 +15,6 @@ import { UserService } from '../../service/user.service';
 import { StoreService } from '../../service/store.service';
 import { ShopService } from '../../service/shop.service';
 import { ReviewService } from '../../service/reviews.service';
-
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-} from '@angular/common/http';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -81,7 +75,7 @@ export class MapComponent implements OnInit, OnDestroy {
     new google.maps.DistanceMatrixService();
   private hasZoomed: boolean = false;
   private userZoomed = false; // Detecta cuando el usuario cambia el zoom manualmente
-
+  inactivityTimeout: any; // Declaramos la variable para el timeout
   opcionesMapa: google.maps.MapOptions = {
     styles: [
       {
@@ -158,12 +152,19 @@ export class MapComponent implements OnInit, OnDestroy {
     }
     this.changeDetector.detectChanges();
     const map = this.directionsRendererInstance.getMap();
-    if (map) {
-      // Escuchar cuando el usuario cambia el zoom manualmente
-      google.maps.event.addListener(map, 'zoom_changed', () => {
-        this.userZoomed = true; // Detecta cuando el usuario cambia el zoom manualmente
-      });
-    }
+  if (map) {
+    google.maps.event.addListener(map, 'zoom_changed', () => {
+      this.userZoomed = true; // Detecta cuando el usuario cambia el zoom manualmente
+    });
+
+    google.maps.event.addListener(map, 'dragstart', () => {
+      this.userZoomed = true; // Detecta cuando el usuario mueve el mapa manualmente
+    });
+
+    google.maps.event.addListener(map, 'idle', () => {
+      this.resetInactivityTimer(); // Reiniciar el temporizador de inactividad después de que el usuario deja de interactuar
+    });
+  }
     // Actualiza los datos cada 10 segundos (10000 ms)
     setInterval(() => {
       // this.fetchShopData();
@@ -171,6 +172,14 @@ export class MapComponent implements OnInit, OnDestroy {
       this.fetchBookData();
     }, 10000); // 10 segundos
   }
+
+  // Controlar el temporizador de inactividad del usuario
+resetInactivityTimer() {
+  clearTimeout(this.inactivityTimeout);
+  this.inactivityTimeout = setTimeout(() => {
+    this.userZoomed = false; // Permitir zoom automático de nuevo si no hay interacción
+  }, 10000); // 10 segundos de inactividad
+}
 
   ngOnDestroy() {
     if (this.watchId) {
@@ -865,7 +874,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.log('El modal está abierto, no se recalcula la ruta.');
       return;
     }
-
+  
     if (!this.modoTransporte) {
       this.toastr.warning(
         'Por favor, selecciona un modo de transporte.',
@@ -873,24 +882,24 @@ export class MapComponent implements OnInit, OnDestroy {
       );
       return;
     }
-
+  
     if (!this.markerPosition) {
       console.error('La posición del marcador no está definida.');
       return;
     }
-
-    // Solo reiniciar el zoom si el usuario no lo ha cambiado manualmente
+  
+    // Solo reiniciar el zoom si el usuario no lo ha cambiado manualmente o si está inactivo
     if (!this.userZoomed) {
       this.hasZoomed = false; // Se permite el zoom automático si el usuario no lo ha modificado
     }
-
+  
     if (!this.destinationName) {
       console.error('El destino no está definido.');
       return;
     }
-
+  
     let destination: google.maps.LatLngLiteral | string;
-
+  
     if (
       typeof this.destinationName === 'object' &&
       'lat' in this.destinationName &&
@@ -903,37 +912,37 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('El destino proporcionado no es válido.');
       return;
     }
-
+  
     const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
-
+  
     const request: google.maps.DirectionsRequest = {
       origin: this.markerPosition,
       destination: destination,
       travelMode: travelMode,
       unitSystem: google.maps.UnitSystem.METRIC,
     };
-
+  
     this.directionsRendererInstance.setOptions({
       suppressMarkers: true,
       preserveViewport: true, // Evita que se cambie el viewport automáticamente
     });
-
+  
     this.directionsService.route(request, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK && result) {
         this.directionsRendererInstance.setDirections(result);
         this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
         this.modosDisponibles[this.modoTransporte] = true;
-
+  
         // Solo centra el mapa, el zoom lo controla la función centrarMapaEnMarcador
         this.centrarMapaEnMarcador();
-
+  
         if (this.modalRef) {
           this.modalRef.close();
         }
-
+  
         this.actualizarRotacionMarcador(0, result);
-
+  
         if (this.rutaActiva && this.markerPosition) {
           this.verificarCercaniaADestino();
         }
@@ -945,7 +954,7 @@ export class MapComponent implements OnInit, OnDestroy {
           'Advertencia'
         );
         this.modosDisponibles[this.modoTransporte] = false;
-
+  
         const availableModes = Object.keys(this.modosDisponibles).filter(
           (mode) => this.modosDisponibles[mode]
         );
@@ -966,7 +975,7 @@ export class MapComponent implements OnInit, OnDestroy {
     if (map) {
       if (this.markerPosition) {
         // Hacer zoom automático solo si no se ha hecho anteriormente y si el usuario no ha interactuado manualmente
-        if (!this.hasZoomed) {
+        if (!this.hasZoomed && !this.userZoomed) {
           map.setZoom(17); // Nivel de zoom inicial
           this.hasZoomed = true; // Marcar que el zoom automático ya se ha realizado
         }
