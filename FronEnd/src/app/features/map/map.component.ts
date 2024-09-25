@@ -153,16 +153,21 @@ export class MapComponent implements OnInit, OnDestroy {
     this.changeDetector.detectChanges();
     const map = this.directionsRendererInstance.getMap();
     if (map) {
+      // Detecta cuando el usuario cambia el zoom manualmente
       google.maps.event.addListener(map, 'zoom_changed', () => {
-        this.userZoomed = true; // Detecta cuando el usuario cambia el zoom manualmente
+        this.userZoomed = true;
+        this.resetInactivityTimer(); // Reiniciar el temporizador de inactividad
       });
 
+      // Detecta cuando el usuario mueve el mapa manualmente
       google.maps.event.addListener(map, 'dragstart', () => {
-        this.userZoomed = true; // Detecta cuando el usuario mueve el mapa manualmente
+        this.userZoomed = true;
+        this.resetInactivityTimer(); // Reiniciar el temporizador de inactividad
       });
 
+      // Se llama cuando el mapa queda "inactivo", es decir, el usuario deja de interactuar
       google.maps.event.addListener(map, 'idle', () => {
-        this.resetInactivityTimer(); // Reiniciar el temporizador de inactividad después de que el usuario deja de interactuar
+        this.resetInactivityTimer(); // Reiniciar el temporizador de inactividad
       });
     }
     // Actualiza los datos cada 10 segundos (10000 ms)
@@ -177,7 +182,7 @@ export class MapComponent implements OnInit, OnDestroy {
   resetInactivityTimer() {
     clearTimeout(this.inactivityTimeout);
     this.inactivityTimeout = setTimeout(() => {
-      this.userZoomed = false; // Permitir zoom automático de nuevo si no hay interacción
+      this.userZoomed = false; // Permitir el centrado y zoom automáticos nuevamente
     }, 10000); // 10 segundos de inactividad
   }
 
@@ -888,9 +893,8 @@ export class MapComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Solo reiniciar el zoom si el usuario no lo ha cambiado manualmente o si está inactivo
     if (!this.userZoomed) {
-      this.hasZoomed = false; // Se permite el zoom automático si el usuario no lo ha modificado
+      this.hasZoomed = false; // Se permite el zoom automático si el usuario no ha interactuado manualmente
     }
 
     if (!this.destinationName) {
@@ -970,22 +974,19 @@ export class MapComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Método para centrar el mapa en el marcador
   centrarMapaEnMarcador() {
     const map = this.directionsRendererInstance.getMap();
     if (map) {
-      if (this.markerPosition) {
-        // Hacer zoom automático solo si no se ha hecho anteriormente y si el usuario no ha interactuado manualmente
-        if (!this.hasZoomed && !this.userZoomed) {
-          map.setZoom(17); // Nivel de zoom inicial
-          this.hasZoomed = true; // Marcar que el zoom automático ya se ha realizado
+      if (this.markerPosition && !this.userZoomed) { // Solo centrar si el usuario no ha interactuado manualmente
+        if (!this.hasZoomed) {
+          map.setZoom(17); // Zoom inicial
+          this.hasZoomed = true;
         }
-        // Siempre centrar el mapa en el marcador del usuario
-        map.panTo(this.markerPosition);
+        map.panTo(this.markerPosition); // Centra el mapa en el marcador
       } else {
-        console.error('La posición del marcador no está definida.');
+        console.log('No se centra el mapa porque el usuario ha interactuado manualmente.');
       }
-    } else {
-      console.error('El mapa no está definido.');
     }
   }
 
