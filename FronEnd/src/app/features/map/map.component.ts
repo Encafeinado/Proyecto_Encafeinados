@@ -325,6 +325,8 @@ export class MapComponent implements OnInit, OnDestroy {
         return 'assets/images/ruta-saudade.jpg';
       case 'milagro coffee shop':
         return 'assets/images/ruta-milagro.jpg';
+      case 'serviteck ing':
+        return 'assets/images/ruta-diana.jpg';
       default:
         return 'assets/images/default-image.jpg'; // Imagen por defecto si no coincide el nombre
     }
