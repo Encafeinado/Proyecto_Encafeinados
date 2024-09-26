@@ -160,14 +160,27 @@ export class MapComponent implements OnInit, OnDestroy {
 
     const map = this.directionsRendererInstance.getMap();
 
-    // Escuchar el evento 'idle' que indica que el usuario ha interactuado con el mapa (zoom o movimiento)
+    // Escuchar el evento 'dragend', 'zoom_changed' y 'center_changed' para detectar interacción del usuario
     if (map) {
-      map.addListener('idle', () => {
+      map.addListener('dragend', () => {
         this.userInteractedWithMap = true;
-        this.toastr.info('El usuario ha interactuado con el mapa')
-        console.log('El usuario ha interactuado con el mapa');
+        console.log("El usuario ha arrastrado el mapa");
+        this.toastr.success('ab')
+      });
+  
+      map.addListener('zoom_changed', () => {
+        this.userInteractedWithMap = true;
+        console.log("El usuario ha cambiado el nivel de zoom");
+        this.toastr.success('a')
+      });
+  
+      map.addListener('center_changed', () => {
+        this.userInteractedWithMap = true;
+        console.log("El usuario ha cambiado el centro del mapa");
+        this.toastr.success('ac')
       });
     }
+
     // Actualiza los datos cada 10 segundos (10000 ms)
     setInterval(() => {
       // this.fetchShopData();
