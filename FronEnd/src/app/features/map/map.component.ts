@@ -898,7 +898,7 @@ export class MapComponent implements OnInit, OnDestroy {
     // Configurar el DirectionsRenderer para no mostrar marcadores
     this.directionsRendererInstance.setOptions({
       suppressMarkers: true,
-      preserveViewport: true, // Solo durante el cálculo inicial de la ruta
+      preserveViewport: !this.hasZoomed,  // Solo preservar la vista si no ha hecho zoom
     });
   
     this.directionsService.route(request, (result, status) => {
@@ -909,15 +909,9 @@ export class MapComponent implements OnInit, OnDestroy {
         this.rutaActiva = true;
         this.modosDisponibles[this.modoTransporte] = true; // Habilitar el modo de transporte actual
   
-        // Centrar el mapa en el marcador solo la primera vez
+        // Solo centrar el mapa y hacer zoom si no se ha hecho antes
         if (!this.hasZoomed) {
           this.centrarMapaEnMarcador();
-          this.hasZoomed = true;  // Marca que el zoom ya se hizo
-  
-          // Desactivar preserveViewport después del primer zoom
-          this.directionsRendererInstance.setOptions({
-            preserveViewport: false,
-          });
         }
   
         if (this.modalRef) {
