@@ -80,6 +80,7 @@ export class MapComponent implements OnInit, OnDestroy {
   distanceMatrixService: google.maps.DistanceMatrixService =
     new google.maps.DistanceMatrixService();
   private hasZoomed: boolean = false;
+  private userInteractedWithMap: boolean = false; // Variable para rastrear si el usuario interactuó con el mapa
 
   opcionesMapa: google.maps.MapOptions = {
     styles: [
@@ -157,6 +158,16 @@ export class MapComponent implements OnInit, OnDestroy {
     }
     this.changeDetector.detectChanges();
 
+    const map = this.directionsRendererInstance.getMap();
+
+    // Escuchar el evento 'idle' que indica que el usuario ha interactuado con el mapa (zoom o movimiento)
+    if (map) {
+      map.addListener('idle', () => {
+        this.userInteractedWithMap = true;
+        this.toastr.info('El usuario ha interactuado con el mapa')
+        console.log('El usuario ha interactuado con el mapa');
+      });
+    }
     // Actualiza los datos cada 10 segundos (10000 ms)
     setInterval(() => {
       // this.fetchShopData();
@@ -590,7 +601,14 @@ export class MapComponent implements OnInit, OnDestroy {
     // Verificar si hay ruta activa antes de abrir el modal
     if (distancia < 45 && !this.modalAbierto && this.rutaActiva) {
       console.log('Abriendo modal de llegada...');
-      this.openModal(this.arriveModal, this.destinationName, '', '', '', this.currentImageUrl);
+      this.openModal(
+        this.arriveModal,
+        this.destinationName,
+        '',
+        '',
+        '',
+        this.currentImageUrl
+      );
       this.modalAbierto = true; // Marcar que el modal ha sido mostrado
     }
 
@@ -850,7 +868,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.log('El modal está abierto, no se recalcula la ruta.');
       return;
     }
-  
+
     if (!this.modoTransporte) {
       this.toastr.warning(
         'Por favor, selecciona un modo de transporte.',
@@ -858,20 +876,20 @@ export class MapComponent implements OnInit, OnDestroy {
       );
       return;
     }
-  
+
     // Verificar que la posición del marcador y el destino estén definidos
     if (!this.markerPosition) {
       console.error('La posición del marcador no está definida.');
       return;
     }
-  
+
     if (!this.destinationName) {
       console.error('El destino no está definido.');
       return;
     }
-  
+
     let destination: google.maps.LatLngLiteral | string;
-  
+
     // Validar el destino
     if (
       typeof this.destinationName === 'object' &&
@@ -885,22 +903,22 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('El destino proporcionado no es válido.');
       return;
     }
-  
+
     const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
-  
+
     const request: google.maps.DirectionsRequest = {
       origin: this.markerPosition,
       destination: destination,
       travelMode: travelMode,
       unitSystem: google.maps.UnitSystem.METRIC,
     };
-  
+
     // Configurar el DirectionsRenderer para no mostrar marcadores
     this.directionsRendererInstance.setOptions({
       suppressMarkers: true,
-      preserveViewport: !this.hasZoomed,  // Solo preservar la vista si no ha hecho zoom
+      preserveViewport: true,
     });
-  
+
     this.directionsService.route(request, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK && result) {
         // Ruta disponible
@@ -908,19 +926,20 @@ export class MapComponent implements OnInit, OnDestroy {
         this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
         this.modosDisponibles[this.modoTransporte] = true; // Habilitar el modo de transporte actual
-  
-        // Solo centrar el mapa y hacer zoom si no se ha hecho antes
-        if (!this.hasZoomed) {
+
+        // Centrar el mapa en el marcador solo si no se ha hecho antes
+        // Centrar el mapa en el marcador solo si no se ha hecho antes y el usuario no ha interactuado
+        if (!this.hasZoomed && !this.userInteractedWithMap) {
           this.centrarMapaEnMarcador();
         }
-  
+
         if (this.modalRef) {
           this.modalRef.close();
         }
-  
+
         // Actualizar la rotación y la flecha
         this.actualizarRotacionMarcador(0, result);
-  
+
         // Verificar cercanía al destino
         if (this.rutaActiva && this.markerPosition) {
           this.verificarCercaniaADestino();
@@ -934,7 +953,7 @@ export class MapComponent implements OnInit, OnDestroy {
           'Advertencia'
         );
         this.modosDisponibles[this.modoTransporte] = false; // Inhabilitar el modo de transporte actual
-  
+
         // Cambiar a otro modo de transporte habilitado
         const availableModes = Object.keys(this.modosDisponibles).filter(
           (mode) => this.modosDisponibles[mode]
@@ -952,7 +971,7 @@ export class MapComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
+
   centrarMapaEnMarcador() {
     const map = this.directionsRendererInstance.getMap();
     if (map) {
@@ -960,7 +979,7 @@ export class MapComponent implements OnInit, OnDestroy {
         // Ajusta el nivel de zoom y centra el mapa en el marcador del usuario
         map.setZoom(17); // Ajusta el nivel de zoom a 17 o cualquier valor que prefieras
         map.panTo(this.markerPosition);
-        this.hasZoomed = true; // Evita que el zoom cambie más adelante
+        this.hasZoomed = true; // Establece que ya se ha hecho el zoom
       } else {
         console.error('La posición del marcador no está definida.');
       }
@@ -1121,7 +1140,14 @@ export class MapComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       if (this.rutaActiva && this.destinationName) {
         console.log('Reabriendo modal de llegada después de la cancelación.');
-        this.openModal(this.arriveModal, this.destinationName, '', '', '', this.currentImageUrl);
+        this.openModal(
+          this.arriveModal,
+          this.destinationName,
+          '',
+          '',
+          '',
+          this.currentImageUrl
+        );
         this.modalAbierto = true;
       } else {
         console.warn(
