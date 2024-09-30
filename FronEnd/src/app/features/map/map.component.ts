@@ -80,7 +80,6 @@ export class MapComponent implements OnInit, OnDestroy {
   distanceMatrixService: google.maps.DistanceMatrixService =
     new google.maps.DistanceMatrixService();
   private hasZoomed: boolean = false;
-  private userInteractedWithMap: boolean = false; // Variable para rastrear si el usuario interactuó con el mapa
 
   opcionesMapa: google.maps.MapOptions = {
     styles: [
@@ -103,16 +102,19 @@ export class MapComponent implements OnInit, OnDestroy {
     tilt: 45, // Activa la inclinación del mapa
     gestureHandling: 'greedy', // Permite rotar y hacer zoom con gestos (como en móviles)
   };
+
   iconoUbicacionUsuario = {
     url: 'assets/IconsMarker/cafeino.png', // Ruta desde la raíz pública
     scaledSize: new google.maps.Size(50, 50),
     rotation: 0,
   };
+  
   iconoTienda = {
     url: 'assets/IconsMarker/cafeteriaAroma.png', // Ruta desde la raíz pública
     scaledSize: new google.maps.Size(40, 40),
     rotation: 0,
   };
+
   @ViewChild('createModal', { static: true }) createModal: any;
   @ViewChild('cancelModal', { static: true }) cancelModal: any;
   @ViewChild('codeModal', { static: true }) codeModal: any;
@@ -157,29 +159,6 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('No se encontró el ID del usuario.');
     }
     this.changeDetector.detectChanges();
-
-    const map = this.directionsRendererInstance.getMap();
-
-    // Escuchar el evento 'dragend', 'zoom_changed' y 'center_changed' para detectar interacción del usuario
-    if (map) {
-      map.addListener('dragend', () => {
-        this.userInteractedWithMap = true;
-        console.log("El usuario ha arrastrado el mapa");
-        this.toastr.success('ab')
-      });
-  
-      map.addListener('zoom_changed', () => {
-        this.userInteractedWithMap = true;
-        console.log("El usuario ha cambiado el nivel de zoom");
-        this.toastr.success('a')
-      });
-  
-      map.addListener('center_changed', () => {
-        this.userInteractedWithMap = true;
-        console.log("El usuario ha cambiado el centro del mapa");
-        this.toastr.success('ac')
-      });
-    }
 
     // Actualiza los datos cada 10 segundos (10000 ms)
     setInterval(() => {
@@ -940,11 +919,8 @@ export class MapComponent implements OnInit, OnDestroy {
         this.rutaActiva = true;
         this.modosDisponibles[this.modoTransporte] = true; // Habilitar el modo de transporte actual
 
-        // Centrar el mapa en el marcador solo si no se ha hecho antes
-        // Centrar el mapa en el marcador solo si no se ha hecho antes y el usuario no ha interactuado
-        if (!this.hasZoomed && !this.userInteractedWithMap) {
-          this.centrarMapaEnMarcador();
-        }
+        // Centrar el mapa en el marcador
+        this.centrarMapaEnMarcador();
 
         if (this.modalRef) {
           this.modalRef.close();
@@ -992,7 +968,7 @@ export class MapComponent implements OnInit, OnDestroy {
         // Ajusta el nivel de zoom y centra el mapa en el marcador del usuario
         map.setZoom(17); // Ajusta el nivel de zoom a 17 o cualquier valor que prefieras
         map.panTo(this.markerPosition);
-        this.hasZoomed = true; // Establece que ya se ha hecho el zoom
+        this.hasZoomed = true; // Evita que el zoom cambie más adelante
       } else {
         console.error('La posición del marcador no está definida.');
       }
