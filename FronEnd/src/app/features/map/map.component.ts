@@ -404,8 +404,8 @@ export class MapComponent implements OnInit, OnDestroy {
       this.watchId = navigator.geolocation.watchPosition(
         (position) => {
           const nuevaPosicion = {
-            lat: 6.151406580341271,
-            lng: -75.61372883791627,
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
             // 6.151406580341271, -75.61372883791627
           };
 
@@ -628,7 +628,7 @@ export class MapComponent implements OnInit, OnDestroy {
       );
     }
   }
-  
+
   centerOnUserLocation(clickTriggered: boolean = false) {
     if (this.markerPosition) {
       const map = this.directionsRendererInstance.getMap();
