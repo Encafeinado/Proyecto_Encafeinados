@@ -1,28 +1,22 @@
 import {
-  Component,
-  OnInit,
-  OnDestroy,
-  AfterViewInit,
-  ViewChild,
-  ElementRef,
   ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild
 } from '@angular/core';
 
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import * as toastr from 'toastr';
 import { AlbumService, Image } from '../../service/album.service';
-import { UserService } from '../../service/user.service';
-import { StoreService } from '../../service/store.service';
-import { ShopService } from '../../service/shop.service';
 import { ReviewService } from '../../service/reviews.service';
+import { ShopService } from '../../service/shop.service';
+import { StoreService } from '../../service/store.service';
+import { UserService } from '../../service/user.service';
 
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-} from '@angular/common/http';
-import { AuthService } from 'src/app/auth/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from 'src/app/auth/services/auth.service';
 
 @Component({
   selector: 'app-map',
@@ -406,30 +400,35 @@ export class MapComponent implements OnInit, OnDestroy {
           const nuevaPosicion = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
-            // 6.151406580341271, -75.61372883791627
           };
-
-          // Si el marcador ya tiene una posición, actualizar la interpolación
+  
+          // Si ya tienes una posición previa, realiza la interpolación
           if (this.markerPosition) {
-            // Actualizar marcador sin zoom repetido
+            // Actualiza la posición del marcador en el mapa
             this.markerUsuario?.setPosition(nuevaPosicion);
             this.verificarAvanceInstrucciones();
-
-            // Solo recenter después de un lapso si no hubo zoom manual
-            const currentTime = Date.now();
-            if (
-              !this.manualZoom &&
-              currentTime - this.lastCenterTime > this.CENTER_DELAY_MS
-            ) {
-              this.centerOnUserLocation();
-              this.lastCenterTime = currentTime; // Actualizar tiempo del último centrado
-            }
+            this.markerPosition = nuevaPosicion;
           } else {
             // Primera vez que se obtiene la posición
             this.markerPosition = nuevaPosicion;
-            this.centerOnUserLocation();
-            this.lastCenterTime = Date.now(); // Inicializar el tiempo
+            this.markerUsuario = new google.maps.Marker({
+              position: this.markerPosition,
+              map: this.directionsRendererInstance.getMap(),
+              icon: this.iconoUbicacionUsuario,
+            });
           }
+  
+          // Solo aplicar zoom automático la primera vez
+          if (!this.hasZoomed) {
+            const map = this.directionsRendererInstance.getMap();
+            if (map) {
+              map.setZoom(17); // Establece el zoom inicial
+              map.panTo(this.markerPosition);
+              this.hasZoomed = true; // Marca que el zoom automático ya se ha hecho
+            }
+          }
+  
+          console.log('Ubicación del usuario actualizada:', this.markerPosition);
         },
         (error) => {
           console.error('Error rastreando la ubicación', error);
@@ -444,6 +443,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Geolocalización no es soportada por este navegador.');
     }
   }
+  
 
   // Método para calcular la distancia entre dos puntos (en metros)
   calcularDistancia(
@@ -633,15 +633,14 @@ export class MapComponent implements OnInit, OnDestroy {
     if (this.markerPosition) {
       const map = this.directionsRendererInstance.getMap();
       if (map) {
-        // Centrar el mapa en la posición del usuario
+        // Centra el mapa en la posición del marcador del usuario
         map.panTo(this.markerPosition);
-
+  
+        // Si se activó por el clic del botón o es la primera vez, ajusta el zoom
         if (clickTriggered || !this.hasZoomed) {
-          // Hacer zoom solo la primera vez o cuando se haga clic
           setTimeout(() => {
-            map.setZoom(17); // Ajustar el nivel de zoom según sea necesario
-            this.hasZoomed = true; // Evitar futuros zooms automáticos
-            this.manualZoom = false; // Resetear flag de zoom manual
+            map.setZoom(17); // Ajusta el nivel de zoom según sea necesario
+            this.hasZoomed = true; // Evita futuros zooms automáticos
           }, 300);
         }
       }
@@ -649,6 +648,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('La ubicación del usuario no está disponible.');
     }
   }
+  
 
   solicitarPermisoOrientacion() {
     const deviceOrientationEvent = DeviceOrientationEvent as any;
