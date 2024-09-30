@@ -102,16 +102,19 @@ export class MapComponent implements OnInit, OnDestroy {
     tilt: 45, // Activa la inclinación del mapa
     gestureHandling: 'greedy', // Permite rotar y hacer zoom con gestos (como en móviles)
   };
+
   iconoUbicacionUsuario = {
     url: 'assets/IconsMarker/cafeino.png', // Ruta desde la raíz pública
     scaledSize: new google.maps.Size(50, 50),
     rotation: 0,
   };
+  
   iconoTienda = {
     url: 'assets/IconsMarker/cafeteriaAroma.png', // Ruta desde la raíz pública
     scaledSize: new google.maps.Size(40, 40),
     rotation: 0,
   };
+
   @ViewChild('createModal', { static: true }) createModal: any;
   @ViewChild('cancelModal', { static: true }) cancelModal: any;
   @ViewChild('codeModal', { static: true }) codeModal: any;
@@ -325,8 +328,6 @@ export class MapComponent implements OnInit, OnDestroy {
         return 'assets/images/ruta-saudade.jpg';
       case 'milagro coffee shop':
         return 'assets/images/ruta-milagro.jpg';
-      case 'serviteck ing':
-        return 'assets/images/ruta-diana.jpg';
       default:
         return 'assets/images/default-image.jpg'; // Imagen por defecto si no coincide el nombre
     }
@@ -592,7 +593,14 @@ export class MapComponent implements OnInit, OnDestroy {
     // Verificar si hay ruta activa antes de abrir el modal
     if (distancia < 45 && !this.modalAbierto && this.rutaActiva) {
       console.log('Abriendo modal de llegada...');
-      this.openModal(this.arriveModal, this.destinationName, '', '', '', this.currentImageUrl);
+      this.openModal(
+        this.arriveModal,
+        this.destinationName,
+        '',
+        '',
+        '',
+        this.currentImageUrl
+      );
       this.modalAbierto = true; // Marcar que el modal ha sido mostrado
     }
 
@@ -1121,7 +1129,14 @@ export class MapComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       if (this.rutaActiva && this.destinationName) {
         console.log('Reabriendo modal de llegada después de la cancelación.');
-        this.openModal(this.arriveModal, this.destinationName, '', '', '', this.currentImageUrl);
+        this.openModal(
+          this.arriveModal,
+          this.destinationName,
+          '',
+          '',
+          '',
+          this.currentImageUrl
+        );
         this.modalAbierto = true;
       } else {
         console.warn(
