@@ -85,8 +85,6 @@ export class MapComponent implements OnInit, OnDestroy {
   private manualZoom: boolean = false; // Controlar si el usuario cambió manualmente el zoom
   private lastCenterTime: number = 0; // Controlar el tiempo del último centrado
   private readonly CENTER_DELAY_MS = 15000; // 15 segundos de espera para centrar nuevamente
-  
-  
 
   opcionesMapa: google.maps.MapOptions = {
     styles: [
@@ -115,7 +113,7 @@ export class MapComponent implements OnInit, OnDestroy {
     scaledSize: new google.maps.Size(50, 50),
     rotation: 0,
   };
-  
+
   iconoTienda = {
     url: 'assets/IconsMarker/cafeteriaAroma.png', // Ruta desde la raíz pública
     scaledSize: new google.maps.Size(40, 40),
@@ -172,7 +170,6 @@ export class MapComponent implements OnInit, OnDestroy {
       // this.fetchShopData();
       this.actualizarEstadosTiendas();
       this.fetchBookData();
-      
     }, 10000); // 10 segundos
   }
 
@@ -274,7 +271,7 @@ export class MapComponent implements OnInit, OnDestroy {
       google.maps.event.addListener(map, 'zoom_changed', () => {
         this.manualZoom = true;
       });
-  
+
       // Listener para detectar cuando el usuario mueve el mapa manualmente
       google.maps.event.addListener(map, 'dragend', () => {
         this.manualZoom = true;
@@ -407,19 +404,23 @@ export class MapComponent implements OnInit, OnDestroy {
       this.watchId = navigator.geolocation.watchPosition(
         (position) => {
           const nuevaPosicion = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
+            lat: 6.151406580341271,
+            lng: -75.61372883791627,
+            // 6.151406580341271, -75.61372883791627
           };
-  
+
           // Si el marcador ya tiene una posición, actualizar la interpolación
           if (this.markerPosition) {
             // Actualizar marcador sin zoom repetido
             this.markerUsuario?.setPosition(nuevaPosicion);
             this.verificarAvanceInstrucciones();
-  
+
             // Solo recenter después de un lapso si no hubo zoom manual
             const currentTime = Date.now();
-            if (!this.manualZoom && currentTime - this.lastCenterTime > this.CENTER_DELAY_MS) {
+            if (
+              !this.manualZoom &&
+              currentTime - this.lastCenterTime > this.CENTER_DELAY_MS
+            ) {
               this.centerOnUserLocation();
               this.lastCenterTime = currentTime; // Actualizar tiempo del último centrado
             }
@@ -443,7 +444,6 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Geolocalización no es soportada por este navegador.');
     }
   }
-  
 
   // Método para calcular la distancia entre dos puntos (en metros)
   calcularDistancia(
@@ -501,19 +501,19 @@ export class MapComponent implements OnInit, OnDestroy {
     ) {
       console.log('Verificando cercanía al destino...', this.destinationName);
 
-      if (
-        typeof this.destinationName === 'object' &&
-        'lat' in this.destinationName &&
-        'lng' in this.destinationName
-      ) {
-        const lat2 = (this.destinationName as { lat: number; lng: number }).lat;
-        const lng2 = (this.destinationName as { lat: number; lng: number }).lng;
-
-        // Calcula la distancia y verifica cercanía
-        this.procesarVerificacionCercania(lat2, lng2);
-      } else {
-        // Si no hay coordenadas, usa el nombre del destino para obtenerlas
-        this.obtenerCoordenadasDestino(this.destinationName)
+      // Buscar la dirección del destino en los datos de la tienda
+      const shopData = this.shopData.find(
+        (shop) => shop.name === this.destinationName
+      );
+      if (shopData && shopData.latitude && shopData.longitude) {
+        // Si hay coordenadas del destino, usar esas coordenadas para calcular la distancia
+        this.procesarVerificacionCercania(
+          shopData.latitude,
+          shopData.longitude
+        );
+      } else if (shopData && shopData.address) {
+        // Si no hay coordenadas pero hay dirección, obtener las coordenadas de la dirección
+        this.obtenerCoordenadasDestino(shopData.address)
           .then((coords) => {
             console.log('Coordenadas obtenidas del destino:', coords);
             this.procesarVerificacionCercania(coords.lat, coords.lng);
@@ -521,6 +521,8 @@ export class MapComponent implements OnInit, OnDestroy {
           .catch((error) => {
             console.error(error);
           });
+      } else {
+        console.error('No se encontró la información de la tienda.');
       }
     } else {
       console.error(
@@ -626,13 +628,14 @@ export class MapComponent implements OnInit, OnDestroy {
       );
     }
   }
+  
   centerOnUserLocation(clickTriggered: boolean = false) {
     if (this.markerPosition) {
       const map = this.directionsRendererInstance.getMap();
       if (map) {
         // Centrar el mapa en la posición del usuario
         map.panTo(this.markerPosition);
-  
+
         if (clickTriggered || !this.hasZoomed) {
           // Hacer zoom solo la primera vez o cuando se haga clic
           setTimeout(() => {
@@ -646,7 +649,6 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('La ubicación del usuario no está disponible.');
     }
   }
-  
 
   solicitarPermisoOrientacion() {
     const deviceOrientationEvent = DeviceOrientationEvent as any;
@@ -825,32 +827,25 @@ export class MapComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Verificar que la posición del marcador y el destino estén definidos
+    // Verificar que la posición del marcador esté definida
     if (!this.markerPosition) {
       console.error('La posición del marcador no está definida.');
       return;
     }
 
-    if (!this.destinationName) {
-      console.error('El destino no está definido.');
+    // Buscar la dirección del destino en los datos de la tienda
+    const shopData = this.shopData.find(
+      (shop) => shop.name === this.destinationName
+    );
+    if (!shopData || !shopData.address) {
+      console.error('No se encontró la dirección de la tienda.');
       return;
     }
 
-    let destination: google.maps.LatLngLiteral | string;
+    const destination = shopData.address;
 
-    // Validar el destino
-    if (
-      typeof this.destinationName === 'object' &&
-      'lat' in this.destinationName &&
-      'lng' in this.destinationName
-    ) {
-      destination = this.destinationName as google.maps.LatLngLiteral;
-    } else if (typeof this.destinationName === 'string') {
-      destination = this.destinationName;
-    } else {
-      console.error('El destino proporcionado no es válido.');
-      return;
-    }
+    // Mostrar la dirección en la consola
+    console.log(`Dirección de la tienda: ${destination}`);
 
     const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
 

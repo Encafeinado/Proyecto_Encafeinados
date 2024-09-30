@@ -35,7 +35,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     setInterval(() => {
       const currentUser = this.authService.currentUser();
       this.userName = currentUser ? currentUser.name : 'Nombre del Usuario';
-      console.log(currentUser)
+      // console.log(currentUser)
       this.router.events.subscribe((event) => {
         if (event instanceof NavigationEnd) {
           this.isLoading = false;

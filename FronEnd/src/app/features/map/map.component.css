@@ -52,7 +52,9 @@
   .info-cafe {
     flex: 1; /* Hace que la sección de información ocupe el espacio restante */
     text-align: center; /* Alinea el texto a la izquierda */
-    max-width: calc(100% - 50px); /* Limita el ancho de la información para evitar que se desborde */
+    max-width: calc(
+      100% - 50px
+    ); /* Limita el ancho de la información para evitar que se desborde */
     word-wrap: break-word; /* Permite que el texto largo se divida en varias líneas */
     min-width: auto;
   }
@@ -308,7 +310,6 @@
   background-color: #666666;
 }
 @media (max-width: 576px) {
-  
   .floating-button-location {
     position: absolute;
     right: 20px; /* Coloca los botones en la misma posición lateral */
@@ -327,7 +328,6 @@
     transition: background-color 0.3s;
     z-index: 2; /* Un valor bajo para que queden debajo del navbar */
   }
-
 
   .floating-button-cancel {
     position: absolute;
@@ -358,7 +358,6 @@
     margin: auto; /* Centra el modal horizontalmente */
   }
 }
-  
 
 /* Estilo del placeholder para dispositivos móviles */
 @media only screen and (max-width: 768px) {
@@ -906,7 +905,9 @@
   .info-cafe {
     flex: 1; /* Hace que la sección de información ocupe el espacio restante */
     text-align: center; /* Alinea el texto a la izquierda */
-    max-width: calc(100% - 50px); /* Limita el ancho de la información para evitar que se desborde */
+    max-width: calc(
+      100% - 50px
+    ); /* Limita el ancho de la información para evitar que se desborde */
     word-wrap: break-word; /* Permite que el texto largo se divida en varias líneas */
     min-width: 152px;
   }
@@ -934,8 +935,6 @@
     color: #555;
   }
 }
-
-
 
 .descripcion-cafe {
   margin-bottom: 10px;
