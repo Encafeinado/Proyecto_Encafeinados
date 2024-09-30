@@ -480,12 +480,7 @@ export class MapComponent implements OnInit, OnDestroy {
                             // Solo recalcular la ruta sin cambiar el zoom
                             this.calcularRuta();
                         }
-                    } else {
-                        // Solo panear a la nueva posición sin cambiar el zoom
-                        const map = this.directionsRendererInstance.getMap();
-                        if (map) {
-                            map.panTo(this.markerPosition); // Solo panear
-                        }
+                    
                     }
                 } else {
                     // Primera vez que se obtiene la posición
