@@ -75,7 +75,7 @@ export class MapComponent implements OnInit, OnDestroy {
     new google.maps.DistanceMatrixService();
   private hasZoomed: boolean = false;
   private geofencingRadius = 15;
-  private geofencingRadiusShop = 10
+  private geofencingRadiusShop = 10;
   private manualZoom: boolean = false; // Controlar si el usuario cambió manualmente el zoom
 
   opcionesMapa: google.maps.MapOptions = {
@@ -298,15 +298,23 @@ export class MapComponent implements OnInit, OnDestroy {
             markerData: markerData,
           });
 
+          // Agregar el listener de click solo si no hay una ruta activa
           marker.addListener('click', () => {
-            this.openModal(
-              this.createModal,
-              markerData.title,
-              markerData.status,
-              markerData.specialties1,
-              markerData.specialties2,
-              markerData.imageUrl
-            );
+            if (!this.rutaActiva) {
+              this.openModal(
+                this.createModal,
+                markerData.title,
+                markerData.status,
+                markerData.specialties1,
+                markerData.specialties2,
+                markerData.imageUrl
+              );
+            } else {
+              this.toastr.warning(
+                'Ya hay una ruta activa. Cancela la ruta actual para seleccionar otra tienda.',
+                'Advertencia'
+              );
+            }
           });
         } else {
           console.error('Posición del marcador de la tienda no está definida.');
@@ -477,10 +485,10 @@ export class MapComponent implements OnInit, OnDestroy {
     // Crear un nuevo círculo en el mapa
     console.log('Creando un nuevo círculo de geofencing.');
     this.geofenceCircle = new google.maps.Circle({
-      strokeColor: '#FF0000',
+      strokeColor: '#FEEFAD',
       strokeOpacity: 0.8,
       strokeWeight: 2,
-      fillColor: '#FF0000',
+      fillColor: '#FDDE55',
       fillOpacity: 0.35,
       map: map,
       center: { lat, lng },
@@ -550,28 +558,37 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('El círculo de geofencing del usuario no está definido.');
       return;
     }
-  
+
     // Obtener la posición del centro del círculo del usuario
     const latUsuario = this.geofenceCircleUsuario.getCenter()?.lat();
     const lngUsuario = this.geofenceCircleUsuario.getCenter()?.lng();
-  
+
     if (latUsuario === undefined || lngUsuario === undefined) {
       console.error('No se pudo obtener la posición del círculo del usuario.');
       return;
     }
-  
+
     // Calcular la distancia entre el centro del círculo del usuario y el destino
-    const distancia = this.calcularDistancia(latUsuario, lngUsuario, latDestino, lngDestino);
-  
-    console.log(`Distancia calculada desde el círculo del usuario al destino: ${distancia} metros`);
-  
+    const distancia = this.calcularDistancia(
+      latUsuario,
+      lngUsuario,
+      latDestino,
+      lngDestino
+    );
+
+    console.log(
+      `Distancia calculada desde el círculo del usuario al destino: ${distancia} metros`
+    );
+
     // Incrementar el radio del círculo aún más, para que la detección se produzca justo al tocar el borde
     const radioAjustado = this.geofenceCircleUsuario.getRadius() * 2; // Incrementa el radio en un 100%
-  
+
     // Verificar si hay una ruta activa y si el destino está dentro del radio ajustado del círculo del usuario
     if (this.rutaActiva && distancia <= radioAjustado) {
       if (!this.modalAbierto) {
-        console.log('Dentro del geofence del usuario. Abriendo modal de llegada...');
+        console.log(
+          'Dentro del geofence del usuario. Abriendo modal de llegada...'
+        );
         this.openModal(
           this.arriveModal,
           this.destinationName,
@@ -828,10 +845,10 @@ export class MapComponent implements OnInit, OnDestroy {
         if (this.rutaActiva) {
           // Crear un nuevo círculo de geofencing
           this.geofenceCircleUsuario = new google.maps.Circle({
-            strokeColor: '#00FF00',
+            strokeColor: '#68D2E8',
             strokeOpacity: 0.8,
             strokeWeight: 2,
-            fillColor: '#00FF00',
+            fillColor: '#03AED2',
             fillOpacity: 0.35,
             map: map,
             center: position,
@@ -861,6 +878,14 @@ export class MapComponent implements OnInit, OnDestroy {
     // Verificar si el modal está abierto
     if (this.modalAbierto) {
       console.log('El modal está abierto, no se recalcula la ruta.');
+      return;
+    }
+
+    if (this.rutaActiva) {
+      this.toastr.warning(
+        'Ya hay una ruta activa. Por favor, cancela la ruta actual antes de seleccionar un nuevo destino.',
+        'Advertencia'
+      );
       return;
     }
 
