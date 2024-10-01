@@ -565,8 +565,8 @@ export class MapComponent implements OnInit, OnDestroy {
   
     console.log(`Distancia calculada desde el círculo del usuario al destino: ${distancia} metros`);
   
-    // Ajustar la condición para incluir un rango mayor de distancia, dependiendo del radio del círculo
-    const radioAjustado = this.geofenceCircleUsuario.getRadius() * 1.2; // Incrementa el radio en un 20%
+    // Incrementar el radio del círculo aún más, para que la detección se produzca justo al tocar el borde
+    const radioAjustado = this.geofenceCircleUsuario.getRadius() * 2; // Incrementa el radio en un 100%
   
     // Verificar si hay una ruta activa y si el destino está dentro del radio ajustado del círculo del usuario
     if (this.rutaActiva && distancia <= radioAjustado) {
