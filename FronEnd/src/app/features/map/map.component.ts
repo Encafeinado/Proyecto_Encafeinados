@@ -75,6 +75,7 @@ export class MapComponent implements OnInit, OnDestroy {
     new google.maps.DistanceMatrixService();
   private hasZoomed: boolean = false;
   private geofencingRadius = 15;
+  private geofencingRadiusShop = 10
   private manualZoom: boolean = false; // Controlar si el usuario cambió manualmente el zoom
 
   opcionesMapa: google.maps.MapOptions = {
@@ -455,6 +456,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Geolocalización no es soportada por este navegador.');
     }
   }
+
   geofenceCircle: google.maps.Circle | null = null; // Referencia al círculo de geofencing
 
   // Método para agregar un círculo alrededor del destino para el geofencing
@@ -482,7 +484,7 @@ export class MapComponent implements OnInit, OnDestroy {
       fillOpacity: 0.35,
       map: map,
       center: { lat, lng },
-      radius: this.geofencingRadius,
+      radius: this.geofencingRadiusShop,
     });
   }
 
@@ -563,8 +565,11 @@ export class MapComponent implements OnInit, OnDestroy {
   
     console.log(`Distancia calculada desde el círculo del usuario al destino: ${distancia} metros`);
   
-    // Verificar si hay una ruta activa y si el destino está dentro del radio del círculo del usuario
-    if (this.rutaActiva && distancia <= this.geofenceCircleUsuario.getRadius()) {
+    // Ajustar la condición para incluir un rango mayor de distancia, dependiendo del radio del círculo
+    const radioAjustado = this.geofenceCircleUsuario.getRadius() * 1.2; // Incrementa el radio en un 20%
+  
+    // Verificar si hay una ruta activa y si el destino está dentro del radio ajustado del círculo del usuario
+    if (this.rutaActiva && distancia <= radioAjustado) {
       if (!this.modalAbierto) {
         console.log('Dentro del geofence del usuario. Abriendo modal de llegada...');
         this.openModal(
