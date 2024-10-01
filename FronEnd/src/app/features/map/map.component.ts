@@ -543,26 +543,30 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  procesarVerificacionCercania(lat2: number, lng2: number) {
-    if (!this.markerPosition) {
-      console.error('Posición del marcador no está definida.');
+  procesarVerificacionCercania(latDestino: number, lngDestino: number) {
+    if (!this.geofenceCircleUsuario) {
+      console.error('El círculo de geofencing del usuario no está definido.');
       return;
     }
-
-    // Calcular la distancia entre el marcador actual y el destino
-    const distancia = this.calcularDistancia(
-      this.markerPosition.lat,
-      this.markerPosition.lng,
-      lat2,
-      lng2
-    );
-
-    console.log(`Distancia calculada: ${distancia} metros`);
-
-    // Verificar si hay una ruta activa y si el marcador está dentro del geofence
-    if (this.rutaActiva && distancia <= this.geofencingRadius) {
+  
+    // Obtener la posición del centro del círculo del usuario
+    const latUsuario = this.geofenceCircleUsuario.getCenter()?.lat();
+    const lngUsuario = this.geofenceCircleUsuario.getCenter()?.lng();
+  
+    if (latUsuario === undefined || lngUsuario === undefined) {
+      console.error('No se pudo obtener la posición del círculo del usuario.');
+      return;
+    }
+  
+    // Calcular la distancia entre el centro del círculo del usuario y el destino
+    const distancia = this.calcularDistancia(latUsuario, lngUsuario, latDestino, lngDestino);
+  
+    console.log(`Distancia calculada desde el círculo del usuario al destino: ${distancia} metros`);
+  
+    // Verificar si hay una ruta activa y si el destino está dentro del radio del círculo del usuario
+    if (this.rutaActiva && distancia <= this.geofenceCircleUsuario.getRadius()) {
       if (!this.modalAbierto) {
-        console.log('Dentro del geofence. Abriendo modal de llegada...');
+        console.log('Dentro del geofence del usuario. Abriendo modal de llegada...');
         this.openModal(
           this.arriveModal,
           this.destinationName,
@@ -576,7 +580,7 @@ export class MapComponent implements OnInit, OnDestroy {
         console.log('El modal ya está abierto.');
       }
     } else {
-      console.log('Aún no cerca del destino o fuera del geofence.');
+      console.log('Aún no cerca del destino o fuera del geofence del usuario.');
       this.modalAbierto = false; // Resetear el estado si se está lejos
     }
   }
