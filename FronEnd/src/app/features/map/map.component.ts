@@ -602,43 +602,47 @@ export class MapComponent implements OnInit, OnDestroy {
 
   procesarVerificacionCercania(lat2: number, lng2: number) {
     if (!this.markerPosition) {
-      console.error('Posición del marcador no está definida.');
-      return;
+        console.error('Posición del marcador no está definida.');
+        return;
     }
 
     const distancia = this.calcularDistancia(
-      this.markerPosition.lat,
-      this.markerPosition.lng,
-      lat2,
-      lng2
+        this.markerPosition.lat,
+        this.markerPosition.lng,
+        lat2,
+        lng2
     );
 
     console.log(`Distancia calculada: ${distancia} metros`);
 
-    // Verificar si hay ruta activa antes de abrir el modal
-    if (distancia < 15 && !this.modalAbierto && this.rutaActiva) {
-      console.log('Abriendo modal de llegada...');
-      this.openModal(
-        this.arriveModal,
-        this.destinationName,
-        '',
-        '',
-        '',
-        this.currentImageUrl
-      );
-      this.modalAbierto = true; // Marcar que el modal ha sido mostrado
+    // Verificar si hay una ruta activa
+    if (!this.rutaActiva) {
+        console.log('No hay una ruta activa. Modal no abrirá.');
+        return;
     }
 
-    if (this.modalAbierto) {
-      console.log(
-        `El modal ya está abierto. Distancia actual: ${distancia} metros`
-      );
+    // Si la distancia es menor de 10 y el modal no está abierto
+    if (distancia < 10) {
+        if (!this.modalAbierto) {
+            console.log('Abriendo modal de llegada...');
+            this.openModal(
+                this.arriveModal,
+                this.destinationName,
+                '',
+                '',
+                '',
+                this.currentImageUrl
+            );
+            this.modalAbierto = true; // Marcar que el modal ha sido mostrado
+        } else {
+            console.log('El modal ya está abierto.');
+        }
     } else {
-      console.log(
-        `Aún no cerca del destino. Distancia actual: ${distancia} metros`
-      );
+        console.log('Aún no cerca del destino.');
+        this.modalAbierto = false; // Resetear el estado si se está lejos
     }
-  }
+}
+
 
   // Método para obtener las coordenadas del destino utilizando Google Maps Geocoding API
   obtenerCoordenadasDestino(
