@@ -455,6 +455,36 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Geolocalización no es soportada por este navegador.');
     }
   }
+  geofenceCircle: google.maps.Circle | null = null; // Referencia al círculo de geofencing
+
+  // Método para agregar un círculo alrededor del destino para el geofencing
+  agregarCirculoGeofencing(lat: number, lng: number) {
+    // Asegúrate de que el mapa esté correctamente instanciado
+    const map = this.directionsRendererInstance.getMap();
+    if (!map) {
+      console.error('El mapa no está disponible.');
+      return;
+    }
+
+    if (this.geofenceCircle) {
+      // Eliminar el círculo existente antes de crear uno nuevo
+      this.geofenceCircle.setMap(null);
+      console.log('Círculo de geofencing eliminado.');
+    }
+
+    // Crear un nuevo círculo en el mapa
+    console.log('Creando un nuevo círculo de geofencing.');
+    this.geofenceCircle = new google.maps.Circle({
+      strokeColor: '#FF0000',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#FF0000',
+      fillOpacity: 0.35,
+      map: map,
+      center: { lat, lng },
+      radius: this.geofencingRadius,
+    });
+  }
 
   // Método para calcular la distancia entre dos puntos (en metros)
   calcularDistancia(
@@ -495,6 +525,7 @@ export class MapComponent implements OnInit, OnDestroy {
             .then((coords) => {
               console.log('Coordenadas obtenidas del destino:', coords);
               this.procesarVerificacionCercania(coords.lat, coords.lng);
+              this.agregarCirculoGeofencing(coords.lat, coords.lng);
             })
             .catch((error) => {
               console.error(error);
@@ -707,6 +738,8 @@ export class MapComponent implements OnInit, OnDestroy {
     return heading;
   }
 
+  geofenceCircleUsuario: google.maps.Circle | null = null; // Referencia al círculo de geofencing del usuario
+
   actualizarRotacionMarcador(
     heading: number,
     result?: google.maps.DirectionsResult
@@ -735,12 +768,14 @@ export class MapComponent implements OnInit, OnDestroy {
           anchor: new google.maps.Point(25, 25),
         };
 
+    // Actualizar el marcador del usuario
     if (this.markerUsuario) {
       this.markerUsuario.setIcon(iconoRotado);
     } else {
       console.error('El marcador del usuario no está definido.');
     }
 
+    // Actualizar la posición del marcador y el círculo de geofencing
     if (result) {
       const route = result.routes[0];
       const legs = route.legs;
@@ -749,6 +784,7 @@ export class MapComponent implements OnInit, OnDestroy {
       if (step) {
         const position = step.start_location;
 
+        // Actualizar la posición del marcador
         if (this.markerUsuario) {
           this.markerUsuario.setPosition(position);
           this.markerUsuario.setIcon({
@@ -772,6 +808,28 @@ export class MapComponent implements OnInit, OnDestroy {
               strokeWeight: 2,
             },
           });
+        }
+
+        // Crear o actualizar el círculo de geofencing cada vez que se obtiene una nueva ruta
+        if (this.geofenceCircleUsuario) {
+          // Primero eliminar el círculo existente
+          this.geofenceCircleUsuario.setMap(null);
+        }
+
+        if (this.rutaActiva) {
+          // Crear un nuevo círculo de geofencing
+          this.geofenceCircleUsuario = new google.maps.Circle({
+            strokeColor: '#00FF00',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#00FF00',
+            fillOpacity: 0.35,
+            map: map,
+            center: position,
+            radius: this.geofencingRadius,
+          });
+        } else {
+          this.geofenceCircleUsuario = null;
         }
       } else {
         console.error('No se pudo obtener el primer paso de la ruta.');
