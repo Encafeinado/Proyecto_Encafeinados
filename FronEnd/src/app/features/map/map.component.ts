@@ -881,14 +881,6 @@ export class MapComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.rutaActiva) {
-      this.toastr.warning(
-        'Ya hay una ruta activa. Por favor, cancela la ruta actual antes de seleccionar un nuevo destino.',
-        'Advertencia'
-      );
-      return;
-    }
-
     if (!this.modoTransporte) {
       this.toastr.warning(
         'Por favor, selecciona un modo de transporte.',
