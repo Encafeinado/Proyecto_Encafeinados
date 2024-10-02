@@ -96,7 +96,7 @@ export class MapComponent implements OnInit, OnDestroy {
     fullscreenControl: false, // Elimina el botón de pantalla completa
     zoomControl: false, // Elimina el control de zoom
     rotateControl: true, // Habilita el control de rotación
-    tilt: 45, // Activa la inclinación del mapa
+    mapTypeId: google.maps.MapTypeId.ROADMAP, // Establece el tipo de mapa en "roadmap"
     gestureHandling: 'greedy', // Permite rotar y hacer zoom con gestos (como en móviles)
   };
 
@@ -256,7 +256,7 @@ export class MapComponent implements OnInit, OnDestroy {
         zoom: this.zoom,
         ...this.opcionesMapa,
       });
-
+      map.setHeading(90)
       this.directionsRendererInstance.setMap(map);
 
       // Listener para detectar si el usuario cambia el zoom manualmente
