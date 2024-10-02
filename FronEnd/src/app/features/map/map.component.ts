@@ -833,26 +833,29 @@ export class MapComponent implements OnInit, OnDestroy {
           });
         }
 
-        // Crear o actualizar el círculo de geofencing cada vez que se obtiene una nueva ruta
-        if (this.geofenceCircleUsuario) {
-          // Primero eliminar el círculo existente
-          this.geofenceCircleUsuario.setMap(null);
-        }
-
         if (this.rutaActiva) {
-          // Crear un nuevo círculo de geofencing
-          this.geofenceCircleUsuario = new google.maps.Circle({
-            strokeColor: '#68D2E8',
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-            fillColor: '#03AED2',
-            fillOpacity: 0.35,
-            map: map,
-            center: position,
-            radius: this.geofencingRadius,
-          });
+          if (this.geofenceCircleUsuario) {
+            // Actualizar el centro del círculo existente a la nueva posición del usuario
+            this.geofenceCircleUsuario.setCenter(position);
+          } else {
+            // Crear un nuevo círculo de geofencing si no existe
+            this.geofenceCircleUsuario = new google.maps.Circle({
+              strokeColor: '#68D2E8',
+              strokeOpacity: 0.8,
+              strokeWeight: 2,
+              fillColor: '#03AED2',
+              fillOpacity: 0.35,
+              map: map,
+              center: position,
+              radius: this.geofencingRadius,
+            });
+          }
         } else {
-          this.geofenceCircleUsuario = null;
+          // Si no hay ruta activa, eliminar el círculo de geofencing
+          if (this.geofenceCircleUsuario) {
+            this.geofenceCircleUsuario.setMap(null);
+            this.geofenceCircleUsuario = null;
+          }
         }
       } else {
         console.error('No se pudo obtener el primer paso de la ruta.');
