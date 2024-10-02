@@ -6,7 +6,6 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import * as toastr from 'toastr';
 import { AlbumService, Image } from '../../service/album.service';
@@ -14,7 +13,6 @@ import { ReviewService } from '../../service/reviews.service';
 import { ShopService } from '../../service/shop.service';
 import { StoreService } from '../../service/store.service';
 import { UserService } from '../../service/user.service';
-
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/auth/services/auth.service';
 
@@ -256,7 +254,6 @@ export class MapComponent implements OnInit, OnDestroy {
         zoom: this.zoom,
         ...this.opcionesMapa,
       });
-      map.setHeading(90)
       this.directionsRendererInstance.setMap(map);
 
       // Listener para detectar si el usuario cambia el zoom manualmente
@@ -631,9 +628,20 @@ export class MapComponent implements OnInit, OnDestroy {
 
   // Método para determinar si la ruta debe ser recalculada
   debeRecalcularRuta(nuevaPosicion: google.maps.LatLngLiteral): boolean {
-    // Implementa una lógica para determinar si la ruta debe ser recalculada
-    // Por ejemplo, podrías comparar con la última posición conocida y verificar si ha cambiado significativamente
-    return true; // Cambia esto según tu lógica
+    const distanciaUmbral = 10; // distancia en metros para considerar un cambio significativo
+    const lastPosition = this.markerPosition;
+
+    // Verifica que lastPosition no sea undefined
+    if (!lastPosition) {
+      return true; // Si no hay una última posición, considera que necesita recalcular
+    }
+
+    const distancia = google.maps.geometry.spherical.computeDistanceBetween(
+      new google.maps.LatLng(lastPosition.lat, lastPosition.lng),
+      new google.maps.LatLng(nuevaPosicion.lat, nuevaPosicion.lng)
+    );
+
+    return distancia > distanciaUmbral; // solo recalcula si la distancia es mayor al umbral
   }
 
   // Método para actualizar la ubicación del marcador cuando se hace clic en el botón
@@ -836,13 +844,12 @@ export class MapComponent implements OnInit, OnDestroy {
           });
         }
 
-        // Crear o actualizar el círculo de geofencing cada vez que se obtiene una nueva ruta
+         // Crear o actualizar el círculo de geofencing
+      if (this.rutaActiva) {
         if (this.geofenceCircleUsuario) {
-          // Primero eliminar el círculo existente
-          this.geofenceCircleUsuario.setMap(null);
-        }
-
-        if (this.rutaActiva) {
+          // Actualizar el centro del círculo existente
+          this.geofenceCircleUsuario.setCenter(position);
+        } else {
           // Crear un nuevo círculo de geofencing
           this.geofenceCircleUsuario = new google.maps.Circle({
             strokeColor: '#68D2E8',
@@ -854,9 +861,14 @@ export class MapComponent implements OnInit, OnDestroy {
             center: position,
             radius: this.geofencingRadius,
           });
-        } else {
-          this.geofenceCircleUsuario = null;
         }
+      } else {
+        if (this.geofenceCircleUsuario) {
+          // Si la ruta no está activa, eliminar el círculo de geofencing
+          this.geofenceCircleUsuario.setMap(null);
+          this.geofenceCircleUsuario = null; // Limpiar la referencia
+        }
+      }
       } else {
         console.error('No se pudo obtener el primer paso de la ruta.');
       }
@@ -998,12 +1010,15 @@ export class MapComponent implements OnInit, OnDestroy {
         const leg = route.legs[0];
 
         // Aquí obtienes la distancia, duración y el nombre del destino
-        const distance = leg.distance?.value || 0;
+        const distanceInMeters = leg.distance?.value || 0;
         const duration = leg.duration?.text || 'Duración no disponible';
         const destination = leg.end_address || 'Destino no disponible';
 
+        // Formatear la distancia
+        const distanceFormatted = this.formatearDistancia(distanceInMeters);
+
         // Almacenar los detalles de la ruta
-        this.routeDetails = `Distancia: ${distance} metros, Tiempo estimado: ${duration}, Destino: ${destination}`;
+        this.routeDetails = `Distancia: ${distanceFormatted}, Tiempo estimado: ${duration}, Destino: ${destination}`;
         console.log(this.routeDetails);
 
         // Limpiar y resetear las instrucciones
@@ -1018,6 +1033,16 @@ export class MapComponent implements OnInit, OnDestroy {
         // Mostrar las primeras 2 instrucciones
         this.mostrarInstrucciones();
       }
+    }
+  }
+
+  // Método para formatear la distancia
+  formatearDistancia(metros: number): string {
+    if (metros >= 1000) {
+      const kilometros = (metros / 1000).toFixed(2); // Convertir a kilómetros y redondear a 2 decimales
+      return `${kilometros} km`;
+    } else {
+      return `${metros} m`; // Mantener en metros
     }
   }
 
