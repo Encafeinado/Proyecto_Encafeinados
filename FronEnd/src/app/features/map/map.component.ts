@@ -774,84 +774,69 @@ export class MapComponent implements OnInit, OnDestroy {
 
   geofenceCircleUsuario: google.maps.Circle | null = null; // Referencia al círculo de geofencing del usuario
 
-  actualizarRotacionMarcador(
-    heading: number,
-    result?: google.maps.DirectionsResult
-  ) {
-    const map = this.directionsRendererInstance.getMap();
-    if (!map) {
-      console.error('El mapa no está definido.');
-      return;
-    }
+actualizarRotacionMarcador(
+  heading: number,
+  result?: google.maps.DirectionsResult
+) {
+  const map = this.directionsRendererInstance.getMap();
+  if (!map) {
+    console.error('El mapa no está definido.');
+    return;
+  }
 
-    // Definir el icono basado en si la ruta está activa o no
-    const iconoRotado = this.rutaActiva
-      ? {
-          path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-          scale: 4,
-          rotation: heading,
-          fillColor: 'blue',
-          fillOpacity: 0.8,
-          strokeWeight: 2,
-          anchor: new google.maps.Point(0, 2.6),
-        }
-      : {
-          url: this.iconoUbicacionUsuario.url,
-          rotation: heading,
-          scaledSize: new google.maps.Size(40, 40),
-          anchor: new google.maps.Point(25, 25),
-        };
+  // Definir el icono basado en si la ruta está activa o no
+  const iconoRotado = this.rutaActiva
+    ? {
+        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+        scale: 4,
+        rotation: heading,
+        fillColor: 'blue',
+        fillOpacity: 0.8,
+        strokeWeight: 2,
+        anchor: new google.maps.Point(0, 2.6),
+      }
+    : {
+        url: this.iconoUbicacionUsuario.url,
+        rotation: heading,
+        scaledSize: new google.maps.Size(40, 40),
+        anchor: new google.maps.Point(25, 25),
+      };
 
-    // Actualizar el marcador del usuario
-    if (this.markerUsuario) {
-      this.markerUsuario.setIcon(iconoRotado);
-    } else {
-      console.error('El marcador del usuario no está definido.');
-    }
+  // Actualizar el marcador del usuario
+  if (this.markerUsuario) {
+    this.markerUsuario.setIcon(iconoRotado);
+  } else {
+    console.error('El marcador del usuario no está definido.');
+  }
 
-    // Actualizar la posición del marcador y el círculo de geofencing
-    if (result) {
-      const route = result.routes[0];
-      const legs = route.legs;
-      const step = legs[0].steps[0];
+  // Actualizar la posición del marcador y el círculo de geofencing
+  if (result) {
+    const route = result.routes[0];
+    const legs = route.legs;
+    const step = legs[0].steps[0];
 
-      if (step) {
-        const position = step.start_location;
+    if (step) {
+      const position = step.start_location;
 
-        // Actualizar la posición del marcador
-        if (this.markerUsuario) {
-          this.markerUsuario.setPosition(position);
-          this.markerUsuario.setIcon({
-            path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-            scale: 4,
-            rotation: heading,
-            fillColor: 'blue',
-            fillOpacity: 0.8,
-            strokeWeight: 2,
-          });
-        } else {
-          this.markerUsuario = new google.maps.Marker({
-            position: position,
-            map: map,
-            icon: {
-              path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-              scale: 4,
-              rotation: heading,
-              fillColor: 'blue',
-              fillOpacity: 0.8,
-              strokeWeight: 2,
-            },
-          });
-        }
+      // Actualizar la posición del marcador
+      if (this.markerUsuario) {
+        this.markerUsuario.setPosition(position);
+        this.markerUsuario.setIcon(iconoRotado);
+      } else {
+        this.markerUsuario = new google.maps.Marker({
+          position: position,
+          map: map,
+          icon: iconoRotado,
+        });
+      }
 
-        // Crear o actualizar el círculo de geofencing cada vez que se obtiene una nueva ruta
+       // Actualizar el círculo de geofencing en la posición del usuario
+       if (this.rutaActiva) {
         if (this.geofenceCircleUsuario) {
-          // Primero eliminar el círculo existente
-          this.geofenceCircleUsuario.setMap(null);
-        }
-
-        if (this.rutaActiva) {
-          // Crear un nuevo círculo de geofencing
+          // Actualizar el centro del círculo existente a la nueva posición del usuario
+          this.geofenceCircleUsuario.setCenter(position);
+        } else {
+          // Crear un nuevo círculo de geofencing si no existe
           this.geofenceCircleUsuario = new google.maps.Circle({
             strokeColor: '#68D2E8',
             strokeOpacity: 0.8,
@@ -862,14 +847,20 @@ export class MapComponent implements OnInit, OnDestroy {
             center: position,
             radius: this.geofencingRadius,
           });
-        } else {
-          this.geofenceCircleUsuario = null;
         }
       } else {
-        console.error('No se pudo obtener el primer paso de la ruta.');
+        // Si no hay ruta activa, eliminar el círculo de geofencing
+        if (this.geofenceCircleUsuario) {
+          this.geofenceCircleUsuario.setMap(null);
+          this.geofenceCircleUsuario = null;
+        }
       }
+    } else {
+      console.error('No se pudo obtener el primer paso de la ruta.');
     }
   }
+}
+
 
   seleccionarModoTransporte(modo: google.maps.TravelMode) {
     this.modoTransporte = modo;
