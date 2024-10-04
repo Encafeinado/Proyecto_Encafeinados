@@ -152,9 +152,9 @@ export class MapComponent implements OnInit, OnDestroy {
     window.addEventListener('offline', () => {
       this.isOffline = true;
       this.mostrarMensajeOffline();
-      // Recargar la página después de 5 segundos
+      // Recargar el componente después de 5 segundos
       setTimeout(() => {
-        window.location.reload();
+        this.recargarComponente();
       }, 5000);
     });
 
@@ -1506,5 +1506,9 @@ export class MapComponent implements OnInit, OnDestroy {
     this.fetchShopData();
     this.populateShopLogos();
     this.fetchBookData();
+  }
+
+  recargarComponente() {
+    this.ngOnInit();
   }
 }
