@@ -119,7 +119,8 @@ export class MapComponent implements OnInit, OnDestroy {
   @ViewChild('codeInput', { static: false }) codeInput!: ElementRef;
   @ViewChild('arriveModal', { static: true }) arriveModal: any;
   @ViewChild('modalReviewShop', { static: true }) modalReviewShop: any;
-
+  @ViewChild('smokeLoader') smokeLoader!: ElementRef;
+  
   constructor(
     private modalService: NgbModal,
     private albumService: AlbumService,
@@ -154,15 +155,14 @@ export class MapComponent implements OnInit, OnDestroy {
     window.addEventListener('offline', () => {
       this.isOffline = true;
       this.mostrarMensajeOffline();
-      // Recargar el componente después de 5 segundos
+      this.smokeLoader.nativeElement.style.display = 'block'; // Mostrar loader
+
+      // Recargar el componente después de 2 segundos
       setTimeout(() => {
-        // Recargar el componente navegando a la misma ruta
-        this.router
-          .navigateByUrl('/', { skipLocationChange: true })
-          .then(() => {
-            this.router.navigate([this.router.url]);
-          });
-      }, 3000);
+        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+          this.router.navigate([this.router.url]);
+        });
+      }, 2000);
     });
 
     window.addEventListener('online', () => {
@@ -171,15 +171,12 @@ export class MapComponent implements OnInit, OnDestroy {
         'La conexión a internet se ha restablecido.',
         'Conexión restablecida'
       );
+      this.smokeLoader.nativeElement.style.display = 'none'; // Ocultar loader
       setTimeout(() => {
-        // Recargar el componente navegando a la misma ruta
-        this.router
-          .navigateByUrl('/', { skipLocationChange: true })
-          .then(() => {
-            this.router.navigate([this.router.url]);
-          });
+        // Recargar toda la página
+        window.location.reload();
       }, 3000);
-    });
+    });    
 
     if (this.userId) {
       this.fetchBookData();
