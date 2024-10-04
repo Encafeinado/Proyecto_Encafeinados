@@ -4,9 +4,8 @@ import {
   ElementRef,
   OnDestroy,
   OnInit,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
-
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import * as toastr from 'toastr';
 import { AlbumService, Image } from '../../service/album.service';
@@ -14,9 +13,9 @@ import { ReviewService } from '../../service/reviews.service';
 import { ShopService } from '../../service/shop.service';
 import { StoreService } from '../../service/store.service';
 import { UserService } from '../../service/user.service';
-
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { LoadingComponent } from 'src/app/shared/loading/loading.component';
 
 @Component({
   selector: 'app-map',
@@ -57,6 +56,7 @@ export class MapComponent implements OnInit, OnDestroy {
     lng: -75.61905204382627,
   };
   zoom = 15;
+  isOffline: boolean = false; // Para indicar si se está sin conexión
   currentImageUrl!: string;
   rutaActiva: boolean = false;
   routeDetails: string | undefined;
@@ -74,14 +74,12 @@ export class MapComponent implements OnInit, OnDestroy {
   distanceMatrixService: google.maps.DistanceMatrixService =
     new google.maps.DistanceMatrixService();
   private hasZoomed: boolean = false;
-
-  private isMapCentered: boolean = false; // Controlar si el mapa ha sido centrado
+  private geofencingRadius = 15;
+  private geofencingRadiusShop = 10;
   private manualZoom: boolean = false; // Controlar si el usuario cambió manualmente el zoom
-  private lastCenterTime: number = 0; // Controlar el tiempo del último centrado
-  private readonly CENTER_DELAY_MS = 15000; // 15 segundos de espera para centrar nuevamente
-  
-  
+  isLoading: boolean = false;
 
+  @ViewChild(LoadingComponent, { static: false }) loadingComponent!: LoadingComponent;
   opcionesMapa: google.maps.MapOptions = {
     styles: [
       {
@@ -100,7 +98,7 @@ export class MapComponent implements OnInit, OnDestroy {
     fullscreenControl: false, // Elimina el botón de pantalla completa
     zoomControl: false, // Elimina el control de zoom
     rotateControl: true, // Habilita el control de rotación
-    tilt: 45, // Activa la inclinación del mapa
+    mapTypeId: google.maps.MapTypeId.ROADMAP, // Establece el tipo de mapa en "roadmap"
     gestureHandling: 'greedy', // Permite rotar y hacer zoom con gestos (como en móviles)
   };
 
@@ -109,7 +107,7 @@ export class MapComponent implements OnInit, OnDestroy {
     scaledSize: new google.maps.Size(50, 50),
     rotation: 0,
   };
-  
+
   iconoTienda = {
     url: 'assets/IconsMarker/cafeteriaAroma.png', // Ruta desde la raíz pública
     scaledSize: new google.maps.Size(40, 40),
@@ -153,7 +151,22 @@ export class MapComponent implements OnInit, OnDestroy {
       this.solicitarPermisoOrientacion.bind(this),
       { once: true }
     );
+    // Escuchar los eventos de conexión a internet
+    window.addEventListener('offline', () => {
+      this.isOffline = true;
+      this.mostrarMensajeOffline();
+      this.mostrarLoader(); // Mostrar el loader en caso de desconexión
+    });
 
+    window.addEventListener('online', () => {
+      this.isOffline = false;
+      this.ocultarLoader(); // Ocultar el loader cuando se restablezca la conexión
+      this.toastr.success(
+        'La conexión a internet se ha restablecido.',
+        'Conexión restablecida'
+      );
+    });
+    
     if (this.userId) {
       this.fetchBookData();
     } else {
@@ -166,8 +179,23 @@ export class MapComponent implements OnInit, OnDestroy {
       // this.fetchShopData();
       this.actualizarEstadosTiendas();
       this.fetchBookData();
-      
     }, 10000); // 10 segundos
+  }
+
+  mostrarMensajeOffline() {
+    this.toastr.error(
+      'Se ha perdido la conexión a internet. Intenta reconectar.',
+      'Sin conexión'
+    );
+  }
+
+  mostrarLoader(): void {
+    this.isLoading = true;
+    this.loadingComponent.showLoader();
+  }
+
+  ocultarLoader(): void {
+    this.isLoading = false;
   }
 
   ngOnDestroy() {
@@ -261,14 +289,13 @@ export class MapComponent implements OnInit, OnDestroy {
         zoom: this.zoom,
         ...this.opcionesMapa,
       });
-
       this.directionsRendererInstance.setMap(map);
 
       // Listener para detectar si el usuario cambia el zoom manualmente
       google.maps.event.addListener(map, 'zoom_changed', () => {
         this.manualZoom = true;
       });
-  
+
       // Listener para detectar cuando el usuario mueve el mapa manualmente
       google.maps.event.addListener(map, 'dragend', () => {
         this.manualZoom = true;
@@ -303,15 +330,23 @@ export class MapComponent implements OnInit, OnDestroy {
             markerData: markerData,
           });
 
+          // Agregar el listener de click solo si no hay una ruta activa
           marker.addListener('click', () => {
-            this.openModal(
-              this.createModal,
-              markerData.title,
-              markerData.status,
-              markerData.specialties1,
-              markerData.specialties2,
-              markerData.imageUrl
-            );
+            if (!this.rutaActiva) {
+              this.openModal(
+                this.createModal,
+                markerData.title,
+                markerData.status,
+                markerData.specialties1,
+                markerData.specialties2,
+                markerData.imageUrl
+              );
+            } else {
+              this.toastr.warning(
+                'Ya hay una ruta activa. Cancela la ruta actual para seleccionar otra tienda.',
+                'Advertencia'
+              );
+            }
           });
         } else {
           console.error('Posición del marcador de la tienda no está definida.');
@@ -396,126 +431,112 @@ export class MapComponent implements OnInit, OnDestroy {
     };
   }
 
-  // rastrearUbicacionUsuario() {
-  //   if (navigator.geolocation) {
-  //     this.watchId = navigator.geolocation.watchPosition(
-  //       (position) => {
-  //         const nuevaPosicion = {
-  //           lat: position.coords.latitude,
-  //           lng: position.coords.longitude,
-  //         };
-  
-  //         // Actualiza la posición del marcador en el mapa
-  //         if (this.markerPosition) {
-  //           this.markerUsuario?.setPosition(nuevaPosicion);
-  //           this.verificarAvanceInstrucciones();
-  //           this.markerPosition = nuevaPosicion;
-  
-  //           // Solo recalcular la ruta si está activa y la posición ha cambiado significativamente
-  //           if (this.rutaActiva && this.debeRecalcularRuta(this.markerPosition)) {
-  //             this.calcularRuta(); // Recalcular la ruta
-  //           } else {
-  //             // Solo panear a la nueva posición sin cambiar el zoom
-  //             const map = this.directionsRendererInstance.getMap();
-  //             if (map) {
-  //               map.panTo(this.markerPosition); // Solo panear
-  //             }
-  //           }
-  //         } else {
-  //           // Primera vez que se obtiene la posición
-  //           this.markerPosition = nuevaPosicion;
-  //           this.markerUsuario = new google.maps.Marker({
-  //             position: this.markerPosition,
-  //             map: this.directionsRendererInstance.getMap(),
-  //             icon: this.iconoUbicacionUsuario,
-  //           });
-  
-  //           // Aplicar zoom automático solo la primera vez
-  //           const map = this.directionsRendererInstance.getMap();
-  //           if (map) {
-  //             map.setZoom(17); // Establece el zoom inicial
-  //             map.panTo(this.markerPosition);
-  //             this.hasZoomed = true; // Marca que el zoom automático ya se ha hecho
-  //           }
-  //         }
-  
-  //         console.log('Ubicación del usuario actualizada:', this.markerPosition);
-  //       },
-  //       (error) => {
-  //         console.error('Error rastreando la ubicación', error);
-  //       },
-  //       {
-  //         enableHighAccuracy: true,
-  //         timeout: 10000,
-  //         maximumAge: 0,
-  //       }
-  //     );
-  //   } else {
-  //     console.error('Geolocalización no es soportada por este navegador.');
-  //   }
-  // }
+  isCalculatingRoute: boolean = false; // Nueva bandera para evitar recalcular mientras ya está en curso
 
   rastrearUbicacionUsuario() {
     if (navigator.geolocation) {
-        this.watchId = navigator.geolocation.watchPosition(
-            (position) => {
-                const nuevaPosicion = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                };
+      this.watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          if (this.isOffline) {
+            // No hacer nada si no hay conexión
+            return;
+          }
 
-                // Actualiza la posición del marcador en el mapa
-                if (this.markerPosition) {
-                    this.markerUsuario?.setPosition(nuevaPosicion);
-                    this.verificarAvanceInstrucciones();
-                    this.markerPosition = nuevaPosicion;
+          const nuevaPosicion = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
 
-                    // Solo recalcular la ruta si está activa y la posición ha cambiado significativamente
-                    if (this.rutaActiva && this.debeRecalcularRuta(this.markerPosition)) {
-                        if (!this.hasZoomed) {
-                            // Hacer zoom y centrar el mapa en el marcador, y recalcular la ruta
-                            this.centrarMapaEnMarcador();
-                            this.calcularRuta();
-                        } else {
-                            // Solo recalcular la ruta sin cambiar el zoom
-                            this.calcularRuta();
-                        }
-                    
-                    }
-                } else {
-                    // Primera vez que se obtiene la posición
-                    this.markerPosition = nuevaPosicion;
-                    this.markerUsuario = new google.maps.Marker({
-                        position: this.markerPosition,
-                        map: this.directionsRendererInstance.getMap(),
-                        icon: this.iconoUbicacionUsuario,
-                    });
+          // Actualiza la posición del marcador en el mapa
+          if (this.markerPosition) {
+            this.markerUsuario?.setPosition(nuevaPosicion);
+            this.verificarAvanceInstrucciones();
+            this.markerPosition = nuevaPosicion;
 
-                    // Aplicar zoom automático solo la primera vez
-                    const map = this.directionsRendererInstance.getMap();
-                    if (map) {
-                        map.setZoom(17); // Establece el zoom inicial
-                        map.panTo(this.markerPosition);
-                        this.hasZoomed = true; // Marca que el zoom automático ya se ha hecho
-                    }
-                }
+            // Solo recalcular la ruta si está activa, la posición ha cambiado significativamente, y no hay cálculo en curso
+            if (
+              this.rutaActiva &&
+              this.debeRecalcularRuta(this.markerPosition) &&
+              !this.isCalculatingRoute
+            ) {
+              this.isCalculatingRoute = true; // Marcar que está calculando la ruta
 
-                console.log('Ubicación del usuario actualizada:', this.markerPosition);
-            },
-            (error) => {
-                console.error('Error rastreando la ubicación', error);
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0,
+              if (!this.hasZoomed) {
+                // Hacer zoom y centrar el mapa en el marcador, y recalcular la ruta
+                this.centrarMapaEnMarcador();
+                this.calcularRuta();
+              } else {
+                // Solo recalcular la ruta sin cambiar el zoom
+                this.calcularRuta();
+              }
             }
-        );
+          } else {
+            // Primera vez que se obtiene la posición
+            this.markerPosition = nuevaPosicion;
+            this.markerUsuario = new google.maps.Marker({
+              position: this.markerPosition,
+              map: this.directionsRendererInstance.getMap(),
+              icon: this.iconoUbicacionUsuario,
+            });
+
+            // Aplicar zoom automático solo la primera vez
+            const map = this.directionsRendererInstance.getMap();
+            if (map) {
+              map.setZoom(17); // Establece el zoom inicial
+              map.panTo(this.markerPosition);
+              this.hasZoomed = true; // Marca que el zoom automático ya se ha hecho
+            }
+          }
+
+          console.log(
+            'Ubicación del usuario actualizada:',
+            this.markerPosition
+          );
+        },
+        (error) => {
+          console.error('Error rastreando la ubicación', error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000, // Aumentar el timeout a 15 segundos
+          maximumAge: 0,
+        }
+      );
     } else {
-        console.error('Geolocalización no es soportada por este navegador.');
+      console.error('Geolocalización no es soportada por este navegador.');
     }
-}
-  
+  }
+
+  geofenceCircle: google.maps.Circle | null = null; // Referencia al círculo de geofencing
+
+  // Método para agregar un círculo alrededor del destino para el geofencing
+  agregarCirculoGeofencing(lat: number, lng: number) {
+    // Asegúrate de que el mapa esté correctamente instanciado
+    const map = this.directionsRendererInstance.getMap();
+    if (!map) {
+      console.error('El mapa no está disponible.');
+      return;
+    }
+
+    if (this.geofenceCircle) {
+      // Eliminar el círculo existente antes de crear uno nuevo
+      this.geofenceCircle.setMap(null);
+      console.log('Círculo de geofencing eliminado.');
+    }
+
+    // Crear un nuevo círculo en el mapa
+    console.log('Creando un nuevo círculo de geofencing.');
+    this.geofenceCircle = new google.maps.Circle({
+      strokeColor: '#FEEFAD',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#FDDE55',
+      fillOpacity: 0.35,
+      map: map,
+      center: { lat, lng },
+      radius: this.geofencingRadiusShop,
+    });
+  }
 
   // Método para calcular la distancia entre dos puntos (en metros)
   calcularDistancia(
@@ -535,35 +556,6 @@ export class MapComponent implements OnInit, OnDestroy {
     return distancia; // Devuelve la distancia en metros
   }
 
-  // Método para obtener la distancia entre el marcador y el destino usando Google Maps Directions API
-  obtenerDistanciaConDirecciones(
-    origen: google.maps.LatLngLiteral,
-    destino: google.maps.LatLngLiteral
-  ): Promise<number> {
-    return new Promise((resolve, reject) => {
-      const directionsService = new google.maps.DirectionsService();
-
-      const request: google.maps.DirectionsRequest = {
-        origin: origen,
-        destination: destino,
-        travelMode: google.maps.TravelMode.DRIVING,
-      };
-
-      directionsService.route(request, (result, status) => {
-        // Verificar que el resultado y las propiedades necesarias no sean undefined
-        if (
-          status === google.maps.DirectionsStatus.OK &&
-          result?.routes?.[0]?.legs?.[0]?.distance?.value
-        ) {
-          const distancia = result.routes[0].legs[0].distance.value; // Distancia en metros
-          resolve(distancia);
-        } else {
-          reject('No se pudo obtener la distancia');
-        }
-      });
-    });
-  }
-
   verificarCercaniaADestino() {
     if (
       this.markerPosition &&
@@ -572,10 +564,12 @@ export class MapComponent implements OnInit, OnDestroy {
       !this.hasArrived
     ) {
       console.log('Verificando cercanía al destino...', this.destinationName);
-  
+
       // Buscar la información del destino en los datos de la tienda usando el nombre
-      const shopData = this.shopData.find(shop => shop.name === this.destinationName);
-  
+      const shopData = this.shopData.find(
+        (shop) => shop.name === this.destinationName
+      );
+
       if (shopData) {
         // Siempre usar la dirección de la tienda para obtener las coordenadas
         if (shopData.address) {
@@ -583,6 +577,7 @@ export class MapComponent implements OnInit, OnDestroy {
             .then((coords) => {
               console.log('Coordenadas obtenidas del destino:', coords);
               this.procesarVerificacionCercania(coords.lat, coords.lng);
+              this.agregarCirculoGeofencing(coords.lat, coords.lng);
             })
             .catch((error) => {
               console.error(error);
@@ -600,49 +595,59 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  procesarVerificacionCercania(lat2: number, lng2: number) {
-    if (!this.markerPosition) {
-        console.error('Posición del marcador no está definida.');
-        return;
+  procesarVerificacionCercania(latDestino: number, lngDestino: number) {
+    if (!this.geofenceCircleUsuario) {
+      console.error('El círculo de geofencing del usuario no está definido.');
+      return;
     }
 
+    // Obtener la posición del centro del círculo del usuario
+    const latUsuario = this.geofenceCircleUsuario.getCenter()?.lat();
+    const lngUsuario = this.geofenceCircleUsuario.getCenter()?.lng();
+
+    if (latUsuario === undefined || lngUsuario === undefined) {
+      console.error('No se pudo obtener la posición del círculo del usuario.');
+      return;
+    }
+
+    // Calcular la distancia entre el centro del círculo del usuario y el destino
     const distancia = this.calcularDistancia(
-        this.markerPosition.lat,
-        this.markerPosition.lng,
-        lat2,
-        lng2
+      latUsuario,
+      lngUsuario,
+      latDestino,
+      lngDestino
     );
 
-    console.log(`Distancia calculada: ${distancia} metros`);
+    console.log(
+      `Distancia calculada desde el círculo del usuario al destino: ${distancia} metros`
+    );
 
-    // Verificar si hay una ruta activa
-    if (!this.rutaActiva) {
-        console.log('No hay una ruta activa. Modal no abrirá.');
-        return;
-    }
+    // Incrementar el radio del círculo aún más, para que la detección se produzca justo al tocar el borde
+    const radioAjustado = this.geofenceCircleUsuario.getRadius() * 2; // Incrementa el radio en un 100%
 
-    // Si la distancia es menor de 10 y el modal no está abierto
-    if (distancia < 10) {
-        if (!this.modalAbierto) {
-            console.log('Abriendo modal de llegada...');
-            this.openModal(
-                this.arriveModal,
-                this.destinationName,
-                '',
-                '',
-                '',
-                this.currentImageUrl
-            );
-            this.modalAbierto = true; // Marcar que el modal ha sido mostrado
-        } else {
-            console.log('El modal ya está abierto.');
-        }
+    // Verificar si hay una ruta activa y si el destino está dentro del radio ajustado del círculo del usuario
+    if (this.rutaActiva && distancia <= radioAjustado) {
+      if (!this.modalAbierto) {
+        console.log(
+          'Dentro del geofence del usuario. Abriendo modal de llegada...'
+        );
+        this.openModal(
+          this.arriveModal,
+          this.destinationName,
+          '',
+          '',
+          '',
+          this.currentImageUrl
+        );
+        this.modalAbierto = true; // Marcar que el modal ha sido mostrado
+      } else {
+        console.log('El modal ya está abierto.');
+      }
     } else {
-        console.log('Aún no cerca del destino.');
-        this.modalAbierto = false; // Resetear el estado si se está lejos
+      console.log('Aún no cerca del destino o fuera del geofence del usuario.');
+      this.modalAbierto = false; // Resetear el estado si se está lejos
     }
-}
-
+  }
 
   // Método para obtener las coordenadas del destino utilizando Google Maps Geocoding API
   obtenerCoordenadasDestino(
@@ -708,7 +713,7 @@ export class MapComponent implements OnInit, OnDestroy {
       if (map) {
         // Centra el mapa en la posición del marcador del usuario
         map.panTo(this.markerPosition);
-  
+
         // Si se activó por el clic del botón o es la primera vez, ajusta el zoom
         if (clickTriggered || !this.hasZoomed) {
           setTimeout(() => {
@@ -721,7 +726,6 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('La ubicación del usuario no está disponible.');
     }
   }
-  
 
   solicitarPermisoOrientacion() {
     const deviceOrientationEvent = DeviceOrientationEvent as any;
@@ -802,6 +806,8 @@ export class MapComponent implements OnInit, OnDestroy {
     return heading;
   }
 
+  geofenceCircleUsuario: google.maps.Circle | null = null; // Referencia al círculo de geofencing del usuario
+
   actualizarRotacionMarcador(
     heading: number,
     result?: google.maps.DirectionsResult
@@ -830,12 +836,14 @@ export class MapComponent implements OnInit, OnDestroy {
           anchor: new google.maps.Point(25, 25),
         };
 
+    // Actualizar el marcador del usuario
     if (this.markerUsuario) {
       this.markerUsuario.setIcon(iconoRotado);
     } else {
       console.error('El marcador del usuario no está definido.');
     }
 
+    // Actualizar la posición del marcador y el círculo de geofencing
     if (result) {
       const route = result.routes[0];
       const legs = route.legs;
@@ -844,29 +852,38 @@ export class MapComponent implements OnInit, OnDestroy {
       if (step) {
         const position = step.start_location;
 
+        // Actualizar la posición del marcador
         if (this.markerUsuario) {
           this.markerUsuario.setPosition(position);
-          this.markerUsuario.setIcon({
-            path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-            scale: 4,
-            rotation: heading,
-            fillColor: 'blue',
-            fillOpacity: 0.8,
-            strokeWeight: 2,
-          });
+          this.markerUsuario.setIcon(iconoRotado);
         } else {
           this.markerUsuario = new google.maps.Marker({
             position: position,
             map: map,
-            icon: {
-              path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-              scale: 4,
-              rotation: heading,
-              fillColor: 'blue',
-              fillOpacity: 0.8,
-              strokeWeight: 2,
-            },
+            icon: iconoRotado,
           });
+        }
+
+        // Actualizar o crear el círculo de geofencing si la ruta está activa
+        if (this.rutaActiva) {
+          if (this.geofenceCircleUsuario) {
+            this.geofenceCircleUsuario.setCenter(position);
+          } else {
+            this.geofenceCircleUsuario = new google.maps.Circle({
+              strokeColor: '#68D2E8',
+              strokeOpacity: 0.8,
+              strokeWeight: 2,
+              fillColor: '#03AED2',
+              fillOpacity: 0.35,
+              map: map,
+              center: position,
+              radius: this.geofencingRadius,
+            });
+          }
+        } else if (this.geofenceCircleUsuario) {
+          // Eliminar el círculo si la ruta ya no está activa
+          this.geofenceCircleUsuario.setMap(null);
+          this.geofenceCircleUsuario = null;
         }
       } else {
         console.error('No se pudo obtener el primer paso de la ruta.');
@@ -886,28 +903,49 @@ export class MapComponent implements OnInit, OnDestroy {
 
   // Método para calcular la ruta
   calcularRuta() {
+    if (this.isOffline) {
+      console.error(
+        'No se puede calcular la ruta porque no hay conexión a internet.'
+      );
+      this.toastr.error(
+        'No se puede calcular la ruta. Sin conexión a internet.',
+        'Error'
+      );
+      this.isCalculatingRoute = false; // Desmarcar que está calculando
+      return;
+    }
+
     // Verificar si el modal está abierto
     if (this.modalAbierto) {
-        console.log('El modal está abierto, no se recalcula la ruta.');
-        return;
+      console.log('El modal está abierto, no se recalcula la ruta.');
+      this.isCalculatingRoute = false; // Desmarcar que está calculando
+      return;
     }
 
     if (!this.modoTransporte) {
-        this.toastr.warning('Por favor, selecciona un modo de transporte.', 'Advertencia');
-        return;
+      this.toastr.warning(
+        'Por favor, selecciona un modo de transporte.',
+        'Advertencia'
+      );
+      this.isCalculatingRoute = false; // Desmarcar que está calculando
+      return;
     }
 
     // Verificar que la posición del marcador esté definida
     if (!this.markerPosition) {
-        console.error('La posición del marcador no está definida.');
-        return;
+      console.error('La posición del marcador no está definida.');
+      this.isCalculatingRoute = false; // Desmarcar que está calculando
+      return;
     }
 
     // Buscar la dirección del destino en los datos de la tienda
-    const shopData = this.shopData.find(shop => shop.name === this.destinationName);
+    const shopData = this.shopData.find(
+      (shop) => shop.name === this.destinationName
+    );
     if (!shopData || !shopData.address) {
-        console.error('No se encontró la dirección de la tienda.');
-        return;
+      console.error('No se encontró la dirección de la tienda.');
+      this.isCalculatingRoute = false; // Desmarcar que está calculando
+      return;
     }
 
     const destination = shopData.address;
@@ -918,28 +956,27 @@ export class MapComponent implements OnInit, OnDestroy {
     const travelMode = this.modoTransporte ?? google.maps.TravelMode.DRIVING;
 
     const request: google.maps.DirectionsRequest = {
-        origin: this.markerPosition,
-        destination: destination,
-        travelMode: travelMode,
-        unitSystem: google.maps.UnitSystem.METRIC,
+      origin: this.markerPosition,
+      destination: destination,
+      travelMode: travelMode,
+      unitSystem: google.maps.UnitSystem.METRIC,
     };
 
     // Configurar el DirectionsRenderer para no mostrar marcadores
     this.directionsRendererInstance.setOptions({
-        suppressMarkers: true,
-        preserveViewport: true,
+      suppressMarkers: true,
+      preserveViewport: true,
     });
 
     this.directionsService.route(request, (result, status) => {
+      this.isCalculatingRoute = false; // Desmarcar que ya terminó el cálculo
+
       if (status === google.maps.DirectionsStatus.OK && result) {
         // Ruta disponible
         this.directionsRendererInstance.setDirections(result);
         this.obtenerDetallesRuta(result);
         this.rutaActiva = true;
         this.modosDisponibles[this.modoTransporte] = true; // Habilitar el modo de transporte actual
-
-        // Centrar el mapa en el marcador
-        // this.centrarMapaEnMarcador();
 
         if (this.modalRef) {
           this.modalRef.close();
@@ -1004,12 +1041,15 @@ export class MapComponent implements OnInit, OnDestroy {
         const leg = route.legs[0];
 
         // Aquí obtienes la distancia, duración y el nombre del destino
-        const distance = leg.distance?.value || 0;
+        const distanceInMeters = leg.distance?.value || 0;
         const duration = leg.duration?.text || 'Duración no disponible';
         const destination = leg.end_address || 'Destino no disponible';
 
+        // Formatear la distancia
+        const distanceFormatted = this.formatearDistancia(distanceInMeters);
+
         // Almacenar los detalles de la ruta
-        this.routeDetails = `Distancia: ${distance} metros, Tiempo estimado: ${duration}, Destino: ${destination}`;
+        this.routeDetails = `Distancia: ${distanceFormatted}, Tiempo estimado: ${duration}, Destino: ${destination}`;
         console.log(this.routeDetails);
 
         // Limpiar y resetear las instrucciones
@@ -1024,6 +1064,16 @@ export class MapComponent implements OnInit, OnDestroy {
         // Mostrar las primeras 2 instrucciones
         this.mostrarInstrucciones();
       }
+    }
+  }
+
+  // Método para formatear la distancia
+  formatearDistancia(metros: number): string {
+    if (metros >= 1000) {
+      const kilometros = (metros / 1000).toFixed(2); // Convertir a kilómetros y redondear a 2 decimales
+      return `${kilometros} km`;
+    } else {
+      return `${metros} m`; // Mantener en metros
     }
   }
 
@@ -1090,6 +1140,12 @@ export class MapComponent implements OnInit, OnDestroy {
       this.instruccionesRuta = []; // Limpia las instrucciones de la ruta
       this.routeDetails = undefined; // Limpia los detalles de la ruta
 
+      // Eliminar el círculo de geofencing si existe
+      if (this.geofenceCircleUsuario) {
+        this.geofenceCircleUsuario.setMap(null);
+        this.geofenceCircleUsuario = null;
+      }
+
       // Vuelve a iniciar el mapa y mostrar los marcadores
       this.iniciarMapa();
       if (this.markerPosition) {
@@ -1104,7 +1160,7 @@ export class MapComponent implements OnInit, OnDestroy {
         }
       }
       this.modalAbierto = false;
-      this.hasZoomed =false;
+      this.hasZoomed = false;
       console.log('Ruta cancelada, mapa actualizado y centrado en el usuario.');
     } else {
       console.error('No se encontró la instancia de DirectionsRenderer.');
@@ -1461,5 +1517,9 @@ export class MapComponent implements OnInit, OnDestroy {
     this.fetchShopData();
     this.populateShopLogos();
     this.fetchBookData();
+  }
+
+  recargarComponente() {
+    this.ngOnInit();
   }
 }
