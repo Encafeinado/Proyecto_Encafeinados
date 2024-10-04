@@ -152,9 +152,10 @@ export class MapComponent implements OnInit, OnDestroy {
     window.addEventListener('offline', () => {
       this.isOffline = true;
       this.mostrarMensajeOffline();
-      // Recargar el componente después de 5 segundos
+      // Recargar el componente y cancelar la ruta después de 5 segundos
       setTimeout(() => {
         this.recargarComponente();
+        this.cancelarRuta(); // Llamar correctamente a la función cancelarRuta
       }, 5000);
     });
 
@@ -426,11 +427,6 @@ export class MapComponent implements OnInit, OnDestroy {
     if (navigator.geolocation) {
       this.watchId = navigator.geolocation.watchPosition(
         (position) => {
-          if (this.isOffline) {
-            // No hacer nada si no hay conexión
-            return;
-          }
-
           const nuevaPosicion = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
@@ -1509,6 +1505,6 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   recargarComponente() {
-    this.ngOnInit();
+    this.iniciarMapa();
   }
 }
