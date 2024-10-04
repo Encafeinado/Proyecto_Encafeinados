@@ -15,7 +15,7 @@ import { StoreService } from '../../service/store.service';
 import { UserService } from '../../service/user.service';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/auth/services/auth.service';
-import { LoadingComponent } from 'src/app/shared/loading/loading.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-map',
@@ -77,9 +77,7 @@ export class MapComponent implements OnInit, OnDestroy {
   private geofencingRadius = 15;
   private geofencingRadiusShop = 10;
   private manualZoom: boolean = false; // Controlar si el usuario cambió manualmente el zoom
-  isLoading: boolean = false;
 
-  @ViewChild(LoadingComponent, { static: false }) loadingComponent!: LoadingComponent;
   opcionesMapa: google.maps.MapOptions = {
     styles: [
       {
@@ -131,7 +129,8 @@ export class MapComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private reviewService: ReviewService,
     private changeDetector: ChangeDetectorRef,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -155,18 +154,33 @@ export class MapComponent implements OnInit, OnDestroy {
     window.addEventListener('offline', () => {
       this.isOffline = true;
       this.mostrarMensajeOffline();
-      this.mostrarLoader(); // Mostrar el loader en caso de desconexión
+      // Recargar el componente después de 5 segundos
+      setTimeout(() => {
+        // Recargar el componente navegando a la misma ruta
+        this.router
+          .navigateByUrl('/', { skipLocationChange: true })
+          .then(() => {
+            this.router.navigate([this.router.url]);
+          });
+      }, 3000);
     });
 
     window.addEventListener('online', () => {
       this.isOffline = false;
-      this.ocultarLoader(); // Ocultar el loader cuando se restablezca la conexión
       this.toastr.success(
         'La conexión a internet se ha restablecido.',
         'Conexión restablecida'
       );
+      setTimeout(() => {
+        // Recargar el componente navegando a la misma ruta
+        this.router
+          .navigateByUrl('/', { skipLocationChange: true })
+          .then(() => {
+            this.router.navigate([this.router.url]);
+          });
+      }, 3000);
     });
-    
+
     if (this.userId) {
       this.fetchBookData();
     } else {
@@ -176,7 +190,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
     // Actualiza los datos cada 10 segundos (10000 ms)
     setInterval(() => {
-      // this.fetchShopData();
       this.actualizarEstadosTiendas();
       this.fetchBookData();
     }, 10000); // 10 segundos
@@ -187,15 +200,6 @@ export class MapComponent implements OnInit, OnDestroy {
       'Se ha perdido la conexión a internet. Intenta reconectar.',
       'Sin conexión'
     );
-  }
-
-  mostrarLoader(): void {
-    this.isLoading = true;
-    this.loadingComponent.showLoader();
-  }
-
-  ocultarLoader(): void {
-    this.isLoading = false;
   }
 
   ngOnDestroy() {
@@ -1517,9 +1521,5 @@ export class MapComponent implements OnInit, OnDestroy {
     this.fetchShopData();
     this.populateShopLogos();
     this.fetchBookData();
-  }
-
-  recargarComponente() {
-    this.ngOnInit();
   }
 }
