@@ -15,6 +15,7 @@ import { StoreService } from '../../service/store.service';
 import { UserService } from '../../service/user.service';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { LoadingComponent } from 'src/app/shared/loading/loading.component';
 
 @Component({
   selector: 'app-map',
@@ -76,7 +77,9 @@ export class MapComponent implements OnInit, OnDestroy {
   private geofencingRadius = 15;
   private geofencingRadiusShop = 10;
   private manualZoom: boolean = false; // Controlar si el usuario cambió manualmente el zoom
+  isLoading: boolean = false;
 
+  @ViewChild(LoadingComponent, { static: false }) loadingComponent!: LoadingComponent;
   opcionesMapa: google.maps.MapOptions = {
     styles: [
       {
@@ -152,20 +155,18 @@ export class MapComponent implements OnInit, OnDestroy {
     window.addEventListener('offline', () => {
       this.isOffline = true;
       this.mostrarMensajeOffline();
-      // Recargar el componente y cancelar la ruta después de 5 segundos
-      setTimeout(() => {
-        this.recargarComponente();
-        this.cancelarRuta(); // Llamar correctamente a la función cancelarRuta
-      }, 5000);
+      this.mostrarLoader(); // Mostrar el loader en caso de desconexión
     });
 
     window.addEventListener('online', () => {
       this.isOffline = false;
+      this.ocultarLoader(); // Ocultar el loader cuando se restablezca la conexión
       this.toastr.success(
         'La conexión a internet se ha restablecido.',
         'Conexión restablecida'
       );
     });
+    
     if (this.userId) {
       this.fetchBookData();
     } else {
@@ -186,6 +187,15 @@ export class MapComponent implements OnInit, OnDestroy {
       'Se ha perdido la conexión a internet. Intenta reconectar.',
       'Sin conexión'
     );
+  }
+
+  mostrarLoader(): void {
+    this.isLoading = true;
+    this.loadingComponent.showLoader();
+  }
+
+  ocultarLoader(): void {
+    this.isLoading = false;
   }
 
   ngOnDestroy() {
@@ -427,6 +437,11 @@ export class MapComponent implements OnInit, OnDestroy {
     if (navigator.geolocation) {
       this.watchId = navigator.geolocation.watchPosition(
         (position) => {
+          if (this.isOffline) {
+            // No hacer nada si no hay conexión
+            return;
+          }
+
           const nuevaPosicion = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
@@ -1505,6 +1520,6 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   recargarComponente() {
-    this.iniciarMapa();
+    this.ngOnInit();
   }
 }
