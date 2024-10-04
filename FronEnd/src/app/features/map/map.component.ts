@@ -777,7 +777,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('El mapa no está definido.');
       return;
     }
-
+  
     // Definir el icono basado en si la ruta está activa o no
     const iconoRotado = this.rutaActiva
       ? {
@@ -795,55 +795,40 @@ export class MapComponent implements OnInit, OnDestroy {
           scaledSize: new google.maps.Size(40, 40),
           anchor: new google.maps.Point(25, 25),
         };
-
+  
     // Actualizar el marcador del usuario
     if (this.markerUsuario) {
       this.markerUsuario.setIcon(iconoRotado);
     } else {
       console.error('El marcador del usuario no está definido.');
     }
-
+  
     // Actualizar la posición del marcador y el círculo de geofencing
     if (result) {
       const route = result.routes[0];
       const legs = route.legs;
       const step = legs[0].steps[0];
-
+  
       if (step) {
         const position = step.start_location;
-
+  
         // Actualizar la posición del marcador
         if (this.markerUsuario) {
           this.markerUsuario.setPosition(position);
-          this.markerUsuario.setIcon({
-            path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-            scale: 4,
-            rotation: heading,
-            fillColor: 'blue',
-            fillOpacity: 0.8,
-            strokeWeight: 2,
-          });
+          this.markerUsuario.setIcon(iconoRotado);
         } else {
           this.markerUsuario = new google.maps.Marker({
             position: position,
             map: map,
-            icon: {
-              path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-              scale: 4,
-              rotation: heading,
-              fillColor: 'blue',
-              fillOpacity: 0.8,
-              strokeWeight: 2,
-            },
+            icon: iconoRotado,
           });
         }
-
+  
+        // Actualizar o crear el círculo de geofencing si la ruta está activa
         if (this.rutaActiva) {
           if (this.geofenceCircleUsuario) {
-            // Actualizar el centro del círculo existente a la nueva posición del usuario
             this.geofenceCircleUsuario.setCenter(position);
           } else {
-            // Crear un nuevo círculo de geofencing si no existe
             this.geofenceCircleUsuario = new google.maps.Circle({
               strokeColor: '#68D2E8',
               strokeOpacity: 0.8,
@@ -855,17 +840,15 @@ export class MapComponent implements OnInit, OnDestroy {
               radius: this.geofencingRadius,
             });
           }
-        } else {
-          // Si no hay ruta activa, eliminar el círculo de geofencing
-          if (this.geofenceCircleUsuario) {
-            this.geofenceCircleUsuario.setMap(null);
-            this.geofenceCircleUsuario = null;
-          }
+        } else if (this.geofenceCircleUsuario) {
+          // Eliminar el círculo si la ruta ya no está activa
+          this.geofenceCircleUsuario.setMap(null);
+          this.geofenceCircleUsuario = null;
         }
       } else {
         console.error('No se pudo obtener el primer paso de la ruta.');
-      }
-    }
+      }
+    }
   }
 
   seleccionarModoTransporte(modo: google.maps.TravelMode) {
@@ -1093,7 +1076,13 @@ export class MapComponent implements OnInit, OnDestroy {
       this.rutaActiva = false; // Marca que la ruta ya no está activa
       this.instruccionesRuta = []; // Limpia las instrucciones de la ruta
       this.routeDetails = undefined; // Limpia los detalles de la ruta
-
+  
+      // Eliminar el círculo de geofencing si existe
+      if (this.geofenceCircleUsuario) {
+        this.geofenceCircleUsuario.setMap(null);
+        this.geofenceCircleUsuario = null;
+      }
+  
       // Vuelve a iniciar el mapa y mostrar los marcadores
       this.iniciarMapa();
       if (this.markerPosition) {
@@ -1101,7 +1090,7 @@ export class MapComponent implements OnInit, OnDestroy {
         if (map) {
           // Centra el mapa en la posición del marcador del usuario
           map.panTo(this.markerPosition);
-
+  
           setTimeout(() => {
             map.setZoom(17); // Ajusta el nivel de zoom según sea necesario
           }, 300);
@@ -1112,7 +1101,7 @@ export class MapComponent implements OnInit, OnDestroy {
       console.log('Ruta cancelada, mapa actualizado y centrado en el usuario.');
     } else {
       console.error('No se encontró la instancia de DirectionsRenderer.');
-    }
+    }
   }
 
   confirmarLlegada() {

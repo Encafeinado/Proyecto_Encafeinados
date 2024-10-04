@@ -31,9 +31,6 @@ export function passwordAsyncValidator(authService: AuthService): AsyncValidator
   };
 }
 
-
-
-
 export function emailDomainValidator(validDomains: string[]): AsyncValidatorFn {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {
     const email = control.value ? control.value.toLowerCase() : '';
