@@ -18,7 +18,68 @@
 @media (max-width: 480px) {
   #map {
     height: 40vh; /* Reduce aún más la altura en pantallas muy pequeñas */
-    border-radius: 8px; /* Ajusta el radio para pantallas más pequeñas */
+    border-radius: 8px; /* Ajusta el radio para pantallas más pequeñas */
+  }
+  .modal-info {
+    display: flex;
+    flex-direction: row-reverse; /* Coloca la imagen a la derecha y el texto a la izquierda */
+    justify-content: flex-start; /* Alinea los elementos al inicio */
+    align-items: flex-start; /* Alinea verticalmente los elementos */
+    gap: 10px; /* Añade un espacio entre la imagen y el texto */
+  }
+
+  .modal-content-create {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-family: "Poppins", sans-serif;
+    width: 100%; /* Limita el ancho del modal */
+    margin: auto; /* Centra el modal horizontalmente */
+  }
+
+  .img-cafe {
+    width: 40%; /* Imagen ocupa todo el ancho disponible */
+    max-width: 170px; /* Tamaño máximo más pequeño para la imagen */
+    height: auto; /* Mantiene la proporción de la imagen */
+    margin-right: 0; /* Elimina el margen derecho */
+    margin-bottom: 10px; /* Añade un margen inferior */
+    display: block; /* Asegura que la imagen se comporte como un bloque */
+    margin-left: auto; /* Centra horizontalmente la imagen */
+    margin-right: auto; /* Centra horizontalmente la imagen */
+  }
+
+  .info-cafe {
+    flex: 1; /* Hace que la sección de información ocupe el espacio restante */
+    text-align: center; /* Alinea el texto a la izquierda */
+    max-width: calc(
+      100% - 50px
+    ); /* Limita el ancho de la información para evitar que se desborde */
+    word-wrap: break-word; /* Permite que el texto largo se divida en varias líneas */
+    min-width: auto;
+  }
+
+  .especialidades {
+    margin-top: 10px;
+  }
+
+  .especialidades p {
+    margin: 5px 0; /* Reduce el margen entre las especialidades */
+    text-align: left; /* Alinea el texto a la izquierda */
+  }
+
+  .modal-footer-create {
+    display: flex;
+    justify-content: center;
+    padding: 6px;
+    border-top: none;
+  }
+
+  .descripcion-cafe {
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
   }
 }
 
@@ -30,7 +91,7 @@
 .floating-button-location {
   position: absolute;
   right: 38vw; /* Coloca los botones en la misma posición lateral */
-  top: 85vh; /* Ajusta este valor para subir o bajar el botón */
+  top: 85vh; /* Ajusta este valor para subir o bajar el botón */
   background-color: #0f1eee; /* Color de fondo azul */
   color: #ffffff;
   border: none;
@@ -49,7 +110,7 @@
 .floating-button-cancel {
   position: absolute;
   right: 38vw; /* Coloca los botones en la misma posición lateral */
-  top: 77vh; /* Ajusta este valor para subir o bajar el botón */
+  top: 77vh; /* Ajusta este valor para subir o bajar el botón */
   background-color: #0f1eee; /* Color de fondo azul */
   color: #ffffff;
   border: none;
@@ -249,7 +310,6 @@
   background-color: #666666;
 }
 @media (max-width: 576px) {
-  
   .floating-button-location {
     position: absolute;
     right: 20px; /* Coloca los botones en la misma posición lateral */
@@ -268,7 +328,6 @@
     transition: background-color 0.3s;
     z-index: 2; /* Un valor bajo para que queden debajo del navbar */
   }
-
 
   .floating-button-cancel {
     position: absolute;
@@ -299,7 +358,6 @@
     margin: auto; /* Centra el modal horizontalmente */
   }
 }
-  
 
 /* Estilo del placeholder para dispositivos móviles */
 @media only screen and (max-width: 768px) {
@@ -814,12 +872,15 @@
   min-width: 220px; /* Asegura que la información tenga un ancho mínimo */
 }
 
-/* Media query para pantallas pequeñas */
 @media (max-width: 768px) {
   .modal-info {
-    flex-wrap: wrap; /* Mantiene los elementos en la misma línea pero permite que se ajusten */
-    align-items: center; /* Centra la imagen y la información en pantallas pequeñas */
+    display: flex;
+    flex-direction: row-reverse; /* Coloca la imagen a la derecha y el texto a la izquierda */
+    justify-content: flex-start; /* Alinea los elementos al inicio */
+    align-items: flex-start; /* Alinea verticalmente los elementos */
+    gap: 10px; /* Añade un espacio entre la imagen y el texto */
   }
+
   .modal-content-create {
     background-color: #ffffff;
     border-radius: 10px;
@@ -831,7 +892,7 @@
   }
 
   .img-cafe {
-    width: 100%; /* Imagen ocupa todo el ancho disponible */
+    width: 45%; /* Imagen ocupa todo el ancho disponible */
     max-width: 170px; /* Tamaño máximo más pequeño para la imagen */
     height: auto; /* Mantiene la proporción de la imagen */
     margin-right: 0; /* Elimina el margen derecho */
@@ -842,8 +903,36 @@
   }
 
   .info-cafe {
-    width: 100%; /* Asegura que la información ocupe todo el ancho disponible */
-    text-align: center; /* Centra el texto en pantallas pequeñas */
+    flex: 1; /* Hace que la sección de información ocupe el espacio restante */
+    text-align: center; /* Alinea el texto a la izquierda */
+    max-width: calc(
+      100% - 50px
+    ); /* Limita el ancho de la información para evitar que se desborde */
+    word-wrap: break-word; /* Permite que el texto largo se divida en varias líneas */
+    min-width: 152px;
+  }
+
+  .especialidades {
+    margin-top: 10px;
+  }
+
+  .especialidades p {
+    margin: 5px 0; /* Reduce el margen entre las especialidades */
+    text-align: left; /* Alinea el texto a la izquierda */
+  }
+
+  .modal-footer-create {
+    display: flex;
+    justify-content: center;
+    padding: 6px;
+    border-top: none;
+  }
+
+  .descripcion-cafe {
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
   }
 }
 
@@ -919,4 +1008,129 @@ textarea.form-control {
 
 .btn-secondary:hover {
   background-color: #999999;
+}
+
+/* ---------------------------------------------------------------------- */
+body {
+  background-size: 40%;
+  background-position: bottom center;
+}
+
+.smoke-loader {
+  width: 100px;
+  height: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 250px;
+  top: 50%;
+}
+
+.coffee-cup {
+  height: 80px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.smoke-wave {
+  width: 50px;
+  height: 50px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  top: 0px;
+  left: 0px;
+}
+
+.smoke1 {
+  width: 6px;
+  height: 30px;
+  float: left;
+  margin-right: 6px;
+  margin-left: 4px;
+  border-radius: 3px;
+  background-color: #03aed2; /* Color principal */
+}
+
+.smoke1:before,
+.smoke1:after {
+  content: "";
+  background: #03aed2; /* Color principal */
+  position: absolute;
+  animation: load 0.9s infinite reverse ease-in-out;
+  border-radius: 3px;
+}
+
+.smoke2 {
+  width: 6px;
+  height: 15px;
+  float: left;
+  margin-right: 6px;
+  margin-left: 4px;
+  border-radius: 3px;
+  background-color: #03aed2; /* Color principal */
+}
+
+.smoke2:before,
+.smoke2:after {
+  content: "";
+  background: #03aed2; /* Color principal */
+  position: absolute;
+  animation: load 0.6s infinite reverse ease-in-out;
+  border-radius: 3px;
+  margin-top: 5px;
+}
+
+.smoke3 {
+  width: 6px;
+  height: 30px;
+  float: left;
+  margin-right: 6px;
+  margin-left: 4px;
+  border-radius: 3px;
+  background-color: #03aed2; /* Color principal */
+}
+
+.smoke3:before,
+.smoke3:after {
+  content: "";
+  background: #03aed2; /* Color principal */
+  position: absolute;
+  animation: load 0.9s infinite 0.5s reverse ease-in-out;
+  border-radius: 3px;
+}
+
+@keyframes load {
+  0% {
+    top: 0;
+    height: 30px;
+    width: 6px;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    top: 29px;
+    height: 15px;
+    width: 6px;
+    opacity: 0;
+  }
+}
+
+.loading-text {
+  color: #03aed2; /* Color principal */
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.smoke-loader {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 1s ease-out, visibility 1s ease-out;
+}
+
+.smoke-loader.hidden {
+  opacity: 0;
+  visibility: hidden;
 }
