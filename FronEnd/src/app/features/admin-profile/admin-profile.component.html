@@ -8,73 +8,76 @@
         <h2>Total CoffeLovers</h2>
         <div class="text-xl">{{ totalClients }}</div>
         <div class="flex align-items-center justify-content-center bg-blue-100 border-round"
-             [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+          [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
           <i class="pi pi-users text-blue-500 text-xl"></i>
         </div>
       </div>
-    
+
       <!-- Total de cafecoins -->
       <div class="card mb-0 stat-box">
         <h2>Total CoffeCoins</h2>
         <div class="text-xl">{{ totalCafecoins }}</div>
         <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
-             [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+          [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
           <i class="pi pi-coins text-orange-500 text-xl"></i>
         </div>
       </div>
-    
+
       <!-- Total de tiendas registradas -->
       <div class="card mb-0 stat-box">
         <h2>Total Tiendas</h2>
         <div class="text-xl">{{ totalShops }}</div>
         <div class="flex align-items-center justify-content-center bg-green-100 border-round"
-             [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+          [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
           <i class="pi pi-check-circle text-green-500 text-xl"></i>
         </div>
       </div>
     </div>
-    
 
-   <!-- Listado de tiendas con promedio de calificaciones y codeUsage -->
-<div class="shops-container">
-  <div *ngFor="let shop of shopsWithAverageRatings" class="shop-card">
-    <div class="shop-details">
-      <span class="shop-name">{{ shop.name }}</span>
 
-      <!-- Mostrar el promedio de calificaciones -->
-      <div class="shop-info">
-        <i class="pi pi-star"></i>
-        <span class="title-bold">Promedio de estrellas:</span> {{ shop.averageRating | number:'1.1-1' }}
+    <!-- Listado de tiendas con promedio de calificaciones y codeUsage -->
+    <div class="shops-container">
+      <div *ngFor="let shop of shopsWithAverageRatings" class="shop-card">
+        <div class="shop-details">
+          <span class="shop-name">{{ shop.name }}</span>
+
+          <!-- Mostrar el promedio de calificaciones -->
+          <div class="shop-info">
+            <i class="pi pi-star"></i>
+            <span class="title-bold">Promedio de estrellas:</span> {{ shop.averageRating | number:'1.1-1' }}
+          </div>
+
+          <div class="shop-info">
+            <i class="pi pi-users"></i>
+            <span class="title-bold">Usos del código:</span> {{ shop.codeUsage }}
+          </div>
+
+
+        </div>
       </div>
-      
-      <div class="shop-info">
-        <i class="pi pi-users"></i>
-        <span class="title-bold">Usos del código:</span> {{ shop.codeUsage }}
-      </div>
-      
-      
     </div>
-  </div>
-</div>
-<br>
+    <br>
 
-    
+
     <!-- Mostrar las reviews -->
     <div class="reviews-section">
       <h1><b>Comentarios</b></h1>
 
       <div class="reviews-container">
-        <div class="review-card" *ngFor="let review of reviews">
-          <div class="review-content">
-            {{ review.review }}
-          </div>
+        <!-- Mostrar mensaje si no hay comentarios -->
+        <div *ngIf="reviews.length === 0; else reviewsTemplate" class="no-reviews-message">
+          <p>No hay comentarios disponibles</p>
         </div>
-        <ng-template #noReviews>
-          <p>No hay reviews disponibles.</p>
+
+        <!-- Mostrar las reviews si existen -->
+        <ng-template #reviewsTemplate>
+          <div class="review-card" *ngFor="let review of reviews">
+            <div class="review-content">
+              {{ review.review }}
+            </div>
+          </div>
         </ng-template>
       </div>
     </div>
-    
-
   </div>
 </div>

@@ -4,14 +4,14 @@
       <h1><strong>Bienvenido a la página de tu café de especialidad</strong></h1>
     </div>
     <div class="main-content">
-      
+
       <div class="info">
         <h2><strong>Código de la tienda</strong></h2>
         <p><strong>Tu código aleatorio es:</strong> {{ codigo }}</p>
         <p><strong>Número de personas que han ingresado el código:</strong> {{ codeEntries }}</p>
         <button class="btn" (click)="useCode()">Generar un nuevo código</button>
       </div>
-      
+
       <div class="activation-section">
         <h2><strong>Activar Tienda en el Mapa</strong></h2>
         <button class="btn" (click)="openModal()">
@@ -29,15 +29,18 @@
       <div class="average-rating">
         <h1><strong>Promedio de Calificaciones</strong></h1>
         <h2> {{ averageRating | number:'1.1-1' }} estrellas</h2>
-      
+
         <div class="reviews-section">
           <h2><strong>Reseñas de Clientes</strong></h2>
-        
+
           <!-- Contenedor común con scrollbar -->
           <div class="scrollable-container">
             <div class="review-rating-container">
-        
-              <!-- Sección de reseñas y calificaciones combinadas -->
+
+              <div *ngIf="reviews.length === 0" class="no-comments-message">
+                <p>No hay comentarios</p>
+              </div>
+              
               <div *ngFor="let review of reviews; let i = index" class="review-card">
                 <div class="card-header">
                   <strong>Comentario:</strong>
@@ -48,20 +51,15 @@
                     <strong>Calificación:</strong>
                   </div>
                   <div class="card-body">
-                    <p> {{ ratings[i]?.stars }} de 5 estrellas</p>
+                    <p>{{ ratings[i]?.stars }} de 5 estrellas</p>
                   </div>
                 </div>
               </div>   
             </div>
           </div>
         </div>
-        
-      </div>      
+      </div>
     </div>
-    
-    
-    
-  
 
     <!-- Modal -->
     <div class="modal-base" [ngClass]="{ 'show': showModal }">
@@ -72,7 +70,8 @@
         <p>¿Estás seguro de que quieres {{ isStoreOpen ? 'cerrar' : 'abrir' }} la tienda en el mapa?</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="confirmToggleStoreActivation()">Sí, {{ isStoreOpen ? 'cerrar' : 'abrir' }}</button>
+        <button type="button" class="btn btn-primary" (click)="confirmToggleStoreActivation()">Sí, {{ isStoreOpen ?
+          'cerrar' : 'abrir' }}</button>
         <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
       </div>
     </div>

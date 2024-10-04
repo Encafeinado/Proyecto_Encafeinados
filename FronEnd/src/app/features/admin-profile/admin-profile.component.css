@@ -211,3 +211,17 @@ body {
   font-weight: bold;
   color: #333; /* O el color que prefieras para los títulos */
 }
+
+.no-reviews-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px; /* Ajusta la altura si es necesario */
+  width: 100%; /* Asegura que ocupe todo el ancho disponible */
+  text-align: center;
+  font-size: 16px; /* Tamaño de letra adecuado */
+  font-weight: bold;
+  color: #555;
+  margin: 0 auto; /* Centra el mensaje horizontalmente */
+  box-sizing: border-box; /* Incluye padding y borde en el tamaño total */
+}
