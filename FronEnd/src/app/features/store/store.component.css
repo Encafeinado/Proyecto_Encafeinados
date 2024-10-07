@@ -283,3 +283,16 @@
   font-size: 1rem;
   color: #666;
 }
+
+.no-comments-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Ajusta la altura al máximo del contenedor */
+  width: 100%; /* Asegura que ocupe todo el ancho disponible */
+  text-align: center;
+  font-weight: bold;
+  color: #555;
+  margin: 0 auto; /* Centra el mensaje horizontalmente */
+  box-sizing: border-box; /* Incluye padding y borde en el tamaño total */
+}
