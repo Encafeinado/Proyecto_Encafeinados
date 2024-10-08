@@ -1,7 +1,88 @@
+/* Estilos para el sidebar */
+.sidebar {
+  background-color: #e6f7ff; /* Fondo suave */
+  padding: 20px;
+  width: 20%;
+  border-right: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%; /* Hacer que el sidebar ocupe el ancho completo en móviles */
+    border-right: none; /* Eliminar el borde derecho en pantallas pequeñas */
+    border-radius: 0px; /* Eliminar los bordes redondeados en pantallas pequeñas */
+  }
+
+  .btn-primary {
+    width: 100%; /* Hacer que el botón ocupe el ancho completo */
+    padding: 15px; /* Hacer que el botón tenga más espacio de padding */
+    font-size: 18px; /* Texto ligeramente más grande para facilitar la lectura */
+  }
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-menu li {
+  margin-bottom: 10px; /* Reducido para más espacio entre botones */
+}
+
+.menu-item {
+  width: 100%;
+  padding: 8px 12px; /* Ajuste del padding para un diseño más compacto */
+  text-align: left;
+  background-color: #fff;
+  border: none;
+  border-radius: 6px; /* Bordes redondeados más sutiles */
+  font-size: 14px; /* Texto más pequeño para mejorar el espacio */
+  color: #333;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+.menu-item i {
+  margin-right: 8px; /* Espacio reducido entre ícono y texto */
+  font-size: 16px; /* Ajuste de tamaño del ícono */
+}
+
+.menu-item:hover {
+  background-color: #cceeff; /* Color hover */
+  transform: translateY(-1px); /* Efecto hover */
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+  padding: 10px 20px;
+  color: #fff;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px; /* Espacio entre el botón y los elementos superiores */
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
 /* Estilos generales para el mapa */
 #map {
-  height: 450px; /* Altura predeterminada para pantallas grandes */
-  width: 100%; /* Asegura que el mapa ocupe el ancho completo */
+  height: 150%; /* Altura predeterminada para pantallas grandes */
+  width: 120%; /* Asegura que el mapa ocupe el ancho completo */
   border-radius: 15px; /* Bordes redondeados */
   overflow: hidden; /* Para asegurar que el contenido del mapa respete el borde redondeado */
 }

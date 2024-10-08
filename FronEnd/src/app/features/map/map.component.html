@@ -9,82 +9,105 @@
   </div>
   <div class="loading-text">Cargando...</div>
 </div>
-
-<div class="main-content" *ngIf="!isOffline">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-8 position-relative">
-        <div id="map">
-          <google-map width="100%" [center]="center" [zoom]="zoom" [options]="opcionesMapa">
-            <!-- Marcador para la ubicación actual con icono personalizado -->
-            <map-marker *ngIf="markerPosition" [position]="markerPosition" [icon]="iconoUbicacionUsuario">
-            </map-marker>
-          </google-map>
-        </div>
-      </div>
-      <div class="col-md-4 sidebar">
-        <p>¡Encuentra los mejores lugares de café en tu área!</p>
-        <div *ngIf="rutaActiva && instruccionesRuta.length > 0" class="ruta-detalles">
+        <!-- <div *ngIf="rutaActiva && instruccionesRuta.length > 0" class="ruta-detalles">
           <h3 class="titulo-detalles">Detalles de la Ruta</h3>
           <p class="detalle-info" style="color: #555">{{ routeDetails }}</p>
-          <!-- Lista de Instrucciones: solo se muestran 2 a la vez -->
+          <!-- Lista de Instrucciones: solo se muestran 2 a la vez
           <ul class="instrucciones-lista">
             <li *ngFor="let instruction of instruccionesActuales" class="instruccion-item">
-              <span class="instruction-icon">➡</span> <span [innerHTML]="instruction"></span>
+              <span class="instruction-icon">➡</span> 
+              <span [innerHTML]="instruction"></span>
             </li>
           </ul>
+        </div> -->
+        <div class="main-content" *ngIf="!isOffline">
+          <div class="container">
+            <div class="row">
+              <!-- Sidebar: Columna izquierda -->
+              <div class="col-md-4 sidebar">
+                <ul class="sidebar-menu">
+                  <li>
+                    <button class="menu-item">
+                      <i class="fas fa-map-marker-alt"></i> Mapa
+                    </button>
+                  </li>
+                  <li>
+                    <button class="menu-item" (click)="openModalWithCodigo()">
+                      <i class="fas fa-coffee"></i> Código
+                    </button>
+                  </li>
+                  <li>
+                    <button class="menu-item" (click)="openModalAlbum()">
+                      <i class="fas fa-book"></i> Álbum
+                    </button>
+                  </li>
+                  <li>
+                    <button class="menu-item" (click)="centerOnUserLocation(true)">
+                      <i class="fa fa-location-arrow" aria-hidden="true"></i> Centrar
+                    </button>
+                  </li>
+                  <li>
+                    <button *ngIf="rutaActiva" class="menu-item" (click)="openModalCancelRuta()">
+                      <i class="fas fa-times-circle"></i> Cancelar ruta
+                    </button>
+                  </li>
+                  <div *ngIf="rutaActiva && instruccionesRuta.length > 0" class="ruta-detalles">
+                    <h3 class="titulo-detalles">Detalles de la Ruta</h3>
+                    <p class="detalle-info" style="color: #555">{{ routeDetails }}</p>
+                     Lista de Instrucciones: solo se muestran 2 a la vez
+                    <ul class="instrucciones-lista">
+                      <li *ngFor="let instruction of instruccionesActuales" class="instruccion-item">
+                        <span class="instruction-icon">➡</span> 
+                        <span [innerHTML]="instruction"></span>
+                      </li>
+                    </ul>
+                  </div>
+                  <br>
+                  <br>
+                  <br>
+                  <br>
+                  <br>
+                  <br>
+                  <li>
+                    <button class="menu-item" (click)="centerOnUserLocation(true)">
+                      <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Cerrar sesión
+                    </button>
+                  </li>
+                </ul>
+                <button class="btn btn-primary" (click)="openModalReviewShop()">Califica la aplicación</button>
+              </div>
+        
+              <!-- Mapa: Columna derecha -->
+              <div class="col-md-8 position-relative">
+                <div id="map">
+                  <google-map width="100%" [center]="center" [zoom]="zoom" [options]="opcionesMapa">
+                    <!-- Marcador para la ubicación actual con icono personalizado -->
+                    <map-marker *ngIf="markerPosition" [position]="markerPosition" [icon]="iconoUbicacionUsuario">
+                    </map-marker>
+                  </google-map>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <br>
-        <!-- Información adicional -->
-        <div
-          style="margin-top: 15px; background-color: #f8f9fa; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-          <h3 style="margin-bottom: 12px; font-weight: bold; font-size: 20px; color: #333;">Información adicional</h3>
-          <ul style="list-style-type: none; padding-left: 0;">
-            <li style="margin-bottom: 12px; display: flex; align-items: center;">
-              <img src="assets/IconsMarker/cafeino.png" alt="Icono de persona"
-                style="width: 28px; height: 28px; margin-right: 10px;">
-              <span style="font-size: 14px; color: #555; font-weight: 400;">Eres tú</span>
-              <!-- Ajuste del tamaño y grosor del texto -->
-            </li>
-            <li style="margin-bottom: 12px; display: flex; align-items: center;">
-              <img src="assets/IconsMarker/cafeteriaAroma.png" alt="Icono de tienda de café"
-                style="width: 24px; height: 24px; margin-right: 10px;">
-              <span style="font-size: 14px; color: #555; font-weight: 400;">Tienda de café</span>
-              <!-- Ajuste del tamaño y grosor del texto -->
-            </li>
-            <li style="margin-bottom: 12px; display: flex; align-items: center;">
-              <span style="color: green; font-size: 18px;">&#8226;</span>
-              <span style="font-size: 14px; color: #555; font-weight: 400; margin-left: 10px;">Tienda abierta</span>
-              <!-- Alineación y ajuste de texto -->
-            </li>
-            <li style="margin-bottom: 12px; display: flex; align-items: center;">
-              <span style="color: red; font-size: 18px;">&#8226;</span>
-              <span style="font-size: 14px; color: #555; font-weight: 400; margin-left: 10px;">Tienda cerrada</span>
-              <!-- Alineación y ajuste de texto -->
-            </li>
-          </ul>
-        </div>
-        <br>
-        <button class="btn btn-primary align-right" (click)="openModalReviewShop()">Califica la aplicación</button>
-      </div>
-    </div>
-  </div>
-</div>
+        
+        
+
 
 <!-- Botón del librito -->
 <div class="button-container-footer" *ngIf="!isOffline">
-  <button class="floating-button button-book" (click)="openModalAlbum()">
+  <!-- <button class="floating-button button-book" (click)="openModalAlbum()">
     <i class="fas fa-book text-white"></i>
   </button>
   <button class="floating-button button-camera" (click)="openModalWithCodigo()">
     <i class="fas fa-coffee text-white"></i>
-  </button>
-  <button *ngIf="rutaActiva" class="floating-button-cancel" (click)="openModalCancelRuta()">
+  </button> -->
+  <!-- <button *ngIf="rutaActiva" class="floating-button-cancel" (click)="openModalCancelRuta()">
     <i class="fas fa-times text-white"></i>
-  </button>
-  <button class="floating-button-location" (click)="centerOnUserLocation(true)">
+  </button> -->
+  <!-- <button class="floating-button-location" (click)="centerOnUserLocation(true)">
     <i class="fa fa-location-arrow" aria-hidden="true"></i>
-  </button>
+  </button> -->
 </div>
 
 <!-- Modal para confirmar la ruta -->
