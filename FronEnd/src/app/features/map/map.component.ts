@@ -47,6 +47,7 @@ export class MapComponent implements OnInit, OnDestroy {
   enteredRating: number = 0;
   enteredReview: string = '';
   showAlert: boolean = false;
+  userName: string = 'Nombre del Usuario';
   isButtonDisabled: boolean = true;
   markerUsuario?: google.maps.Marker;
   google: any = window.google;
@@ -120,6 +121,7 @@ export class MapComponent implements OnInit, OnDestroy {
   @ViewChild('arriveModal', { static: true }) arriveModal: any;
   @ViewChild('modalReviewShop', { static: true }) modalReviewShop: any;
   @ViewChild('smokeLoader') smokeLoader!: ElementRef;
+  @ViewChild('sesionModal', { static: true }) sesionModal: any;
   
   constructor(
     private modalService: NgbModal,
@@ -1273,7 +1275,33 @@ export class MapComponent implements OnInit, OnDestroy {
       this.openedModal = false; // Reiniciar el estado del modal
     });
   }
-
+  onLogout() {
+    this.authService.logout();
+  }
+  openModalLogout(content: any): void {
+    if (!this.openedModal) {
+      this.openedModal = true;
+      this.modalRef = this.modalService.open(content, {
+        centered: true,
+        backdrop: 'static',
+      });
+      this.modalRef.result.then(
+        () => {
+          this.openedModal = false;
+        },
+        () => {
+          this.openedModal = false;
+        }
+      );
+    }
+  }
+  openLogoutModal(content: any): void {
+    this.openModalLogout(content);
+  }
+  confirmLogout(): void {
+    this.authService.logout();
+    this.modalRef.close();
+  }
   updateButtonReviewState() {
     this.isButtonDisabled = this.reviewApp.trim().length === 0;
   }
