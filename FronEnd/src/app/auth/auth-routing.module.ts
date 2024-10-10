@@ -5,6 +5,7 @@ import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
 import { RequestResetPasswordComponent } from './pages/request-reset-password-page/request-reset-password.component';
 import { ResetPasswordComponent } from './pages/reset-password-page/reset-password.component';
+import { LoginAdminPageComponent } from './pages/login-admin-page/login-admin-page.component';
 const routes: Routes = [
 
   {
@@ -12,6 +13,7 @@ const routes: Routes = [
     component: AuthLayoutComponent,
     children: [
       { path: 'login', component: LoginPageComponent },
+      { path: 'login-admin', component: LoginAdminPageComponent },
       { path: 'register', component: RegisterPageComponent },
       { path: 'forgot-password', component: RequestResetPasswordComponent },
       { path: 'reset-password', component: ResetPasswordComponent },

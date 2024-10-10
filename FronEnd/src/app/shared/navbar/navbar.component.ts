@@ -58,7 +58,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   onLogout() {
     this.authService.logout();
+    this.router.navigateByUrl('/landing'); // Redirigir a landing después de logout
   }
+  
 
   setupDropdownToggle() {
     const dropdownButton = document.getElementById('userDropdown');
@@ -125,6 +127,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   
   isOnLoginPage(): boolean {
     return this.router.url === '/auth/login';
+  }
+
+  isOnLoginAdminPage(): boolean {
+    return this.router.url === '/auth/login-admin';
   }
 
   isOnRegisterPage(): boolean {

@@ -16,6 +16,8 @@ export class AuthController {
     return this.authService.create(createUserDto);
   }
 
+  
+
   @Get('users') // Nueva ruta para obtener todos los usuarios
   async getAllUsers(): Promise<User[]> {
     return this.authService.findAll();

@@ -4,6 +4,7 @@ import { Observable, catchError, forkJoin, map, of, throwError } from 'rxjs';
 import { Shop } from 'src/app/features/store/interfaces/shop.interface';
 import { environment } from 'src/environments/environments';
 import { AuthStatus, CheckTokenResponse, LoginResponse, User } from '../interfaces';
+import { LoginAdminResponse } from '../interfaces/login-admin-response.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ import { AuthStatus, CheckTokenResponse, LoginResponse, User } from '../interfac
 export class AuthService {
 
   private readonly baseUrl: string = environment.baseUrl;
-
+  private logoutTriggered = false;
   private http = inject(HttpClient);
 
   private _currentUser = signal<User | Shop | null>(null);
@@ -60,6 +61,23 @@ export class AuthService {
       })
     );
   }
+
+  loginAdmin(email: string, password: string): Observable<boolean> {
+    const urlAdmin = `${this.baseUrl}/admin/login`;
+  
+    const body = { email, password };
+    return this.http.post<LoginAdminResponse>(urlAdmin, body).pipe(
+      map(({ admin, token }) => this.setAuthentication(admin, token, 'admin')),
+      catchError((error: HttpErrorResponse) => {
+        // Imprimir el error para depuración
+        console.log('Login error:', error);
+  
+        // Aquí debemos asegurarnos de lanzar un error con el mensaje adecuado
+        return throwError(() => new Error(error.error.message || 'Error desconocido'));
+      })
+    );
+  }
+  
   
   
   checkEmailAvailability(email: string): Observable<boolean> {

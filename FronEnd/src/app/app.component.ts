@@ -59,36 +59,36 @@ export class AppComponent {
   public authStatusChangedEffect = effect(() => {
     const authStatus = this.authService.authStatus();
     console.log('Estado de autenticación:', authStatus);
-
+  
     switch (authStatus) {
       case AuthStatus.checking:
         return;
-
+  
       case AuthStatus.authenticated:
         const currentUser = this.authService.currentUser();
         if (currentUser) {
           this.userName = currentUser.name || 'Nombre del Usuario';
           console.log('Nombre del usuario:', this.userName);
-
-          if (currentUser.roles.includes('user')) {
-            this.router.navigateByUrl('/map');
-          } else if (currentUser.roles.includes('shop')) {
-            this.router.navigateByUrl('/store');
-          } else {
-            this.router.navigateByUrl('/landing');
+  
+          // Redirige solo si no estás en una página válida para el rol actual
+          if (this.router.url !== '/map' && this.router.url !== '/store') {
+            if (currentUser.roles.includes('user')) {
+              this.router.navigateByUrl('/map');
+            } else if (currentUser.roles.includes('shop')) {
+              this.router.navigateByUrl('/store');
+            }
           }
         }
         return;
-
+  
       case AuthStatus.notAuthenticated:
+        // Redirigir solo si el usuario está en una página privada
         const currentUrl = this.router.url;
-        console.log('URL actual:', currentUrl);
-
-        // Redirigir a la página de inicio si la URL actual no es pública
         if (currentUrl !== '/auth/login' && currentUrl !== '/landing') {
           this.router.navigateByUrl('/landing');
         }
         return;
     }
   });
+  
 }
