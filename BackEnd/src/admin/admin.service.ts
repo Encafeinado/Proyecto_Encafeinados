@@ -116,6 +116,8 @@ export class AdminService {
   findOne(id: number) {
     return `This action returns a #${id} auth`;
   }
+
+
   
    getJwtToken(payload: JwtPayload): string {
     // Configura la expiración del token (ejemplo: 1 hora)

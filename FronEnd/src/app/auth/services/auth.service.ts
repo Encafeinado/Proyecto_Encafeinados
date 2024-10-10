@@ -5,6 +5,8 @@ import { Shop } from 'src/app/features/store/interfaces/shop.interface';
 import { environment } from 'src/environments/environments';
 import { AuthStatus, CheckTokenResponse, LoginResponse, User } from '../interfaces';
 import { LoginAdminResponse } from '../interfaces/login-admin-response.interface';
+import { Admin } from '../interfaces/admin.interface';
+import { Router } from '@angular/router'; // Importar Router
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +14,7 @@ import { LoginAdminResponse } from '../interfaces/login-admin-response.interface
 export class AuthService {
 
   private readonly baseUrl: string = environment.baseUrl;
-  private logoutTriggered = false;
+  private isLogout = false; // Flag para saber si es logout explícito
   private http = inject(HttpClient);
 
   private _currentUser = signal<User | Shop | null>(null);
@@ -26,13 +28,14 @@ export class AuthService {
   constructor() {
     this.checkAuthStatus().subscribe();
   }
-
+  private router = inject(Router); // Inyectar el servicio Router
   private setAuthentication(userOrShop: User | Shop, token: string, role: string): boolean {
     this._currentUser.set(userOrShop);
     this._authStatus.set(AuthStatus.authenticated);
     localStorage.setItem('token', token);
     localStorage.setItem('shopId', role === 'shop' ? (userOrShop as Shop)._id : '');
     localStorage.setItem('userId', role === 'user' ? (userOrShop as User)._id : '');
+    localStorage.setItem('adminId', role === 'admin' ? (userOrShop as Admin)._id : '');
     this.rolUser.set(role);
 
     return true;
@@ -139,8 +142,10 @@ validatePassword(email: string, password: string): Observable<{ valid: boolean }
 }
 
 isAuthenticated(): boolean {
-  return !!this.currentUser();
+  const currentUser = this.currentUser();
+  return !!currentUser && (this.rolUser() === 'user' || this.rolUser() === 'shop' || this.rolUser() === 'admin');
 }
+
 
 
   register(name: string, email: string, password: string, phone: string): Observable<boolean> {
@@ -176,8 +181,9 @@ isAuthenticated(): boolean {
   }
 
   checkAuthStatus(): Observable<boolean> {
-    const url = `${this.baseUrl}/auth/check-token`;
-    const url2 = `${this.baseUrl}/shop/check-token`;
+    const urlUser = `${this.baseUrl}/auth/check-token`;
+    const urlShop = `${this.baseUrl}/shop/check-token`;
+    const urlAdmin = `${this.baseUrl}/admin/check-token`; // Añadir el URL para validar el token de admin
     const token = localStorage.getItem('token');
     const currentUrl = window.location.href; // Obtener la URL actual
   
@@ -187,36 +193,52 @@ isAuthenticated(): boolean {
     }
   
     if (!token) {
-      this.logout();
+      // Si no hay token, simplemente marcar el estado como no autenticado sin redirigir
+      this._authStatus.set(AuthStatus.notAuthenticated);
       return of(false);
     }
   
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
   
-    return this.http.get<CheckTokenResponse>(url, { headers }).pipe(
+    return this.http.get<CheckTokenResponse>(urlUser, { headers }).pipe(
       map(({ user, token }) => this.setAuthentication(user!, token, 'user')),
       catchError(err => {
-        return this.http.get<CheckTokenResponse>(url2, { headers }).pipe(
+        return this.http.get<CheckTokenResponse>(urlShop, { headers }).pipe(
           map(({ shop, token }) => this.setAuthentication(shop!, token, 'shop')),
           catchError(innerErr => {
-            console.error('Error al verificar el token', innerErr);
-            this._authStatus.set(AuthStatus.notAuthenticated);
-            this.logout();
-            return of(false);
+            // Verificación adicional para administradores
+            return this.http.get<CheckTokenResponse>(urlAdmin, { headers }).pipe(
+              map(({ admin, token }) => this.setAuthentication(admin!, token, 'admin')),
+              catchError(adminErr => {
+                console.error('Error al verificar el token', adminErr);
+                this._authStatus.set(AuthStatus.notAuthenticated);
+                // No llamar a logout aquí, solo marcar como no autenticado
+                return of(false);
+              })
+            );
           })
         );
       })
     );
   }
   
+  
 
   logout() {
+    this.isLogout = true; // Se marca que es un cierre de sesión
+
+    // Eliminar los datos de autenticación del almacenamiento local
     localStorage.removeItem('token');
     localStorage.removeItem('shopId');
     localStorage.removeItem('userId');
+
+    // Restablecer el estado de autenticación
     this._currentUser.set(null);
     this._authStatus.set(AuthStatus.notAuthenticated);
     this.rolUser.set(null);
+
+    // Redirigir a la página de landing
+    this.router.navigate(['/landing']);
   }
 
   getShopId(): string | null {

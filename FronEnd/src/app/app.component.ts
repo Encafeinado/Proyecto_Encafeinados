@@ -61,21 +61,19 @@ export class AppComponent {
     console.log('Estado de autenticación:', authStatus);
   
     switch (authStatus) {
-      case AuthStatus.checking:
-        return;
-  
       case AuthStatus.authenticated:
         const currentUser = this.authService.currentUser();
         if (currentUser) {
           this.userName = currentUser.name || 'Nombre del Usuario';
-          console.log('Nombre del usuario:', this.userName);
-  
-          // Redirige solo si no estás en una página válida para el rol actual
-          if (this.router.url !== '/map' && this.router.url !== '/store') {
+    
+          // Verifica si es admin y redirige a /admin-profile
+          if (this.router.url !== '/map' && this.router.url !== '/store' && this.router.url !== '/admin-profile') {
             if (currentUser.roles.includes('user')) {
               this.router.navigateByUrl('/map');
             } else if (currentUser.roles.includes('shop')) {
               this.router.navigateByUrl('/store');
+            } else if (currentUser.roles.includes('admin')) {
+              this.router.navigateByUrl('/admin-profile'); // Redirige a /admin-profile para admin
             }
           }
         }
@@ -85,7 +83,7 @@ export class AppComponent {
         // Redirigir solo si el usuario está en una página privada
         const currentUrl = this.router.url;
         if (currentUrl !== '/auth/login' && currentUrl !== '/landing') {
-          this.router.navigateByUrl('/landing');
+        
         }
         return;
     }

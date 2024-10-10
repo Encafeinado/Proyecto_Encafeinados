@@ -38,14 +38,19 @@ export class MiPerfilComponent implements OnInit {
       console.error('Token no encontrado en el almacenamiento local.');
       return;
     }
-
+  
+    if (!this.userData || !this.userData.email) {
+      console.error('Datos del usuario o email no están definidos.');
+      return;
+    }
+  
     this.userService.fetchUserData(token).subscribe(
-      (data: any[]) => { // Asegúrate de que estás recibiendo un array
+      (data: any[]) => {
         console.log('Datos completos del usuario:', data);
-
-        // Encuentra el usuario correcto dentro del array
-        const usuario = data.find(u => u.email === this.userData.email); // Cambia según el criterio que prefieras
-
+  
+        // Encuentra el usuario correcto dentro del array usando el email
+        const usuario = data.find(u => u.email === this.userData.email); 
+  
         if (usuario && usuario.cafecoin !== undefined) {
           this.userData.cafecoin = usuario.cafecoin;
           console.log('Cafecoins actualizados:', this.userData.cafecoin);
@@ -58,7 +63,8 @@ export class MiPerfilComponent implements OnInit {
         console.error('Error al actualizar los datos del usuario:', error);
       }
     );
-}
+  }
+  
 
 
   loadReviews(): void {
@@ -78,7 +84,7 @@ export class MiPerfilComponent implements OnInit {
       console.error('Usuario no autenticado.');
       return;
     }
-
+  
     this.userRole = currentUser.roles ? currentUser.roles[0] : '';
     if (this.userRole === 'shop') {
       this.loadShopData(currentUser._id);
@@ -87,7 +93,7 @@ export class MiPerfilComponent implements OnInit {
       console.log('Datos del usuario:', this.userData);
     }
   }
-
+  
   loadShopData(shopId: string): void {
     this.storeService.getShopById(shopId).subscribe(
       (data) => {

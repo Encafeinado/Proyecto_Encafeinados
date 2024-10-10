@@ -90,7 +90,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       this.router.url === '/store' ||
       this.router.url === '/map' ||
       this.router.url === '/landing'||
-      this.router.url === '/landing-tienda'
+      this.router.url === '/landing-tienda'||
+      this.router.url === '/admin-profile'
     );
   }
 
@@ -160,5 +161,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   isUserLandingTienda(): boolean {
     return this.router.url === '/landing-tienda';
+  }
+
+  isAdminProfilePage(): boolean {
+    return this.router.url === '/admin-profile';
   }
 }

@@ -1,10 +1,10 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, InternalServerErrorException, NotFoundException, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, InternalServerErrorException, NotFoundException, Param, Post, Request, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto, LoginDto,  } from './dto';
 import { Admin } from './entities/admin.entity';
-//import { AdminGuard } from './guards/admin.guard';
 import { LoginResponce } from './interfaces/login-responce';
 import { RegisterAdminDto } from './dto/register-admin.dto';
+import { AdminGuard } from './guards/admin.guard';
 
 @Controller('admin')
 export class AdminController {
@@ -53,18 +53,23 @@ export class AdminController {
     return this.adminService.findAll();
   }
 
- // @UseGuards(AdminGuard)
+  @UseGuards(AdminGuard)
   @Get('check-token')
-  checkToken(@Request() req: Request): LoginResponce{
-    
-    const admin = req['admin'] as Admin;
-
+  checkToken(@Request() req: Request): LoginResponce {
+    // Cambiar req['admin'] a req['user']
+    const admin = req['user'] as Admin;
+  
+    // Asegúrate de que admin no es undefined antes de generar el token
+    if (!admin) {
+      throw new UnauthorizedException('Administrador no encontrado');
+    }
+  
     return {
       admin,
-      token: this.adminService.getJwtToken( {id: admin._id})
-    }
-
+      token: this.adminService.getJwtToken({ id: admin._id })
+    };
   }
+  
 
   //@UseGuards(AdminGuard)
   @Get('Admin-id')
