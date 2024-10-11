@@ -17,6 +17,9 @@ export class AdminProfileComponent implements OnInit {
   totalShops: number = 0;     // Total de tiendas registradas
   shopsWithAverageRatings: any[] = [];  // Array para almacenar cada tienda con su promedio de calificaciones
   totalCafecoins: number = 0;
+  shopWithMostCodeUsage: any; // Tienda con más redenciones de código
+  codigosUsados: boolean = false; // Nueva propiedad para el término de búsqueda
+
   constructor(
     private authService: AuthService,
     private storeService: StoreService,
@@ -32,6 +35,8 @@ export class AdminProfileComponent implements OnInit {
     this.loadTotalCafecoins();
     this.loadReviews(); 
   }
+
+  // Método para cargar el total de cafecoins
   loadTotalCafecoins(): void {
     this.userService.fetchAllUsers().subscribe(
       (users) => {
@@ -44,7 +49,8 @@ export class AdminProfileComponent implements OnInit {
       }
     );
   }
-  // Cargar datos del usuario actual
+
+  // Método para cargar los datos del usuario
   loadUserData(): void {
     const currentUser = this.authService.currentUser();
     if (!currentUser) {
@@ -55,7 +61,7 @@ export class AdminProfileComponent implements OnInit {
     console.log('Datos del usuario:', this.userData);
   }
 
-  // Cargar las reviews
+  // Método para cargar las reviews
   loadReviews(): void {
     this.reviewService.getAllReviews().subscribe(
       (data) => {
@@ -68,27 +74,27 @@ export class AdminProfileComponent implements OnInit {
     );
   }
 
-  // Cargar y sumar el número total de clientes (codeUsage) de todas las tiendas
+  // Método para cargar el total de clientes (usuarios registrados)
   loadTotalClients(): void {
-    this.storeService.getAllShops().subscribe(
-      (shops) => {
-        this.totalClients = shops.reduce((total, shop) => total + shop.codeUsage, 0); // Sumar los codeUsage
-        console.log('Total clientes:', this.totalClients);
+    this.userService.fetchAllUsers().subscribe(
+      (users) => {
+        this.totalClients = users.length; // Contamos el total de usuarios registrados
+        console.log('Total usuarios registrados:', this.totalClients);
         this.cdr.detectChanges(); // Forzamos la detección de cambios
       },
       (error) => {
-        console.error('Error al cargar las tiendas:', error);
+        console.error('Error al cargar los usuarios:', error);
       }
     );
   }
 
-  // Cargar el número total de tiendas y calcular el promedio de calificaciones de cada tienda
+  // Método para cargar el total de tiendas y sus datos
   loadTotalShops(): void {
     this.storeService.getAllShops().subscribe(
       (shops) => {
         this.totalShops = shops.length;  // Contamos cuántas tiendas están registradas
         console.log('Total de tiendas registradas:', this.totalShops);
-
+  
         // Calcular el promedio de ratings para cada tienda
         this.shopsWithAverageRatings = shops.map(shop => {
           const averageRating = shop.ratings && shop.ratings.length > 0
@@ -99,8 +105,20 @@ export class AdminProfileComponent implements OnInit {
             averageRating // Agregamos el promedio de ratings a cada tienda
           };
         });
-
-        console.log('Shops with average ratings:', this.shopsWithAverageRatings);
+  
+        // Encontrar la tienda con más redenciones de código (codeUsage)
+        const shopWithCodeUsage = shops.filter(shop => shop.codeUsage > 0);
+        
+        if (shopWithCodeUsage.length > 0) {
+          this.shopWithMostCodeUsage = shopWithCodeUsage.reduce((prev, current) => {
+            return (prev.codeUsage > current.codeUsage) ? prev : current;
+          });
+        } else {
+          this.codigosUsados = true;
+          this.shopWithMostCodeUsage = null; // Ninguna tienda ha redimido códigos
+        }
+  
+        console.log('Tienda con más codeUsage:', this.shopWithMostCodeUsage);
         this.cdr.detectChanges(); // Forzamos la detección de cambios
       },
       (error) => {
