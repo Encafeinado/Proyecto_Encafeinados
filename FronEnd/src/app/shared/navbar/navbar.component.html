@@ -1,3 +1,8 @@
+<div *ngIf="!isOnMapPage()">
+
+  
+  
+</div>
 <nav class="navbar navbar-expand-lg bg-coffee">
   <div class="container-fluid d-flex justify-content-between align-items-center">  
     <!-- Contenedor para el logo y el texto "Encafeinados" -->
@@ -15,10 +20,10 @@
         <li *ngIf="isUserLanding()"><a class="dropdown-item" routerLink="/landing-tienda">Tiendas Aliadas</a></li>
         <li *ngIf="isUserLanding()"><a class="dropdown-item" routerLink="/auth/login">Iniciar sesión</a></li>
         <li *ngIf="isUserLandingTienda()"><a class="dropdown-item">Iniciar sesión Tienda</a></li>
-        <li *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage()">
+        <li *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage() && !isOnLoginAdminPage() ">
           <a *ngIf="userName" class="dropdown-item" routerLink="/perfil"><i class="fas fa-user"></i> {{ userName }}</a>
         </li>
-        <li *ngIf="authService.isAuthenticated() && !isOnLoginPage() && !isOnRegisterPage() && !isOnResetPage() && !isOnRequestPage() ">
+        <li *ngIf="authService.isAuthenticated() && !isOnLoginPage() && !isOnRegisterPage() && !isOnResetPage() && !isOnRequestPage() && !isOnLoginAdminPage()">
           <a class="dropdown-item" (click)="openLogoutModal(sesionModal)"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
         </li>
       </ul>
@@ -40,7 +45,7 @@
     <a class="btn btn-outline-light">Iniciar sesión Tienda</a>
   </ng-container>
 
-  <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage()">
+  <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage() && !isOnLoginAdminPage() ">
     <div *ngIf="userName" class="dropdown">
       <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="fas fa-user" style="font-size: 1.5rem"></i>
@@ -70,4 +75,3 @@
 </ng-template>
 </div>
 </nav>
-

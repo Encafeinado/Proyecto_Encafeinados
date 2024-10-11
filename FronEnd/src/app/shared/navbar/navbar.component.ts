@@ -58,7 +58,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   onLogout() {
     this.authService.logout();
+    this.router.navigateByUrl('/landing'); // Redirigir a landing después de logout
   }
+  
 
   setupDropdownToggle() {
     const dropdownButton = document.getElementById('userDropdown');
@@ -88,7 +90,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       this.router.url === '/store' ||
       this.router.url === '/map' ||
       this.router.url === '/landing'||
-      this.router.url === '/landing-tienda'
+      this.router.url === '/landing-tienda'||
+      this.router.url === '/admin-profile'
     );
   }
 
@@ -127,6 +130,14 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     return this.router.url === '/auth/login';
   }
 
+  isOnMapPage(): boolean {
+    return this.router.url === '/map';
+  }
+
+  isOnLoginAdminPage(): boolean {
+    return this.router.url === '/auth/login-admin';
+  }
+
   isOnRegisterPage(): boolean {
     return this.router.url === '/auth/register';
   }
@@ -154,5 +165,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   isUserLandingTienda(): boolean {
     return this.router.url === '/landing-tienda';
+  }
+
+  isAdminProfilePage(): boolean {
+    return this.router.url === '/admin-profile';
   }
 }

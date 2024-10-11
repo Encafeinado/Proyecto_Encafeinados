@@ -18,7 +18,7 @@ export class AdminProfileComponent implements OnInit {
   shopsWithAverageRatings: any[] = [];  // Array para almacenar cada tienda con su promedio de calificaciones
   totalCafecoins: number = 0;
   shopWithMostCodeUsage: any; // Tienda con más redenciones de código
-  codigosUsados: boolean = false; // Nueva propiedad para el término de búsqueda
+  codigosUsados: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -36,7 +36,6 @@ export class AdminProfileComponent implements OnInit {
     this.loadReviews(); 
   }
 
-  // Método para cargar el total de cafecoins
   loadTotalCafecoins(): void {
     this.userService.fetchAllUsers().subscribe(
       (users) => {
@@ -50,7 +49,6 @@ export class AdminProfileComponent implements OnInit {
     );
   }
 
-  // Método para cargar los datos del usuario
   loadUserData(): void {
     const currentUser = this.authService.currentUser();
     if (!currentUser) {
@@ -61,7 +59,6 @@ export class AdminProfileComponent implements OnInit {
     console.log('Datos del usuario:', this.userData);
   }
 
-  // Método para cargar las reviews
   loadReviews(): void {
     this.reviewService.getAllReviews().subscribe(
       (data) => {
@@ -74,7 +71,6 @@ export class AdminProfileComponent implements OnInit {
     );
   }
 
-  // Método para cargar el total de clientes (usuarios registrados)
   loadTotalClients(): void {
     this.userService.fetchAllUsers().subscribe(
       (users) => {
@@ -88,7 +84,6 @@ export class AdminProfileComponent implements OnInit {
     );
   }
 
-  // Método para cargar el total de tiendas y sus datos
   loadTotalShops(): void {
     this.storeService.getAllShops().subscribe(
       (shops) => {
