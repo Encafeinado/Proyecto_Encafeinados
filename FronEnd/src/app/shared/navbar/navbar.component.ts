@@ -32,6 +32,18 @@ export class NavbarComponent implements OnInit, AfterViewInit {
         this.isLoading = false;
       }
     });
+    setInterval(() => {
+      const currentUser = this.authService.currentUser();
+      this.userName = currentUser ? currentUser.name : 'Nombre del Usuario';
+      // console.log(currentUser)
+      this.router.events.subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          this.isLoading = false;
+        } else if (event instanceof NavigationCancel || event instanceof NavigationError) {
+          this.isLoading = false;
+        }
+      }); 
+    }, 5000);
   }
 
   

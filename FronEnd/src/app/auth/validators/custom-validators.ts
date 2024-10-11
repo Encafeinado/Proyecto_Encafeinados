@@ -9,7 +9,7 @@ export function passwordValidator(): ValidatorFn {
     const value = control.value || '';
     const hasUpperCase = /[A-Z]/.test(value);
     const hasNumber = /[0-9]/.test(value);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>_\\[\]\-+\/;]/.test(value);
     const isValid = hasUpperCase && hasNumber && hasSpecialChar;
     return !isValid ? { 'passwordInvalid': true } : null;
   };
@@ -30,9 +30,6 @@ export function passwordAsyncValidator(authService: AuthService): AsyncValidator
     );
   };
 }
-
-
-
 
 export function emailDomainValidator(validDomains: string[]): AsyncValidatorFn {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {

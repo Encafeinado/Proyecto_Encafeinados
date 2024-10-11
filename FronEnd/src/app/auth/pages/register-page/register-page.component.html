@@ -13,7 +13,7 @@
               El correo electrónico ya está en uso.
             </div>
 
-            <!--  Opciones de tipo de registro
+              <!--Opciones de tipo de registro
               <div class="wrap-input100 m-b-23 form-outline mb-4">
                 <span class="label-input100">Tipo de Registro</span>
                 <div class="d-flex justify-content-around mt-2">
@@ -151,17 +151,17 @@
     <div *ngIf="myForm.get('phone')?.hasError('required')" class="error-message">
       El campo celular es obligatorio.
     </div>
-    
+
     <!-- Validación de solo números -->
     <div *ngIf="myForm.get('phone')?.hasError('invalidPhoneNumber') && !myForm.get('phone')?.hasError('required')" class="error-message">
       Solo debe contener números.
     </div>
-    
+
     <!-- Validación de longitud mínima (solo se muestra si no hay error de 'invalidPhoneNumber') -->
     <div *ngIf="myForm.get('phone')?.hasError('minlength') && !myForm.get('phone')?.hasError('required') && !myForm.get('phone')?.hasError('invalidPhoneNumber')" class="error-message">
       Mínimo debe tener 10 números.
     </div>
-    
+
     <!-- Validación de longitud máxima (solo se muestra si no hay error de 'invalidPhoneNumber') -->
     <div *ngIf="myForm.get('phone')?.hasError('maxlength') && !myForm.get('phone')?.hasError('required') && !myForm.get('phone')?.hasError('invalidPhoneNumber')" class="error-message">
       Máximo debe tener 10 números.
@@ -205,13 +205,8 @@
             </div>
 
             <div class="text-center pt-1 mb-5 pb-1">
-              <button
-                  data-mdb-button-init
-                  data-mdb-ripple-init
-                  class="login100-form-btn"
-                  [disabled]="myForm.invalid"
-                  type="submit"
-                >Registrar</button>
+              <button data-mdb-button-init data-mdb-ripple-init class="login100-form-btn" [disabled]="myForm.invalid"
+                type="submit">Registrar</button>
             </div>
             <div class="flex-col-c p-t-3 mt-3">
               <span class="txt1 p-b-2">
