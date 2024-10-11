@@ -1,58 +1,66 @@
-<div class="main-content">
+<div *ngIf="isOffline" #smokeLoader class="smoke-loader">
+  <div class="smoke-wave">
+    <div class="smoke1"></div>
+    <div class="smoke2"></div>
+    <div class="smoke3"></div>
+  </div>
+  <div class="coffee-cup">
+    <img src="assets/images/Cafeino-caminando.svg" alt="Coffee Cup" width="80" height="80">
+  </div>
+  <div class="loading-text">Cargando...</div>
+</div>
+
+<div class="main-content" *ngIf="!isOffline">
   <div class="container">
     <div class="row">
       <div class="col-md-8 position-relative">
         <div id="map">
-          <google-map  width="100%" [center]="center" [zoom]="zoom" [options]="opcionesMapa">
-
+          <google-map width="100%" [center]="center" [zoom]="zoom" [options]="opcionesMapa">
             <!-- Marcador para la ubicación actual con icono personalizado -->
             <map-marker *ngIf="markerPosition" [position]="markerPosition" [icon]="iconoUbicacionUsuario">
             </map-marker>
           </google-map>
         </div>
-        <!-- En tu plantilla HTML -->
-        <button *ngIf="rutaActiva" class="floating-button-cancel" (click)="openModalCancelRuta()">
-          <i class="fas fa-times text-white"></i>
-        </button>
-        <button class="floating-button-location" (click)="centerOnUserLocation(true)">
-          <i class="fa fa-location-arrow" aria-hidden="true"></i>
-        </button>
-
       </div>
       <div class="col-md-4 sidebar">
         <p>¡Encuentra los mejores lugares de café en tu área!</p>
         <div *ngIf="rutaActiva && instruccionesRuta.length > 0" class="ruta-detalles">
           <h3 class="titulo-detalles">Detalles de la Ruta</h3>
-          <p class="detalle-info">{{ routeDetails }}</p>
-
+          <p class="detalle-info" style="color: #555">{{ routeDetails }}</p>
           <!-- Lista de Instrucciones: solo se muestran 2 a la vez -->
           <ul class="instrucciones-lista">
             <li *ngFor="let instruction of instruccionesActuales" class="instruccion-item">
-              <span class="instruction-icon">➡️</span> <span [innerHTML]="instruction"></span>
+              <span class="instruction-icon">➡</span> <span [innerHTML]="instruction"></span>
             </li>
           </ul>
         </div>
         <br>
-
         <!-- Información adicional -->
-        <div style="margin-top: 15px; background-color: #f8f9fa; padding: 10px; border-radius: 5px;">
-          <h3 style="margin-bottom: 10px;">Información adicional</h3>
+        <div
+          style="margin-top: 15px; background-color: #f8f9fa; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+          <h3 style="margin-bottom: 12px; font-weight: bold; font-size: 20px; color: #333;">Información adicional</h3>
           <ul style="list-style-type: none; padding-left: 0;">
-            <li style="margin-bottom: 10px;">
+            <li style="margin-bottom: 12px; display: flex; align-items: center;">
               <img src="assets/IconsMarker/cafeino.png" alt="Icono de persona"
-                style="width: 20px; height: 20px; margin-right: 10px;">
-              <span style="font-size: 16px;">Eres tú</span>
+                style="width: 28px; height: 28px; margin-right: 10px;">
+              <span style="font-size: 14px; color: #555; font-weight: 400;">Eres tú</span>
+              <!-- Ajuste del tamaño y grosor del texto -->
             </li>
-            <li style="margin-bottom: 10px;">
-              <img src="assets/IconsMarker/cafeteriaAroma.png" alt="Icono de persona"
-                style="width: 20px; height: 20px; margin-right: 10px;">
-              <span style="font-size: 16px;">Tienda de café</span>
+            <li style="margin-bottom: 12px; display: flex; align-items: center;">
+              <img src="assets/IconsMarker/cafeteriaAroma.png" alt="Icono de tienda de café"
+                style="width: 24px; height: 24px; margin-right: 10px;">
+              <span style="font-size: 14px; color: #555; font-weight: 400;">Tienda de café</span>
+              <!-- Ajuste del tamaño y grosor del texto -->
             </li>
-            <li style="margin-bottom: 10px;">
-              <span style="color: green; font-size: 18px;">&#8226;</span> Tienda abierta
+            <li style="margin-bottom: 12px; display: flex; align-items: center;">
+              <span style="color: green; font-size: 18px;">&#8226;</span>
+              <span style="font-size: 14px; color: #555; font-weight: 400; margin-left: 10px;">Tienda abierta</span>
+              <!-- Alineación y ajuste de texto -->
             </li>
-            <li style="margin-bottom: 10px;">
-              <span style="color: red; font-size: 18px;">&#8226;</span> Tienda cerrada
+            <li style="margin-bottom: 12px; display: flex; align-items: center;">
+              <span style="color: red; font-size: 18px;">&#8226;</span>
+              <span style="font-size: 14px; color: #555; font-weight: 400; margin-left: 10px;">Tienda cerrada</span>
+              <!-- Alineación y ajuste de texto -->
             </li>
           </ul>
         </div>
@@ -61,185 +69,183 @@
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Botón del librito -->
-  <div class="button-container-footer">
-    <button class="floating-button button-book" (click)="openModalAlbum()">
-      <i class="fas fa-book text-white"></i>
-    </button>
-    <button class="floating-button button-camera" (click)="openModalWithCodigo()">
-      <i class="fas fa-coffee text-white"></i>
-    </button>
-  </div>
+<!-- Botón del librito -->
+<div class="button-container-footer" *ngIf="!isOffline">
+  <button class="floating-button button-book" (click)="openModalAlbum()">
+    <i class="fas fa-book text-white"></i>
+  </button>
+  <button class="floating-button button-camera" (click)="openModalWithCodigo()">
+    <i class="fas fa-coffee text-white"></i>
+  </button>
+  <button *ngIf="rutaActiva" class="floating-button-cancel" (click)="openModalCancelRuta()">
+    <i class="fas fa-times text-white"></i>
+  </button>
+  <button class="floating-button-location" (click)="centerOnUserLocation(true)">
+    <i class="fa fa-location-arrow" aria-hidden="true"></i>
+  </button>
+</div>
 
-  <!-- Modal para confirmar la ruta -->
-  <ng-template #createModal let-modal>
-    <div class="modal-content-create">
-      <div class="modal-header-create">
-        <h4 class="modal-title-create">{{ destinationName }}</h4>
-      </div>
-      <div class="modal-body-create">
-        <div class="modal-info">
-          <img [src]="currentImageUrl" alt="Imagen de la tienda" class="img-fluid img-cafe">
-          <div class="info-cafe">
-            <p class="descripcion-cafe">Información del café</p>
-            <div class="especialidades">
-              <p><i class="fa fa-star"></i> Especialidad 1: {{ specialties1 }}</p>
-              <p><i class="fa fa-star"></i> Especialidad 2: {{ specialties2 }}</p>
-              <p><i class="fa fa-store"></i> Estado de la tienda: <span [class.abierto]="shopStatus"
-                  [class.cerrado]="!shopStatus">{{ shopStatus ? 'Abierto' : 'Cerrado' }}</span></p>
-            </div>
+<!-- Modal para confirmar la ruta -->
+<ng-template #createModal let-modal>
+  <div class="modal-content-create">
+    <div class="modal-header-create">
+      <h4 class="modal-title-create">{{ destinationName }}</h4>
+    </div>
+    <div class="modal-body-create">
+      <div class="modal-info">
+        <img [src]="currentImageUrl" alt="Imagen de la tienda" class="img-fluid img-cafe">
+        <div class="info-cafe">
+          <p class="descripcion-cafe">Información del café</p>
+          <div class="especialidades">
+            <p><i class="fa fa-star"></i> Especialidad 1: {{ specialties1 }}</p>
+            <p><i class="fa fa-star"></i> Especialidad 2: {{ specialties2 }}</p>
+            <p><i class="fa fa-store"></i> Estado de la tienda: <span [class.abierto]="shopStatus"
+                [class.cerrado]="!shopStatus">{{ shopStatus ? 'Abierto' : 'Cerrado' }}</span></p>
           </div>
         </div>
-
-        <div class="transport-selection">
-          <label class="transport-label">
-            <input type="radio" name="transport" [class.active]="modoTransporte === google.maps.TravelMode.DRIVING"
-              (click)="seleccionarModoTransporte(google.maps.TravelMode.DRIVING)">
-            <i class="fa fa-car"></i>
-          </label>
-          <label class="transport-label">
-            <input type="radio" name="transport" [class.active]="modoTransporte === google.maps.TravelMode.BICYCLING"
-              (click)="seleccionarModoTransporte(google.maps.TravelMode.BICYCLING)">
-            <i class="fa fa-bicycle"></i>
-          </label>
-          <label class="transport-label">
-            <input type="radio" name="transport" [class.active]="modoTransporte === google.maps.TravelMode.WALKING"
-              (click)="seleccionarModoTransporte(google.maps.TravelMode.WALKING)">
-              <i class="fas fa-walking"></i>
-            </label>
-        </div>
       </div>
-      <div class="modal-footer-create">
-        <button type="button" class="btn btn-primary" (click)="calcularRuta()">Guíame</button>
-        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancelar</button>
+      <div class="transport-selection">
+        <label class="transport-label">
+          <input type="radio" name="transport" [checked]="modoTransporte === google.maps.TravelMode.DRIVING"
+            [disabled]="!modosDisponibles[google.maps.TravelMode.DRIVING]"
+            (click)="seleccionarModoTransporte(google.maps.TravelMode.DRIVING)">
+          <i class="fa fa-car"></i>
+        </label>
+        <label class="transport-label">
+          <input type="radio" name="transport" [checked]="modoTransporte === google.maps.TravelMode.BICYCLING"
+            [disabled]="!modosDisponibles[google.maps.TravelMode.BICYCLING]"
+            (click)="seleccionarModoTransporte(google.maps.TravelMode.BICYCLING)">
+          <i class="fa fa-bicycle"></i>
+        </label>
+        <label class="transport-label">
+          <input type="radio" name="transport" [checked]="modoTransporte === google.maps.TravelMode.WALKING"
+            [disabled]="!modosDisponibles[google.maps.TravelMode.WALKING]"
+            (click)="seleccionarModoTransporte(google.maps.TravelMode.WALKING)">
+          <i class="fas fa-walking"></i>
+        </label>
       </div>
     </div>
-  </ng-template>
-
-  <!-- Modal para cancelar la ruta -->
-  <ng-template #cancelModal let-modal>
-    <div class="modal-content-cancelR">
-      <div class="modal-header-cancelR">
-        <h4 class="modal-title-cancelR">Cancelar Ruta</h4>
-      </div>
-      <div class="modal-body-cancelR">
-        <p>¿Estás seguro de que quieres cancelar la ruta actual?</p>
-      </div>
-      <div class="modal-footer-cancelR">
-        <button type="button" class="btn" (click)="confirmarRutaCancelada()">Si, seguro</button>
-        <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
-      </div>
+    <div class="modal-footer-create">
+      <button type="button" class="btn btn-primary" (click)="calcularRuta()">Guíame</button>
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancelar</button>
     </div>
-  </ng-template>
+  </div>
+</ng-template>
 
-  <ng-template #codeModal let-modal>
-    <div class="modal-content-code">
-      <div class="modal-header-code">
-        <h5 class="modal-title-code">Ingresa tu código y calificación:</h5>
-      </div>
-      <div class="modal-body-code">
-        <label for="code">Código:</label>
-        <input #codeInput type="text" id="code" class="form-control" [(ngModel)]="enteredCode"
-          placeholder="Ingresa tu código" (input)="updateButtonState()">
-        <br>
-        <label for="rating">Calificación:</label>
-        <div class="star-rating">
-          <span *ngFor="let i of [1, 2, 3, 4, 5]; let index = index" [ngClass]="{
+<!-- Modal para cancelar la ruta -->
+<ng-template #cancelModal let-modal>
+  <div class="modal-content-cancelR">
+    <div class="modal-header-cancelR">
+      <h4 class="modal-title-cancelR">Cancelar Ruta</h4>
+    </div>
+    <div class="modal-body-cancelR">
+      <p>¿Estás seguro de que quieres cancelar la ruta actual?</p>
+    </div>
+    <div class="modal-footer-cancelR">
+      <button type="button" class="btn" (click)="confirmarRutaCancelada()">Si, seguro</button>
+      <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #codeModal let-modal>
+  <div class="modal-content-code">
+    <div class="modal-header-code">
+      <h5 class="modal-title-code">Ingresa tu código y calificación:</h5>
+    </div>
+    <div class="modal-body-code">
+      <label for="code">Código:</label>
+      <input #codeInput type="text" id="code" class="form-control" [(ngModel)]="enteredCode"
+        placeholder="Ingresa tu código" (input)="updateButtonState()">
+      <br>
+      <label for="rating">Calificación:</label>
+      <div class="star-rating">
+        <span *ngFor="let i of [1, 2, 3, 4, 5]; let index = index" [ngClass]="{
                   'star-filled': enteredRating > index,
                   'star-empty': enteredRating <= index
                 }" (click)="setRating(index + 1); updateButtonState()">
-            &#9733;
-          </span>
-        </div>
-        <br>
-        <label for="review">Reseña:</label>
-        <!-- Cambiado el textarea por un input -->
-      
-          <textarea #codeInput id="review" class="form-control review-textarea" [(ngModel)]="enteredReview"
-          placeholder="Escribe tu reseña" (input)="updateButtonState()" rows="4">
+          &#9733;
+        </span>
+      </div>
+      <br>
+      <label for="review">Reseña:</label>
+      <!-- Cambiado el textarea por un input -->
+
+      <textarea #codeInput id="review" class="form-control review-textarea" [(ngModel)]="enteredReview"
+        placeholder="Escribe tu reseña" (input)="updateButtonState()" rows="4">
         </textarea>
 
-      </div>
-      <div class="modal-footer-code">
-        <button type="button" class="btn" (click)="verifyCode()" [disabled]="isButtonDisabled">Verificar</button>
-        <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
-      </div>
     </div>
-  </ng-template>
-  
+    <div class="modal-footer-code">
+      <button type="button" class="btn" (click)="verifyCode()" [disabled]="isButtonDisabled">Verificar</button>
+      <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
+    </div>
+  </div>
+</ng-template>
 
-  <ng-template #modalReviewShop let-modal>
-    <div class="modal-content-review">
-      <div class="modal-header-review">
-        <h5 class="modal-title-review-j">Califica la aplicación</h5>
-      </div>
-      <div class="modal-body-review">
-        <label for="reviewApp">Comentario o sugerencia:</label>
-        <textarea #codeInput id="reviewApp" class="form-control review-textarea" [(ngModel)]="reviewApp"
-          placeholder="Ingresa tu comentario o sugerencia" (input)="updateButtonReviewState()" rows="4">
+<ng-template #modalReviewShop let-modal>
+  <div class="modal-content-review">
+    <div class="modal-header-review">
+      <h5 class="modal-title-review-j">Califica la aplicación</h5>
+    </div>
+    <div class="modal-body-review">
+      <label for="reviewApp">Comentario o sugerencia:</label>
+      <textarea #codeInput id="reviewApp" class="form-control review-textarea" [(ngModel)]="reviewApp"
+        placeholder="Ingresa tu comentario o sugerencia" (input)="updateButtonReviewState()" rows="4">
         </textarea>
-      </div>
-      <div class="modal-footer-review">
-        <button type="button" class="btn" (click)="addReviewToApp()" [disabled]="isButtonDisabled">
-          Enviar
-        </button>
-        <button type="button" class="btn" (click)="modal.dismiss('cancel')">
-          Cerrar
-        </button>
-      </div>
     </div>
-  </ng-template>
-  
+    <div class="modal-footer-review">
+      <button type="button" class="btn" (click)="addReviewToApp()" [disabled]="isButtonDisabled">
+        Enviar
+      </button>
+      <button type="button" class="btn" (click)="modal.dismiss('cancel')">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</ng-template>
 
-  <!-- Modal álbum -->
-  <ng-template #modalBook let-modal>
-    <div class="modal-content modal-book">
-      <div class="modal-header">
-        <h5 class="modal-title">Álbum</h5>
-      </div>
-      <div class="modal-body">
-        <div class="album-info">
-          <div class="missing-stamps">
-            Sellos obtenidos: {{ obtainedStamps }}/{{ totalStamps }}
-          </div>
-        </div>
-        <div class="album">
-          <div class="album-page" *ngFor="let shop of shopLogos">
-            <img *ngIf="shop.logoUrl" [src]="shop.logoUrl" [class.colored]="isLogoColored(shop.logoUrl)"
-              alt="{{ shop.name }}">
-          </div>
+<!-- Modal álbum -->
+<ng-template #modalBook let-modal>
+  <div class="modal-content modal-book">
+    <div class="modal-header">
+      <h5 class="modal-title">Álbum</h5>
+    </div>
+    <div class="modal-body">
+      <div class="album-info">
+        <div class="missing-stamps">
+          Sellos obtenidos: {{ obtainedStamps }}/{{ totalStamps }}
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cerrar</button>
+      <div class="album">
+        <div class="album-page" *ngFor="let shop of shopLogos">
+          <img *ngIf="shop.logoUrl" [src]="shop.logoUrl" [class.colored]="isLogoColored(shop.logoUrl)"
+            alt="{{ shop.name }}">
+        </div>
       </div>
     </div>
-  </ng-template>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cerrar</button>
+    </div>
+  </div>
+</ng-template>
 
-  <!-- Modal de llegada al café -->
-  <ng-template #arriveModal let-modal>
-    <div class="modal-content-arrive">
-      <div class="modal-header-arrive">
-        <h4 class="modal-title-arrive" id="modal-title-arrive">¡¡Llegaste a {{ destinationName }}!!</h4>
-      </div>
-      <div class="modal-body-arrive">
-        <div class="image-gallery-coffee">
-          <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
-          <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
-          <img src="https://via.placeholder.com/150" alt="Imagen de café" class="img-fluid gallery-image">
-        </div>
-        <p class="descripcion-cafe">Información del café</p>
-        <div class="especialidades">
-          <p><i class="fa fa-star"></i> Especialidad 1: {{ specialties1 }}</p>
-          <p><i class="fa fa-star"></i> Especialidad 2: {{ specialties2 }}</p>
-          <p><i class="fa fa-store"></i> Estado de la tienda: <span [class.abierto]="shopStatus"
-              [class.cerrado]="!shopStatus">{{ shopStatus ? 'Abierto' : 'Cerrado' }}</span></p>
-        </div>
-      </div>
-      <div class="modal-footer-arrive">
-        <button type="button" class="btn" (click)="confirmarLlegada()">Si, he llegado</button>
-        <button *ngIf="rutaActiva" type="button" class="btn" (click)="cancelarLLegada(modal)">No, he llegado</button>
+<!-- Modal de llegada al café -->
+<ng-template #arriveModal let-modal>
+  <div class="modal-content-arrive">
+    <div class="modal-header-arrive">
+      <h4 class="modal-title-arrive" id="modal-title-arrive">¡¡Llegaste a {{ destinationName }}!!</h4>
+    </div>
+    <div class="modal-body-arrive">
+      <div class="image-gallery-coffee">
+        <img [src]="currentImageUrl" alt="Imagen de café" class="img-fluid gallery-image">
       </div>
     </div>
-  </ng-template>
+    <div class="modal-footer-arrive">
+      <button type="button" class="btn" (click)="confirmarLlegada()">Si, he llegado</button>
+      <button *ngIf="rutaActiva" type="button" class="btn" (click)="cancelarLLegada(modal)">No, he llegado</button>
+    </div>
+  </div>
+</ng-template>
