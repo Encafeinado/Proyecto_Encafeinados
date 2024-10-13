@@ -2,9 +2,9 @@
   <div class="profile-container">
 
     <!-- Total de clientes -->
-    <div class="container" style="height: 10%;">
+    <div class="container">
       <div class="row">
-        <div class="col-md-3 col-sm-6">
+        <div class="col-md-4 col-sm-6">
           <div class="card stat-box">
             <h2>Total CoffeLovers</h2>
             <div class="text-xl">{{ totalClients }}</div>
@@ -13,8 +13,7 @@
             </div>
           </div>
         </div>
-    
-        <div class="col-md-3 col-sm-6">
+        <div class="col-md-4 col-sm-6">
           <div class="card stat-box">
             <h2>Total CoffeCoins</h2>
             <div class="text-xl">{{ totalCafecoins }}</div>
@@ -23,8 +22,7 @@
             </div>
           </div>
         </div>
-    
-        <div class="col-md-3 col-sm-6">
+        <div class="col-md-4 col-sm-6">
           <div class="card stat-box">
             <h2>Total Tiendas</h2>
             <div class="text-xl">{{ totalShops }}</div>
@@ -33,21 +31,42 @@
             </div>
           </div>
         </div>
-    
-        <div class="col-md-3 col-sm-6">
-          <div class="card stat-box">
-            <h2>Tienda con más redenciones</h2>
-            <div class="text">{{ shopWithMostCodeUsage?.name }}</div>
-            <div class="text" *ngIf="codigosUsados">No se han usado códigos</div>
-            <div class="text-md">Código usado {{ shopWithMostCodeUsage?.codeUsage }} veces</div>
-            <div class="icon-container">
-              <i class="pi pi-chart-line text-purple-500 text-xl"></i>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
+    <br><br>
+    <!-- Top 5 section -->
+    <div class="container">
+      <div class="row">
+        <!-- Top 5 Tiendas por códigos usados -->
+        <div class="col-md-4">
+          <h2>Top 5 Tiendas por Códigos Usados</h2>
+          <ul>
+            <li *ngFor="let shop of top5ShopsByCodeUsage">
+              {{ shop.name }} - {{ shop.codeUsage }} códigos usados
+            </li>
+          </ul>
+        </div>
 
+        <!-- Top 5 Tiendas por Promedio de Calificaciones -->
+        <div class="col-md-4">
+          <h2>Top 5 Tiendas por Promedio</h2>
+          <ul>
+            <li *ngFor="let shop of top5ShopsByAverageRating">
+              {{ shop.name }} - Promedio: {{ shop.averageRating | number:'1.1-1' }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Top 5 Usuarios por Cafecoins -->
+        <div class="col-md-4">
+          <h2>Top 5 Usuarios por Cafecoins</h2>
+          <ul>
+            <li *ngFor="let user of top5UsersByCafecoins">
+              {{ user.name }} - {{ user.cafecoin }} Coffecoins
+            </li>
+          </ul>
+        </div>
+    </div>
 
     <!-- Listado de tiendas con promedio de calificaciones y codeUsage -->
     <div class="shops-container">
@@ -65,8 +84,6 @@
             <i class="pi pi-users"></i>
             <span class="title-bold">Usos del código:</span> {{ shop.codeUsage }}
           </div>
-
-
         </div>
       </div>
     </div>

@@ -130,6 +130,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     return this.router.url === '/auth/login';
   }
 
+  isOnMapPage(): boolean {
+    return this.router.url === '/map';
+  }
+
   isOnLoginAdminPage(): boolean {
     return this.router.url === '/auth/login-admin';
   }

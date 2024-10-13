@@ -226,3 +226,41 @@ body {
   margin: 0 auto; /* Centra el mensaje horizontalmente */
   box-sizing: border-box; /* Incluye padding y borde en el tamaño total */
 }
+
+
+.stat-box {
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul li {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+ul li:last-child {
+  border-bottom: none;
+}
+
+.shop-info {
+  margin-top: 10px;
+}
+
+.shop-card {
+  margin-bottom: 20px;
+}

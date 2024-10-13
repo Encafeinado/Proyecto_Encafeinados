@@ -62,7 +62,7 @@
                   <li><button *ngIf="rutaActiva" class="menu-item" (click)="openModalCancelRuta()"><i class="fas fa-times-circle"></i> Cancelar ruta</button></li>
                 </ul>
                 <button class="menu-item" (click)="openModalReviewShop()">Califica la aplicación</button>
-                <button class="menu-item" (click)="centerOnUserLocation(true)"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+                <button class="menu-item" (click)="openLogoutModal(sesionModal)"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
               </div>
             </div>
           </div>
@@ -248,6 +248,21 @@
     <div class="modal-footer-arrive">
       <button type="button" class="btn" (click)="confirmarLlegada()">Si, he llegado</button>
       <button *ngIf="rutaActiva" type="button" class="btn" (click)="cancelarLLegada(modal)">No, he llegado</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #sesionModal let-modal>
+  <div class="modal-base">
+    <div class="modal-header">
+      <h4 class="modal-title">Cerrar sesión</h4>
+    </div>
+    <div class="modal-body">
+      <p>¿Estás seguro de que quieres cerrar sesión?</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="confirmLogout()">Sí, Seguro</button>
+      <button type="button" class="btn btn-primary" (click)="modal.dismiss('cancel')">Cancelar</button>
     </div>
   </div>
 </ng-template>
