@@ -3,6 +3,7 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 import { StoreService } from 'src/app/service/store.service'; 
 import { ReviewService } from '../../service/reviews.service';
 import { UserService } from 'src/app/service/user.service'; 
+import { AlbumService } from 'src/app/service/album.service';
 
 @Component({
   selector: 'app-admin-profile',
@@ -20,11 +21,19 @@ export class AdminProfileComponent implements OnInit {
   shopWithMostCodeUsage: any; // Tienda con más redenciones de código
   codigosUsados: boolean = false;
 
+  top5ShopsByCodeUsage: any[] = [];
+  top5ShopsByAverageRating: any[] = [];
+  top5UsersByCafecoins: any[] = [];
+  top5UsersByCafecoinsAndStickers: any[] = [];
+  top5UsersByStickers: any[] = [];
+  
+
   constructor(
     private authService: AuthService,
     private storeService: StoreService,
     private reviewService: ReviewService,
     private userService: UserService,
+    private albumService: AlbumService,
     private cdr: ChangeDetectorRef // Inyectamos ChangeDetectorRef
   ) { }
 
@@ -34,6 +43,11 @@ export class AdminProfileComponent implements OnInit {
     this.loadTotalShops();
     this.loadTotalCafecoins();
     this.loadReviews(); 
+    this.loadTop5ShopsByCodeUsage();
+    this.loadTop5ShopsByAverageRating();
+    this.loadTop5UsersByCafecoins();
+    this.loadTop5UsersByStickers();
+    this.loadTop5UsersByCafecoinsAndStickers();
   }
 
   loadTotalCafecoins(): void {
@@ -121,4 +135,128 @@ export class AdminProfileComponent implements OnInit {
       }
     );
   }
+
+   // Obtener el top 5 de tiendas por códigos usados
+   loadTop5ShopsByCodeUsage(): void {
+    this.storeService.getAllShops().subscribe(
+      (shops) => {
+        this.top5ShopsByCodeUsage = shops
+          .sort((a, b) => b.codeUsage - a.codeUsage) // Ordenar por codeUsage descendente
+          .slice(0, 5); // Tomar las primeras 5 tiendas
+      },
+      (error) => {
+        console.error('Error al obtener el top 5 de tiendas por código usado:', error);
+      }
+    );
+  }
+
+  // Obtener el top 5 de tiendas por promedio de calificaciones
+  loadTop5ShopsByAverageRating(): void {
+    this.storeService.getAllShops().subscribe(
+      (shops) => {
+        this.top5ShopsByAverageRating = shops
+          .map(shop => ({
+            ...shop,
+            averageRating: shop.ratings && shop.ratings.length > 0
+              ? shop.ratings.reduce((acc: number, cur: { stars: number }) => acc + cur.stars, 0) / shop.ratings.length
+              : 0
+          }))
+          .sort((a, b) => b.averageRating - a.averageRating) // Ordenar por promedio descendente
+          .slice(0, 5); // Tomar las primeras 5 tiendas
+      },
+      (error) => {
+        console.error('Error al obtener el top 5 de tiendas por promedio:', error);
+      }
+    );
+  }
+
+  // Obtener el top 5 de usuarios por cafecoins
+  loadTop5UsersByCafecoins(): void {
+    this.userService.fetchAllUsers().subscribe(
+      (users) => {
+        this.top5UsersByCafecoins = users
+          .sort((a, b) => b.cafecoin - a.cafecoin) // Ordenar por cafecoins descendente
+          .slice(0, 5); // Tomar los primeros 5 usuarios
+      },
+      (error) => {
+        console.error('Error al obtener el top 5 de usuarios por cafecoins:', error);
+      }
+    );
+  }
+  loadTop5UsersByStickers(): void {
+    this.userService.fetchAllUsers().subscribe(
+      (users) => {
+        // Traer la data de los álbumes
+        this.albumService.getAllAlbums().subscribe(
+          (albums) => {
+            const userStickerCounts = users.map(user => {
+              // Encontrar el álbum relacionado con el usuario
+              const album = albums.find(a => a.nameUser === user.name);
+              const stickerCount = album ? album.images.length : 0;
+              
+              return {
+                name: user.name,
+                stickerCount: stickerCount,
+              };
+            });
+
+            // Ordenar por cantidad de estampitas y tomar el top 5
+            this.top5UsersByStickers = userStickerCounts
+              .sort((a, b) => b.stickerCount - a.stickerCount)
+              .slice(0, 5);
+
+            this.cdr.detectChanges(); 
+          },
+          (error) => {
+            console.error('Error al obtener los álbumes:', error);
+          }
+        );
+      },
+      (error) => {
+        console.error('Error al cargar los usuarios:', error);
+      }
+    );
+  }
+  loadTop5UsersByCafecoinsAndStickers(): void {
+    this.userService.fetchAllUsers().subscribe(
+      (users) => {
+        this.albumService.getAllAlbums().subscribe(
+          (albums) => {
+            const userStickerAndCafecoinCounts = users.map(user => {
+              // Encontrar el álbum relacionado con el usuario
+              const album = albums.find(a => a.nameUser === user.name);
+              const stickerCount = album ? album.images.length : 0;
+  
+              return {
+                name: user.name,
+                cafecoin: user.cafecoin,
+                stickerCount: stickerCount,
+                // Calculamos un puntaje priorizando las estampitas sobre los cafecoins
+                score: stickerCount * 10 + user.cafecoin // Se da mayor peso a las estampitas
+              };
+            });
+  
+            // Ordenar primero por estampitas (stickerCount) y luego por cafecoins
+            this.top5UsersByCafecoinsAndStickers = userStickerAndCafecoinCounts
+              .sort((a, b) => {
+                if (b.stickerCount === a.stickerCount) {
+                  return b.cafecoin - a.cafecoin; // Si tienen la misma cantidad de estampitas, ordenar por coffecoins
+                }
+                return b.stickerCount - a.stickerCount; // Priorizar estampitas
+              })
+              .slice(0, 5); // Tomar los primeros 5 usuarios
+  
+            this.cdr.detectChanges(); // Forzar la detección de cambios
+          },
+          (error) => {
+            console.error('Error al obtener los álbumes:', error);
+          }
+        );
+      },
+      (error) => {
+        console.error('Error al cargar los usuarios:', error);
+      }
+    );
+  }
+  
 }

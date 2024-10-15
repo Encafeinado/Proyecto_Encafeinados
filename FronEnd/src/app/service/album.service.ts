@@ -27,6 +27,9 @@ export class AlbumService {
       )
     );
   }
+  getAllAlbums(): Observable<any[]> {
+    return this.http.get<any[]>(this.bookUrl); // Llama al endpoint GET /book
+  }
 
   private arrayBufferToBase64(buffer: any): string {
     let binary = '';

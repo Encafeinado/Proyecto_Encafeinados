@@ -1,3 +1,89 @@
+/* Contenedor del mapa, ocupa toda la pantalla */
+#map-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+/* Botón para abrir el sidebar */
+.open-sidebar-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  background-color: #007bff;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 15px;
+  color: white;
+  font-size: 18px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+}
+
+/* Ajusta el tamaño del logo */
+.navbar-logo {
+  width: 35%; /* Cambia este valor para ajustar el tamaño del logo */
+  height: auto; /* Mantiene las proporciones del logo */
+}
+
+/* Ajusta el tamaño del texto de la marca */
+.navbar-brand {
+  font-size: 1.5rem; /* Ajusta este valor para hacer el texto más grande */
+  font-weight: bold; /* Puedes hacerlo en negrita si deseas que resalte más */
+  color: #333; /* Asegúrate de que el color sea visible sobre el fondo */
+  margin-left: 10px; /* Separación entre el logo y el texto */
+}
+
+
+/* Contenedor del logo y la información del usuario */
+.user-info-container {
+  display: flex;
+  align-items: center;
+  padding: 10px 0; /* Espaciado para el contenedor */
+  margin-bottom: 20px; /* Separación con los elementos de abajo */
+}
+
+/* Cuadro del logo */
+.logo-box {
+  width: 50px; /* Ajusta el tamaño del logo */
+  height: 50px;
+  background-color: #ffffff; /* Fondo blanco */
+  border-radius: 50%; /* Para hacerlo circular */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+/* Logo del usuario */
+.user-logo {
+  width: 40px; /* Tamaño ajustado del logo */
+  height: auto;
+}
+
+/* Detalles del usuario (Nombre y correo) */
+.user-details {
+  margin-left: 10px; /* Espacio entre el logo y los detalles */
+}
+
+/* Nombre del usuario con tamaño ajustado */
+.user-name {
+  font-size: 1rem; /* Tamaño más pequeño para el nombre */
+  font-weight: bold;
+  color: #333;
+}
+
+/* Email del usuario con estilo más suave */
+.user-email {
+  font-size: 0.8rem; /* Tamaño más pequeño para el correo */
+  color: #888;
+}
+
 .custom-offcanvas {
   width: 300px; /* Cambia el tamaño del ancho */
   background-color: #d4f1f7;
@@ -27,16 +113,6 @@
   padding: 10px 20px;
   font-size: 16px;
 }
-
-
-
-
-
-
-
-
-
-
 /* Estilos para el sidebar */
 .sidebar {
   background-color: #e6f7ff; /* Fondo suave */
@@ -89,23 +165,23 @@
 
 .menu-item i {
   margin-right: 12px; /* Espacio entre ícono y texto */
-  font-size: 40px; /* Tamaño del ícono ajustado */
+  font-size: 30px; /* Tamaño del ícono ajustado */
   color: #007bff; /* Color del ícono */
 }
 
 .menu-item:hover {
-  background-color: #e0f7fa; /* Color de fondo al hacer hover */
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Sombra más prominente al hacer hover */
-  transform: translateY(-1px); /* Efecto de elevarse ligeramente */
+  background-color: #e0f7fa;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
-
+/* Estilo para cuando el botón está activo */
 .menu-item.active {
-  background-color: #007bff; /* Fondo azul cuando está activo */
-  color: white; /* Texto blanco cuando está activo */
+  background-color: #007bff;
+  color: white;
 }
 
 .menu-item.active i {
-  color: white; /* Ícono blanco cuando está activo */
+  color: white;
 }
 
 .menu-item:focus {
@@ -135,25 +211,33 @@
 }
 
 /* Estilos generales para el mapa */
-#map {
-  height: 150%; /* Altura predeterminada para pantallas grandes */
-  width: 120%; /* Asegura que el mapa ocupe el ancho completo */
-  border-radius: 15px; /* Bordes redondeados */
-  overflow: hidden; /* Para asegurar que el contenido del mapa respete el borde redondeado */
-}
+ #map {
+  border-radius: 15px; 
+  overflow: hidden; 
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+} 
+
 
 /* Ajustes para pantallas más pequeñas */
 @media (max-width: 768px) {
   #map {
-    height: 50vh; /* Reduce la altura a 50vh en pantallas más pequeñas */
+    
     border-radius: 10px; /* Ajusta el radio en pantallas más pequeñas */
+  }
+  .open-sidebar-btn {
+    width: 54px;
   }
 }
 
 /* Ajustes adicionales para pantallas muy pequeñas (por ejemplo, teléfonos) */
 @media (max-width: 480px) {
   #map {
-    height: 40vh; /* Reduce aún más la altura en pantallas muy pequeñas */
+
     border-radius: 8px; /* Ajusta el radio para pantallas más pequeñas */
   }
   .modal-info {

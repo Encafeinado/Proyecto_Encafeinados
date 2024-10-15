@@ -47,7 +47,6 @@ export class MapComponent implements OnInit, OnDestroy {
   enteredRating: number = 0;
   enteredReview: string = '';
   showAlert: boolean = false;
-  userName: string = 'Nombre del Usuario';
   isButtonDisabled: boolean = true;
   markerUsuario?: google.maps.Marker;
   google: any = window.google;
@@ -61,6 +60,8 @@ export class MapComponent implements OnInit, OnDestroy {
   currentImageUrl!: string;
   rutaActiva: boolean = false;
   routeDetails: string | undefined;
+  userName: string = 'Nombre del Usuario';
+  userMail: string = 'Correo del usuario;'
   markerPosition: google.maps.LatLngLiteral | undefined;
   directionsResult: google.maps.DirectionsResult | null = null;
   ultimaPosicion: google.maps.LatLngLiteral | null = null; // Para almacenar la última posición
@@ -142,6 +143,9 @@ export class MapComponent implements OnInit, OnDestroy {
     this.fetchShopData();
     this.populateShopLogos();
     this.fetchBookData();
+    const currentUser = this.authService.currentUser();
+    this.userName = currentUser ? currentUser.name : 'Nombre del Usuario';
+    this.userMail = currentUser ? currentUser.email: 'Correo del usuario'
     this.userId = this.authService.getUserId(); // Obtener el ID del usuario
     document.body.addEventListener(
       'touchstart',
