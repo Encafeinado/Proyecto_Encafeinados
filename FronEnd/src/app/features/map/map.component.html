@@ -9,17 +9,6 @@
   </div>
   <div class="loading-text">Cargando...</div>
 </div>
-<!-- <div *ngIf="rutaActiva && instruccionesRuta.length > 0" class="ruta-detalles">
-          <h3 class="titulo-detalles">Detalles de la Ruta</h3>
-          <p class="detalle-info" style="color: #555">{{ routeDetails }}</p>
-          <!-- Lista de Instrucciones: solo se muestran 2 a la vez
-          <ul class="instrucciones-lista">
-            <li *ngFor="let instruction of instruccionesActuales" class="instruccion-item">
-              <span class="instruction-icon">➡</span> 
-              <span [innerHTML]="instruction"></span>
-            </li>
-          </ul>
-        </div> -->
         <div class="main-content" *ngIf="!isOffline">
           <!-- Mapa que ocupa toda la pantalla -->
           <div id="map">
@@ -55,13 +44,13 @@
               <div>
                 <ul class="sidebar-menu">
                   <li><button class="menu-item" data-bs-dismiss="offcanvas"><i class="fas fa-map-marker-alt"></i> Mapa</button></li>
-                  <li><button class="menu-item" (click)="openModalWithCodigo()"><i class="fas fa-coffee"></i> Código</button></li>
-                  <li><button class="menu-item" (click)="openModalAlbum()"><i class="fas fa-book"></i> Álbum</button></li>
-                  <li><button class="menu-item" routerLink="/perfil"><i class="fas fa-user"></i>Mi perfil</button></li>
+                  <li><button class="menu-item" (click)="openModalWithCodigo()" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fas fa-coffee"></i> Código</button></li>
+                  <li><button class="menu-item" (click)="openModalAlbum()" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fas fa-book"></i> Álbum</button></li>
+                  <li><button class="menu-item" routerLink="/perfil" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fas fa-user"></i>Mi perfil</button></li>
                   <li><button class="menu-item" data-bs-dismiss="offcanvas" (click)="centerOnUserLocation(true)"><i class="fa fa-location-arrow" aria-hidden="true"></i> Centrar</button></li>
                   <li><button *ngIf="rutaActiva" class="menu-item" (click)="openModalCancelRuta()"><i class="fas fa-times-circle"></i> Cancelar ruta</button></li>
                 </ul>
-                <button class="menu-item" (click)="openModalReviewShop()"><i class="fa fa-star"></i>Califica la aplicación</button>
+                <button class="menu-item" (click)="openModalReviewShop()" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-star"></i>Califica la aplicación</button>
                 <button class="menu-item" (click)="openLogoutModal(sesionModal)"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
               </div>
             </div>

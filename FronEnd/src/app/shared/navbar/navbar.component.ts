@@ -91,7 +91,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       this.router.url === '/map' ||
       this.router.url === '/landing'||
       this.router.url === '/landing-tienda'||
-      this.router.url === '/admin-profile'
+      this.router.url === '/admin-profile'||
+      this.router.url === '/payment'
     );
   }
 
@@ -161,6 +162,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   isUserLanding(): boolean {
     return this.router.url === '/landing';
+  }
+
+  isPayment(): boolean {
+    return this.router.url === '/payment';
   }
 
   isUserLandingTienda(): boolean {

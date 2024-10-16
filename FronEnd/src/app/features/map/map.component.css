@@ -411,7 +411,9 @@
 .button-camera {
   margin-left: 60px; /* Espacio entre los botones */
 }
-
+.modal-content-code {
+  z-index: 1050; /* Mayor que cualquier otro z-index */
+}
 .modal-content-code,
 .modal-content-create,
 .modal-content-cancelR,
