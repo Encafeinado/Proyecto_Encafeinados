@@ -139,6 +139,29 @@ export class ShopService {
       );
     }
   }
+
+  async getUsedCodesByMonth(year: number, month: number): Promise<number> {
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0, 23, 59, 59);
+
+    const result = await this.shopModel.aggregate([
+      {
+        $match: {
+          updatedAt: { $gte: startDate, $lte: endDate },
+          codeUsage: { $gt: 0 },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalCodesUsed: { $sum: '$codeUsage' },
+        },
+      },
+    ]);
+
+    return result.length > 0 ? result[0].totalCodesUsed : 0;
+  }
+
   //verificar  librerias para generar código aleatorio
   async generateUniqueVerificationCode(): Promise<string> {
     let code: string;

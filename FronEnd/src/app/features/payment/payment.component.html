@@ -1,0 +1,65 @@
+<div class="container facturacion-container">
+  <!-- Fila para la imagen -->
+  <div class="row mb-4 justify-content-center">
+    <div class="col-md-8 text-center">
+      <img src="../../../../assets/images/QR.png" alt="Imagen de encabezado" class="img-fluid" />
+    </div>
+  </div>
+
+  <!-- Fila para el selector de años y meses -->
+  <div class="row mb-4">
+    <!-- Selector de años -->
+    <div class="col-md-3 d-flex align-items-center">
+      <label for="years" class="mr-2">Año:</label>
+      <select id="years" class="form-control form-control-sm" [(ngModel)]="selectedYear" (change)="onMonthOrYearChange()">
+        <option [value]="null" disabled selected>Seleccione un año</option>
+        <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+      </select>
+    </div>
+    
+    <!-- Selector de meses -->
+    <div class="col-md-3 d-flex align-items-center meses">
+      <label for="meses" class="mr-2">Mes:</label>
+      <select id="meses" class="form-control form-control-sm" [(ngModel)]="selectedMonth" [disabled]="!selectedYear" (change)="onMonthOrYearChange()">
+        <option [value]="null" disabled selected>Seleccione un mes</option>
+        <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+      </select>
+    </div>
+    
+    <!-- Subida de imagen -->
+    <div class="col-md-6 d-flex align-items-center qr-upload">
+      <label for="qrUpload" class="mr-2">Subir comprobante:</label>
+      <input type="file" id="qrUpload" class="form-control-file" accept="image/*,application/pdf" (change)="onFileSelected($event)" />
+    </div>
+  </div>
+
+  <!-- Tabla de códigos usados -->
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th class="text-center">Código Usado</th>
+            <th class="text-center">Valor</th>
+            <th class="text-center">Estado</th>
+            <th class="text-center">Acción</th><!-- Nueva columna para el icono de guardar -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let code of filteredCodes">
+            <td class="text-center">{{ code.code }}</td>
+            <td class="text-center">{{ code.value | currency }}</td>
+            <td class="text-center" [ngClass]="{'text-success': code.status === 'pagado', 'text-danger': code.status === 'rechazado'}">{{ code.status }}</td>
+            <td class="text-center">
+              <button class="btn btn-success btn-sm" (click)="saveFile(code)">
+                <i class="fas fa-save"></i> <!-- Ícono de Font Awesome -->
+              </button>
+            </td>
+          </tr>
+        </tbody>
+        
+      </table>
+    </div>
+  </div>
+  
+</div>
