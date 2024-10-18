@@ -143,6 +143,7 @@ export class RegisterPageComponent {
       address: ['', { updateOn: 'blur' }],
       logo: ['', { updateOn: 'blur' }],
       statusShop: [false], // Campo oculto con valor predeterminado, sin `updateOn`
+      origin: ['', { validators: [Validators.required], updateOn: 'change' }],
     },
     {
       validators: this.passwordMatchValidator,
@@ -162,6 +163,8 @@ export class RegisterPageComponent {
       this.isUser = true;
       this.isStore = false;
       this.formTitle = 'Registro de Usuario';
+      // Validaciones para el rol de usuario
+      this.myForm.get('origin')?.setValidators([Validators.required]); // Hacer obligatorio
       this.myForm.get('specialties1')?.clearValidators();
       this.myForm.get('specialties2')?.clearValidators();
       this.myForm.get('address')?.clearValidators();
@@ -169,10 +172,13 @@ export class RegisterPageComponent {
       this.isUser = false;
       this.isStore = true;
       this.formTitle = 'Registro de Tienda';
+      // Limpiar las validaciones para la tienda
+      this.myForm.get('origin')?.clearValidators();  // Quitar validación
       this.myForm.get('specialties1')?.setValidators([Validators.required]);
       this.myForm.get('specialties2')?.setValidators([Validators.required]);
       this.myForm.get('address')?.setValidators([Validators.required]);
     }
+    this.myForm.get('origin')?.updateValueAndValidity();
     this.myForm.get('specialties1')?.updateValueAndValidity();
     this.myForm.get('specialties2')?.updateValueAndValidity();
     this.myForm.get('address')?.updateValueAndValidity();
@@ -262,6 +268,7 @@ export class RegisterPageComponent {
           specialties2,
           address,
           logo,
+          origin 
         } = this.myForm.value;
 
         if (this.isStore) {
@@ -314,7 +321,7 @@ export class RegisterPageComponent {
             },
           });
         } else {
-          this.authService.register(name, email, password, phone).subscribe({
+          this.authService.register(name, email, password, phone, origin).subscribe({
             next: () => {
               this.toastr.success('¡Registro de usuario exitoso!', 'Éxito');
               this.router.navigateByUrl('/auth/login');
