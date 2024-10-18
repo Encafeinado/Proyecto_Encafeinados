@@ -148,9 +148,9 @@ isAuthenticated(): boolean {
 
 
 
-  register(name: string, email: string, password: string, phone: string): Observable<boolean> {
+  register(name: string, email: string, password: string, phone: string, origin: string): Observable<boolean> {
     const url = `${this.baseUrl}/auth/register`;
-    const body = { name, email, password, phone };
+    const body = { name, email, password, phone, origin }; // Incluir el campo origin
 
     return this.http.post<LoginResponse>(url, body).pipe(
       map(({ user, token }) => this.setAuthentication(user!, token, 'user')),

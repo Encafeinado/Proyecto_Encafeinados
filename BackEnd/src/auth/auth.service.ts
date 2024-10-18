@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcryptjs from 'bcryptjs';
@@ -35,7 +41,9 @@ export class AuthService {
       if (error.code === 11000) {
         throw new BadRequestException(`${createUserDto.email} Ya Existe!`);
       }
-      throw new InternalServerErrorException('Algo terrible esta sucediendo!!!!');
+      throw new InternalServerErrorException(
+        'Algo terrible esta sucediendo!!!!',
+      );
     }
   }
 
@@ -58,7 +66,7 @@ export class AuthService {
         status: true, // Estado por defecto
         images: [], // Lista de imágenes inicial, vacía por defecto
       });
-  
+
       // Guarda el libro en la base de datos
       await newBook.save();
     } catch (error) {
@@ -68,7 +76,7 @@ export class AuthService {
       throw new InternalServerErrorException('Error creando el libro');
     }
   }
-  
+
   async login(loginDto: LoginDto): Promise<LoginResponce> {
     const { email, password } = loginDto;
     const user = await this.userModel.findOne({ email });
@@ -80,7 +88,9 @@ export class AuthService {
 
     if (!bcryptjs.compareSync(password, user.password)) {
       console.log('Password incorrect');
-      throw new UnauthorizedException('Credenciales de la contraseña no válidas');
+      throw new UnauthorizedException(
+        'Credenciales de la contraseña no válidas',
+      );
     }
 
     const { password: _, ...rest } = user.toJSON();
@@ -90,51 +100,51 @@ export class AuthService {
     };
   }
 
+  // auth.service.ts
+  async validatePassword(email: string, password: string): Promise<boolean> {
+    const user = await this.userModel.findOne({ email }); // Cambiado de findByEmail a findOne
 
- // auth.service.ts
- async validatePassword(email: string, password: string): Promise<boolean> {
-  const user = await this.userModel.findOne({ email }); // Cambiado de findByEmail a findOne
+    if (!user) {
+      return false;
+    }
 
-  if (!user) {
-    return false;
+    // Compara la contraseña proporcionada con la almacenada en la base de datos
+    return bcryptjs.compare(password, user.password);
   }
 
-  // Compara la contraseña proporcionada con la almacenada en la base de datos
-  return bcryptjs.compare(password, user.password);
-}
-
-  
   async sendPasswordResetToken(email: string): Promise<void> {
-
     const user = await this.userModel.findOne({ email });
-
 
     const shop = !user ? await this.shopModel.findOne({ email }) : null;
 
     if (!user && !shop) {
-      throw new NotFoundException('Correo electrónico no registrado en ninguna de las colecciones');
+      throw new NotFoundException(
+        'Correo electrónico no registrado en ninguna de las colecciones',
+      );
     }
 
     const entity = user || shop;
-    const token = this.jwtService.sign({ id: entity._id }, { expiresIn: '10m' });
+    const token = this.jwtService.sign(
+      { id: entity._id },
+      { expiresIn: '10m' },
+    );
 
     console.log('Generated token:', token);
 
     await this.mailService.sendPasswordResetMail(email, token);
   }
-  
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
     try {
       const payload = this.jwtService.verify(token);
-  
+
       const user = await this.userModel.findById(payload.id);
       const shop = !user ? await this.shopModel.findById(payload.id) : null;
-  
+
       if (!user && !shop) {
         throw new NotFoundException('Usuario o tienda no encontrado');
       }
-  
+
       if (user) {
         user.password = bcryptjs.hashSync(newPassword, 10);
         await user.save();
@@ -142,13 +152,11 @@ export class AuthService {
         shop.password = bcryptjs.hashSync(newPassword, 10);
         await shop.save();
       }
-  
     } catch (error) {
       console.error('Error en el restablecimiento de contraseña:', error);
       throw new UnauthorizedException('Token no válido o expirado');
     }
   }
-  
 
   findAll(): Promise<User[]> {
     return this.userModel.find();
@@ -162,20 +170,18 @@ export class AuthService {
     return user.toObject() as UserDocument; // Conviértelo a objeto
   }
 
-
   async findShopById(id: string) {
     const shop = await this.userModel.findById(id);
     const { password, ...rest } = shop.toJSON();
     return rest;
   }
 
-
   async checkEmailAvailability(email: string): Promise<boolean> {
     try {
       const existingEmail = await this.userModel.findOne({ email });
       return !existingEmail; // Retorna true si el email no existe, false si existe
     } catch (error) {
-      console.error("Error al verificar el correo:", error);
+      console.error('Error al verificar el correo:', error);
       throw new InternalServerErrorException('Error al verificar el correo.');
     }
   }
@@ -185,14 +191,10 @@ export class AuthService {
       const existingEmail = await this.userModel.findOne({ email });
       return !!existingEmail; // Retorna true si el email existe, false si no existe
     } catch (error) {
-      console.error("Error al verificar el correo:", error);
+      console.error('Error al verificar el correo:', error);
       throw new InternalServerErrorException('Error al verificar el correo.');
     }
   }
-  
-  
-  
-
 
   findOne(id: number) {
     return `This action returns a #${id} auth`;
@@ -206,9 +208,8 @@ export class AuthService {
     return `This action removes a #${id} auth`;
   }
 
-   getJwtToken(payload: JwtPayload): string {
+  getJwtToken(payload: JwtPayload): string {
     // Configura la expiración del token (ejemplo: 1 hora)
     return this.jwtService.sign(payload, { expiresIn: '1h' });
   }
-  
 }

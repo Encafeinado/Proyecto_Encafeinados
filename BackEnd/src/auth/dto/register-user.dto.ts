@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength } from "class-validator";
+import { IsEmail, IsString, MinLength, IsIn } from "class-validator";
 import { IsCellPhone } from '../decorators/is-cell-phone.decorator';
 export class RegisterUserDto {
 
@@ -13,5 +13,7 @@ export class RegisterUserDto {
     @MinLength(6)
     password: string;
 
-  
+    @IsString()
+    @IsIn(['Local', 'Extranjero'], { message: 'Procedencia debe ser "local" o "extranjero".' })
+    origin: string;
 }

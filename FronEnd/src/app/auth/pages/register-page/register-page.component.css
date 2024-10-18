@@ -204,3 +204,18 @@ body {
     color: #0f1eee; /* Color negro */
   }
   
+  /* Estilo solo para la opción de "Seleccione" */
+.placeholder-option {
+  color: gray;        /* Color como el del placeholder */
+  font-size: 0.85em;  /* Tamaño de fuente más pequeño */
+}
+
+/* Para cambiar el color de la opción "Seleccione" cuando está seleccionada */
+select.form-control:invalid .placeholder-option {
+  color: gray;
+}
+
+/* Asegurar que el select mantenga su color de texto normal cuando se selecciona otra opción */
+select.form-control:valid {
+  color: black;
+}
