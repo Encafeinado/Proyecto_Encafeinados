@@ -166,16 +166,16 @@ export class ShopService {
   async generateUniqueVerificationCode(): Promise<string> {
     let code: string;
     let codeExists: boolean;
-
+  
     do {
-      code = Math.random().toString(36).substring(2, 8);
-      codeExists =
-        (await this.shopModel.exists({ verificationCode: code })) !== null;
+      // Genera un número entre 0 y 9999, y lo rellena con ceros a la izquierda si es necesario
+      code = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+      codeExists = (await this.shopModel.exists({ verificationCode: code })) !== null;
       console.log('Checking if code exists:', code, codeExists);
     } while (codeExists);
-
-    return code;
-  }
+  
+    return code;
+  }
 
   async verifyVerificationCode(shopId: string, code: string): Promise<boolean> {
     const shop = await this.shopModel.findById(shopId);

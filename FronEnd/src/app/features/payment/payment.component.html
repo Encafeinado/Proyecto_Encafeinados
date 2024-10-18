@@ -48,7 +48,7 @@
         <tbody>
           <tr *ngFor="let code of filteredCodes">
             <td class="text-center">{{ code.code }}</td>
-            <td class="text-center">{{ code.value | currency }}</td>
+            <td class="text-center">{{ code.value | currency:'USD':'symbol':'1.0-0' }}</td>
             <td class="text-center" [ngClass]="{'text-success': code.status === 'pagado', 'text-danger': code.status === 'rechazado'}">{{ code.status }}</td>
             <td class="text-center">
               <button class="btn btn-success btn-sm" (click)="saveFile(code)">
