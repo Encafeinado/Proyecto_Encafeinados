@@ -140,40 +140,40 @@ export class ShopService {
     }
   }
 
-  async getUsedCodesByMonth(year: number, month: number): Promise<number> {
+  async getUsedCodesByMonth(id: string, year: number, month: number): Promise<number> {
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0, 23, 59, 59);
-
-    const result = await this.shopModel.aggregate([
-      {
-        $match: {
-          updatedAt: { $gte: startDate, $lte: endDate },
-          codeUsage: { $gt: 0 },
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          totalCodesUsed: { $sum: '$codeUsage' },
-        },
-      },
-    ]);
-
-    return result.length > 0 ? result[0].totalCodesUsed : 0;
+  
+    // Buscar la tienda por ID
+    const shop = await this.shopModel.findById(id);
+    
+    if (!shop) {
+      throw new NotFoundException('Tienda no encontrada');
+    }
+  
+    // Verifica si hay algún uso de códigos en el mes específico
+    const totalCodesUsed = shop.codeUsage; // Esto debe ser un número
+    // Supongamos que 'updatedAt' está en otra parte (por ejemplo, en una colección separada)
+    // Debes buscar la colección correspondiente para filtrar los registros.
+  
+    // Aquí podrías necesitar hacer otra consulta si 'codeUsage' no tiene detalles.
+    // Por ahora, solo devolvemos el total que tienes en 'shop.codeUsage'
+    
+    return totalCodesUsed;
   }
 
   //verificar  librerias para generar código aleatorio
   async generateUniqueVerificationCode(): Promise<string> {
     let code: string;
     let codeExists: boolean;
-
+  
     do {
-      code = Math.random().toString(36).substring(2, 8);
-      codeExists =
-        (await this.shopModel.exists({ verificationCode: code })) !== null;
+      // Genera un número entre 0 y 9999, y lo rellena con ceros a la izquierda si es necesario
+      code = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+      codeExists = (await this.shopModel.exists({ verificationCode: code })) !== null;
       console.log('Checking if code exists:', code, codeExists);
     } while (codeExists);
-
+  
     return code;
   }
 

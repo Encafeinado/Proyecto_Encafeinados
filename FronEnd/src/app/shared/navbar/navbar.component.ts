@@ -92,7 +92,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       this.router.url === '/landing'||
       this.router.url === '/landing-tienda'||
       this.router.url === '/admin-profile'||
-      this.router.url === '/payment'
+      this.router.url === '/payment' ||
+      this.router.url === '/billing-list'
     );
   }
 
@@ -170,5 +171,13 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   isAdminProfilePage(): boolean {
     return this.router.url === '/admin-profile';
+  }
+
+  isUserAdmin(): boolean {
+    return this.authService.rolUser() === 'admin';
+  }
+
+  isBillingList(): boolean {
+    return this.router.url === '/billing-list';
   }
 }

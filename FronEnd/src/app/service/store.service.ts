@@ -50,11 +50,11 @@ export class StoreService {
     return this.http.get<Shop[]>(`${this.baseUrl}/allShops`);
   }
 
-  getUsedCodes(year: number, month: string): Observable<number> {
-    return this.http.get<number>(`${this.baseUrl}/used-codes`, {
+  getUsedCodes(shopId: string, year: number, month: string): Observable<number> {
+    return this.http.get<number>(`${this.baseUrl}/${shopId}/used-codes`, {
       params: { year: year.toString(), month: month },
     });
-  }
+  }  
 
   setStoreActivation(status: boolean): void {
     this.isStoreOpen = status;

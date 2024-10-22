@@ -13,7 +13,7 @@
               El correo electrónico ya está en uso.
             </div>
 
-            <!-- Opciones de tipo de registro
+            <!-- <!-- Opciones de tipo de registro 
             <div class="wrap-input100 m-b-23 form-outline mb-4">
               <span class="label-input100">Tipo de Registro</span>
               <div class="d-flex justify-content-around mt-2">
@@ -87,13 +87,15 @@
             <!-- Procedencia -->
             <div *ngIf="isUser" class="wrap-input100 m-b-23 form-outline mb-4">
               <span class="label-input100">Procedencia</span>
-              <div class="input-with-eye">
-                <select class="input100 small-placeholder form-control" formControlName="origin">
-                  <option value="" disabled class="placeholder-option">Seleccione</option>
-                  <option value="Local">Local</option>
-                  <option value="Extranjero">Extranjero</option>
-                </select>
-                <span class="focus-input100"></span>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" formControlName="origin" value="Local">
+                  <span class="radio-label">Local</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" formControlName="origin" value="Extranjero">
+                  <span class="radio-label">Extranjero</span>
+                </label>
               </div>
 
               <!-- Mostrar error si el campo está vacío -->

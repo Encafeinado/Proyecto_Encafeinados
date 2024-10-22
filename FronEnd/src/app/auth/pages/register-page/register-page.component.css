@@ -154,7 +154,6 @@ body {
   
     
   }
-
   
   .card {
     background-color: #fff;
@@ -166,11 +165,6 @@ body {
     position: relative;
     max-width: 350px; /* Reduce el tamaño máximo del card */
   }
-
-
-
-
-
   
   /* Estilos para la sección de fondo circular */
   .background-circle {
@@ -204,18 +198,35 @@ body {
     color: #0f1eee; /* Color negro */
   }
   
-  /* Estilo solo para la opción de "Seleccione" */
-.placeholder-option {
-  color: gray;        /* Color como el del placeholder */
-  font-size: 0.85em;  /* Tamaño de fuente más pequeño */
+/* Grupo de botones de radio */
+.radio-group {
+  display: flex;
+  justify-content: center;
+  gap: 30px; /* Espacio entre las opciones */
+  margin-bottom: 10px;
 }
 
-/* Para cambiar el color de la opción "Seleccione" cuando está seleccionada */
-select.form-control:invalid .placeholder-option {
-  color: gray;
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* Asegurar que el select mantenga su color de texto normal cuando se selecciona otra opción */
-select.form-control:valid {
-  color: black;
+/* Estilos para las etiquetas */
+.radio-label {
+  font-size: 1.1em;
 }
+
+/* Estilos para los botones de radio */
+input[type="radio"] {
+  accent-color: #007bff; /* Cambia este color según tu tema */
+  transform: scale(1.2);
+}
+
+/* Mensaje de error */
+.error-message {
+  color: #ff4d4d;
+  font-size: 0.9em;
+  margin-top: 5px;
+}
+
