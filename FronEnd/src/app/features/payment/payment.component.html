@@ -46,6 +46,9 @@
           </tr>
         </thead>
         <tbody>
+          <tr *ngIf="filteredCodes.length === 0">
+            <td class="text-center" colspan="5">No hay registros</td>
+          </tr>
           <tr *ngFor="let code of filteredCodes">
             <td class="text-center">{{ code.code }}</td>
             <td class="text-center">{{ code.value | currency:'USD':'symbol':'1.0-0' }}</td>
