@@ -1,0 +1,80 @@
+.facturacion-container {
+    width: 100%;
+    max-width: 1200px; /* Limita el ancho máximo para pantallas grandes */
+    padding: 70px;
+    margin-top: 140px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  .facturacion-container img {
+    margin-bottom: 20px; /* Agrega espacio entre la imagen y el contenido inferior */
+  }
+  
+  
+  .table {
+    width: 100%; /* Asegúrate de que la tabla ocupe el 100% del ancho disponible */
+  }
+  
+  .meses {
+    display: flex;
+    align-items: center; /* Alinea el select y el label verticalmente */
+  }
+  
+  .meses label {
+    margin-right: 10px; /* Ajusta el espacio entre el label y el select */
+  }
+  
+  .meses select {
+    width: 100%; /* Asegura que ocupe todo el espacio del contenedor */
+    max-width: 150px; /* Limita el ancho máximo del select a 100px */
+    padding: 5px; /* Ajusta el relleno */
+  }
+  
+  .table .btn-sm {
+    padding: 3px 6px;
+    font-size: 0.875rem;
+  } 
+  
+  .grid-section {
+    margin-top: 20px;
+    width: 100%;
+  }
+  
+  .grid-section table {
+    width: 100%; /* Asegúrate de que la tabla ocupe todo el ancho del contenedor */
+    border-collapse: collapse;
+    text-align: center;
+  }
+  
+  .grid-section th, .grid-section td {
+    padding: 15px; /* Aumenta el padding para que el contenido no quede tan compacto */
+    border: 1px solid #ddd;
+  }
+  
+  .grid-section td.pagado {
+    color: green;
+  }
+  
+  .grid-section td.rechazado {
+    color: red;
+  }
+  
+  .table {
+    margin-top: 20px;
+  }
+  
+  .btn-sm {
+    padding: 5px 10px;
+    font-size: 0.875rem;
+  }
+  
+  .radio-group {
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .radio-label {
+    margin-left: 5px;
+  }
+  

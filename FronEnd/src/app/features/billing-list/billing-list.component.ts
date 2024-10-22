@@ -1,17 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { StoreService } from '../../service/store.service';
+import { Component } from '@angular/core';
+import { StoreService } from 'src/app/service/store.service';
 
 @Component({
-  selector: 'app-facturacion',
-  templateUrl: './payment.component.html',
-  styleUrls: ['./payment.component.css']
+  selector: 'app-billing-list',
+  templateUrl: './billing-list.component.html',
+  styleUrls: ['./billing-list.component.css']
 })
-export class PaymentComponent implements OnInit {
+export class BillingListComponent {
   codesUsedInMonth: number = 0; // Para almacenar el número de códigos usados
   filteredCodes: { code: string, value: number, status: string }[] = []; // Para mostrar los códigos en la tabla
-  shopId: string = '';
   selectedYear: number | null = null;
   selectedMonth: string | null = null;
+  shopId: string = '';
   years: number[] = [];
   months: { value: string, name: string }[] = [
     { value: '01', name: 'Enero' },
@@ -27,13 +27,23 @@ export class PaymentComponent implements OnInit {
     { value: '11', name: 'Noviembre' },
     { value: '12', name: 'Diciembre' }
   ];
+  
+  payments: { store: string, month: number, status: string, year: number }[] = [
+    { store: 'Tienda 1', month: 1, status: 'Pagado', year: 2023 },
+    { store: 'Tienda 2', month: 2, status: 'Pendiente', year: 2022 },
+    // Otros datos de ejemplo
+  ];
+
+  // Aplicar el mismo tipo a filteredPayments
+  filteredPayments: { store: string, month: number, status: string, year: number }[] = [];
+
+  stores = ['Tienda 1', 'Tienda 2', 'Tienda 3'];  // Lista de tiendas
 
   constructor(private storeService: StoreService) {}
 
   ngOnInit(): void {
     this.loadYears();
     this.shopId = localStorage.getItem('shopId') || '';
-    console.log(this.shopId);
   }
 
   loadYears(): void {
@@ -91,5 +101,10 @@ export class PaymentComponent implements OnInit {
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  viewDetails(payment: any) {
+    // Aquí se manejará la lógica para ver el detalle del pago
+    console.log('Detalles del pago:', payment);
   }
 }

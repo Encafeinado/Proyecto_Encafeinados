@@ -140,27 +140,35 @@ export class ShopService {
     }
   }
 
-  async getUsedCodesByMonth(year: number, month: number): Promise<number> {
-    const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month, 0, 23, 59, 59);
+  async getUsedCodesByMonth(id: string, year: number, month: number): Promise<number> {
+    const startDate = new Date(year, month - 1, 1); // Inicio del mes
+    const endDate = new Date(year, month, 0, 23, 59, 59); // Fin del mes
 
-    const result = await this.shopModel.aggregate([
-      {
-        $match: {
-          updatedAt: { $gte: startDate, $lte: endDate },
-          codeUsage: { $gt: 0 },
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          totalCodesUsed: { $sum: '$codeUsage' },
-        },
-      },
-    ]);
+    // Buscar la tienda por ID
+    const shop = await this.shopModel.findById(id);
+    
+    if (!shop) {
+        throw new NotFoundException('Tienda no encontrada');
+    }
 
-    return result.length > 0 ? result[0].totalCodesUsed : 0;
-  }
+    // Verificar que codeUsage es un arreglo o está definido
+    if (!Array.isArray(shop.codeUsage)) {
+        console.log(shop); // Log para ver la estructura completa
+        throw new Error('codeUsage debe ser un arreglo');
+    }
+
+    // Contar los códigos usados en el mes específico
+    let totalCodesUsed = 0;
+
+    for (const usage of shop.codeUsage) {
+        const usageDate = new Date(usage.updatedAt); // Suponiendo que cada uso tiene un campo 'updatedAt'
+        if (usageDate >= startDate && usageDate <= endDate) {
+            totalCodesUsed++;
+        }
+    }
+
+    return totalCodesUsed;
+}
 
   //verificar  librerias para generar código aleatorio
   async generateUniqueVerificationCode(): Promise<string> {
@@ -174,8 +182,8 @@ export class ShopService {
       console.log('Checking if code exists:', code, codeExists);
     } while (codeExists);
   
-    return code;
-  }
+    return code;
+  }
 
   async verifyVerificationCode(shopId: string, code: string): Promise<boolean> {
     const shop = await this.shopModel.findById(shopId);

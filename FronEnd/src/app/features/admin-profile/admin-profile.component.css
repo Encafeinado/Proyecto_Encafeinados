@@ -285,7 +285,7 @@ ul li:last-child {
 /* Para resaltar el número en el Top 5 */
 .top-number {
   font-weight: bold;
-  color: #48adc2; /* Un color azul para resaltar */
+  color: #003cff; /* Un color azul para resaltar */
     margin-right: 8px; /* Espacio entre el número y el texto */
 }
 

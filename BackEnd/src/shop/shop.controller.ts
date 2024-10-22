@@ -34,12 +34,13 @@ export class ShopController {
     }
   }
 
-  @Get('used-codes')
+  @Get(':id/used-codes')
   async getUsedCodesByMonth(
+    @Param('id') id: string,
     @Query('year') year: number,
     @Query('month') month: number,
   ): Promise<number> {
-    return this.shopService.getUsedCodesByMonth(year, month);
+    return this.shopService.getUsedCodesByMonth(id, year, month);
   }
   
 // shop.controller.ts

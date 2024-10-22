@@ -1,0 +1,78 @@
+<div class="container facturacion-container">
+    <!-- Filtros por tienda, mes, estado y año -->
+    <div class="row mb-4">
+        <!-- Filtro por tienda -->
+        <div class="col-md-3 d-flex align-items-center">
+            <label for="store" class="mr-2">Tienda:</label>
+            <select id="store" class="form-control form-control-sm">
+                <option [value]="null" disabled selected>Seleccione una tienda</option>
+                <option *ngFor="let store of stores" [value]="store">{{ store }}</option>
+            </select>
+        </div>
+
+        <!-- Filtro por año -->
+        <div class="col-md-3 d-flex align-items-center">
+            <label for="years" class="mr-2">Año:</label>
+            <select id="years" class="form-control form-control-sm" [(ngModel)]="selectedYear">
+                <option [value]="null" disabled selected>Seleccione un año</option>
+                <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+            </select>
+        </div>
+
+        <!-- Filtro por mes -->
+        <div class="col-md-3 d-flex align-items-center">
+            <label for="months" class="mr-2">Mes:</label>
+            <select id="months" class="form-control form-control-sm" [(ngModel)]="selectedMonth"
+                [disabled]="!selectedYear">
+                <option [value]="null" disabled selected>Seleccione un mes</option>
+                <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+            </select>
+        </div>
+
+        <!-- Filtro por estado -->
+        <div class="col-md-3 d-flex align-items-center">
+            <label for="status" class="mr-2">Estado:</label>
+            <select id="status" class="form-control form-control-sm">
+                <option [value]="null" disabled selected>Seleccione un estado</option>
+                <option value="Pagado">Pagado</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Rechazado">Rechazado</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Tabla de lista de pagos -->
+    <div class="row">
+        <div class="col-md-12">
+          <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th class="text-center">Tienda</th>
+                <th class="text-center">Mes</th>
+                <th class="text-center">Estado</th>
+                <th class="text-center">Año</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Si no hay registros, mostrar mensaje -->
+              <tr *ngIf="filteredPayments.length === 0">
+                <td class="text-center" colspan="5">No hay registros</td>
+              </tr>
+              <!-- Mostrar filas de pagos si hay registros -->
+              <tr *ngFor="let payment of filteredPayments">
+                <td class="text-center">{{ payment.store }}</td>
+                <td class="text-center">{{ payment.month }}</td>
+                <td class="text-center" [ngClass]="{'text-success': payment.status === 'Pagado', 'text-danger': payment.status === 'Rechazado'}">{{ payment.status }}</td>
+                <td class="text-center">{{ payment.year }}</td>
+                <td class="text-center">
+                  <button class="btn btn-primary btn-sm" (click)="viewDetails(payment)">
+                    Ver Detalle
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>      
+</div>
