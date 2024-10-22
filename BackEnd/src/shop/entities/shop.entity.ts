@@ -50,6 +50,10 @@ export class Shop {
   @Prop({ default: false })
   statusShop: boolean;
 
+   // Campos adicionales generados por timestamps
+   createdAt?: Date;  // Agregar si es necesario, aunque no es requerido
+   updatedAt?: Date;  // Agregar para que TypeScript reconozca
+
   // Campo para almacenar calificaciones (estrellas) directamente en la clase
   @Prop({ type: [{ stars: Number }], default: [] })
   ratings: { stars: number }[];

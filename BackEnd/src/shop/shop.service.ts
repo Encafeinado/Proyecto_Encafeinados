@@ -32,31 +32,31 @@ export class ShopService {
     code: string,
     userId: string,
     review?: string,
-    rating?: number
+    rating?: number,
   ): Promise<{ message: string; shop?: ShopDocument }> {
     // Buscar la tienda con el código de verificación
     const shop = await this.shopModel.findOne({ verificationCode: code });
-  
+
     if (!shop) {
       return { message: 'Código de verificación no válido' };
     }
-  
+
     // Actualizar los CoffeeCoins del usuario
     const user = await this.userModel.findById(userId);
     if (user) {
       user.cafecoin += 10; // Aumentar los CoffeeCoins
       await user.save();
     }
-  
+
     // Actualizar el uso del código y generar un nuevo código de verificación
     shop.codeUsage = (shop.codeUsage || 0) + 1;
     shop.verificationCode = await this.generateUniqueVerificationCode();
-  
+
     // Si se proporciona una calificación, añádela a la tienda
     if (rating) {
       shop.ratings.push({ stars: rating });
     }
-  
+
     // Si se proporciona una reseña, añádela a la tienda
     if (review) {
       shop.reviews.push({
@@ -64,12 +64,12 @@ export class ShopService {
         user: userId, // Guardar el ID del usuario para referencia
       });
     }
-  
+
     await shop.save();
-  
+
     // Actualizar el libro del usuario con los detalles de la tienda
     await this.updateBookWithShopDetails(shop, userId);
-  
+
     return {
       message: 'Código de verificación guardado exitosamente',
       shop: shop.toObject() as ShopDocument,
@@ -143,37 +143,38 @@ export class ShopService {
   async getUsedCodesByMonth(id: string, year: number, month: number): Promise<number> {
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0, 23, 59, 59);
-  
+
     // Buscar la tienda por ID
     const shop = await this.shopModel.findById(id);
     
     if (!shop) {
-      throw new NotFoundException('Tienda no encontrada');
+        throw new NotFoundException('Tienda no encontrada');
     }
-  
-    // Verifica si hay algún uso de códigos en el mes específico
-    const totalCodesUsed = shop.codeUsage; // Esto debe ser un número
-    // Supongamos que 'updatedAt' está en otra parte (por ejemplo, en una colección separada)
-    // Debes buscar la colección correspondiente para filtrar los registros.
-  
-    // Aquí podrías necesitar hacer otra consulta si 'codeUsage' no tiene detalles.
-    // Por ahora, solo devolvemos el total que tienes en 'shop.codeUsage'
-    
-    return totalCodesUsed;
-  }
+
+    // Verifica si `updatedAt` está dentro del rango
+    if (shop.updatedAt && shop.updatedAt >= startDate && shop.updatedAt <= endDate) {
+        return shop.codeUsage; // Retornar el uso de códigos
+    }
+
+    return 0; // Si no hay coincidencia, retornar 0
+}
+
 
   //verificar  librerias para generar código aleatorio
   async generateUniqueVerificationCode(): Promise<string> {
     let code: string;
     let codeExists: boolean;
-  
+
     do {
       // Genera un número entre 0 y 9999, y lo rellena con ceros a la izquierda si es necesario
-      code = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-      codeExists = (await this.shopModel.exists({ verificationCode: code })) !== null;
+      code = Math.floor(Math.random() * 10000)
+        .toString()
+        .padStart(4, '0');
+      codeExists =
+        (await this.shopModel.exists({ verificationCode: code })) !== null;
       console.log('Checking if code exists:', code, codeExists);
     } while (codeExists);
-  
+
     return code;
   }
 
@@ -244,15 +245,14 @@ export class ShopService {
 
   async validatePassword(email: string, password: string): Promise<boolean> {
     const shop = await this.shopModel.findOne({ email }); // Cambiado de findByEmail a findOne
-  
+
     if (!shop) {
       return false;
     }
-  
+
     // Compara la contraseña proporcionada con la almacenada en la base de datos
     return bcryptjs.compare(password, shop.password);
   }
-  
 
   async register(
     registerDto: RegisterShopDto,
