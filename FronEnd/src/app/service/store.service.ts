@@ -56,6 +56,11 @@ export class StoreService {
     });
   }  
 
+  savePayment(paymentData: any): Observable<PaymentResponse> {
+    return this.http.post<PaymentResponse>(`${environment.baseUrl}/payment/create`, paymentData);
+  }
+  
+
   setStoreActivation(status: boolean): void {
     this.isStoreOpen = status;
     localStorage.setItem('isStoreOpen', status.toString());

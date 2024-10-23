@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { PaymentRoutingModule } from './payment-routing.module';
 import { PaymentComponent } from './payment.component';
 import { FormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -13,7 +14,8 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     PaymentRoutingModule,
-    FormsModule  
+    FormsModule,
+    NgbModule
   ]
 })
 export class PaymentModule { }

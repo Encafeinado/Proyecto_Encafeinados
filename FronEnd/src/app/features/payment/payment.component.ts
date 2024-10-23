@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { StoreService } from '../../service/store.service';
+import { AuthService } from 'src/app/auth/services/auth.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'; // Asegúrate de importar NgbModal
 
 @Component({
   selector: 'app-facturacion',
@@ -7,8 +9,12 @@ import { StoreService } from '../../service/store.service';
   styleUrls: ['./payment.component.css']
 })
 export class PaymentComponent implements OnInit {
-  codesUsedInMonth: number = 0; // Para almacenar el número de códigos usados
-  filteredCodes: { code: string, value: number, status: string }[] = []; // Para mostrar los códigos en la tabla
+  isSaving = false;
+  shopData: any;
+  userRole: string = '';
+  userData: any;
+  codesUsedInMonth: number = 0;
+  filteredCodes: { code: string, value: number, status: string }[] = [];
   shopId: string = '';
   selectedYear: number | null = null;
   selectedMonth: string | null = null;
@@ -27,8 +33,13 @@ export class PaymentComponent implements OnInit {
     { value: '11', name: 'Noviembre' },
     { value: '12', name: 'Diciembre' }
   ];
+  qrImage: string | undefined;
 
-  constructor(private storeService: StoreService) {}
+  @ViewChild('sesionModal') sesionModal!: TemplateRef<any>; // Agregada la referencia al modal
+
+  constructor(private storeService: StoreService,
+              private authService: AuthService,
+              private modalService: NgbModal) {} // Inyecta NgbModal
 
   ngOnInit(): void {
     this.loadYears();
@@ -48,28 +59,25 @@ export class PaymentComponent implements OnInit {
       this.fetchUsedCodes(this.shopId, this.selectedYear, this.selectedMonth);
     }
   }
-  
-  qrImage: string | undefined;
 
   fetchUsedCodes(shopId: string, year: number, month: string): void {
-    this.storeService.getUsedCodes(shopId,year, month).subscribe(
+    this.storeService.getUsedCodes(shopId, year, month).subscribe(
       (count: number) => {
         this.codesUsedInMonth = count;
-  
-        // Generar un único código y sumar los valores
+
         if (count > 0) {
           const totalValue = count * 200; // Cada código tiene un valor de 200
           this.filteredCodes = [
             {
               code: `${count}`, // Mostrar el total de códigos
               value: totalValue, // Valor total de todos los códigos
-              status: 'rechazado' // Estado inicial "rechazado"
+              status: 'Pendiente' // Estado inicial "Pendiente"
             }
           ];
         } else {
           this.filteredCodes = []; // Si no hay códigos, limpiar la tabla
         }
-  
+
         console.log('Códigos generados:', this.filteredCodes);
       },
       (error) => {
@@ -77,11 +85,112 @@ export class PaymentComponent implements OnInit {
       }
     );
   }
-  
-  saveFile(code: any): void {
-    console.log('Guardando archivo para el código:', code);
+
+ // Método para guardar el archivo y abrir el modal
+saveFile(code: any): void {
+  if (!this.qrImage || !this.selectedYear || !this.selectedMonth) {
+    console.error('Faltan datos para guardar el pago');
+    return;
   }
 
+  // Abre el modal de confirmación
+  this.openConfirmationModal(this.sesionModal);
+}
+
+
+
+async confirmUpload(modal: any): Promise<void> {
+  // Espera a que se carguen los datos del usuario
+  await this.loadUserData();
+
+  // Verifica los datos después de haberlos cargado
+  if (!this.userRole || !this.shopData || !this.shopData.name) {
+    console.error('Datos de la tienda no disponibles');
+    modal.dismiss('cancel'); // Cierra el modal si no hay datos
+    return;
+  }
+
+  const paymentData = {
+    nameShop: this.shopData.name,
+    shopId: this.shopId,
+    statusPayment: true,
+    year: Number(this.selectedYear),
+    month: Number(this.selectedMonth),
+    images: [
+      {
+        image: this.qrImage
+      }
+    ]
+  };
+
+  // Llamada al servicio para guardar el pago
+  this.storeService.savePayment(paymentData).subscribe(
+    (response) => {
+      console.log('Pago guardado con éxito:', response);
+      this.updatePaymentStatusToPaid(); // Actualiza el estado del pago aquí
+      modal.close('uploaded'); // Cierra el modal después de la actualización
+    },
+    (error) => {
+      console.error('Error al guardar el pago:', error);
+      modal.dismiss('cancel'); // Cierra el modal en caso de error
+    }
+  );
+}
+
+  
+
+  updatePaymentStatusToPaid(): void {
+    if (this.filteredCodes.length > 0) {
+      this.filteredCodes[0].status = 'Pagado'; // Cambiar el estado del primer código a "Pagado"
+      console.log('Estado del pago actualizado a "Pagado":', this.filteredCodes);
+    } else {
+      console.error('No hay códigos para actualizar el estado');
+    }
+  }
+
+  loadUserData(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const currentUser = this.authService.currentUser();
+      if (!currentUser) {
+        console.error('Usuario no autenticado.');
+        reject();
+        return;
+      }
+  
+      this.userRole = currentUser.roles ? currentUser.roles[0] : '';
+      console.log('Rol del usuario:', this.userRole);
+      
+      if (this.userRole === 'shop') {
+        this.loadShopData(currentUser._id).then(() => {
+          console.log('Datos de la tienda cargados');
+          resolve();
+        }).catch(reject); // Rechaza si hay un error al cargar la tienda
+      } else {
+        this.userData = currentUser;
+        console.log('Datos del usuario:', this.userData);
+        resolve();
+      }
+    });
+  }
+  
+  
+  loadShopData(shopId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.storeService.getShopById(shopId).subscribe(
+        (data) => {
+          this.shopData = data; // Asegúrate de que data contenga la información correcta
+          console.log('Datos de la tienda:', this.shopData); // Muestra los datos para verificar
+          resolve();
+        },
+        (error) => {
+          console.error('Error al cargar los datos de la tienda:', error);
+          reject();
+        }
+      );
+    });
+  }
+  
+  
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
@@ -91,5 +200,12 @@ export class PaymentComponent implements OnInit {
       };
       reader.readAsDataURL(file);
     }
+  }
+
+
+
+  openConfirmationModal(modal: TemplateRef<any>): void {
+    // Aquí se asume que utilizas algún servicio para abrir modales
+    this.modalService.open(modal); // Asegúrate de que esta línea está correcta según tu implementación
   }
 }
