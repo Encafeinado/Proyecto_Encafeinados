@@ -139,6 +139,9 @@ button:hover {
   cursor: pointer;
 }
 
+
+
+
 /*//////////////////////////////////////////////////////////////////
 [ tratamiento de datos ]*/
 
@@ -157,6 +160,8 @@ button:hover {
   color: #ffffff; /* Texto negro */
   background-color: #03aed2;
 }
+
+
 
 .mat-mdc-dialog-container {
   --mdc-dialog-container-color: #ffffff; /* Cambia el fondo a blanco */

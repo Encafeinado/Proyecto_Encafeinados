@@ -11,6 +11,77 @@
   margin-bottom: 20px; /* Agrega espacio entre la imagen y el contenido inferior */
 }
 
+.modal-payment {
+  background-color: #fffaf0; /* Color de fondo más claro */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  font-family: "Poppins", sans-serif;
+  position: relative; /* Para las decoraciones */
+  overflow: hidden; /* Evitar que se muestren elementos que sobresalen */
+}
+
+.modal-payment::before,
+.modal-payment::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  width: 20px;
+  background: linear-gradient(to bottom, #68d2e8, #03aed2);
+  z-index: -1;
+  border-radius: 10px;
+}
+
+.modal-payment::before {
+  left: -25px;
+  transform: rotate(2deg);
+}
+
+.modal-payment::after {
+  right: -25px;
+  transform: rotate(-2deg);
+}
+
+.modal-payment .modal-header {
+  background-color: #0f1eee;
+  color: #ffffff;
+  border: none; /* Eliminamos el borde */
+  padding: 15px;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.modal-payment .modal-header::after {
+  content: "Pasaporte";
+  position: absolute;
+  bottom: -20px;
+  right: 20px;
+  font-size: 0.8rem;
+  color: #03aed2;
+}
+
+.modal-payment .modal-header .close {
+  color: #ffffff;
+  opacity: 1;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.modal-payment .modal-body {
+  padding: 20px;
+  background-color: #d4f1f7;
+  border-radius: 0 0 10px 10px;
+}
+.modal-payment .modal-footer {
+  padding: 15px;
+  display: flex;
+  justify-content: center; /* Cambiado a 'center' para centrar los botones */
+  border-top: 1px solid #E0E0E0;
+}
 
 .table {
   width: 100%; /* Asegúrate de que la tabla ocupe el 100% del ancho disponible */
@@ -83,10 +154,9 @@
   pointer-events: none; /* Desactivar interacción */
 }
 
-.select-scroll {
-  max-height: 100px;  /* Limita la altura del desplegable */
-  overflow-y: auto;   /* Permite scroll vertical */
-}
+
+
+
 
 
 

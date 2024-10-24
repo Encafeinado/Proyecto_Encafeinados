@@ -1,14 +1,15 @@
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { StoreService } from '../../service/store.service';
 import { AuthService } from 'src/app/auth/services/auth.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'; // Asegúrate de importar NgbModal
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-facturacion',
+  selector: 'app-payment',
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.css']
 })
 export class PaymentComponent implements OnInit {
+  modalRef!: NgbModalRef;
   isSaving = false;
   shopData: any;
   submitted = false; 
@@ -36,7 +37,7 @@ export class PaymentComponent implements OnInit {
   ];
   qrImage: string | undefined;
 
-  @ViewChild('sesionModal') sesionModal!: TemplateRef<any>; // Agregada la referencia al modal
+  @ViewChild('modalPayment', { static: true }) modalPayment: any;
 
   constructor(private storeService: StoreService,
               private authService: AuthService,
@@ -54,6 +55,7 @@ export class PaymentComponent implements OnInit {
       this.years.push(year);
     }
   }
+
 
   onMonthOrYearChange(): void {
     if (this.selectedYear && this.selectedMonth && this.shopId) {
@@ -125,7 +127,7 @@ saveFile(code: any): void {
   }
 
   // Si todos los campos son válidos, abre el modal de confirmación
-  this.openConfirmationModal(this.sesionModal);
+  this.openConfirmationModal(this.modalPayment);
 }
 
 
