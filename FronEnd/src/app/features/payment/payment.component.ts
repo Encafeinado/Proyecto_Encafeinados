@@ -11,6 +11,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap'; // Asegúrate de importar
 export class PaymentComponent implements OnInit {
   isSaving = false;
   shopData: any;
+  submitted = false; 
   userRole: string = '';
   userData: any;
   codesUsedInMonth: number = 0;
@@ -61,41 +62,72 @@ export class PaymentComponent implements OnInit {
   }
 
   fetchUsedCodes(shopId: string, year: number, month: string): void {
+    // Llamada para obtener el número de códigos usados
     this.storeService.getUsedCodes(shopId, year, month).subscribe(
       (count: number) => {
         this.codesUsedInMonth = count;
-
+  
         if (count > 0) {
           const totalValue = count * 200; // Cada código tiene un valor de 200
-          this.filteredCodes = [
-            {
-              code: `${count}`, // Mostrar el total de códigos
-              value: totalValue, // Valor total de todos los códigos
-              status: 'Pendiente' // Estado inicial "Pendiente"
+  
+          // Llamada para obtener el estado del pago basado en el shopId
+          this.storeService.getPaymentStatus(shopId).subscribe(
+            (response: { statusPayment: boolean }) => {
+              const statusPayment = response.statusPayment;
+              this.filteredCodes = [
+                {
+                  code: `${count}`, // Mostrar el total de códigos
+                  value: totalValue, // Valor total de todos los códigos
+                  status: statusPayment ? 'Pagado' : 'Rechazado' // Mostrar el estado correcto basado en la respuesta
+                }
+              ];
+  
+              console.log('Códigos generados con estado:', this.filteredCodes);
+            },
+            (error) => {
+              if (error.status === 404) {
+                // Si el error es 404, mostramos 'Pendiente'
+                this.filteredCodes = [
+                  {
+                    code: `${count}`,
+                    value: totalValue,
+                    status: 'Pendiente' // Estado por defecto si no se encuentra el pago
+                  }
+                ];
+              } else {
+                console.error('Error al obtener el estado del pago:', error);
+                // Otros errores diferentes a 404
+                this.filteredCodes = [];
+              }
             }
-          ];
+          );
         } else {
           this.filteredCodes = []; // Si no hay códigos, limpiar la tabla
         }
-
-        console.log('Códigos generados:', this.filteredCodes);
       },
       (error) => {
         console.error('Error al obtener los códigos usados:', error);
       }
     );
   }
+  
+  
 
- // Método para guardar el archivo y abrir el modal
+// Método para guardar el archivo y abrir el modal
 saveFile(code: any): void {
+  // Establecer la variable 'submitted' en true cuando se intenta guardar
+  this.submitted = true;
+
+  // Validar si los campos requeridos (qrImage, selectedYear, selectedMonth) están presentes
   if (!this.qrImage || !this.selectedYear || !this.selectedMonth) {
     console.error('Faltan datos para guardar el pago');
     return;
   }
 
-  // Abre el modal de confirmación
+  // Si todos los campos son válidos, abre el modal de confirmación
   this.openConfirmationModal(this.sesionModal);
 }
+
 
 
 

@@ -74,3 +74,19 @@
 .grid-section td.rechazado {
   color: red;
 }
+
+
+.btn-disabled {
+  background-color: #cccccc; /* Color gris claro */
+  border-color: #cccccc;
+  color: #666666; /* Color del texto */
+  pointer-events: none; /* Desactivar interacción */
+}
+
+.select-scroll {
+  max-height: 100px;  /* Limita la altura del desplegable */
+  overflow-y: auto;   /* Permite scroll vertical */
+}
+
+
+

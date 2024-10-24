@@ -11,25 +11,32 @@
     <!-- Selector de años -->
     <div class="col-md-3 d-flex align-items-center">
       <label for="years" class="mr-2">Año:</label>
-      <select id="years" class="form-control form-control-sm" [(ngModel)]="selectedYear" (change)="onMonthOrYearChange()">
+      <select id="years" class="form-control form-control-sm" [(ngModel)]="selectedYear"
+        (change)="onMonthOrYearChange()">
         <option [value]="null" disabled selected>Seleccione un año</option>
         <option *ngFor="let year of years" [value]="year">{{ year }}</option>
       </select>
     </div>
-    
+
     <!-- Selector de meses -->
     <div class="col-md-3 d-flex align-items-center meses">
       <label for="meses" class="mr-2">Mes:</label>
-      <select id="meses" class="form-control form-control-sm" [(ngModel)]="selectedMonth" [disabled]="!selectedYear" (change)="onMonthOrYearChange()">
+      <select id="meses" class="form-control form-control-sm" [(ngModel)]="selectedMonth" [disabled]="!selectedYear"
+        (change)="onMonthOrYearChange()">
         <option [value]="null" disabled selected>Seleccione un mes</option>
         <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
       </select>
     </div>
-    
-    <!-- Subida de imagen -->
-    <div class="col-md-6 d-flex align-items-center qr-upload">
-      <label for="qrUpload" class="mr-2">Subir comprobante:</label>
-      <input type="file" id="qrUpload" class="form-control-file" accept="image/*,application/pdf" (change)="onFileSelected($event)" />
+    <div class="col-md-6 qr-upload">
+      <div class="form-group">
+        <label for="qrUpload" class="mr-2">Subir comprobante:</label>
+        <input type="file" id="qrUpload" class="form-control-file" accept="image/*,application/pdf" required
+          #qrUpload="ngModel" [(ngModel)]="qrImage" name="qrImage" (change)="onFileSelected($event)" />
+        <!-- Mensaje de error si no se ha seleccionado un archivo -->
+        <div *ngIf="qrUpload.invalid && submitted" class="text-danger mt-1">
+          Campo obligatorio.
+        </div>
+      </div>
     </div>
   </div>
 
@@ -52,11 +59,17 @@
           <tr *ngFor="let code of filteredCodes">
             <td class="text-center">{{ code.code }}</td>
             <td class="text-center">{{ code.value | currency:'USD':'symbol':'1.0-0' }}</td>
-            <td class="text-center" [ngClass]="{'text-success': code.status === 'pagado', 'text-danger': code.status === 'rechazado'}">{{ code.status }}</td>
+            <td class="text-center"
+              [ngClass]="{'text-success': code.status.toLowerCase() === 'pagado', 'text-danger': code.status.toLowerCase() === 'pendiente'}">
+              {{ code.status }}
+            </td>
             <td class="text-center">
-              <button class="btn btn-success btn-sm" (click)="saveFile(code)" [disabled]="isSaving">
+              <button class="btn btn-success btn-sm" (click)="saveFile(code)"
+                [disabled]="isSaving || code.status.toLowerCase() === 'pagado'"
+                [ngClass]="{'btn-disabled': isSaving || code.status.toLowerCase() === 'pagado'}">
                 <i class="fas fa-save"></i> <!-- Ícono de Font Awesome -->
               </button>
+
             </td>
           </tr>
         </tbody>
@@ -69,7 +82,7 @@
   <div class="modal-header">
     <h4 class="modal-title">Confirmación de Pago</h4>
     <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-      
+
     </button>
   </div>
   <div class="modal-body">
@@ -80,5 +93,3 @@
     <button type="button" class="btn btn-primary" (click)="confirmUpload(modal)">Confirmar</button>
   </div>
 </ng-template>
-
-

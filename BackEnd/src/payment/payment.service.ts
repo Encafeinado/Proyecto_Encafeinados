@@ -48,6 +48,18 @@ export class PaymentService {
     return this.paymentModel.find();
   }
 
+
+  async findPaymentStatusByShopId(shopId: string): Promise<Payment> {
+    const payment = await this.paymentModel.findOne({ shopId }).exec();
+    if (!payment) {
+      throw new NotFoundException('Pago no encontrado');
+    }
+    return payment;
+  }
+  
+
+
+
   async findPaymentById(id: string): Promise<Payment> {
     const payment = await this.paymentModel.findById(id);
     if (!payment) {

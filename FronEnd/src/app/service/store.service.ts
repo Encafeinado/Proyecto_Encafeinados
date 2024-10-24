@@ -12,7 +12,7 @@ export class StoreService {
   private codeEntries: number = Number(localStorage.getItem('codeEntries')) || 0;
   private isStoreOpen: boolean = localStorage.getItem('isStoreOpen') === 'true';
   private baseUrl = `${environment.baseUrl}/shop`; // Asegúrate de que esta URL coincida con tu backend
-
+  private baseUrl2 = `${environment.baseUrl}`;
   constructor(private http: HttpClient) { }
 
   getCodeEntries(): number {
@@ -55,6 +55,17 @@ export class StoreService {
       params: { year: year.toString(), month: month },
     });
   }  
+
+
+// store.service.ts
+getPaymentStatus(shopId: string): Observable<{ statusPayment: boolean }> {
+  return this.http.get<{ statusPayment: boolean }>(`${this.baseUrl2}/payment/status/${shopId}`);
+}
+
+
+
+  
+
 
   savePayment(paymentData: any): Observable<PaymentResponse> {
     return this.http.post<PaymentResponse>(`${environment.baseUrl}/payment/create`, paymentData);

@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Post
 } from '@nestjs/common';
@@ -27,6 +28,19 @@ export class PaymentController {
   ) {
     return this.paymentService.addImage(paymentId, addImageDto);
   }
+
+
+  @Get('status/:shopId')
+  async getPaymentStatusByShopId(@Param('shopId') shopId: string) {
+    const payment = await this.paymentService.findPaymentStatusByShopId(shopId);
+    if (!payment) {
+      throw new NotFoundException('Pago no encontrado');
+    }
+    return { statusPayment: payment.statusPayment };
+  }
+  
+
+
 
   @Get()
   async findAll() {
