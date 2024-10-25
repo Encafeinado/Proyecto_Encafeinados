@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'; 
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { StoreService } from 'src/app/service/store.service';
 
 @Component({
@@ -6,8 +6,9 @@ import { StoreService } from 'src/app/service/store.service';
   templateUrl: './billing-list.component.html',
   styleUrls: ['./billing-list.component.css'],
 })
-export class BillingListComponent {
-  
+export class BillingListComponent implements OnInit, OnDestroy {
+  yearDropdownOpen: boolean = false; // Estado para el dropdown del año
+  monthDropdownOpen: boolean = false; // Estado para el dropdown del mes
   codesUsedInMonth: number = 0;
   filteredCodes: { code: string; value: number; status: string }[] = [];
   selectedYear: number | null = null;
@@ -32,7 +33,6 @@ export class BillingListComponent {
   payments: any[] = [];
   filteredPayments: any[] = [];
   selectedPaymentImage: string | null = null;
-  // Propiedades para paginación
   page: number = 1;
   pageSize: number = 5;
   totalPayments: number = 0;
@@ -44,6 +44,11 @@ export class BillingListComponent {
     this.loadYears();
     this.loadStores();
     this.loadPayments();
+    document.addEventListener('click', this.handleClickOutside.bind(this));
+  }
+
+  ngOnDestroy() {
+    document.removeEventListener('click', this.handleClickOutside.bind(this));
   }
 
   loadYears(): void {
@@ -51,6 +56,28 @@ export class BillingListComponent {
     for (let year = currentYear; year >= 2000; year--) {
       this.years.push(year);
     }
+  }
+
+  toggleYearDropdown(): void {
+    this.yearDropdownOpen = !this.yearDropdownOpen;
+    this.monthDropdownOpen = false; // Cierra el dropdown del mes si está abierto
+  }
+
+  toggleMonthDropdown(): void {
+    this.monthDropdownOpen = !this.monthDropdownOpen;
+    this.yearDropdownOpen = false; // Cierra el dropdown del año si está abierto
+  }
+
+  selectYear(year: number): void {
+    this.selectedYear = year;
+    this.yearDropdownOpen = false; // Cierra el dropdown al seleccionar un año
+    this.onFilterChange();
+  }
+
+  selectMonth(monthValue: string): void {
+    this.selectedMonth = monthValue;
+    this.monthDropdownOpen = false; // Cierra el dropdown al seleccionar un mes
+    this.onFilterChange();
   }
 
   loadStores(): void {
@@ -134,5 +161,26 @@ export class BillingListComponent {
 
   closeModal() {
     this.selectedPaymentImage = null; // Oculta el modal
+  }
+
+  getSelectedMonthName(): string {
+    const month = this.months.find(m => m.value === this.selectedMonth);
+    return month ? month.name : 'Seleccione un mes';
+  }
+
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    const yearSelect = document.querySelector('.year-select');
+    const monthSelect = document.querySelector('.month-select');
+
+    // Cierra el dropdown del año si se hace clic fuera de él
+    if (this.yearDropdownOpen && yearSelect && !yearSelect.contains(target)) {
+      this.yearDropdownOpen = false;
+    }
+
+    // Cierra el dropdown del mes si se hace clic fuera de él
+    if (this.monthDropdownOpen && monthSelect && !monthSelect.contains(target)) {
+      this.monthDropdownOpen = false;
+    }
   }
 }

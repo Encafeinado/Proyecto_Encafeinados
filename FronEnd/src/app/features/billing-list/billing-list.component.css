@@ -241,3 +241,44 @@
   position: relative;
   z-index: 1000; /* Asegúrate de que el modal esté por encima del overlay */
 }
+
+.custom-select {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  cursor: pointer;
+}
+
+.selected-value {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: background-color 0.3s;
+}
+
+.options {
+  position: absolute;
+  top: 100%; /* Asegura que la lista se muestre debajo del elemento */
+  left: 0;
+  right: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  z-index: 1000;
+  max-height: 200px; /* Limitar la altura del dropdown */
+  overflow-y: auto; /* Agregar scroll si hay demasiadas opciones */
+}
+
+.option {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.option:hover {
+  background-color: #f0f0f0; /* Cambiar el color al pasar el mouse */
+}
+
+label {
+  font-size: 1rem; /* Ajustar el tamaño del label */
+}

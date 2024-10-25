@@ -12,19 +12,23 @@
     <!-- Filtro por año -->
     <div class="col-md-3 d-flex align-items-center">
       <label for="years" class="mr-2">Año:</label>
-      <select id="years" class="form-control form-control-sm" [(ngModel)]="selectedYear" (change)="onFilterChange()">
-        <option [ngValue]="null" disabled>Seleccione un año</option>
-        <option *ngFor="let year of years" [ngValue]="year">{{ year }}</option>
-      </select>
+      <div class="custom-select year-select" (click)="toggleYearDropdown()">
+        <div class="selected-value">{{ selectedYear || 'Seleccione un año' }}</div>
+        <div class="options" *ngIf="yearDropdownOpen">
+          <div class="option" *ngFor="let year of years" (click)="selectYear(year)">{{ year }}</div>
+        </div>
+      </div>
     </div>
 
     <!-- Filtro por mes -->
     <div class="col-md-3 d-flex align-items-center">
       <label for="months" class="mr-2">Mes:</label>
-      <select id="months" class="form-control form-control-sm" [(ngModel)]="selectedMonth" (change)="onFilterChange()">
-        <option [value]="null" disabled selected>Seleccione un mes</option>
-        <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
-      </select>
+      <div class="custom-select month-select" (click)="toggleMonthDropdown()">
+        <div class="selected-value">{{ getSelectedMonthName() }}</div>
+        <div class="options" *ngIf="monthDropdownOpen">
+          <div class="option" *ngFor="let month of months" (click)="selectMonth(month.value)">{{ month.name }}</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -56,7 +60,7 @@
                 <button class="btn btn-primary btn-sm" (click)="viewDetails(payment)">
                   <i class="fas fa-search"></i>
                 </button>
-              </td>              
+              </td>
             </tr>
           </tbody>
         </table>
