@@ -77,7 +77,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     return (
       this.isUserLanding() || 
       this.isUserLandingTienda() || 
-      
+      this.isPayment() || 
       (this.userName.trim().length > 0 && this.authService.isAuthenticated())
     );
   }
@@ -168,6 +168,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   isUserLandingTienda(): boolean {
     return this.router.url === '/landing-tienda';
   }
+
 
   isAdminProfilePage(): boolean {
     return this.router.url === '/admin-profile';
