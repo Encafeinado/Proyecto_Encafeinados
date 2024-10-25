@@ -57,7 +57,7 @@ export class AdminProfileComponent implements OnInit {
     this.userService.fetchAllUsers().subscribe(
       (users) => {
         this.totalCafecoins = users.reduce((total, user) => total + user.cafecoin, 0); // Sumamos todos los cafecoins
-        console.log('Total cafecoins:', this.totalCafecoins);
+        // console.log('Total cafecoins:', this.totalCafecoins);
         this.cdr.detectChanges(); // Forzar la detección de cambios
       },
       (error) => {
@@ -73,14 +73,14 @@ export class AdminProfileComponent implements OnInit {
       return;
     }
     this.userData = currentUser;
-    console.log('Datos del usuario:', this.userData);
+    // console.log('Datos del usuario:', this.userData);
   }
 
   loadReviews(): void {
     this.reviewService.getAllReviews().subscribe(
       (data) => {
         this.reviews = data;
-        console.log('Reviews cargadas:', this.reviews);
+        // console.log('Reviews cargadas:', this.reviews);
       },
       (error) => {
         console.error('Error al cargar las reviews:', error);
@@ -92,7 +92,7 @@ export class AdminProfileComponent implements OnInit {
     this.userService.fetchAllUsers().subscribe(
       (users) => {
         this.totalClients = users.length; // Contamos el total de usuarios registrados
-        console.log('Total usuarios registrados:', this.totalClients);
+        // console.log('Total usuarios registrados:', this.totalClients);
         this.cdr.detectChanges(); // Forzamos la detección de cambios
       },
       (error) => {
@@ -105,7 +105,7 @@ export class AdminProfileComponent implements OnInit {
     this.storeService.getAllShops().subscribe(
       (shops) => {
         this.totalShops = shops.length;  // Contamos cuántas tiendas están registradas
-        console.log('Total de tiendas registradas:', this.totalShops);
+        // console.log('Total de tiendas registradas:', this.totalShops);
   
         // Calcular el promedio de ratings para cada tienda
         this.shopsWithAverageRatings = shops.map(shop => {
@@ -130,7 +130,7 @@ export class AdminProfileComponent implements OnInit {
           this.shopWithMostCodeUsage = null; // Ninguna tienda ha redimido códigos
         }
   
-        console.log('Tienda con más codeUsage:', this.shopWithMostCodeUsage);
+        // console.log('Tienda con más codeUsage:', this.shopWithMostCodeUsage);
         this.cdr.detectChanges(); // Forzamos la detección de cambios
       },
       (error) => {
@@ -269,7 +269,7 @@ export class AdminProfileComponent implements OnInit {
     this.userService.fetchAllUsers().subscribe(
       (users) => {
         this.totalLocalClients = users.filter(user => user.origin === 'Local').length;
-        console.log('Total de clientes locales:', this.totalLocalClients);
+        // console.log('Total de clientes locales:', this.totalLocalClients);
         this.cdr.detectChanges(); 
       },
       (error) => {
@@ -283,7 +283,7 @@ export class AdminProfileComponent implements OnInit {
     this.userService.fetchAllUsers().subscribe(
       (users) => {
         this.totalForeignClients = users.filter(user => user.origin === 'Extranjero').length;
-        console.log('Total de clientes extranjeros:', this.totalForeignClients);
+        // console.log('Total de clientes extranjeros:', this.totalForeignClients);
         this.cdr.detectChanges(); 
       },
       (error) => {

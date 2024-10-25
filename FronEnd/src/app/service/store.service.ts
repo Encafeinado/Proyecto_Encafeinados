@@ -2,18 +2,19 @@
 import { Injectable } from '@angular/core';
 import { Shop } from '../features/store/interfaces/shop.interface';
 import { HttpClient, HttpHeaders } from '@angular/common/http'; // Importa HttpHeaders
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environments';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StoreService {
-  private codeEntries: number = Number(localStorage.getItem('codeEntries')) || 0;
+  private codeEntries: number =
+    Number(localStorage.getItem('codeEntries')) || 0;
   private isStoreOpen: boolean = localStorage.getItem('isStoreOpen') === 'true';
   private baseUrl = `${environment.baseUrl}/shop`; // Asegúrate de que esta URL coincida con tu backend
   private baseUrl2 = `${environment.baseUrl}`;
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getCodeEntries(): number {
     return this.codeEntries;
@@ -40,37 +41,58 @@ export class StoreService {
   }
 
   // store.service.ts
-  verifyCodeCode(code: string, review: string, rating: number): Observable<{ message: string, shop: Shop }> {
+  verifyCodeCode(
+    code: string,
+    review: string,
+    rating: number
+  ): Observable<{ message: string; shop: Shop }> {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     const url = `${this.baseUrl}/verify-code`;
-    return this.http.post<{ message: string, shop: Shop }>(url, { code, review, rating: +rating }, { headers });
+    return this.http.post<{ message: string; shop: Shop }>(
+      url,
+      { code, review, rating: +rating },
+      { headers }
+    );
   }
   getAllShops(): Observable<Shop[]> {
     return this.http.get<Shop[]>(`${this.baseUrl}/allShops`);
   }
 
-  getUsedCodes(shopId: string, year: number, month: string): Observable<number> {
+  getUsedCodes(
+    shopId: string,
+    year: number,
+    month: string
+  ): Observable<number> {
     return this.http.get<number>(`${this.baseUrl}/${shopId}/used-codes`, {
       params: { year: year.toString(), month: month },
     });
-  }  
+  }
 
+  // store.service.ts
+  getPaymentStatus(shopId: string): Observable<{ statusPayment: boolean }> {
+    return this.http.get<{ statusPayment: boolean }>(
+      `${this.baseUrl2}/payment/status/${shopId}`
+    );
+  }
 
-// store.service.ts
-getPaymentStatus(shopId: string): Observable<{ statusPayment: boolean }> {
-  return this.http.get<{ statusPayment: boolean }>(`${this.baseUrl2}/payment/status/${shopId}`);
-}
-
-
-
-  
-
+  getAllPayments(): Observable<any[]> {
+    const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`); // Configurar la cabecera con el token
+    return this.http.get<any[]>(`${environment.baseUrl}/payment`, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error al obtener los pagos:', error);
+        return throwError(() => error);
+      })
+    );
+  }
 
   savePayment(paymentData: any): Observable<PaymentResponse> {
-    return this.http.post<PaymentResponse>(`${environment.baseUrl}/payment/create`, paymentData);
+    return this.http.post<PaymentResponse>(
+      `${environment.baseUrl}/payment/create`,
+      paymentData
+    );
   }
-  
 
   setStoreActivation(status: boolean): void {
     this.isStoreOpen = status;
@@ -78,6 +100,8 @@ getPaymentStatus(shopId: string): Observable<{ statusPayment: boolean }> {
   }
 
   updateShopStatus(shopId: string, status: boolean): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/${shopId}/status`, { statusShop: status });
+    return this.http.patch(`${this.baseUrl}/${shopId}/status`, {
+      statusShop: status,
+    });
   }
 }

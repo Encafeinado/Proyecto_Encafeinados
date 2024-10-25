@@ -1,19 +1,20 @@
-import { Component } from '@angular/core';
+import { Component } from '@angular/core'; 
 import { StoreService } from 'src/app/service/store.service';
 
 @Component({
   selector: 'app-billing-list',
   templateUrl: './billing-list.component.html',
-  styleUrls: ['./billing-list.component.css']
+  styleUrls: ['./billing-list.component.css'],
 })
 export class BillingListComponent {
-  codesUsedInMonth: number = 0; // Para almacenar el número de códigos usados
-  filteredCodes: { code: string, value: number, status: string }[] = []; // Para mostrar los códigos en la tabla
+  
+  codesUsedInMonth: number = 0;
+  filteredCodes: { code: string; value: number; status: string }[] = [];
   selectedYear: number | null = null;
   selectedMonth: string | null = null;
   shopId: string = '';
   years: number[] = [];
-  months: { value: string, name: string }[] = [
+  months: { value: string; name: string }[] = [
     { value: '01', name: 'Enero' },
     { value: '02', name: 'Febrero' },
     { value: '03', name: 'Marzo' },
@@ -25,25 +26,24 @@ export class BillingListComponent {
     { value: '09', name: 'Septiembre' },
     { value: '10', name: 'Octubre' },
     { value: '11', name: 'Noviembre' },
-    { value: '12', name: 'Diciembre' }
+    { value: '12', name: 'Diciembre' },
   ];
-  
-  payments: { store: string, month: number, status: string, year: number }[] = [
-    { store: 'Tienda 1', month: 1, status: 'Pagado', year: 2023 },
-    { store: 'Tienda 2', month: 2, status: 'Pendiente', year: 2022 },
-    // Otros datos de ejemplo
-  ];
-
-  // Aplicar el mismo tipo a filteredPayments
-  filteredPayments: { store: string, month: number, status: string, year: number }[] = [];
-
-  stores = ['Tienda 1', 'Tienda 2', 'Tienda 3'];  // Lista de tiendas
+  stores: any[] = [];
+  payments: any[] = [];
+  filteredPayments: any[] = [];
+  selectedPaymentImage: string | null = null;
+  // Propiedades para paginación
+  page: number = 1;
+  pageSize: number = 5;
+  totalPayments: number = 0;
+  totalPages: number = 0;
 
   constructor(private storeService: StoreService) {}
 
   ngOnInit(): void {
     this.loadYears();
-    this.shopId = localStorage.getItem('shopId') || '';
+    this.loadStores();
+    this.loadPayments();
   }
 
   loadYears(): void {
@@ -53,58 +53,86 @@ export class BillingListComponent {
     }
   }
 
-  onMonthOrYearChange(): void {
-    if (this.selectedYear && this.selectedMonth && this.shopId) {
-      this.fetchUsedCodes(this.shopId, this.selectedYear, this.selectedMonth);
-    }
-  }
-  
-  qrImage: string | undefined;
-
-  fetchUsedCodes(shopId: string, year: number, month: string): void {
-    this.storeService.getUsedCodes(shopId,year, month).subscribe(
-      (count: number) => {
-        this.codesUsedInMonth = count;
-  
-        // Generar un único código y sumar los valores
-        if (count > 0) {
-          const totalValue = count * 200; // Cada código tiene un valor de 200
-          this.filteredCodes = [
-            {
-              code: `${count}`, // Mostrar el total de códigos
-              value: totalValue, // Valor total de todos los códigos
-              status: 'rechazado' // Estado inicial "rechazado"
-            }
-          ];
-        } else {
-          this.filteredCodes = []; // Si no hay códigos, limpiar la tabla
-        }
-  
-        console.log('Códigos generados:', this.filteredCodes);
+  loadStores(): void {
+    this.storeService.getAllShops().subscribe(
+      (data: any) => {
+        this.stores = data;
+        console.log('Tiendas cargadas:', data);
       },
       (error) => {
-        console.error('Error al obtener los códigos usados:', error);
+        console.error('Error al cargar tiendas:', error);
       }
     );
   }
-  
-  saveFile(code: any): void {
-    console.log('Guardando archivo para el código:', code);
+
+  loadPayments(): void {
+    this.storeService.getAllPayments().subscribe(
+      (data: any) => {
+        this.payments = data;
+        this.filteredPayments = this.payments;
+        this.totalPayments = this.filteredPayments.length;
+        this.calculateTotalPages();
+        console.log('Pagos cargados:', data);
+      },
+      (error) => {
+        console.error('Error al cargar pagos:', error);
+      }
+    );
   }
 
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.qrImage = reader.result as string;
-      };
-      reader.readAsDataURL(file);
-    }
+  onFilterChange(): void {
+    this.filterPayments();
+  }
+
+  onStoreSelected(event: any): void {
+    this.shopId = event.target.value;
+    console.log('Tienda seleccionada:', this.shopId);
+    this.onFilterChange();
+  }
+
+  filterPayments(): void {
+    console.log('Filtrando pagos con:', {
+      storeId: this.shopId,
+      year: this.selectedYear,
+      month: this.selectedMonth,
+    });
+
+    this.filteredPayments = this.payments.filter((payment) => {
+      const yearMatches = !this.selectedYear || payment.year === this.selectedYear;
+      const monthMatches = !this.selectedMonth || payment.month === parseInt(this.selectedMonth, 10);
+      const shopMatches = !this.shopId || payment.shopId === this.shopId;
+
+      return yearMatches && monthMatches && shopMatches;
+    });
+
+    console.log('Pagos filtrados:', this.filteredPayments);
+    this.totalPayments = this.filteredPayments.length;
+    this.calculateTotalPages();
+  }
+
+  private calculateTotalPages(): void {
+    this.totalPages = Math.ceil(this.totalPayments / this.pageSize);
+  }
+
+  getPaginatedPayments(): any[] {
+    const startIndex = (this.page - 1) * this.pageSize;
+    return this.filteredPayments.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  setPage(page: number) {
+    this.page = page;
   }
 
   viewDetails(payment: any) {
-    // Aquí se manejará la lógica para ver el detalle del pago
-    console.log('Detalles del pago:', payment);
+    if (payment.images && payment.images.length > 0) {
+      this.selectedPaymentImage = payment.images[0].image; // Asigna la imagen en formato base64
+    } else {
+      this.selectedPaymentImage = null;
+      console.error("No hay imagen disponible para este registro");
+    }
+  }
+
+  closeModal() {
+    this.selectedPaymentImage = null; // Oculta el modal
   }
 }
