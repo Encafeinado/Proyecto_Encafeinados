@@ -1,16 +1,16 @@
 <div class="container facturacion-container">
   <div class="row mb-4">
-    <!-- Filtro por tienda -->
-    <div class="col-md-3 d-flex align-items-center">
+    <div class="col-md-3">
       <label for="store" class="mr-2">Tienda:</label>
-      <select id="store" class="form-control form-control-sm" (change)="onStoreSelected($event)">
-        <option [value]="null" disabled selected>Seleccione una tienda</option>
-        <option *ngFor="let store of stores" [value]="store._id"> {{ store.name }} </option>
-      </select>
+      <div class="custom-select store-select" (click)="toggleStoreDropdown()">
+        <div class="selected-value">{{ getSelectedStoreName() }}</div>
+        <div class="options" *ngIf="storeDropdownOpen">
+          <div class="option" *ngFor="let store of stores" (click)="selectStore(store._id)">{{ store.name }}</div>
+        </div>
+      </div>
     </div>
-
-    <!-- Filtro por año -->
-    <div class="col-md-3 d-flex align-items-center">
+    
+    <div class="col-md-3">
       <label for="years" class="mr-2">Año:</label>
       <div class="custom-select year-select" (click)="toggleYearDropdown()">
         <div class="selected-value">{{ selectedYear || 'Seleccione un año' }}</div>
@@ -19,9 +19,8 @@
         </div>
       </div>
     </div>
-
-    <!-- Filtro por mes -->
-    <div class="col-md-3 d-flex align-items-center">
+    
+    <div class="col-md-3">
       <label for="months" class="mr-2">Mes:</label>
       <div class="custom-select month-select" (click)="toggleMonthDropdown()">
         <div class="selected-value">{{ getSelectedMonthName() }}</div>
@@ -29,7 +28,7 @@
           <div class="option" *ngFor="let month of months" (click)="selectMonth(month.value)">{{ month.name }}</div>
         </div>
       </div>
-    </div>
+    </div>    
   </div>
 
   <!-- Tabla de lista de pagos -->

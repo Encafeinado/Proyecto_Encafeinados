@@ -9,6 +9,8 @@ import { StoreService } from 'src/app/service/store.service';
 export class BillingListComponent implements OnInit, OnDestroy {
   yearDropdownOpen: boolean = false; // Estado para el dropdown del año
   monthDropdownOpen: boolean = false; // Estado para el dropdown del mes
+  storeDropdownOpen: boolean = false; // Estado para el dropdown de tienda
+  selectedStoreId: string | null = null; // ID de la tienda seleccionada
   codesUsedInMonth: number = 0;
   filteredCodes: { code: string; value: number; status: string }[] = [];
   selectedYear: number | null = null;
@@ -60,12 +62,26 @@ export class BillingListComponent implements OnInit, OnDestroy {
 
   toggleYearDropdown(): void {
     this.yearDropdownOpen = !this.yearDropdownOpen;
-    this.monthDropdownOpen = false; // Cierra el dropdown del mes si está abierto
+    this.monthDropdownOpen = false;
+    this.storeDropdownOpen = false; // Cierra el dropdown de tienda
   }
 
   toggleMonthDropdown(): void {
     this.monthDropdownOpen = !this.monthDropdownOpen;
+    this.yearDropdownOpen = false;
+    this.storeDropdownOpen = false; // Cierra el dropdown de tienda
+  }
+
+  toggleStoreDropdown(): void {
+    this.storeDropdownOpen = !this.storeDropdownOpen;
     this.yearDropdownOpen = false; // Cierra el dropdown del año si está abierto
+    this.monthDropdownOpen = false; // Cierra el dropdown del mes si está abierto
+  }
+
+  selectStore(storeId: string): void {
+    this.selectedStoreId = storeId;
+    this.storeDropdownOpen = false; // Cierra el dropdown al seleccionar una tienda
+    this.onFilterChange();
   }
 
   selectYear(year: number): void {
@@ -112,22 +128,26 @@ export class BillingListComponent implements OnInit, OnDestroy {
   }
 
   onStoreSelected(event: any): void {
-    this.shopId = event.target.value;
-    console.log('Tienda seleccionada:', this.shopId);
+    this.selectedStoreId = event.target.value;
+    console.log('Tienda seleccionada:', this.selectedStoreId);
     this.onFilterChange();
   }
 
   filterPayments(): void {
     console.log('Filtrando pagos con:', {
-      storeId: this.shopId,
+      storeId: this.selectedStoreId,
       year: this.selectedYear,
       month: this.selectedMonth,
     });
 
     this.filteredPayments = this.payments.filter((payment) => {
-      const yearMatches = !this.selectedYear || payment.year === this.selectedYear;
-      const monthMatches = !this.selectedMonth || payment.month === parseInt(this.selectedMonth, 10);
-      const shopMatches = !this.shopId || payment.shopId === this.shopId;
+      const yearMatches =
+        !this.selectedYear || payment.year === this.selectedYear;
+      const monthMatches =
+        !this.selectedMonth ||
+        payment.month === parseInt(this.selectedMonth, 10);
+      const shopMatches =
+        !this.selectedStoreId || payment.shopId === this.selectedStoreId;
 
       return yearMatches && monthMatches && shopMatches;
     });
@@ -155,7 +175,7 @@ export class BillingListComponent implements OnInit, OnDestroy {
       this.selectedPaymentImage = payment.images[0].image; // Asigna la imagen en formato base64
     } else {
       this.selectedPaymentImage = null;
-      console.error("No hay imagen disponible para este registro");
+      console.error('No hay imagen disponible para este registro');
     }
   }
 
@@ -164,14 +184,22 @@ export class BillingListComponent implements OnInit, OnDestroy {
   }
 
   getSelectedMonthName(): string {
-    const month = this.months.find(m => m.value === this.selectedMonth);
+    const month = this.months.find((m) => m.value === this.selectedMonth);
     return month ? month.name : 'Seleccione un mes';
+  }
+
+  getSelectedStoreName(): string {
+    const selectedStore = this.stores.find(
+      (store) => store._id === this.selectedStoreId
+    );
+    return selectedStore ? selectedStore.name : 'Seleccione una tienda';
   }
 
   handleClickOutside(event: MouseEvent): void {
     const target = event.target as HTMLElement;
     const yearSelect = document.querySelector('.year-select');
     const monthSelect = document.querySelector('.month-select');
+    const storeSelect = document.querySelector('.store-select'); // Agrega esta línea
 
     // Cierra el dropdown del año si se hace clic fuera de él
     if (this.yearDropdownOpen && yearSelect && !yearSelect.contains(target)) {
@@ -179,8 +207,21 @@ export class BillingListComponent implements OnInit, OnDestroy {
     }
 
     // Cierra el dropdown del mes si se hace clic fuera de él
-    if (this.monthDropdownOpen && monthSelect && !monthSelect.contains(target)) {
+    if (
+      this.monthDropdownOpen &&
+      monthSelect &&
+      !monthSelect.contains(target)
+    ) {
       this.monthDropdownOpen = false;
+    }
+
+    // Cierra el dropdown de tienda si se hace clic fuera de él
+    if (
+      this.storeDropdownOpen &&
+      storeSelect &&
+      !storeSelect.contains(target)
+    ) {
+      this.storeDropdownOpen = false;
     }
   }
 }

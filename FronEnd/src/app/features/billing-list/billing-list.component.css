@@ -242,10 +242,22 @@
   z-index: 1000; /* Asegúrate de que el modal esté por encima del overlay */
 }
 
-.custom-select {
+.col-md-3 {
+  margin-bottom: 15px; /* Aumentar el margen inferior para más espacio entre los filtros */
+  display: flex; /* Usar flexbox para la alineación */
+  flex-direction: column; /* Colocar los elementos en columna */
+}
+
+label {
+  font-size: 1rem; /* Ajustar el tamaño del label */
+  margin-bottom: 5px; /* Espacio entre el label y el select */
+}
+
+.custom-select { 
   position: relative;
   display: inline-block;
-  width: 100%;
+  width: 100%; /* Ocupa el 100% del ancho del contenedor */
+  max-width: 250px; /* Ancho máximo para el select */
   cursor: pointer;
 }
 
@@ -255,6 +267,10 @@
   border-radius: 4px;
   background-color: #fff;
   transition: background-color 0.3s;
+  white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+  overflow: hidden; /* Oculta el texto que se desborda */
+  text-overflow: ellipsis; /* Muestra puntos suspensivos si hay desbordamiento */
+  width: 100%; /* Asegura que el elemento ocupe todo el ancho disponible */
 }
 
 .options {
@@ -277,8 +293,4 @@
 
 .option:hover {
   background-color: #f0f0f0; /* Cambiar el color al pasar el mouse */
-}
-
-label {
-  font-size: 1rem; /* Ajustar el tamaño del label */
 }
