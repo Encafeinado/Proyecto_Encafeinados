@@ -6,42 +6,42 @@
     </div>
   </div>
 
-  <!-- Fila para el selector de años y meses -->
-<div class="row mb-4 align-items-center">
-  <!-- Selector de años -->
-  <div class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0">
-    <label for="years" class="mr-2">Año:</label>
-    <select id="years" class="form-control form-control-sm" [(ngModel)]="selectedYear" (change)="onMonthOrYearChange()">
-      <option [value]="null" disabled selected>Seleccione un año</option>
-      <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-    </select>
-  </div>
 
-  <!-- Selector de meses -->
-  <div class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0">
-    <label for="meses" class="mr-2">Mes:</label>
-    <select id="meses" class="form-control form-control-sm" [(ngModel)]="selectedMonth" [disabled]="!selectedYear"
-      (change)="onMonthOrYearChange()">
-      <option [value]="null" disabled selected>Seleccione un mes</option>
-      <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
-    </select>
-  </div>
-
-  <!-- Subir comprobante -->
-<div class="col-12 col-sm-4 col-md-6">
-  <div class="form-group">
-    <label for="qrUpload" class="d-block">Subir comprobante:</label> <!-- d-block asegura que el label esté en una línea propia -->
-    <input type="file" id="qrUpload" class="form-control-file form-control-sm" accept="image/*,application/pdf"
-      required #qrUpload="ngModel" [(ngModel)]="qrImage" name="qrImage" (change)="onFileSelected($event)" />
-    <!-- Mensaje de error si no se ha seleccionado un archivo -->
-    <div *ngIf="qrUpload.invalid && submitted" class="text-danger mt-1">
-      Campo obligatorio.
+  <div class="row mb-4 align-items-center">
+    <!-- Selector de años -->
+    <div class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0">
+      <label for="years" class="mr-2">Año:</label>
+      <div class="custom-select year-select" (click)="toggleYearDropdown()">
+        <div class="selected-value">{{ selectedYear || 'Seleccione un año' }}</div>
+        <div class="options" *ngIf="yearDropdownOpen">
+          <div class="option" *ngFor="let year of years" (click)="selectYear(year)">{{ year }}</div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Selector de meses y botón de subir comprobante en la misma fila -->
+    <div class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0">
+      <label for="months" class="mr-2">Mes:</label>
+      <div class="custom-select month-select" (click)="toggleMonthDropdown()">
+        <div class="selected-value">{{ getSelectedMonthName() }}</div>
+        <div class="options" *ngIf="monthDropdownOpen">
+          <div class="option" *ngFor="let month of months" (click)="selectMonth(month.value)">{{ month.name }}</div>
+        </div>
+      </div>
+    </div>    
+  
+    <!-- Subir comprobante -->
+    <div class="col-12 col-sm-4 col-md-6 mb-2 mb-sm-0 qr-upload">
+      <label for="qrUpload" class="mr-2">Subir comprobante:</label>
+      <input type="file" id="qrUpload" class="form-control-file form-control-sm" accept="image/*,application/pdf"
+        required #qrUpload="ngModel" [(ngModel)]="qrImage" name="qrImage" (change)="onFileSelected($event)" />
+      <!-- Mensaje de error si no se ha seleccionado un archivo -->
+      <div *ngIf="qrUpload.invalid && submitted" class="text-danger mt-1">
+        Campo obligatorio.
+      </div>
     </div>
   </div>
-</div>
-
-
-
+  
   <!-- Tabla de códigos usados -->
  
     <div class="col-md-12">

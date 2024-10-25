@@ -10,9 +10,11 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 })
 export class PaymentComponent implements OnInit {
   modalRef!: NgbModalRef;
+  yearDropdownOpen: boolean = false; // Estado para el dropdown del año
+  monthDropdownOpen: boolean = false; // Estado para el dropdown del mes
   isSaving = false;
   shopData: any;
-  submitted = false; 
+  submitted = false;
   userRole: string = '';
   userData: any;
   codesUsedInMonth: number = 0;
@@ -40,15 +42,71 @@ export class PaymentComponent implements OnInit {
   @ViewChild('modalPayment', { static: true }) modalPayment: any;
 
   constructor(private storeService: StoreService,
-              private authService: AuthService,
-              private modalService: NgbModal) {} // Inyecta NgbModal
+    private authService: AuthService,
+    private modalService: NgbModal) { } // Inyecta NgbModal
 
   ngOnInit(): void {
     this.loadYears();
     this.shopId = localStorage.getItem('shopId') || '';
     console.log(this.shopId);
+    document.addEventListener('click', this.handleClickOutside.bind(this));
+  }
+  ngOnDestroy() {
+    document.removeEventListener('click', this.handleClickOutside.bind(this));
+  }
+  toggleYearDropdown(): void {
+    this.yearDropdownOpen = !this.yearDropdownOpen;
+    this.monthDropdownOpen = false;
   }
 
+  toggleMonthDropdown(): void {
+    this.monthDropdownOpen = !this.monthDropdownOpen;
+    this.yearDropdownOpen = false;
+  }
+
+  selectYear(year: number): void {
+    this.selectedYear = year;
+    this.yearDropdownOpen = false; // Cierra el dropdown al seleccionar un año
+  }
+
+  selectMonth(monthValue: string): void {
+    this.selectedMonth = monthValue;
+    this.monthDropdownOpen = false; // Cierra el dropdown al seleccionar un mes
+  }
+
+
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    const yearSelect = document.querySelector('.year-select');
+    const monthSelect = document.querySelector('.month-select');
+    const storeSelect = document.querySelector('.store-select');
+
+    // Verificamos si el dropdown del año está abierto y si el click fue fuera del selector
+    if (this.yearDropdownOpen && yearSelect && !yearSelect.contains(target)) {
+      this.yearDropdownOpen = false;
+      this.checkAndFetchUsedCodes();
+    }
+
+    // Verificamos si el dropdown del mes está abierto y si el click fue fuera del selector
+    if (this.monthDropdownOpen && monthSelect && !monthSelect.contains(target)) {
+      this.monthDropdownOpen = false;
+      this.checkAndFetchUsedCodes();
+    }
+
+
+  }
+
+  // Método auxiliar para verificar selección y hacer la llamada a fetchUsedCodes
+  checkAndFetchUsedCodes(): void {
+    if (this.selectedYear && this.selectedMonth && this.shopId) {
+      this.fetchUsedCodes(this.shopId, this.selectedYear, this.selectedMonth);
+    }
+  }
+
+  getSelectedMonthName(): string {
+    const month = this.months.find((m) => m.value === this.selectedMonth);
+    return month ? month.name : 'Seleccione un mes';
+  }
   loadYears(): void {
     const currentYear = new Date().getFullYear();
     for (let year = currentYear; year >= 2000; year--) {
@@ -57,21 +115,16 @@ export class PaymentComponent implements OnInit {
   }
 
 
-  onMonthOrYearChange(): void {
-    if (this.selectedYear && this.selectedMonth && this.shopId) {
-      this.fetchUsedCodes(this.shopId, this.selectedYear, this.selectedMonth);
-    }
-  }
 
   fetchUsedCodes(shopId: string, year: number, month: string): void {
     // Llamada para obtener el número de códigos usados
     this.storeService.getUsedCodes(shopId, year, month).subscribe(
       (count: number) => {
         this.codesUsedInMonth = count;
-  
+
         if (count > 0) {
           const totalValue = count * 200; // Cada código tiene un valor de 200
-  
+
           // Llamada para obtener el estado del pago basado en el shopId
           this.storeService.getPaymentStatus(shopId).subscribe(
             (response: { statusPayment: boolean }) => {
@@ -83,7 +136,7 @@ export class PaymentComponent implements OnInit {
                   status: statusPayment ? 'Pagado' : 'Rechazado' // Mostrar el estado correcto basado en la respuesta
                 }
               ];
-  
+
               console.log('Códigos generados con estado:', this.filteredCodes);
             },
             (error) => {
@@ -112,66 +165,66 @@ export class PaymentComponent implements OnInit {
       }
     );
   }
-  
-  
-
-// Método para guardar el archivo y abrir el modal
-saveFile(code: any): void {
-  // Establecer la variable 'submitted' en true cuando se intenta guardar
-  this.submitted = true;
-
-  // Validar si los campos requeridos (qrImage, selectedYear, selectedMonth) están presentes
-  if (!this.qrImage || !this.selectedYear || !this.selectedMonth) {
-    console.error('Faltan datos para guardar el pago');
-    return;
-  }
-
-  // Si todos los campos son válidos, abre el modal de confirmación
-  this.openConfirmationModal(this.modalPayment);
-}
 
 
 
+  // Método para guardar el archivo y abrir el modal
+  saveFile(code: any): void {
+    // Establecer la variable 'submitted' en true cuando se intenta guardar
+    this.submitted = true;
 
-async confirmUpload(modal: any): Promise<void> {
-  // Espera a que se carguen los datos del usuario
-  await this.loadUserData();
-
-  // Verifica los datos después de haberlos cargado
-  if (!this.userRole || !this.shopData || !this.shopData.name) {
-    console.error('Datos de la tienda no disponibles');
-    modal.dismiss('cancel'); // Cierra el modal si no hay datos
-    return;
-  }
-
-  const paymentData = {
-    nameShop: this.shopData.name,
-    shopId: this.shopId,
-    statusPayment: true,
-    year: Number(this.selectedYear),
-    month: Number(this.selectedMonth),
-    images: [
-      {
-        image: this.qrImage
-      }
-    ]
-  };
-
-  // Llamada al servicio para guardar el pago
-  this.storeService.savePayment(paymentData).subscribe(
-    (response) => {
-      console.log('Pago guardado con éxito:', response);
-      this.updatePaymentStatusToPaid(); // Actualiza el estado del pago aquí
-      modal.close('uploaded'); // Cierra el modal después de la actualización
-    },
-    (error) => {
-      console.error('Error al guardar el pago:', error);
-      modal.dismiss('cancel'); // Cierra el modal en caso de error
+    // Validar si los campos requeridos (qrImage, selectedYear, selectedMonth) están presentes
+    if (!this.qrImage || !this.selectedYear || !this.selectedMonth) {
+      console.error('Faltan datos para guardar el pago');
+      return;
     }
-  );
-}
 
-  
+    // Si todos los campos son válidos, abre el modal de confirmación
+    this.openConfirmationModal(this.modalPayment);
+  }
+
+
+
+
+  async confirmUpload(modal: any): Promise<void> {
+    // Espera a que se carguen los datos del usuario
+    await this.loadUserData();
+
+    // Verifica los datos después de haberlos cargado
+    if (!this.userRole || !this.shopData || !this.shopData.name) {
+      console.error('Datos de la tienda no disponibles');
+      modal.dismiss('cancel'); // Cierra el modal si no hay datos
+      return;
+    }
+
+    const paymentData = {
+      nameShop: this.shopData.name,
+      shopId: this.shopId,
+      statusPayment: true,
+      year: Number(this.selectedYear),
+      month: Number(this.selectedMonth),
+      images: [
+        {
+          image: this.qrImage
+        }
+      ]
+    };
+
+    // Llamada al servicio para guardar el pago
+    this.storeService.savePayment(paymentData).subscribe(
+      (response) => {
+        console.log('Pago guardado con éxito:', response);
+        this.updatePaymentStatusToPaid(); // Actualiza el estado del pago aquí
+        modal.close('uploaded'); // Cierra el modal después de la actualización
+      },
+      (error) => {
+        console.error('Error al guardar el pago:', error);
+        modal.dismiss('cancel'); // Cierra el modal en caso de error
+      }
+    );
+  }
+
+
 
   updatePaymentStatusToPaid(): void {
     if (this.filteredCodes.length > 0) {
@@ -190,10 +243,10 @@ async confirmUpload(modal: any): Promise<void> {
         reject();
         return;
       }
-  
+
       this.userRole = currentUser.roles ? currentUser.roles[0] : '';
       console.log('Rol del usuario:', this.userRole);
-      
+
       if (this.userRole === 'shop') {
         this.loadShopData(currentUser._id).then(() => {
           console.log('Datos de la tienda cargados');
@@ -206,8 +259,8 @@ async confirmUpload(modal: any): Promise<void> {
       }
     });
   }
-  
-  
+
+
   loadShopData(shopId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this.storeService.getShopById(shopId).subscribe(
@@ -223,8 +276,8 @@ async confirmUpload(modal: any): Promise<void> {
       );
     });
   }
-  
-  
+
+
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
@@ -238,8 +291,11 @@ async confirmUpload(modal: any): Promise<void> {
 
 
 
+  // Método para abrir el modal en el centro
   openConfirmationModal(modal: TemplateRef<any>): void {
-    // Aquí se asume que utilizas algún servicio para abrir modales
-    this.modalService.open(modal); // Asegúrate de que esta línea está correcta según tu implementación
+    this.modalService.open(modal, { centered: true });
   }
 }
+
+
+

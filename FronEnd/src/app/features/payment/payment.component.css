@@ -9,7 +9,7 @@
 }
 
 .col-md-12 {
-  width: 120%; /* Hace que el div sea más ancho que el 100% del contenedor */
+  width: 100%; /* Hace que el div sea más ancho que el 100% del contenedor */
   margin-left: 1%; /* Mueve el div hacia la izquierda para centrarlo */
   margin-right: -5%; /* Opcional, para asegurarse de que esté centrado */
   padding: 2%;
@@ -118,7 +118,8 @@
 
 .qr-upload {
   display: flex;
-  align-items: center; /* Alinea el label y el input verticalmente */
+  flex-direction: column; /* Asegura que el label y el input de archivo estén alineados en columnas */
+  align-items: flex-start;
 }
 
 .qr-upload label {
@@ -160,6 +161,47 @@
   border-color: #cccccc;
   color: #666666; /* Color del texto */
   pointer-events: none; /* Desactivar interacción */
+}
+
+.custom-select {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  cursor: pointer;
+}
+
+.selected-value {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: background-color 0.3s;
+}
+
+.options {
+  position: absolute;
+  top: 100%; /* Asegura que la lista se muestre debajo del elemento */
+  left: 0;
+  right: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  z-index: 1000;
+  max-height: 160px; /* Limitar la altura del dropdown */
+  overflow-y: auto; /* Agregar scroll si hay demasiadas opciones */
+}
+
+.option {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.option:hover {
+  background-color: #f0f0f0; /* Cambiar el color al pasar el mouse */
+}
+
+label {
+  font-size: 1rem; /* Ajustar el tamaño del label */
 }
 
 @media (max-width: 768px) {
@@ -289,7 +331,7 @@
   }
   .col-md-12 {
     width: 120%; /* Hace que el div sea más ancho que el 100% del contenedor */
-    margin-left: -4%; /* Mueve el div hacia la izquierda para centrarlo */
+    margin-left: -10%; /* Mueve el div hacia la izquierda para centrarlo */
     margin-right: -5%; /* Opcional, para asegurarse de que esté centrado */
     padding: 1%;
 }
@@ -303,6 +345,45 @@
     padding: 3px 6px; /* Aumentado el tamaño de los botones */
     font-size: 0.8rem; /* Aumentado el tamaño de fuente */
   }
+
+
+  .custom-select {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    cursor: pointer;
+  }
+  
+  .selected-value {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    transition: background-color 0.3s;
+  }
+  
+  .options {
+    position: absolute;
+    top: 100%; /* Asegura que la lista se muestre debajo del elemento */
+    left: 0;
+    right: 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    z-index: 1000;
+    max-height: 120px; /* Limitar la altura del dropdown */
+    overflow-y: auto; /* Agregar scroll si hay demasiadas opciones */
+  }
+  
+  .option {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .option:hover {
+    background-color: #f0f0f0; /* Cambiar el color al pasar el mouse */
+  }
+  
 }
 
 
