@@ -126,56 +126,62 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #fffaf0;
+  background-color: #ffffff; /* Cambiado a blanco para coincidir */
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  font-family: "Poppins", sans-serif; /* Agregado para uniformidad */
+  overflow: hidden;
+}
+
+.modal-title {
+  font-size: 1.5em;
+  margin: 0;
+  text-align: center; /* Asegura que el texto esté centrado */
 }
 
 .modal-base.show {
   display: block;
 }
 
-
 .modal-header {
-  background-color: #2516f1;
-  color: #FFFFFF;
+  background-color: #0f1eee; /* Cambiado para que coincida con el segundo modal */
+  color: #ffffff; /* Cambiado a blanco */
   padding: 15px;
   border-radius: 10px 10px 0 0;
-  text-align: center;
+  display: flex; /* Asegura que el contenido se alinee */
+  justify-content: center; /* Centra el contenido */
 }
-
 
 .modal-body {
   padding: 20px;
-  background-color: #d4f1f7;
+  background-color: #d4f1f7; /* Mantener el mismo color de fondo */
   border-radius: 0 0 10px 10px;
   text-align: center;
 }
 
 .modal-footer {
-  padding: 20px;
   display: flex;
   justify-content: center;
-}
-
-.h1 {
-  background-color: #2516f1;
+  padding: 20px;
+  border-top: none; /* Asegura que no haya borde superior */
 }
 
 .modal-footer .btn {
   margin: 0 10px;
-  background-color: #2516f1;
-  color: #ffffff;
-  border: none;
+  background-color: #2516f1; /* Color de fondo del botón */
+  color: #ffffff; /* Color de texto del botón */
+  border: none; /* Sin borde para que coincida */
 }
-
 
 .modal-footer .btn:hover {
-  background-color: #d4f1f7;
+  background-color: #676ed6; /* Color al pasar el mouse */
 }
 
-/* Contenedor que abarca las columnas de comentarios y calificaciones */
+.modal-footer .btn:disabled {
+  background-color: #666666; /* Color para el botón deshabilitado */
+}
+
 /* Contenedor que abarca las columnas de comentarios y calificaciones */
 .scrollable-container {
   max-height: 300px;
@@ -282,4 +288,17 @@
   margin-top: 10px;
   font-size: 1rem;
   color: #666;
+}
+
+.no-comments-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Ajusta la altura al máximo del contenedor */
+  width: 100%; /* Asegura que ocupe todo el ancho disponible */
+  text-align: center;
+  font-weight: bold;
+  color: #555;
+  margin: 0 auto; /* Centra el mensaje horizontalmente */
+  box-sizing: border-box; /* Incluye padding y borde en el tamaño total */
 }

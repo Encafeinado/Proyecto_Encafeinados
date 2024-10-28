@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Request, Patch, InternalServerErrorException, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Request, Patch, InternalServerErrorException, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { RegisterShopDto, LoginDto, VerifyCodeDto } from './dto';
 import { ShopDocument } from './entities/shop.entity'; // Importa ShopDocument
@@ -32,6 +32,15 @@ export class ShopController {
     } else {
       return { message: 'Código de verificación no aceptado' };
     }
+  }
+
+  @Get(':id/used-codes')
+  async getUsedCodesByMonth(
+    @Param('id') id: string,
+    @Query('year') year: number,
+    @Query('month') month: number,
+  ): Promise<number> {
+    return this.shopService.getUsedCodesByMonth(id, year, month);
   }
   
 // shop.controller.ts

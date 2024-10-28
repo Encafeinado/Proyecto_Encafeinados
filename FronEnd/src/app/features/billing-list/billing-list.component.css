@@ -1,0 +1,296 @@
+.facturacion-container {
+  width: 100%;
+  max-width: 1200px; /* Limita el ancho máximo para pantallas grandes */
+  padding: 70px;
+  margin-top: 140px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.facturacion-container img {
+  margin-bottom: 20px; /* Agrega espacio entre la imagen y el contenido inferior */
+}
+
+.table {
+  width: 100%; /* Asegúrate de que la tabla ocupe el 100% del ancho disponible */
+}
+
+.meses {
+  display: flex;
+  align-items: center; /* Alinea el select y el label verticalmente */
+}
+
+.meses label {
+  margin-right: 10px; /* Ajusta el espacio entre el label y el select */
+}
+
+.meses select {
+  width: 100%; /* Asegura que ocupe todo el espacio del contenedor */
+  max-width: 150px; /* Limita el ancho máximo del select a 150px */
+  padding: 5px; /* Ajusta el relleno */
+}
+
+.table .btn-sm {
+  padding: 3px 6px;
+  font-size: 0.875rem;
+} 
+
+.grid-section {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.grid-section table {
+  width: 100%; /* Asegúrate de que la tabla ocupe todo el ancho del contenedor */
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.grid-section th, .grid-section td {
+  padding: 15px; /* Aumenta el padding para que el contenido no quede tan compacto */
+  border: 1px solid #ddd;
+}
+
+.grid-section td.pagado {
+  color: green;
+}
+
+.grid-section td.rechazado {
+  color: red;
+}
+
+.table {
+  margin-top: 20px;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 0.875rem;
+}
+
+.radio-group {
+  display: flex;
+  justify-content: space-around;
+}
+
+.radio-label {
+  margin-left: 5px;
+}
+
+/* Estilos para la paginación */
+.pagination {
+  margin-top: 20px;
+  justify-content: center; /* Centra los controles de paginación */
+  display: flex; /* Usa flexbox para el layout */
+}
+
+.pagination .page-item {
+  margin: 0 5px; /* Espacio entre los items de la paginación */
+}
+
+.pagination .page-link {
+  padding: 5px 10px; /* Reduce el relleno de los enlaces de paginación */
+  border: none; /* Elimina el borde predeterminado */
+  border-radius: 20px; /* Esquinas redondeadas */
+  background-color: #0f1eee; /* Fondo azul */
+  color: #ffffff; /* Color del texto */
+  font-weight: bold; /* Texto en negrita */
+  font-size: 0.9rem; /* Tamaño de fuente más pequeño */
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s; /* Transiciones suaves */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+.pagination .page-link:hover {
+  background-color: #0b1bb7; /* Cambia el fondo al pasar el ratón a un azul más oscuro */
+  color: #ffffff; /* Color del texto permanece blanco */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra más prominente */
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #0b1bb7; /* Fondo azul más oscuro para el item activo */
+  color: #ffffff; /* Texto blanco para el item activo */
+}
+
+.pagination .page-item.disabled .page-link {
+  color: #25292c; /* Color gris para el enlace deshabilitado */
+  background-color: #b8dbfe; /* Fondo gris claro para el enlace deshabilitado */
+  cursor: not-allowed; /* Cambia el cursor para indicar que no es interactivo */
+  opacity: 0.7; /* Añade opacidad para el enlace deshabilitado */
+}
+
+/* Mejora para la tabla en pantallas pequeñas */
+.table-responsive {
+  overflow-x: auto; /* Permite el desplazamiento horizontal */
+  -webkit-overflow-scrolling: touch; /* Suaviza el scroll en móviles */
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.table th, .table td {
+  padding: 15px;
+  border: 1px solid #ddd;
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto; /* Permite el desplazamiento horizontal */
+    -webkit-overflow-scrolling: touch; /* Suaviza el scroll en móviles */
+  }
+
+  .table {
+    width: 100%; /* Mantiene el ancho de la tabla */
+    font-size: 0.9rem; /* Reduce ligeramente el tamaño de fuente */
+  }
+
+  .table th, .table td {
+    padding: 10px; /* Ajusta el padding para reducir el tamaño */
+  }
+
+  .pagination .page-link {
+    font-size: 0.8rem;
+    padding: 3px 8px;
+  }
+
+  /* Ajuste del tamaño del botón para móviles */
+  .btn-sm {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+  }
+}
+
+
+.modal-content {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
+}
+
+.modal-header {
+  background-color: #0f1eee;
+  color: #ffffff;
+  padding: 15px;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-body {
+  padding: 20px;
+  background-color: #d4f1f7;
+  border-radius: 0 0 10px 10px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  border-top: none;
+}
+
+.modal-footer .btn {
+  margin: 0 10px;
+  background-color: #2516f1;
+  color: #ffffff;
+}
+
+.modal-footer .btn:hover {
+  background-color: #676ed6;
+}
+
+.modal-footer .btn:disabled {
+  background-color: #666666;
+}
+
+.image-gallery {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.gallery-image {
+  max-height: 400px;
+  object-fit: contain;
+}
+
+.modal-title{
+  font-size: 1.5em;
+  margin: 0;
+  text-align: center; /* Asegura que el texto esté centrado */
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Color negro semi-transparente */
+  z-index: 999; /* Asegúrate de que esté por detrás del modal */
+}
+
+.modal-dialog {
+  position: relative;
+  z-index: 1000; /* Asegúrate de que el modal esté por encima del overlay */
+}
+
+.col-md-3 {
+  margin-bottom: 15px; /* Aumentar el margen inferior para más espacio entre los filtros */
+  display: flex; /* Usar flexbox para la alineación */
+  flex-direction: column; /* Colocar los elementos en columna */
+}
+
+label {
+  font-size: 1rem; /* Ajustar el tamaño del label */
+  margin-bottom: 5px; /* Espacio entre el label y el select */
+}
+
+.custom-select { 
+  position: relative;
+  display: inline-block;
+  width: 100%; /* Ocupa el 100% del ancho del contenedor */
+  max-width: 250px; /* Ancho máximo para el select */
+  cursor: pointer;
+}
+
+.selected-value {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: background-color 0.3s;
+  white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+  overflow: hidden; /* Oculta el texto que se desborda */
+  text-overflow: ellipsis; /* Muestra puntos suspensivos si hay desbordamiento */
+  width: 100%; /* Asegura que el elemento ocupe todo el ancho disponible */
+}
+
+.options {
+  position: absolute;
+  top: 100%; /* Asegura que la lista se muestre debajo del elemento */
+  left: 0;
+  right: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  z-index: 1000;
+  max-height: 200px; /* Limitar la altura del dropdown */
+  overflow-y: auto; /* Agregar scroll si hay demasiadas opciones */
+}
+
+.option {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.option:hover {
+  background-color: #f0f0f0; /* Cambiar el color al pasar el mouse */
+}

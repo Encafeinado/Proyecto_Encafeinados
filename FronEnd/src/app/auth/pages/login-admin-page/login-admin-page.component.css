@@ -1,0 +1,182 @@
+/* Estilos generales */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #ffffff; /* Fondo amarillo claro */
+  margin: 0;
+  padding: 0;
+}
+
+/* Estilos para el encabezado */
+header h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  color: #03AED2; /* Azul principal */
+}
+
+header p {
+  font-size: 1.5rem;
+  color: #6c757d; /* Gris */
+}
+
+.txt1 {
+  font-size: 1rem;
+  color: #491a1a; /* Gris */
+}
+
+/* Estilos para las secciones */
+section h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #0f1eee; /* Amarillo brillante */
+}
+
+section p {
+  font-size: 1rem;
+  color: #000000; /* Azul principal */
+}
+
+blockquote {
+  background-color: #fff;
+  padding: 20px;
+  border-left: 5px solid #68D2E8; /* Azul claro */
+  color: #797d6c; /* Gris */
+}
+
+footer p {
+  font-size: 1rem;
+  color: #7d6c75; /* Gris */
+}
+
+.main-content {
+  padding-top: 100px; /* Ajusta este valor según la altura de tu navbar */
+}
+
+.form-container {
+  position: relative; /* Necesario si usas position: absolute en el Toastr */
+}
+
+.custom-error {
+  color: rgb(148, 36, 36); /* Color del texto del mensaje de error */
+  font-size: 14px; /* Ajusta el tamaño del texto */
+  margin-bottom: 10px; /* Añade espacio debajo del error para mover el formulario */
+  padding: 5px 10px; /* Espaciado interno */
+  background-color: #f8d7da; /* Fondo rojo claro */
+  border: 1px solid #f5c6cb; /* Borde */
+  border-radius: 4px; /* Bordes redondeados */
+  text-align: center; /* Centra el texto */
+}
+
+
+/* Ajuste del tamaño máximo del contenedor del formulario */
+.form-container {
+  border: 2px solid #e0d9d9; /* Borde del contenedor */
+  border-radius: 12px; /* Bordes redondeados */
+  padding: 10px; /* Reduce el padding interno */
+  background-color: #fff; /* Fondo blanco */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  position: relative;
+  max-width: 300px; /* Reduce el tamaño máximo del contenedor */
+  min-height: 100px; /* Ajusta según el tamaño necesario */
+  margin: 0 auto; /* Centra el contenedor */
+  
+}
+
+
+
+/* Estilos para el círculo de servicio */
+.service-circle-container {
+  width: 150px; /* Tamaño del círculo */
+  height: 150px; /* Tamaño del círculo */
+  border-radius: 50%; /* Círculo */
+  overflow: hidden; /* Ajusta la imagen al círculo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto; /* Centra el círculo */
+  background-color: #f0f0f0; /* Color de fondo opcional */
+}
+
+.service-circle-img {
+  width: 100%;
+  height: auto;
+}
+
+.service-circle-text {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+/* Ajustes responsivos para pantallas pequeñas */
+@media (max-width: 768px) {
+  .main-content {
+    padding-top: 150px; /* Ajusta este valor según la altura de tu navbar */
+  }
+  
+  .service-circle-container {
+    width: 100px; /* Tamaño más pequeño en pantallas pequeñas */
+    height: 100px; /* Tamaño más pequeño en pantallas pequeñas */
+  }
+
+  .service-circle-text {
+    font-size: 1rem; /* Tamaño de fuente más pequeño en pantallas pequeñas */
+  }
+}
+
+@media (max-width: 600px) {
+  .background-circle {
+    height: 300px; /* Ajusta el tamaño del círculo en pantallas pequeñas */
+  }
+
+  .carousel-item {
+    height: 100px; /* Ajusta la altura del carrusel en pantallas pequeñas */
+  }
+}
+
+/* Ajuste del tamaño del card */
+.card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  padding: 10px; /* Reduce el padding interno */
+  margin: 10px; /* Reduce el margen exterior */
+  position: relative;
+  max-width: 350px; /* Reduce el tamaño máximo del card */
+}
+
+
+
+
+/* Estilos para la sección de fondo circular */
+.background-circle {
+  position: relative;
+  background: radial-gradient(circle, rgba(129, 227, 240, 0.5), rgba(224, 247, 250, 0)); /* Degradado difuminado del azul claro */
+  border-radius: 100%;
+  padding: 20px; /* Espacio alrededor del contenido */
+  height: auto; /* Permite que el contenedor ajuste su altura según el contenido */
+  width: 100%; /* Ancho completo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Estilos para el contenedor de contenido */
+.content-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Estilos para el contenido de texto */
+.text-content {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.text-content .title {
+  font-size: 2em; /* Tamaño de fuente grande */
+  color: #0f1eee; /* Color negro */
+}
+

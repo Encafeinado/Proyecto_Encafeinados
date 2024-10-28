@@ -1,0 +1,98 @@
+<div class="container facturacion-container">
+  <!-- Fila para la imagen -->
+  <div class="row mb-4 justify-content-center">
+    <div class="col-md-8 text-center">
+      <img src="../../../../assets/images/QR.png" alt="Imagen de encabezado" class="img-fluid" />
+    </div>
+  </div>
+
+
+  <div class="row mb-4 align-items-center">
+    <!-- Selector de años -->
+    <div class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0">
+      <label for="years" class="mr-2">Año:</label>
+      <div class="custom-select year-select" (click)="toggleYearDropdown()">
+        <div class="selected-value">{{ selectedYear || 'Seleccione un año' }}</div>
+        <div class="options" *ngIf="yearDropdownOpen">
+          <div class="option" *ngFor="let year of years" (click)="selectYear(year)">{{ year }}</div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Selector de meses y botón de subir comprobante en la misma fila -->
+    <div class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0">
+      <label for="months" class="mr-2">Mes:</label>
+      <div class="custom-select month-select" (click)="toggleMonthDropdown()">
+        <div class="selected-value">{{ getSelectedMonthName() }}</div>
+        <div class="options" *ngIf="monthDropdownOpen">
+          <div class="option" *ngFor="let month of months" (click)="selectMonth(month.value)">{{ month.name }}</div>
+        </div>
+      </div>
+    </div>    
+  
+    <!-- Subir comprobante -->
+    <div class="col-12 col-sm-4 col-md-6 mb-2 mb-sm-0 qr-upload">
+      <label for="qrUpload" class="mr-2">Subir comprobante:</label>
+      <input type="file" id="qrUpload" class="form-control-file form-control-sm" accept="image/*,application/pdf"
+        required #qrUpload="ngModel" [(ngModel)]="qrImage" name="qrImage" (change)="onFileSelected($event)" />
+      <!-- Mensaje de error si no se ha seleccionado un archivo -->
+      <div *ngIf="qrUpload.invalid && submitted" class="text-danger mt-1">
+        Campo obligatorio.
+      </div>
+    </div>
+  </div>
+  
+  <!-- Tabla de códigos usados -->
+ 
+    <div class="col-md-12">
+      <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th class="text-center">Código Usado</th>
+            <th class="text-center">Valor</th>
+            <th class="text-center">Estado</th>
+            <th class="text-center">Acción</th><!-- Nueva columna para el icono de guardar -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="filteredCodes.length === 0">
+            <td class="text-center" colspan="5">No hay registros</td>
+          </tr>
+          <tr *ngFor="let code of filteredCodes">
+            <td class="text-center">{{ code.code }}</td>
+            <td class="text-center">{{ code.value | currency:'USD':'symbol':'1.0-0' }}</td>
+            <td class="text-center"
+              [ngClass]="{'text-success': code.status.toLowerCase() === 'pagado', 'text-danger': code.status.toLowerCase() === 'pendiente'}">
+              {{ code.status }}
+            </td>
+            <td class="text-center">
+              <button class="btn btn-success btn-sm" (click)="saveFile(code)"
+                [disabled]="isSaving || code.status.toLowerCase() === 'pagado'"
+                [ngClass]="{'btn-disabled': isSaving || code.status.toLowerCase() === 'pagado'}">
+                <i class="fas fa-save"></i> <!-- Ícono de Font Awesome -->
+              </button>
+
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+<ng-template #modalPayment let-modal>
+  <div class="modal-payment">
+    <div class="modal-header">
+      <h4 class="modal-title">Confirmación de Pago</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>¿Está seguro de que deseas guardar el comprobante pago?</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="modal.dismiss('cancel')">Cancelar</button>
+      <button type="button" class="btn btn-primary" (click)="confirmUpload(modal)">Confirmar</button>
+    </div>
+  </div>
+</ng-template>

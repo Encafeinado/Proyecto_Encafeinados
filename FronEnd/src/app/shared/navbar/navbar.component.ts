@@ -35,7 +35,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     setInterval(() => {
       const currentUser = this.authService.currentUser();
       this.userName = currentUser ? currentUser.name : 'Nombre del Usuario';
-      console.log(currentUser)
+      // console.log(currentUser)
       this.router.events.subscribe((event) => {
         if (event instanceof NavigationEnd) {
           this.isLoading = false;
@@ -58,7 +58,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 
   onLogout() {
     this.authService.logout();
+    this.router.navigateByUrl('/landing'); // Redirigir a landing después de logout
   }
+  
 
   setupDropdownToggle() {
     const dropdownButton = document.getElementById('userDropdown');
@@ -75,7 +77,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     return (
       this.isUserLanding() || 
       this.isUserLandingTienda() || 
-      
+      this.isPayment() || 
       (this.userName.trim().length > 0 && this.authService.isAuthenticated())
     );
   }
@@ -88,7 +90,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       this.router.url === '/store' ||
       this.router.url === '/map' ||
       this.router.url === '/landing'||
-      this.router.url === '/landing-tienda'
+      this.router.url === '/landing-tienda'||
+      this.router.url === '/admin-profile'||
+      this.router.url === '/payment' ||
+      this.router.url === '/billing-list'
     );
   }
 
@@ -127,6 +132,10 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     return this.router.url === '/auth/login';
   }
 
+  isOnLoginAdminPage(): boolean {
+    return this.router.url === '/auth/login-admin';
+  }
+
   isOnRegisterPage(): boolean {
     return this.router.url === '/auth/register';
   }
@@ -152,7 +161,24 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     return this.router.url === '/landing';
   }
 
+  isPayment(): boolean {
+    return this.router.url === '/payment';
+  }
+
   isUserLandingTienda(): boolean {
     return this.router.url === '/landing-tienda';
+  }
+
+
+  isAdminProfilePage(): boolean {
+    return this.router.url === '/admin-profile';
+  }
+
+  isUserAdmin(): boolean {
+    return this.authService.rolUser() === 'admin';
+  }
+
+  isBillingList(): boolean {
+    return this.router.url === '/billing-list';
   }
 }
