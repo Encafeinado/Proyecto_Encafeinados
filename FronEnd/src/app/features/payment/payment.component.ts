@@ -10,6 +10,7 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 })
 export class PaymentComponent implements OnInit {
   modalRef!: NgbModalRef;
+  amount: number = 0;
   yearDropdownOpen: boolean = false; // Estado para el dropdown del año
   monthDropdownOpen: boolean = false; // Estado para el dropdown del mes
   isSaving = false;
@@ -75,11 +76,25 @@ export class PaymentComponent implements OnInit {
   }
 
 
+  isEndOfMonth(): boolean {
+    const today = new Date();
+    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    return today.getDate() === lastDayOfMonth;
+  }
+
+
+ // isEndOfMonth(): boolean {
+   // const today = new Date();
+    //const simulatedLastDayOfMonth = 28; // Simula el último día del mes como el 28
+    //return today.getDate() === simulatedLastDayOfMonth;
+  //}
+  
+  
+
   handleClickOutside(event: MouseEvent): void {
     const target = event.target as HTMLElement;
     const yearSelect = document.querySelector('.year-select');
     const monthSelect = document.querySelector('.month-select');
-    const storeSelect = document.querySelector('.store-select');
 
     // Verificamos si el dropdown del año está abierto y si el click fue fuera del selector
     if (this.yearDropdownOpen && yearSelect && !yearSelect.contains(target)) {
@@ -117,47 +132,42 @@ export class PaymentComponent implements OnInit {
 
 
   fetchUsedCodes(shopId: string, year: number, month: string): void {
-    // Llamada para obtener el número de códigos usados
     this.storeService.getUsedCodes(shopId, year, month).subscribe(
       (count: number) => {
         this.codesUsedInMonth = count;
-
+  
         if (count > 0) {
-          const totalValue = count * 200; // Cada código tiene un valor de 200
-
-          // Llamada para obtener el estado del pago basado en el shopId
+          const totalValue = count * 200; // Calcula el valor total de todos los códigos
+          this.amount = totalValue; // Guarda el valor en `this.amount`
+  
           this.storeService.getPaymentStatus(shopId).subscribe(
             (response: { statusPayment: boolean }) => {
               const statusPayment = response.statusPayment;
               this.filteredCodes = [
                 {
-                  code: `${count}`, // Mostrar el total de códigos
-                  value: totalValue, // Valor total de todos los códigos
-                  status: statusPayment ? 'Pagado' : 'Rechazado' // Mostrar el estado correcto basado en la respuesta
+                  code: `${count}`,
+                  value: totalValue,
+                  status: statusPayment ? 'Pagado' : 'Rechazado'
                 }
               ];
-
-              console.log('Códigos generados con estado:', this.filteredCodes);
             },
             (error) => {
               if (error.status === 404) {
-                // Si el error es 404, mostramos 'Pendiente'
                 this.filteredCodes = [
                   {
                     code: `${count}`,
                     value: totalValue,
-                    status: 'Pendiente' // Estado por defecto si no se encuentra el pago
+                    status: 'Pendiente'
                   }
                 ];
               } else {
                 console.error('Error al obtener el estado del pago:', error);
-                // Otros errores diferentes a 404
                 this.filteredCodes = [];
               }
             }
           );
         } else {
-          this.filteredCodes = []; // Si no hay códigos, limpiar la tabla
+          this.filteredCodes = [];
         }
       },
       (error) => {
@@ -165,6 +175,7 @@ export class PaymentComponent implements OnInit {
       }
     );
   }
+  
 
 
 
@@ -189,17 +200,18 @@ export class PaymentComponent implements OnInit {
   async confirmUpload(modal: any): Promise<void> {
     // Espera a que se carguen los datos del usuario
     await this.loadUserData();
-
+  
     // Verifica los datos después de haberlos cargado
     if (!this.userRole || !this.shopData || !this.shopData.name) {
       console.error('Datos de la tienda no disponibles');
       modal.dismiss('cancel'); // Cierra el modal si no hay datos
       return;
     }
-
+  
     const paymentData = {
       nameShop: this.shopData.name,
       shopId: this.shopId,
+      amount: this.amount, // Asegúrate de asignar el valor correcto de 'amount'
       statusPayment: true,
       year: Number(this.selectedYear),
       month: Number(this.selectedMonth),
@@ -209,7 +221,7 @@ export class PaymentComponent implements OnInit {
         }
       ]
     };
-
+  
     // Llamada al servicio para guardar el pago
     this.storeService.savePayment(paymentData).subscribe(
       (response) => {
@@ -223,7 +235,7 @@ export class PaymentComponent implements OnInit {
       }
     );
   }
-
+  
 
 
   updatePaymentStatusToPaid(): void {

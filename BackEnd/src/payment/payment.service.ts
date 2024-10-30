@@ -40,7 +40,7 @@ export class PaymentService {
       const newPayment = new this.paymentModel(createPaymentDto);
       return newPayment.save();
     } catch (error) {
-      throw new InternalServerErrorException('Error creando el libro');
+      throw new InternalServerErrorException('Error creando el pago');
     }
   }
 

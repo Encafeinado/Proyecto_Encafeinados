@@ -9,6 +9,11 @@ export class CreatePaymentDto {
   @IsNotEmpty()
   shopId: string; // ID de la tienda
 
+  @IsNumber()
+  @IsNotEmpty()
+  amount: number; // valor del pago
+
+
   @IsBoolean()
   @IsNotEmpty()
   statusPayment: boolean; // Estado del pago
