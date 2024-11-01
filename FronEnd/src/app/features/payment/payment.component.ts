@@ -82,12 +82,6 @@ export class PaymentComponent implements OnInit {
     return today.getDate() === lastDayOfMonth;
   }
 
-
- // isEndOfMonth(): boolean {
-   // const today = new Date();
-    //const simulatedLastDayOfMonth = 28; // Simula el último día del mes como el 28
-    //return today.getDate() === simulatedLastDayOfMonth;
-  //}
   
   
 
@@ -128,7 +122,6 @@ export class PaymentComponent implements OnInit {
       this.years.push(year);
     }
   }
-
 
 
   fetchUsedCodes(shopId: string, year: number, month: string): void {
@@ -177,8 +170,6 @@ export class PaymentComponent implements OnInit {
   }
   
 
-
-
   // Método para guardar el archivo y abrir el modal
   saveFile(code: any): void {
     // Establecer la variable 'submitted' en true cuando se intenta guardar
@@ -193,8 +184,6 @@ export class PaymentComponent implements OnInit {
     // Si todos los campos son válidos, abre el modal de confirmación
     this.openConfirmationModal(this.modalPayment);
   }
-
-
 
 
   async confirmUpload(modal: any): Promise<void> {
