@@ -115,6 +115,10 @@
   font-size: 0.875rem;
 }
 
+.qr-image {
+  width: 200px; /* Ajusta el ancho a tu preferencia */
+  height: auto; /* Mantiene la proporción de la imagen */
+}
 
 .qr-upload {
   display: flex;
@@ -128,7 +132,7 @@
 }
 
 .qr-upload input[type="file"] {
-  width: 100%; /* Asegura que el input ocupe todo el ancho disponible */
+  width: 50%; /* Asegura que el input ocupe todo el ancho disponible */
 }
 
 .grid-section {

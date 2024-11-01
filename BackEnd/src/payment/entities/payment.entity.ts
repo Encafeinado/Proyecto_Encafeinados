@@ -10,6 +10,9 @@ export class Payment {
   shopId: string; // ID de la tienda
 
   @Prop({ required: true })
+  amount: number; // valor del pago
+
+  @Prop({ required: true })
   statusPayment: boolean; // Estado del pago (completado o no)
 
   @Prop({ required: true })
