@@ -126,32 +126,41 @@ export class PaymentComponent implements OnInit {
 
   fetchUsedCodes(shopId: string, year: number, month: string): void {
     this.storeService.getUsedCodes(shopId, year, month).subscribe(
-      (count: number) => {
-        this.codesUsedInMonth = count;
+      (response) => {
   
-        if (count > 0) {
-          const totalValue = count * 200; // Calcula el valor total de todos los códigos
-          this.amount = totalValue; // Guarda el valor en `this.amount`
+        if (!response || !response.codeUsageDates) {
+          console.error('codeUsageDates es undefined o no existe en la respuesta');
+          this.codesUsedInMonth = 0;
+          this.filteredCodes = [];
+          return;
+        }
+  
+        const filteredDates = response.codeUsageDates;
+        this.codesUsedInMonth = filteredDates.length;
+  
+        if (this.codesUsedInMonth > 0) {
+          const totalValue = this.codesUsedInMonth * 200;
+          this.amount = totalValue;
   
           this.storeService.getPaymentStatus(shopId).subscribe(
-            (response: { statusPayment: boolean }) => {
-              const statusPayment = response.statusPayment;
+            (paymentResponse: { statusPayment: boolean }) => {
+              const statusPayment = paymentResponse.statusPayment;
               this.filteredCodes = [
                 {
-                  code: `${count}`,
+                  code: `${this.codesUsedInMonth}`,
                   value: totalValue,
-                  status: statusPayment ? 'Pagado' : 'Rechazado'
-                }
+                  status: statusPayment ? 'Pagado' : 'Rechazado',
+                },
               ];
             },
             (error) => {
               if (error.status === 404) {
                 this.filteredCodes = [
                   {
-                    code: `${count}`,
+                    code: `${this.codesUsedInMonth}`,
                     value: totalValue,
-                    status: 'Pendiente'
-                  }
+                    status: 'Pendiente',
+                  },
                 ];
               } else {
                 console.error('Error al obtener el estado del pago:', error);
@@ -168,6 +177,7 @@ export class PaymentComponent implements OnInit {
       }
     );
   }
+  
   
 
   // Método para guardar el archivo y abrir el modal

@@ -39,7 +39,7 @@ export class ShopController {
     @Param('id') id: string,
     @Query('year') year: number,
     @Query('month') month: number,
-  ): Promise<number> {
+  ): Promise<{ codeUsageDates: { date: Date }[] }> {
     return this.shopService.getUsedCodesByMonth(id, year, month);
   }
   
