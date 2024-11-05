@@ -9,8 +9,12 @@
         <h2><strong>Código de la tienda</strong></h2>
         <p><strong>Tu código aleatorio es:</strong> {{ codigo }}</p>
         <p><strong>Número de personas que han ingresado el código:</strong> {{ codeEntries }}</p>
-        <button class="btn" (click)="useCode()">Generar un nuevo código</button>
+        <button class="btn" (click)="useCode()" [disabled]="isLoading">
+          <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          {{ isLoading ? 'Cargando...' : 'Generar un nuevo código' }}
+        </button>
       </div>
+      
 
       <div class="activation-section">
         <h2><strong>Activar Tienda en el Mapa</strong></h2>

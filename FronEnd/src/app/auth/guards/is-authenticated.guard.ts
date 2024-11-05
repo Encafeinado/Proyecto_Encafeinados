@@ -10,12 +10,11 @@ export const IsAuthenticatedGuard: CanActivateFn = (route, state) => {
   const authStatus = authService.authStatus();
   const currentUser = authService.currentUser();
 
-  // Permitir acceso a las rutas '/profile' y '/reset-password'
-  if (state.url === '/perfil' ) {
+  // Permitir acceso a las rutas '/perfil' y '/reset-password'
+  if (state.url === '/perfil') {
     if (authStatus === AuthStatus.verify || authStatus === AuthStatus.authenticated) {
       return true;
     } else {
-      router.navigateByUrl('/landing');
       return false;
     }
   }
@@ -30,13 +29,14 @@ export const IsAuthenticatedGuard: CanActivateFn = (route, state) => {
         router.navigateByUrl('/map');
       } else if (currentUser && currentUser.roles.includes('shop')) {
         router.navigateByUrl('/store');
+      } else if (currentUser && currentUser.roles.includes('admin')) {
+        router.navigateByUrl('/admin-profile'); // Redirigir a admin-profile
       } else {
-        router.navigateByUrl('/landing');
+      
       }
       return false;
     }
   }
 
-  router.navigateByUrl('/landing');
   return false;
 };

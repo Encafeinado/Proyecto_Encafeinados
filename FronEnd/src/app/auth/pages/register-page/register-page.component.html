@@ -37,7 +37,8 @@
               </div>
 
               <!-- Solo se muestra un error a la vez, en este orden: requerido, minlength, maxlength, invalidName -->
-              <div *ngIf="myForm.get('name')?.touched && myForm.get('name')?.hasError('required')" class="error-message">
+              <div *ngIf="myForm.get('name')?.touched && myForm.get('name')?.hasError('required')"
+                class="error-message">
                 El campo es obligatorio.
               </div>
               <div
@@ -56,7 +57,6 @@
                 Solo letras,sin espacios ni símbolos.
               </div>
             </div>
-
 
             <!-- Correo -->
             <div class="wrap-input100 m-b-23 form-outline mb-4">
@@ -83,6 +83,28 @@
                 El formato del correo no es válido.
               </div>
             </div>
+
+            <!-- Procedencia -->
+            <div *ngIf="isUser" class="wrap-input100 m-b-23 form-outline mb-4">
+              <span class="label-input100">Procedencia</span>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" formControlName="origin" value="Local">
+                  <span class="radio-label">Local</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" formControlName="origin" value="Extranjero">
+                  <span class="radio-label">Extranjero</span>
+                </label>
+              </div>
+
+              <!-- Mostrar error si el campo está vacío -->
+              <div *ngIf="myForm.get('origin')?.touched && myForm.get('origin')?.hasError('required')"
+                class="error-message">
+                El campo procedencia es obligatorio.
+              </div>
+            </div>
+
             <!-- Contraseña -->
             <div class="wrap-input100 m-b-23 form-outline mb-4">
               <span class="label-input100">Contraseña</span>
@@ -137,37 +159,44 @@
               </div>
             </div>
 
-    <!-- Celular -->
-<div class="wrap-input100 m-b-23 form-outline mb-4">
-  <span class="label-input100">Celular</span>
-  <div class="input-with-eye">
-    <input class="input100 small-placeholder form-control" type="text" formControlName="phone" placeholder="Celular">
-    <span class="focus-input100"></span>
-  </div>
+            <!-- Celular -->
+            <div class="wrap-input100 m-b-23 form-outline mb-4">
+              <span class="label-input100">Celular</span>
+              <div class="input-with-eye">
+                <input class="input100 small-placeholder form-control" type="text" formControlName="phone"
+                  placeholder="Celular">
+                <span class="focus-input100"></span>
+              </div>
 
-  <!-- Mostrar un solo error a la vez, usando 'dirty' -->
-  <div *ngIf="myForm.get('phone')?.dirty">
-    <!-- Validación de campo requerido -->
-    <div *ngIf="myForm.get('phone')?.hasError('required')" class="error-message">
-      El campo celular es obligatorio.
-    </div>
+              <!-- Mostrar un solo error a la vez, usando 'dirty' -->
+              <div *ngIf="myForm.get('phone')?.dirty">
+                <!-- Validación de campo requerido -->
+                <div *ngIf="myForm.get('phone')?.hasError('required')" class="error-message">
+                  El campo celular es obligatorio.
+                </div>
 
-    <!-- Validación de solo números -->
-    <div *ngIf="myForm.get('phone')?.hasError('invalidPhoneNumber') && !myForm.get('phone')?.hasError('required')" class="error-message">
-      Solo debe contener números.
-    </div>
+                <!-- Validación de solo números -->
+                <div
+                  *ngIf="myForm.get('phone')?.hasError('invalidPhoneNumber') && !myForm.get('phone')?.hasError('required')"
+                  class="error-message">
+                  Solo debe contener números.
+                </div>
 
-    <!-- Validación de longitud mínima (solo se muestra si no hay error de 'invalidPhoneNumber') -->
-    <div *ngIf="myForm.get('phone')?.hasError('minlength') && !myForm.get('phone')?.hasError('required') && !myForm.get('phone')?.hasError('invalidPhoneNumber')" class="error-message">
-      Mínimo debe tener 10 números.
-    </div>
+                <!-- Validación de longitud mínima (solo se muestra si no hay error de 'invalidPhoneNumber') -->
+                <div
+                  *ngIf="myForm.get('phone')?.hasError('minlength') && !myForm.get('phone')?.hasError('required') && !myForm.get('phone')?.hasError('invalidPhoneNumber')"
+                  class="error-message">
+                  Mínimo debe tener 10 números.
+                </div>
 
-    <!-- Validación de longitud máxima (solo se muestra si no hay error de 'invalidPhoneNumber') -->
-    <div *ngIf="myForm.get('phone')?.hasError('maxlength') && !myForm.get('phone')?.hasError('required') && !myForm.get('phone')?.hasError('invalidPhoneNumber')" class="error-message">
-      Máximo debe tener 10 números.
-    </div>
-  </div>
-</div>
+                <!-- Validación de longitud máxima (solo se muestra si no hay error de 'invalidPhoneNumber') -->
+                <div
+                  *ngIf="myForm.get('phone')?.hasError('maxlength') && !myForm.get('phone')?.hasError('required') && !myForm.get('phone')?.hasError('invalidPhoneNumber')"
+                  class="error-message">
+                  Máximo debe tener 10 números.
+                </div>
+              </div>
+            </div>
 
 
             <!-- Campos específicos para tiendas -->
