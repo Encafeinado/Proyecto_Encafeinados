@@ -58,8 +58,7 @@ Si no está de acuerdo con el tratamiento de sus datos personales bajo los térm
 le solicitamos que se abstenga de utilizar nuestra plataforma. 
 6. Contacto 
 Para  cualquier  consulta  o  solicitud  relacionada  con  el  tratamiento  de  sus datos  personales, 
-puede  comunicarse  con  nosotros  a  través  del  correo  electrónico  [correo  de  contacto]  o  al 
-número de celular [número de contacto]. 
+puede  comunicarse  con  nosotros  a  través  del  correo  electrónico encafeinados4@gmail.com o al número de celular 3006292795. 
  
 Importante:  Al  hacer  clic  en  "Aceptar"  o  al  continuar  con  el  proceso  de  registro,  usted 
 declara que ha leído y  comprendido esta política de tratamiento de datos  personales y que 

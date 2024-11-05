@@ -1,43 +1,65 @@
-.profile-container {
-  max-width: 600px;
+.profile-container { 
+  max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  background-color: #f8f9fa;
+  border-radius: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .profile-header {
   text-align: center;
-  font-size: 2em;
-  margin-bottom: 20px;
-  color: #333;
+  margin-bottom: 30px;
 }
 
-.profile-details {
-  display: flex;
-  flex-direction: column;
+.profile-header h1 {
+  font-size: 2.5em;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Tarjeta de perfil */
+.profile-card {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
 }
 
 .profile-item {
+  padding: 15px;
+  border-radius: 10px;
   display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #e0e0e0;
+  align-items: center;
+  gap: 15px;
+  transition: background-color 0.3s ease;
 }
 
-.profile-item:last-child {
-  border-bottom: none;
+.profile-item:hover {
+  background-color: #f1f1f1;
 }
 
 .profile-item label {
-  font-weight: bold;
-  color: #555;
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .profile-item p {
+  font-size: 1.1em;
   color: #666;
   margin: 0;
+}
+
+i {
+  color: #888;
+  font-size: 1.5em;
 }
 
 
@@ -54,4 +76,86 @@
   max-width: 150px; /* Ajusta el tamaño máximo del logo */
   max-height: 150px; /* Ajusta la altura máxima del logo */
   border-radius: 8px; /* Opcional: agrega bordes redondeados */
+}
+
+.shop-profile-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #fafafa;
+  border-radius: 12px;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Header de la tienda */
+.shop-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 20px;
+}
+
+.shop-logo-container {
+  flex-shrink: 0;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.shop-logo {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.shop-name-container h1 {
+  font-size: 2.5em;
+  color: #333;
+  margin: 0;
+  font-weight: bold;
+}
+
+.shop-slogan {
+  font-size: 1.1em;
+  color: #777;
+  margin-top: 5px;
+}
+
+/* Detalles de la tienda */
+.shop-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.shop-detail {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.shop-detail i {
+  font-size: 2em;
+  color: #5a5a5a;
+}
+
+.shop-detail h3 {
+  margin: 0;
+  font-size: 1.4em;
+  color: #333;
+}
+
+.shop-detail p {
+  margin: 5px 0 0;
+  color: #666;
+  font-size: 1.1em;
 }
