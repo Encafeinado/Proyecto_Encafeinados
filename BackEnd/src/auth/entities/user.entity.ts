@@ -25,6 +25,9 @@ export class User {
 
     @Prop({default: 0})
     cafecoin: number;
+
+    @Prop({required: true, enum: ['Local', 'Extranjero'], default: 'Local'})
+    origin: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

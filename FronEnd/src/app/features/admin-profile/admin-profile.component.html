@@ -2,82 +2,160 @@
   <div class="profile-container">
 
     <!-- Total de clientes -->
-    <div class="stats-container">
-      <!-- Total de clientes -->
-      <div class="card mb-0 stat-box">
-        <h2>Total CoffeLovers</h2>
-        <div class="text-xl">{{ totalClients }}</div>
-        <div class="flex align-items-center justify-content-center bg-blue-100 border-round"
-          [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
-          <i class="pi pi-users text-blue-500 text-xl"></i>
-        </div>
-      </div>
-
-      <!-- Total de cafecoins -->
-      <div class="card mb-0 stat-box">
-        <h2>Total CoffeCoins</h2>
-        <div class="text-xl">{{ totalCafecoins }}</div>
-        <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
-          [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
-          <i class="pi pi-coins text-orange-500 text-xl"></i>
-        </div>
-      </div>
-
-      <!-- Total de tiendas registradas -->
-      <div class="card mb-0 stat-box">
-        <h2>Total Tiendas</h2>
-        <div class="text-xl">{{ totalShops }}</div>
-        <div class="flex align-items-center justify-content-center bg-green-100 border-round"
-          [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
-          <i class="pi pi-check-circle text-green-500 text-xl"></i>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Listado de tiendas con promedio de calificaciones y codeUsage -->
-    <div class="shops-container">
-      <div *ngFor="let shop of shopsWithAverageRatings" class="shop-card">
-        <div class="shop-details">
-          <span class="shop-name">{{ shop.name }}</span>
-
-          <!-- Mostrar el promedio de calificaciones -->
-          <div class="shop-info">
-            <i class="pi pi-star"></i>
-            <span class="title-bold">Promedio de estrellas:</span> {{ shop.averageRating | number:'1.1-1' }}
-          </div>
-
-          <div class="shop-info">
-            <i class="pi pi-users"></i>
-            <span class="title-bold">Usos del código:</span> {{ shop.codeUsage }}
-          </div>
-
-
-        </div>
-      </div>
-    </div>
-    <br>
-
-
-    <!-- Mostrar las reviews -->
-    <div class="reviews-section">
-      <h1><b>Comentarios</b></h1>
-
-      <div class="reviews-container">
-        <!-- Mostrar mensaje si no hay comentarios -->
-        <div *ngIf="reviews.length === 0; else reviewsTemplate" class="no-reviews-message">
-          <p>No hay comentarios disponibles</p>
-        </div>
-
-        <!-- Mostrar las reviews si existen -->
-        <ng-template #reviewsTemplate>
-          <div class="review-card" *ngFor="let review of reviews">
-            <div class="review-content">
-              {{ review.review }}
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-2 col-md-3 col-sm-6">
+          <div class="card stat-box">
+            <h2>Total CoffeLovers</h2>
+            <div class="text-xl">{{ totalClients }}</div>
+            <div class="icon-container">
+              <i class="pi pi-users text-blue-500 text-xl"></i>
             </div>
           </div>
-        </ng-template>
+        </div>
+        
+        <div class="col-lg-2 col-md-3 col-sm-6">
+          <div class="card stat-box">
+            <h2>Total CoffeCoins</h2>
+            <div class="text-xl">{{ totalCafecoins }}</div>
+            <div class="icon-container">
+              <i class="pi pi-coins text-orange-500 text-xl"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-3 col-sm-6">
+          <div class="card stat-box">
+            <h2>Total Tiendas</h2>
+            <div class="text-xl">{{ totalShops }}</div>
+            <div class="icon-container">
+              <i class="pi pi-check-circle text-green-500 text-xl"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-3 col-sm-6">
+          <div class="card stat-box">
+            <h2>Personas Locales</h2>
+            <div class="text-xl">{{ totalLocalClients }}</div>
+            <div class="icon-container">
+              <i class="pi pi-users text-blue-500 text-xl"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-3 col-sm-6">
+          <div class="card stat-box">
+            <h2>Personas Extranjeras</h2>
+            <div class="text-xl">{{ totalForeignClients }}</div>
+            <div class="icon-container">
+              <i class="pi pi-users text-green-500 text-xl"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <br><br>
+    <!-- Top 5 section -->
+    <div class="container">
+      <!-- Top 5 section -->
+      <div class="top5-container">
+        <!-- Top 5 Tiendas por códigos usados -->
+        <div class="top5-item">
+          <h2>Top 5 Tiendas por Códigos Usados</h2>
+          <ul>
+            <li *ngFor="let shop of top5ShopsByCodeUsage; let i = index" style="text-align: left;">
+              <span class="top-number">{{ i + 1 }}.</span> {{ shop.name }}: {{ shop.codeUsage }} códigos usados
+            </li>
+          </ul>
+        </div>
+
+        <!-- Top 5 Tiendas por Promedio de Calificaciones -->
+        <div class="top5-item">
+          <h2>Top 5 Tiendas por Promedio</h2>
+          <ul>
+            <li *ngFor="let shop of top5ShopsByAverageRating; let i = index" style="text-align: left;">
+              <span class="top-number">{{ i + 1 }}.</span> {{ shop.name }} - Promedio: {{ shop.averageRating |
+              number:'1.1-1' }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Top 5 Usuarios por Cafecoins -->
+        <div class="top5-item">
+          <h2>Top 5 CoffeLovers por CoffeCoins</h2>
+          <ul>
+            <li *ngFor="let user of top5UsersByCafecoins; let i = index" style="text-align: left;">
+              <span class="top-number">{{ i + 1 }}.</span> {{ user.name }}: {{ user.cafecoin }} Coffecoins
+            </li>
+          </ul>
+        </div>
+
+        <!-- Top 5 Usuarios por Estampitas -->
+        <div class="top5-item">
+          <h2>Top 5 CoffeLovers por Sellos</h2>
+          <ul>
+            <li *ngFor="let user of top5UsersByStickers; let i = index" style="text-align: left;">
+              <span class="top-number">{{ i + 1 }}.</span> {{ user.name }}: {{ user.stickerCount }} sellos <br>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Top 5 Usuarios por Coffecoins y Estampitas -->
+        <div class="top5-item">
+          <h2>Top 5 CoffeLovers por Coffecoins y Sellos</h2>
+          <ul>
+            <li *ngFor="let user of top5UsersByCafecoinsAndStickers; let i = index" style="text-align: left;">
+              <span class="top-number">{{ i + 1 }}.</span> {{ user.name }}: {{ user.cafecoin }} Coffecoins - {{
+              user.stickerCount }} Sellos
+            </li>
+          </ul>
+        </div>
+      </div>
+      <br><br>
+      <h1 style="text-align: center;"><b>Resumen de las tiendas</b></h1>
+      <div class="shops-section">
+        <div class="shops-container">
+
+          <div *ngFor="let shop of shopsWithAverageRatings" class="shop-card">
+            <div class="shop-details">
+              <span class="shop-name">{{ shop.name }}</span>
+
+              <!-- Mostrar el promedio de calificaciones -->
+              <div class="shop-info">
+                <i class="pi pi-star"></i>
+                <span class="title-bold">Promedio de estrellas:</span> {{ shop.averageRating | number:'1.1-1' }}
+              </div>
+
+              <div class="shop-info">
+                <i class="pi pi-users"></i>
+                <span class="title-bold">Usos del código:</span> {{ shop.codeUsage }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br>
+      <!-- Mostrar las reviews -->
+      <div class="reviews-section">
+        <h1><b>Comentarios</b></h1>
+        <div class="reviews-container">
+          <!-- Mostrar mensaje si no hay comentarios -->
+          <div *ngIf="reviews.length === 0; else reviewsTemplate" class="no-reviews-message">
+            <p>No hay comentarios disponibles</p>
+          </div>
+
+          <!-- Mostrar las reviews si existen -->
+          <ng-template #reviewsTemplate>
+            <div class="review-card" *ngFor="let review of reviews">
+              <div class="review-content">
+                {{ review.review }}
+              </div>
+            </div>
+          </ng-template>
+        </div>
       </div>
     </div>
   </div>
-</div>

@@ -1,0 +1,407 @@
+.facturacion-container {
+  width: 95%;
+  max-width: 1200px; /* Limita el ancho máximo para pantallas grandes */
+  padding: 40px;
+  margin-top: 120px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.col-md-12 {
+  width: 100%; /* Hace que el div sea más ancho que el 100% del contenedor */
+  margin-left: 1%; /* Mueve el div hacia la izquierda para centrarlo */
+  margin-right: -5%; /* Opcional, para asegurarse de que esté centrado */
+  padding: 2%;
+}
+
+.facturacion-container img {
+  margin-bottom: 20px; /* Agrega espacio entre la imagen y el contenido inferior */
+}
+
+.modal-payment {
+  background-color: #fffaf0; /* Color de fondo más claro */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  font-family: "Poppins", sans-serif;
+  position: relative; /* Para las decoraciones */
+  overflow: hidden; /* Evitar que se muestren elementos que sobresalen */
+}
+
+.modal-title {
+  font-size: 1.5em;
+  margin: 0;
+  text-align: center; /* Asegura que el texto esté centrado */
+}
+
+.modal-payment::before,
+.modal-payment::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  width: 20px;
+  background: linear-gradient(to bottom, #68d2e8, #03aed2);
+  z-index: -1;
+  border-radius: 10px;
+}
+
+.modal-payment::before {
+  left: -25px;
+  transform: rotate(2deg);
+}
+
+.modal-payment::after {
+  right: -25px;
+  transform: rotate(-2deg);
+}
+
+.modal-payment .modal-header {
+  background-color: #0f1eee;
+  color: #ffffff;
+  border: none; /* Eliminamos el borde */
+  padding: 15px;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.modal-footer .btn {
+  margin: 0 10px;
+  background-color: #2516f1;
+  color: #ffffff;
+}
+
+.modal-footer .btn:hover {
+  background-color: #676ed6;
+}
+
+.modal-payment .modal-header::after {
+  content: "Pasaporte";
+  position: absolute;
+  bottom: -20px;
+  right: 20px;
+  font-size: 0.8rem;
+  color: #03aed2;
+}
+
+.modal-payment .modal-header .close {
+  color: #ffffff;
+  opacity: 1;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.modal-payment .modal-body {
+  padding: 20px;
+  background-color: #d4f1f7;
+  border-radius: 0 0 10px 10px;
+}
+.modal-payment .modal-footer {
+  padding: 15px;
+  display: flex;
+  justify-content: center; /* Cambiado a 'center' para centrar los botones */
+  border-top: 1px solid #E0E0E0;
+}
+
+.table {
+  width: 100%; /* Asegúrate de que la tabla ocupe el 100% del ancho disponible */
+}
+
+.meses {
+  display: flex;
+  align-items: center; /* Alinea el select y el label verticalmente */
+}
+
+.meses label {
+  margin-right: 10px; /* Ajusta el espacio entre el label y el select */
+}
+
+.meses select {
+  width: 100%; /* Asegura que ocupe todo el espacio del contenedor */
+  max-width: 150px; /* Limita el ancho máximo del select a 100px */
+  padding: 5px; /* Ajusta el relleno */
+}
+
+.table .btn-sm {
+  padding: 3px 6px;
+  font-size: 0.875rem;
+}
+
+.qr-image {
+  width: 200px; /* Ajusta el ancho a tu preferencia */
+  height: auto; /* Mantiene la proporción de la imagen */
+}
+
+.qr-upload {
+  display: flex;
+  flex-direction: column; /* Asegura que el label y el input de archivo estén alineados en columnas */
+  align-items: flex-start;
+}
+
+.qr-upload label {
+  margin-right: 0; /* Elimina el margen derecho para que el label esté completamente arriba */
+  display: block; /* Asegura que el label esté en su propia línea */
+}
+
+.qr-upload input[type="file"] {
+  width: 50%; /* Asegura que el input ocupe todo el ancho disponible */
+}
+
+.grid-section {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.grid-section table {
+  width: 100%; /* Asegúrate de que la tabla ocupe todo el ancho del contenedor */
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.grid-section th, .grid-section td {
+  padding: 15px; /* Aumenta el padding para que el contenido no quede tan compacto */
+  border: 1px solid #ddd;
+}
+
+.grid-section td.pagado {
+  color: green;
+}
+
+.grid-section td.rechazado {
+  color: red;
+}
+
+
+.btn-disabled {
+  background-color: #cccccc; /* Color gris claro */
+  border-color: #cccccc;
+  color: #666666; /* Color del texto */
+  pointer-events: none; /* Desactivar interacción */
+}
+
+.custom-select {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  cursor: pointer;
+}
+
+.selected-value {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: background-color 0.3s;
+}
+
+.options {
+  position: absolute;
+  top: 100%; /* Asegura que la lista se muestre debajo del elemento */
+  left: 0;
+  right: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  z-index: 1000;
+  max-height: 160px; /* Limitar la altura del dropdown */
+  overflow-y: auto; /* Agregar scroll si hay demasiadas opciones */
+}
+
+.option {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.option:hover {
+  background-color: #f0f0f0; /* Cambiar el color al pasar el mouse */
+}
+
+label {
+  font-size: 1rem; /* Ajustar el tamaño del label */
+}
+
+@media (max-width: 768px) {
+
+  .facturacion-container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 50px; /* Reducido el padding */
+    margin-top: 100px; /* Reducido el margen superior */
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+
+  .facturacion-container img {
+    width: 100%; /* Imagen más pequeña para móviles */
+    margin-bottom: 10px;
+  }
+
+  .modal-payment {
+    padding: 10px; /* Reducir padding en el modal */
+  }
+
+  .modal-payment .modal-header {
+    padding: 8px;
+    font-size: 0.85rem; /* Reducir el tamaño de fuente */
+  }
+
+  .modal-payment .modal-body,
+  .modal-payment .modal-footer {
+    padding: 8px;
+  }
+
+  .meses label {
+    margin-right: 5px; /* Reducido el margen */
+  }
+
+  .meses select {
+    width: 100%; /* Ocupa todo el ancho disponible */
+    padding: 3px;
+  }
+
+  /* Año y Mes */
+  .facturacion-container label {
+    font-size: 0.85rem; /* Reduce el tamaño del texto en los labels */
+  }
+
+  .facturacion-container select {
+    font-size: 0.85rem; /* Reduce el tamaño de fuente en los selectores */
+    padding: 3px 8px; /* Reduce el padding en los selectores */
+  }
+
+  /* Subir comprobante */
+  .qr-upload label {
+    font-size: 0.85rem; /* Reduce el tamaño del label */
+    margin-right: 10px; /* Reduce el margen entre label e input */
+  }
+
+  .qr-upload input[type="file"] {
+    font-size: 0.85rem; /* Reduce el tamaño de la fuente en el input de archivo */
+    width: 100%; /* Asegura que ocupe todo el espacio */
+  }
+
+  .form-group {
+    margin-bottom: 10px; /* Reduce el espacio entre los campos de formulario */
+  }
+  .grid-section table {
+    font-size: 0.85rem; /* Aumentado el tamaño de fuente en la tabla */
+  }
+
+  .grid-section th,
+  .grid-section td {
+    padding: 10px; /* Aumentado el padding para que los elementos tengan más espacio */
+  }
+
+  .btn-sm {
+    padding: 4px 8px; /* Aumentado el tamaño de los botones */
+    font-size: 0.85rem; /* Aumentado el tamaño de fuente de los botones */
+  }
+}
+
+@media (max-width: 576px) {
+  .facturacion-container {
+    width: 95%;
+    max-width: 1200px;
+    padding: 40px; /* Reducido el padding */
+    margin-top: 105px; /* Reducido el margen superior */
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  .modal-payment {
+    padding: 5px; /* Reducir aún más el padding */
+    font-size: 0.75rem; /* Tamaño de fuente reducido */
+  }
+
+   /* Año y Mes */
+   .facturacion-container label {
+    font-size: 0.8rem; /* Reduce aún más el tamaño del texto en los labels */
+  }
+  .form-control-sm{
+    font-size: .655rem;
+  }
+
+
+  .facturacion-container select {
+    font-size: 0.8rem; /* Reduce aún más el tamaño de fuente en los selectores */
+    padding: 7px 9px; /* Reduce el padding en los selectores */
+  }
+
+  /* Subir comprobante */
+  .qr-upload label {
+    font-size: 0.8rem; /* Reduce el tamaño del label */
+  }
+
+  .qr-upload input[type="file"] {
+    font-size: 0.8rem; /* Reduce aún más el tamaño de la fuente en el input de archivo */
+  }
+
+  .modal-payment .modal-header {
+    font-size: 0.75rem; /* Reducir el tamaño de fuente aún más */
+  }
+
+  .grid-section table {
+    font-size: 0.85rem; /* Aumentado el tamaño de fuente de la tabla */
+  }
+  .col-md-12 {
+    width: 120%; /* Hace que el div sea más ancho que el 100% del contenedor */
+    margin-left: -10%; /* Mueve el div hacia la izquierda para centrarlo */
+    margin-right: -5%; /* Opcional, para asegurarse de que esté centrado */
+    padding: 1%;
+}
+
+  .grid-section th,
+  .grid-section td {
+    padding: 20px; /* Aumentado el padding */
+  }
+
+  .btn-sm {
+    padding: 3px 6px; /* Aumentado el tamaño de los botones */
+    font-size: 0.8rem; /* Aumentado el tamaño de fuente */
+  }
+
+
+  .custom-select {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    cursor: pointer;
+  }
+  
+  .selected-value {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    transition: background-color 0.3s;
+  }
+  
+  .options {
+    position: absolute;
+    top: 100%; /* Asegura que la lista se muestre debajo del elemento */
+    left: 0;
+    right: 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    z-index: 1000;
+    max-height: 120px; /* Limitar la altura del dropdown */
+    overflow-y: auto; /* Agregar scroll si hay demasiadas opciones */
+  }
+  
+  .option {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .option:hover {
+    background-color: #f0f0f0; /* Cambiar el color al pasar el mouse */
+  }
+  
+}

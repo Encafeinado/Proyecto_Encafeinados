@@ -32,42 +32,36 @@ export class ShopService {
     code: string,
     userId: string,
     review?: string,
-    rating?: number
+    rating?: number,
   ): Promise<{ message: string; shop?: ShopDocument }> {
-    // Buscar la tienda con el código de verificación
     const shop = await this.shopModel.findOne({ verificationCode: code });
   
     if (!shop) {
       return { message: 'Código de verificación no válido' };
     }
   
-    // Actualizar los CoffeeCoins del usuario
     const user = await this.userModel.findById(userId);
     if (user) {
-      user.cafecoin += 10; // Aumentar los CoffeeCoins
+      user.cafecoin += 10;
       await user.save();
     }
   
-    // Actualizar el uso del código y generar un nuevo código de verificación
     shop.codeUsage = (shop.codeUsage || 0) + 1;
     shop.verificationCode = await this.generateUniqueVerificationCode();
   
-    // Si se proporciona una calificación, añádela a la tienda
     if (rating) {
       shop.ratings.push({ stars: rating });
     }
   
-    // Si se proporciona una reseña, añádela a la tienda
     if (review) {
-      shop.reviews.push({
-        text: review,
-        user: userId, // Guardar el ID del usuario para referencia
-      });
+      shop.reviews.push({ text: review, user: userId });
     }
+  
+    // Agrega la fecha actual al array de fechas de uso de código
+    shop.codeUsageDates.push({ date: new Date() });
   
     await shop.save();
   
-    // Actualizar el libro del usuario con los detalles de la tienda
     await this.updateBookWithShopDetails(shop, userId);
   
     return {
@@ -75,6 +69,8 @@ export class ShopService {
       shop: shop.toObject() as ShopDocument,
     };
   }
+  
+ 
 
   async updateBookWithShopDetails(
     shop: ShopDocument,
@@ -139,13 +135,40 @@ export class ShopService {
       );
     }
   }
+
+  async getUsedCodesByMonth(id: string, year: number, month: number): Promise<{ codeUsageDates: { date: Date }[] }> {
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0, 23, 59, 59);
+  
+    // Buscar la tienda por ID
+    const shop = await this.shopModel.findById(id);
+  
+    if (!shop) {
+      throw new NotFoundException('Tienda no encontrada');
+    }
+  
+    // Filtrar `codeUsageDates` para obtener solo las fechas dentro del rango del mes y año especificado
+    const codeUsageDates = shop.codeUsageDates.filter((usage) => {
+      const usageDate = new Date(usage.date);
+      return usageDate >= startDate && usageDate <= endDate;
+    });
+  
+    return { codeUsageDates };
+  }
+  
+  
+
+
   //verificar  librerias para generar código aleatorio
   async generateUniqueVerificationCode(): Promise<string> {
     let code: string;
     let codeExists: boolean;
 
     do {
-      code = Math.random().toString(36).substring(2, 8);
+      // Genera un número entre 0 y 9999, y lo rellena con ceros a la izquierda si es necesario
+      code = Math.floor(Math.random() * 10000)
+        .toString()
+        .padStart(4, '0');
       codeExists =
         (await this.shopModel.exists({ verificationCode: code })) !== null;
       console.log('Checking if code exists:', code, codeExists);
@@ -221,15 +244,14 @@ export class ShopService {
 
   async validatePassword(email: string, password: string): Promise<boolean> {
     const shop = await this.shopModel.findOne({ email }); // Cambiado de findByEmail a findOne
-  
+
     if (!shop) {
       return false;
     }
-  
+
     // Compara la contraseña proporcionada con la almacenada en la base de datos
     return bcryptjs.compare(password, shop.password);
   }
-  
 
   async register(
     registerDto: RegisterShopDto,
@@ -251,9 +273,10 @@ export class ShopService {
     return this.shopModel.find().exec();
   }
 
-  findAllShops(): Promise<ShopDocument[]> {
-    return this.shopModel.find().exec();
+  async findAllShops(): Promise<any[]> {
+    return this.shopModel.find().select('_id name').lean().exec(); // Asegúrate de seleccionar `_id` y `name`
   }
+  
 
   findOne(id: number) {
     return `This action returns a #${id} auth`;
