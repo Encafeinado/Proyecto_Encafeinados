@@ -39,7 +39,11 @@ export class PaymentController {
     return { statusPayment: payment.statusPayment };
   }
   
-
+  @Get('test-register-monthly') // Endpoint temporal para prueba
+  async testRegisterMonthlyPayments() {
+    await this.paymentService.checkAndRegisterMonthlyPayments();
+    return { message: 'Monthly payments checked and registered if needed' };
+  }
 
 
   @Get()

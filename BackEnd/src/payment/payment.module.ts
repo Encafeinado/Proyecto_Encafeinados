@@ -5,11 +5,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Payment, PaymentSchema } from './entities/payment.entity';
 import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
+import { ShopModule } from 'src/shop/shop.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forFeature([{ name: Payment.name, schema: PaymentSchema }]),
+    ShopModule,
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SEED,

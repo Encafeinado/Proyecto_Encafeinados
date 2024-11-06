@@ -70,6 +70,7 @@ export class ShopService {
     };
   }
   
+ 
 
   async updateBookWithShopDetails(
     shop: ShopDocument,
@@ -272,9 +273,10 @@ export class ShopService {
     return this.shopModel.find().exec();
   }
 
-  findAllShops(): Promise<ShopDocument[]> {
-    return this.shopModel.find().exec();
+  async findAllShops(): Promise<any[]> {
+    return this.shopModel.find().select('_id name').lean().exec(); // Asegúrate de seleccionar `_id` y `name`
   }
+  
 
   findOne(id: number) {
     return `This action returns a #${id} auth`;

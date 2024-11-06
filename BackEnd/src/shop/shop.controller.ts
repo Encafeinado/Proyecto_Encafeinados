@@ -86,6 +86,8 @@ async verifyCodeByUser(
   findAllShops(@Request() req: Request) {
     return this.shopService.findAll();
   }  
+
+  
   @Get()
   findAll(@Request() req: Request) {
     return this.shopService.findAll();
