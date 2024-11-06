@@ -84,6 +84,21 @@ export class PaymentService {
     }
   }
 
+  // Método para actualizar un pago existente
+  async update(id: string, updatePaymentDto: CreatePaymentDto): Promise<Payment> {
+    const updatedPayment = await this.paymentModel.findByIdAndUpdate(
+      id,
+      updatePaymentDto,
+      { new: true } // Opción para devolver el documento actualizado
+    );
+
+    if (!updatedPayment) {
+      throw new NotFoundException('Pago no encontrado para actualizar');
+    }
+
+    return updatedPayment;
+  }
+
   async registerPaymentForNewMonth(
     shopId: string,
     name: string,

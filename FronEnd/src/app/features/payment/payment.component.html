@@ -67,8 +67,8 @@
           </td>
           <td class="text-center">
             <button class="btn btn-success btn-sm" (click)="saveFile(code)"
-              [disabled]="isSaving || code.status.toLowerCase() === 'pagado' || !isEndOfMonth()"
-              [ngClass]="{'btn-disabled': isSaving || code.status.toLowerCase() === 'pagado' || !isEndOfMonth()}">
+              [disabled]="isSaving || code.status.toLowerCase() === 'pagado'"
+              [ngClass]="{'btn-disabled': isSaving || code.status.toLowerCase() === 'pagado' }">
               <i class="fas fa-save"></i> <!-- Ícono de Font Awesome -->
             </button>
           </td>

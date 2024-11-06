@@ -94,12 +94,14 @@ export class StoreService {
     );
   }
 
-  savePayment(paymentData: any): Observable<PaymentResponse> {
-    return this.http.post<PaymentResponse>(
-      `${environment.baseUrl}/payment/create`,
-      paymentData
-    );
-  }
+ // store.service.ts
+savePayment(paymentId: string, paymentData: any): Observable<PaymentResponse> {
+  return this.http.patch<PaymentResponse>(
+    `${environment.baseUrl}/payment/${paymentId}`,
+    paymentData
+  );
+}
+
 
   setStoreActivation(status: boolean): void {
     this.isStoreOpen = status;

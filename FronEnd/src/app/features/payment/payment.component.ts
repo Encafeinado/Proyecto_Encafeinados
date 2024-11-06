@@ -80,15 +80,6 @@ export class PaymentComponent implements OnInit {
     this.monthDropdownOpen = false; // Cierra el dropdown al seleccionar un mes
   }
 
-  isEndOfMonth(): boolean {
-    const today = new Date();
-    const lastDayOfMonth = new Date(
-      today.getFullYear(),
-      today.getMonth() + 1,
-      0
-    ).getDate();
-    return today.getDate() === lastDayOfMonth;
-  }
 
   handleClickOutside(event: MouseEvent): void {
     const target = event.target as HTMLElement;
@@ -211,7 +202,6 @@ export class PaymentComponent implements OnInit {
 
   // Método para guardar el archivo y abrir el modal
   saveFile(code: any): void {
-    // Establecer la variable 'submitted' en true cuando se intenta guardar
     this.submitted = true;
 
     // Validar si los campos requeridos (qrImage, selectedYear, selectedMonth) están presentes
@@ -225,20 +215,18 @@ export class PaymentComponent implements OnInit {
   }
 
   async confirmUpload(modal: any): Promise<void> {
-    // Espera a que se carguen los datos del usuario
     await this.loadUserData();
-
-    // Verifica los datos después de haberlos cargado
+  
     if (!this.userRole || !this.shopData || !this.shopData.name) {
       console.error('Datos de la tienda no disponibles');
-      modal.dismiss('cancel'); // Cierra el modal si no hay datos
+      modal.dismiss('cancel');
       return;
     }
-
+  
     const paymentData = {
       nameShop: this.shopData.name,
       shopId: this.shopId,
-      amount: this.amount, // Asegúrate de asignar el valor correcto de 'amount'
+      amount: this.amount,
       statusPayment: true,
       year: Number(this.selectedYear),
       month: Number(this.selectedMonth),
@@ -248,20 +236,33 @@ export class PaymentComponent implements OnInit {
         },
       ],
     };
-
-    // Llamada al servicio para guardar el pago
-    this.storeService.savePayment(paymentData).subscribe(
-      (response) => {
-        console.log('Pago guardado con éxito:', response);
-        this.updatePaymentStatusToPaid(); // Actualiza el estado del pago aquí
-        modal.close('uploaded'); // Cierra el modal después de la actualización
-      },
-      (error) => {
-        console.error('Error al guardar el pago:', error);
-        modal.dismiss('cancel'); // Cierra el modal en caso de error
-      }
+  
+    // Encuentra el pago existente para el mes y año seleccionados, si existe
+    const existingPayment = this.payments.find(
+      (payment) =>
+        payment.year === this.selectedYear &&
+        payment.month === Number(this.selectedMonth)
     );
+  
+    if (existingPayment) {
+      // Si ya existe el pago, actualízalo usando `update`
+      this.storeService.savePayment(existingPayment._id, paymentData).subscribe(
+        (response) => {
+          console.log('Pago actualizado con éxito:', response);
+          this.updatePaymentStatusToPaid();
+          modal.close('uploaded');
+        },
+        (error) => {
+          console.error('Error al actualizar el pago:', error);
+          modal.dismiss('cancel');
+        }
+      );
+    } else {
+      console.error('No se encontró un pago existente para actualizar');
+      modal.dismiss('cancel');
+    }
   }
+  
 
   updatePaymentStatusToPaid(): void {
     if (this.filteredCodes.length > 0) {
