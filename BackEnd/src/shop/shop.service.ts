@@ -34,47 +34,42 @@ export class ShopService {
     review?: string,
     rating?: number,
   ): Promise<{ message: string; shop?: ShopDocument }> {
-    // Buscar la tienda con el código de verificación
     const shop = await this.shopModel.findOne({ verificationCode: code });
-
+  
     if (!shop) {
       return { message: 'Código de verificación no válido' };
     }
-
-    // Actualizar los CoffeeCoins del usuario
+  
     const user = await this.userModel.findById(userId);
     if (user) {
-      user.cafecoin += 10; // Aumentar los CoffeeCoins
+      user.cafecoin += 10;
       await user.save();
     }
-
-    // Actualizar el uso del código y generar un nuevo código de verificación
+  
     shop.codeUsage = (shop.codeUsage || 0) + 1;
     shop.verificationCode = await this.generateUniqueVerificationCode();
-
-    // Si se proporciona una calificación, añádela a la tienda
+  
     if (rating) {
       shop.ratings.push({ stars: rating });
     }
-
-    // Si se proporciona una reseña, añádela a la tienda
+  
     if (review) {
-      shop.reviews.push({
-        text: review,
-        user: userId, // Guardar el ID del usuario para referencia
-      });
+      shop.reviews.push({ text: review, user: userId });
     }
-
+  
+    // Agrega la fecha actual al array de fechas de uso de código
+    shop.codeUsageDates.push({ date: new Date() });
+  
     await shop.save();
-
-    // Actualizar el libro del usuario con los detalles de la tienda
+  
     await this.updateBookWithShopDetails(shop, userId);
-
+  
     return {
       message: 'Código de verificación guardado exitosamente',
       shop: shop.toObject() as ShopDocument,
     };
   }
+  
 
   async updateBookWithShopDetails(
     shop: ShopDocument,
@@ -140,24 +135,27 @@ export class ShopService {
     }
   }
 
-  async getUsedCodesByMonth(id: string, year: number, month: number): Promise<number> {
+  async getUsedCodesByMonth(id: string, year: number, month: number): Promise<{ codeUsageDates: { date: Date }[] }> {
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 0, 23, 59, 59);
-
+  
     // Buscar la tienda por ID
     const shop = await this.shopModel.findById(id);
-    
+  
     if (!shop) {
-        throw new NotFoundException('Tienda no encontrada');
+      throw new NotFoundException('Tienda no encontrada');
     }
-
-    // Verifica si `updatedAt` está dentro del rango
-    if (shop.updatedAt && shop.updatedAt >= startDate && shop.updatedAt <= endDate) {
-        return shop.codeUsage; // Retornar el uso de códigos
-    }
-
-    return 0; // Si no hay coincidencia, retornar 0
-}
+  
+    // Filtrar `codeUsageDates` para obtener solo las fechas dentro del rango del mes y año especificado
+    const codeUsageDates = shop.codeUsageDates.filter((usage) => {
+      const usageDate = new Date(usage.date);
+      return usageDate >= startDate && usageDate <= endDate;
+    });
+  
+    return { codeUsageDates };
+  }
+  
+  
 
 
   //verificar  librerias para generar código aleatorio

@@ -54,7 +54,9 @@ export class StoreService {
       { code, review, rating: +rating },
       { headers }
     );
+
   }
+  
   getAllShops(): Observable<Shop[]> {
     return this.http.get<Shop[]>(`${this.baseUrl}/allShops`);
   }
@@ -63,11 +65,15 @@ export class StoreService {
     shopId: string,
     year: number,
     month: string
-  ): Observable<number> {
-    return this.http.get<number>(`${this.baseUrl}/${shopId}/used-codes`, {
-      params: { year: year.toString(), month: month },
-    });
+  ): Observable<{ codeUsageDates: { date: string }[] }> {
+    return this.http.get<{ codeUsageDates: { date: string }[] }>(
+      `${this.baseUrl}/${shopId}/used-codes`,
+      {
+        params: { year: year.toString(), month: month },
+      }
+    );
   }
+  
 
   // store.service.ts
   getPaymentStatus(shopId: string): Observable<{ statusPayment: boolean }> {
