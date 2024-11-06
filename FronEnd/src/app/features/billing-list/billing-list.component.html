@@ -55,13 +55,16 @@
       <div class="custom-select month-select" (click)="toggleMonthDropdown()">
         <div class="selected-value">
           {{ getSelectedMonthName() }}
+          <!-- Mover la "X" aquí, al final de la selección -->
           <span *ngIf="selectedMonth" class="clear-filter" (click)="clearSelectedMonth($event)"> ✖️ </span>
         </div>
         <div class="options" *ngIf="monthDropdownOpen">
-          <div class="option" *ngFor="let month of months" (click)="selectMonth(month.value)">{{ month.name }}</div>
+          <div class="option" *ngFor="let month of months" (click)="selectMonth(month.value)">
+            {{ month.name }}
+          </div>
         </div>
       </div>
-    </div>
+    </div>    
 
     <div class="col-md-3">
       <label for="status" class="mr-2">Estado:</label>
@@ -77,13 +80,6 @@
       </div>
     </div>
   </div>
-  <h3>Tiendas Pendientes</h3>
-<ul>
-  <div *ngFor="let store of pendingStores">
-    <p>{{ store.name }} - Pagos pendientes en los meses:
-      {{ store.missingMonths.join(', ') }}</p>
-  </div> 
-</ul>
 
   <!-- Tabla de lista de pagos -->
   <div class="row">
@@ -126,20 +122,11 @@
       </div>
 
       <!-- Controles de paginación -->
-      <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-          <li class="page-item" [class.disabled]="page === 1">
-            <a class="page-link" (click)="setPage(page - 1)">Anterior</a>
-          </li>
-          <li class="page-item" *ngFor="let i of [].constructor(totalPages); let index = index"
-            [class.active]="page === (index + 1)">
-            <a class="page-link" (click)="setPage(index + 1)">{{ index + 1 }}</a>
-          </li>
-          <li class="page-item" [class.disabled]="page === totalPages">
-            <a class="page-link" (click)="setPage(page + 1)">Siguiente</a>
-          </li>
-        </ul>
-      </nav>
+      <div class="pagination-slider">
+        <button class="btn prev" [disabled]="page === 1" (click)="setPage(page - 1)">⟨ Anterior</button>
+        <span class="page-indicator">Página {{ page }} de {{ totalPages }}</span>
+        <button class="btn next" [disabled]="page === totalPages" (click)="setPage(page + 1)">Siguiente ⟩</button>
+      </div>           
     </div>
   </div>
   <div *ngIf="selectedPaymentImage" class="modal" tabindex="-1" style="display: block;">

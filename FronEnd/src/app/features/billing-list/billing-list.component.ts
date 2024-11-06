@@ -354,4 +354,20 @@ export class BillingListComponent implements OnInit, OnDestroy {
     this.selectedStatus = null;
     this.onFilterChange();
   }
+
+  getPageRange(totalPages: number, currentPage: number): number[] {
+    const range: number[] = [];
+    let start = currentPage > 3 ? currentPage - 2 : 1;
+    let end = currentPage + 2 < totalPages ? currentPage + 2 : totalPages;
+  
+    if (end - start < 4) {
+      start = end - 4 > 0 ? end - 4 : 1;
+    }
+  
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+  
 }

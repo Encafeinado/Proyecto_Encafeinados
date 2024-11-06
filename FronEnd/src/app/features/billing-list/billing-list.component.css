@@ -140,44 +140,50 @@
 }
 
 /* Estilos para la paginación */
-.pagination {
-  margin-top: 20px;
-  justify-content: center; /* Centra los controles de paginación */
-  display: flex; /* Usa flexbox para el layout */
+.pagination-slider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
 }
 
-.pagination .page-item {
-  margin: 0 5px; /* Espacio entre los items de la paginación */
+.pagination-slider .btn {
+  color: #0f1eee; /* Color del texto azul */
+  padding: 6px 18px; /* Espaciado más pequeño para botones menos grandes */
+  border: 2px solid #0f1eee; /* Borde azul */
+  border-radius: 23px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  background-color: white; /* Fondo blanco */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
 }
 
-.pagination .page-link {
-  padding: 5px 10px; /* Reduce el relleno de los enlaces de paginación */
-  border: none; /* Elimina el borde predeterminado */
-  border-radius: 20px; /* Esquinas redondeadas */
-  background-color: #0f1eee; /* Fondo azul */
-  color: #ffffff; /* Color del texto */
-  font-weight: bold; /* Texto en negrita */
-  font-size: 0.9rem; /* Tamaño de fuente más pequeño */
-  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s; /* Transiciones suaves */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+.pagination-slider .btn:hover {
+  background-color: #0f1eee; /* Fondo azul en hover */
+  color: white; /* Texto blanco */
+  transform: translateY(-2px); /* Pequeño efecto de desplazamiento */
 }
 
-.pagination .page-link:hover {
-  background-color: #0b1bb7; /* Cambia el fondo al pasar el ratón a un azul más oscuro */
-  color: #ffffff; /* Color del texto permanece blanco */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra más prominente */
+.pagination-slider .btn[disabled] {
+  background-color: #f1f1f1; /* Fondo suave cuando está deshabilitado */
+  border-color: #333; /* Borde más suave */
+  color: #333; /* Texto gris claro */
+  cursor: not-allowed; /* Cursor deshabilitado */
+  box-shadow: none; /* Sin sombra */
 }
 
-.pagination .page-item.active .page-link {
-  background-color: #0b1bb7; /* Fondo azul más oscuro para el item activo */
-  color: #ffffff; /* Texto blanco para el item activo */
+.pagination-slider .btn.prev[disabled], 
+.pagination-slider .btn.next[disabled] {
+  background-color: #e4e4e4; /* Fondo más claro para botones deshabilitados (anterior y siguiente) */
+  border-color: #333; /* Borde más claro */
 }
 
-.pagination .page-item.disabled .page-link {
-  color: #25292c; /* Color gris para el enlace deshabilitado */
-  background-color: #b8dbfe; /* Fondo gris claro para el enlace deshabilitado */
-  cursor: not-allowed; /* Cambia el cursor para indicar que no es interactivo */
-  opacity: 0.7; /* Añade opacidad para el enlace deshabilitado */
+.pagination-slider .page-indicator {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333; /* Gris más oscuro para el texto de la página */
+  margin: 0 10px; /* Un poco de separación entre el texto y los botones */
 }
 
 /* Mejora para la tabla en pantallas pequeñas */
@@ -329,6 +335,7 @@ label {
   border-radius: 4px;
   background-color: #fff;
   transition: background-color 0.3s;
+  justify-content: space-between;
   white-space: nowrap; /* Evita que el texto se divida en varias líneas */
   overflow: hidden; /* Oculta el texto que se desborda */
   text-overflow: ellipsis; /* Muestra puntos suspensivos si hay desbordamiento */
@@ -444,4 +451,9 @@ label {
 .status-button.pending {
   background-color: #f8d7da; /* Color de fondo para "Pendiente" */
   color: #721c24; /* Color de texto para "Pendiente" */
+}
+
+.clear-filter {
+  margin-left: 10px; /* Espacio a la izquierda de la X */
+  cursor: pointer; /* Cambia el cursor al pasar sobre la X */
 }
