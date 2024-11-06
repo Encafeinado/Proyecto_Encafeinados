@@ -54,8 +54,9 @@ export class StoreService {
       { code, review, rating: +rating },
       { headers }
     );
-
+    
   }
+
   
   getAllShops(): Observable<Shop[]> {
     return this.http.get<Shop[]>(`${this.baseUrl}/allShops`);
