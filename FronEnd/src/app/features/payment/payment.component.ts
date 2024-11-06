@@ -21,6 +21,7 @@ export class PaymentComponent implements OnInit {
   userData: any;
   codesUsedInMonth: number = 0;
   filteredCodes: { code: string; value: number; status: string }[] = [];
+  filteredPayments: any[] = [];
   shopId: string = '';
   selectedYear: number | null = null;
   selectedMonth: string | null = null;
@@ -317,6 +318,41 @@ export class PaymentComponent implements OnInit {
         }
       );
     });
+  }
+
+  clearSelectedYear(event: MouseEvent): void {
+    event.stopPropagation();
+    this.selectedYear = null;
+    this.onFilterChange();
+  }
+
+  clearSelectedMonth(event: MouseEvent): void {
+    event.stopPropagation();
+    this.selectedMonth = null;
+    this.onFilterChange();
+  }
+
+  onFilterChange(): void {
+    this.filterPayments();
+  }
+
+  filterPayments(): void {
+    console.log('Filtrando pagos con:', {
+      year: this.selectedYear,
+      month: this.selectedMonth,
+    });
+
+    this.filteredPayments = this.payments.filter((payment) => {
+      const yearMatches =
+        !this.selectedYear || payment.year === this.selectedYear;
+      const monthMatches =
+        !this.selectedMonth ||
+        payment.month === parseInt(this.selectedMonth, 10);
+
+      return yearMatches && monthMatches;
+    });
+
+    console.log('Pagos filtrados:', this.filteredPayments);
   }
 
   onFileSelected(event: any): void {

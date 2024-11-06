@@ -29,6 +29,12 @@
   overflow: hidden; /* Evitar que se muestren elementos que sobresalen */
 }
 
+.modal-title {
+  font-size: 1.5em;
+  margin: 0;
+  text-align: center; /* Asegura que el texto esté centrado */
+}
+
 .modal-payment::before,
 .modal-payment::after {
   content: "";
@@ -60,6 +66,16 @@
   display: flex;
   justify-content: center;
   position: relative;
+}
+
+.modal-footer .btn {
+  margin: 0 10px;
+  background-color: #2516f1;
+  color: #ffffff;
+}
+
+.modal-footer .btn:hover {
+  background-color: #676ed6;
 }
 
 .modal-payment .modal-header::after {
@@ -389,8 +405,3 @@ label {
   }
   
 }
-
-
-
-
-

@@ -12,7 +12,10 @@
     <div class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0">
       <label for="years" class="mr-2">Año:</label>
       <div class="custom-select year-select" (click)="toggleYearDropdown()">
-        <div class="selected-value">{{ selectedYear || 'Seleccione un año' }}</div>
+        <div class="selected-value">
+          {{ selectedYear || 'Seleccione un año' }}
+          <span *ngIf="selectedYear" class="clear-filter" (click)="clearSelectedYear($event)"> ✖️ </span>
+        </div>
         <div class="options" *ngIf="yearDropdownOpen">
           <div class="option" *ngFor="let year of years" (click)="selectYear(year)">{{ year }}</div>
         </div>
@@ -23,7 +26,9 @@
     <div class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0">
       <label for="months" class="mr-2">Mes:</label>
       <div class="custom-select month-select" (click)="toggleMonthDropdown()">
-        <div class="selected-value">{{ getSelectedMonthName() }}</div>
+        <div class="selected-value">{{ getSelectedMonthName() }}
+          <span *ngIf="selectedMonth" class="clear-filter" (click)="clearSelectedMonth($event)"> ✖️ </span>
+        </div>
         <div class="options" *ngIf="monthDropdownOpen">
           <div class="option" *ngFor="let month of months" (click)="selectMonth(month.value)">{{ month.name }}</div>
         </div>
@@ -90,8 +95,8 @@
       <p>¿Está seguro de que deseas guardar el comprobante pago?</p>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-primary" (click)="modal.dismiss('cancel')">Cancelar</button>
-      <button type="button" class="btn btn-primary" (click)="confirmUpload(modal)">Confirmar</button>
+      <button type="button" class="btn" (click)="confirmUpload(modal)">Confirmar</button>
+      <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
     </div>
   </div>
 </ng-template>
