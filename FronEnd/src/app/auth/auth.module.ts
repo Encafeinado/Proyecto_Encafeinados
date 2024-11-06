@@ -9,11 +9,13 @@ import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component
 import { RequestResetPasswordComponent } from './pages/request-reset-password-page/request-reset-password.component';
 import { ResetPasswordComponent } from './pages/reset-password-page/reset-password.component';
 import { HttpClientModule } from '@angular/common/http';
+import { LoginAdminPageComponent } from './pages/login-admin-page/login-admin-page.component';
 
 
 @NgModule({
   declarations: [
     LoginPageComponent,
+    LoginAdminPageComponent,
     RegisterPageComponent,
     AuthLayoutComponent,
     RequestResetPasswordComponent,

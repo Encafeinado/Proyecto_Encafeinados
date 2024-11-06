@@ -526,10 +526,22 @@
   gap: 10px; /* Espacio entre las piezas */
 }
 
+.album-scroll-container {
+  max-height: 400px; /* Límite de altura en pantallas grandes */
+  overflow-y: auto; /* Habilita el scroll vertical */
+}
+
 /* Ajustes para dispositivos móviles */
 @media (max-width: 768px) {
+  /* Cambia a 3 columnas en móviles */
   .modal-book .album {
     grid-template-columns: repeat(3, 1fr); /* 3 columnas en móviles */
+  }
+
+  /* Contenedor con scroll solo en móviles */
+  .album-scroll-container {
+    max-height: 200px; /* Límite de altura solo en móviles */
+    overflow-y: auto; /* Habilita el scroll vertical */
   }
 
   .modal-book .album-page img {

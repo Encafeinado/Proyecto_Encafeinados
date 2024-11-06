@@ -54,7 +54,7 @@ export class StoreComponent implements OnInit {
         this.reviews = shop.reviews;
         this.ratings = shop.ratings;
         this.calculateAverageRating();
-        console.log(this.reviews, this.ratings)
+        // console.log(this.reviews, this.ratings)
       },
       error => {
         console.error('Error fetching shop info:', error);
@@ -78,12 +78,33 @@ export class StoreComponent implements OnInit {
     console.log('Nuevo código generado:', this.codigo);
   }
 
+  isLoading = false;
+  isToastrVisible = false; // Nuevo estado para verificar si el toastr ya está visible
+  
   useCode() {
-    this.storeService.verifyCode(this.shopId, this.codigo).subscribe(response => {
-      this.getShopInfo(); // Actualiza la información de la tienda después de usar el código
-      this.toastr.success(response.message);
-    });
+    if (this.isLoading || this.isToastrVisible) {
+      return; // Evita múltiples clics y múltiples toastr visibles
+    }
+    
+    this.isLoading = true;
+    this.storeService.verifyCode(this.shopId, this.codigo).subscribe(
+      response => {
+        this.getShopInfo();
+        this.toastr.success(response.message);
+        this.isToastrVisible = true;
+  
+        // Oculta el toastr después de un tiempo y permite mostrar otro nuevamente
+        setTimeout(() => this.isToastrVisible = false, 4000); // 3 segundos de espera
+        this.isLoading = false;
+      },
+      error => {
+        this.toastr.error('Error al verificar el código');
+        this.isLoading = false;
+      }
+    );
   }
+  
+  
 
   openModal() {
     this.showModal = true;
