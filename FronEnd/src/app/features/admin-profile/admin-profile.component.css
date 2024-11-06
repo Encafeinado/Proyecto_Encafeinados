@@ -1,6 +1,5 @@
 /* Contenedor principal para centrar y limitar el ancho */
 .profile-container {
-  max-width: 1200px; /* Ajuste para un mayor ancho en pantalla grande */
   margin: 0 auto;
   padding: 20px;
   background-color: #f9f9f9;
@@ -68,6 +67,7 @@
 
 .stat-box {
   flex: 1;
+  height: 100%;
   padding: 1rem;
   background-color: white;
   border-radius: 8px;
@@ -76,7 +76,7 @@
   flex-direction: column; /* Para que el contenido se organice verticalmente */
   align-items: center; /* Centra los elementos */
   text-align: center; /* Asegura que el texto esté centrado */
-  max-width: 300px;
+  max-width: 200px;
   margin: 0 auto;
 }
 
@@ -200,6 +200,7 @@
 
 /* Ajustes generales de layout para un mejor uso del espacio */
 body {
+  overflow: auto;
   background: linear-gradient(to right, #e6e9f0, #eef1f5); /* Degradado suave */
 }
 
@@ -224,4 +225,73 @@ body {
   color: #555;
   margin: 0 auto; /* Centra el mensaje horizontalmente */
   box-sizing: border-box; /* Incluye padding y borde en el tamaño total */
+}
+
+.stat-box {
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul li {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+ul li:last-child {
+  border-bottom: none;
+}
+
+.shop-info {
+  margin-top: 10px;
+}
+
+.shop-card {
+  margin-bottom: 20px;
+}
+/* Contenedor de los Top 5 */
+.top5-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem; /* Añade espacio entre las tarjetas */
+  margin-top: 20px;
+}
+
+/* Para cada tarjeta de Top 5 */
+.top5-item {
+  flex: 5; /* Para que cada tarjeta ocupe el mismo espacio */
+  min-width: 150px; /* Asegúrate de tener un ancho mínimo */
+  max-width: 300px; /* Establece un ancho máximo para pantallas grandes */
+  padding: 1rem;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+/* Para resaltar el número en el Top 5 */
+.top-number {
+  font-weight: bold;
+  color: #003cff; /* Un color azul para resaltar */
+    margin-right: 8px; /* Espacio entre el número y el texto */
+}
+
+/* Ajuste para todo el texto */
+ul li {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 1rem; /* Ajusta el tamaño del texto */
 }

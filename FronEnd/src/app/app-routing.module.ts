@@ -9,8 +9,12 @@ const routes: Routes = [
   { path: 'map', loadChildren: () => import('./features/map/map.module').then(m => m.MapModule), canActivate: [IsAuthenticatedGuard], data: { role: 'user' } },
   { path: 'landing', loadChildren: () => import('./features/landing/landing.module').then(m => m.LandingModule), canActivate: [IsNotAuthenticatedGuard] },
   { path: 'perfil', loadChildren: () => import('./features/mi-perfil/mi-perfil.module').then(m => m.MiPerfilModule), canActivate: [IsAuthenticatedGuard] },
+  { path: 'payment', loadChildren: () => import('./features/payment/payment.module').then(m => m.PaymentModule) },
+  { path: 'billing-list', loadChildren: () => import('./features/billing-list/billing-list.module').then(m=> m.BillingListModule)},
   { path: 'landing-tienda', loadChildren: () => import('./features/landing-tienda/landing-tienda.module').then(m => m.LandingTiendaModule), canActivate: [IsNotAuthenticatedGuard] },
-  { path: 'admin-profile', loadChildren: () => import('./features/admin-profile/admin-profile.module').then(m => m.AdminProfileModule)}, 
+  { path: 'admin-profile', loadChildren: () => import('./features/admin-profile/admin-profile.module').then(m => m.AdminProfileModule),canActivate: [IsAuthenticatedGuard], data: { role: 'admin' }}, 
+  
+  
   // { path: '**', redirectTo: '/landing' }
 ];
 

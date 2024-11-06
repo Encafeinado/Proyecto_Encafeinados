@@ -12,23 +12,35 @@
         <i class="fas fa-user" style="font-size: 1.5rem"></i>
       </button>
       <ul class="dropdown-menu" aria-labelledby="mobileMenu">
+        <!-- Opción para Facturación solo visible para usuarios que son tiendas -->
+        <li *ngIf="isUserShop()"><a class="dropdown-item" routerLink="/payment"><i class="fas fa-file-invoice me-2"></i>Facturación</a></li>
         <li *ngIf="isUserLanding()"><a class="dropdown-item" routerLink="/landing-tienda">Tiendas Aliadas</a></li>
         <li *ngIf="isUserLanding()"><a class="dropdown-item" routerLink="/auth/login">Iniciar sesión</a></li>
         <li *ngIf="isUserLandingTienda()"><a class="dropdown-item">Iniciar sesión Tienda</a></li>
-        <li *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage()">
+    
+        <li *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage() && !isOnLoginAdminPage() && !isOnLoginAdminPage() ">
           <a *ngIf="userName" class="dropdown-item" routerLink="/perfil"><i class="fas fa-user"></i> {{ userName }}</a>
         </li>
-        <li *ngIf="authService.isAuthenticated() && !isOnLoginPage() && !isOnRegisterPage() && !isOnResetPage() && !isOnRequestPage() ">
+        <li *ngIf="authService.isAuthenticated() && !isOnLoginPage() && !isOnRegisterPage() && !isOnResetPage() && !isOnRequestPage() && !isOnLoginAdminPage()">
           <a class="dropdown-item" (click)="openLogoutModal(sesionModal)"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
         </li>
       </ul>
     </div>
+    
 
 <!-- Menú para pantallas grandes -->
 <div class="navbar-collapse collapse" id="navbarText">
   <ul class="navbar-nav me-auto mb-2 mb-lg-0">        
     <li class="nav-item" *ngIf="isUserLanding()">
       <a class="btn btn-outline-light2" routerLink="/landing-tienda">Tiendas Aliadas</a>
+    </li>
+
+    <li class="nav-item" *ngIf="isUserShop()">
+      <a class="btn btn-outline-light2" routerLink="/payment">Facturación</a>
+    </li>
+
+    <li class="nav-item" *ngIf="isUserAdmin()">
+      <a class="btn btn-outline-light2" routerLink="/billing-list">Lista de pagos</a>
     </li>
   </ul>
   
@@ -40,7 +52,7 @@
     <a class="btn btn-outline-light">Iniciar sesión Tienda</a>
   </ng-container>
 
-  <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage()">
+  <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage() && !isOnLoginAdminPage() ">
     <div *ngIf="userName" class="dropdown">
       <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="fas fa-user" style="font-size: 1.5rem"></i>

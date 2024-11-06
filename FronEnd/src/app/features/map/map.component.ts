@@ -319,6 +319,7 @@ export class MapComponent implements OnInit, OnDestroy {
             map: map,
             icon: this.iconoTienda,
             title: markerData.title,
+            optimized: true // Activar optimización
           });
 
           const overlay = new CircleOverlay(

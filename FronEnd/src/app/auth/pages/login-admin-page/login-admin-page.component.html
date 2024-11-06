@@ -1,0 +1,97 @@
+<!-- Section: Design Block -->
+<div class="main-content">
+  <section class="background-circle">
+    <div class="form-container">
+        <div class="card bg-glass mx-auto" style="max-width: 400px;">
+          <div class="card-body px-2 py-3 px-md-3">
+            <form class="login100-form" autocomplete="off" [formGroup]="myForm" (ngSubmit)="login()">
+              <div class="text-center mb-4">
+                <img src="../../../../assets/images/logosinfondo.png" alt="Logo" style="width: 100px; height: auto;">
+              </div>
+              <p class="h5 mb-4 text-center">Inicio Sesión Admin</p>
+              <!-- Campo de correo -->
+              <div class="wrap-input100 m-b-23 form-outline mb-4">
+               
+                  <div *ngIf="showError" class="custom-error">
+                    Correo y/o contraseña incorrectas
+                  </div>
+                <span class="label-input100">Correo</span>
+              
+                <div class="wrap-input100">
+                  <input 
+                    class="input100 small-placeholder form-control" 
+                    type="email" 
+                    formControlName="email"
+                    placeholder="Correo electrónico" 
+                    autocomplete="email"
+                    (input)="onInputChange()" 
+                  >
+                  <span class="focus-input100"></span>
+                </div>
+
+                <!-- Mensajes de error aparecen solo si el campo ha sido tocado y la validación asíncrona ha terminado -->
+                <div *ngIf="myForm.get('email')?.touched && !myForm.get('email')?.pending && myForm.get('email')?.hasError('required')" class="error-message">
+                  El campo correo es obligatorio.
+                </div>
+                <div *ngIf="myForm.get('email')?.dirty && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidEmailFormat')" class="error-message">
+                  El formato del correo  es incorrecto.
+                </div>
+                <div *ngIf="myForm.get('email')?.dirty && !myForm.get('email')?.pending && myForm.get('email')?.hasError('invalidDomain')" class="error-message">
+                  El formato del correo  no es válido.
+                </div>
+                
+                
+              </div>
+              <div class="form-outline mb-4">
+                <span class="label-input100">Contraseña</span>
+                <div class="wrap-input100">
+                  <input 
+                    class="input100 small-placeholder form-control" 
+                    type="{{ hidePassword ? 'password' : 'text' }}" 
+                    formControlName="password"
+                    placeholder="Ingrese su contraseña"
+                    autocomplete="current-password"
+                    (input)="onInputChange()" 
+                  >
+                  <span class="focus-input100"></span>
+                  <div class="eye-icon" (click)="togglePasswordVisibility()">
+                    <i class="fa" [ngClass]="{'fa-eye': hidePassword, 'fa-eye-slash': !hidePassword}"></i>
+                  </div>
+                </div>
+                
+                <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('required')" class="error-message">
+                  El campo contraseña es obligatorio.
+                </div>
+               
+                <div *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('invalidPassword')" class="error-message">
+                  La contraseña es incorrecta.
+                </div>
+              </div>
+              
+              <div class="text-center pt-1 mb-5 pb-1">
+                <button 
+                  data-mdb-button-init 
+                  data-mdb-ripple-init 
+                  class="login100-form-btn" 
+                  [disabled]="myForm.invalid" 
+                  type="submit"
+                >
+                  Iniciar Sesión
+                </button>
+
+                <!-- <a class="text-muted mt-3 d-block" routerLink="/auth/forgot-password">¿Olvidaste tu contraseña?</a>
+
+                <div class="flex-col-c p-t-3 mt-3">
+                  <span class="txt1 p-b-2">
+                    ¿No tienes cuenta?
+                  </span>
+                  <a routerLink="/auth/register" >
+                    Crea una aquí
+                  </a>
+                </div> -->
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+  </section>
