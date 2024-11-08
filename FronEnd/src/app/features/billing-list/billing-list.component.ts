@@ -53,8 +53,10 @@ export class BillingListComponent implements OnInit, OnDestroy {
     this.loadYears();
     this.loadStores();
     this.loadPayments();
-    this.loadPendingPayments();
     document.addEventListener('click', this.handleClickOutside.bind(this));
+    setInterval(() => {
+      this.loadPayments();
+    }, 10000); // 10 segundos
   }
 
   ngOnDestroy() {
@@ -130,8 +132,6 @@ export class BillingListComponent implements OnInit, OnDestroy {
     this.storeService.getAllPayments().subscribe(
       (data: any) => {
         this.payments = data;
-        // Cargar las tiendas pendientes después de obtener los pagos
-        this.loadPendingPayments(); // Llama a este método para llenar pendingStores
         this.filteredPayments = this.payments;
         this.totalPayments = this.filteredPayments.length;
         this.calculateTotalPages();
@@ -145,53 +145,6 @@ export class BillingListComponent implements OnInit, OnDestroy {
     );
   }
   
-
-  loadPendingPayments(): void {
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1; // Mes actual (1 a 12)
-  
-    this.storeService.getAllShops().subscribe(
-      (shops: any[]) => {
-        this.storeService.getAllPayments().subscribe(
-          (payments: any[]) => {
-            this.pendingStores = shops.filter((shop) => {
-              const shopPayments = payments.filter(
-                (payment) => payment.shopId === shop._id && payment.year === currentYear
-              );
-  
-              const startMonth = this.startDate.getMonth() + 1;
-              const missingMonths = [];
-  
-              // Revisamos solo desde el mes de inicio hasta el mes actual
-              for (let month = startMonth; month <= currentMonth; month++) {
-                const hasPaymentForMonth = shopPayments.some(
-                  (payment) => payment.month === month
-                );
-  
-                if (!hasPaymentForMonth) {
-                  missingMonths.push(month); // Agrega el mes si falta el pago
-                }
-              }
-  
-              // Si tiene meses faltantes, se agrega como pendiente
-              if (missingMonths.length > 0) {
-                shop.missingMonths = missingMonths; // Añadir meses faltantes a la tienda
-                return true;
-              }
-              return false;
-            });
-            console.log('Tiendas con pagos pendientes:', this.pendingStores);
-          },
-          (error) => {
-            console.error('Error al cargar pagos:', error);
-          }
-        );
-      },
-      (error) => {
-        console.error('Error al cargar tiendas:', error);
-      }
-    );
-  }  
 
   onFilterChange(): void {
     this.filterPayments();
