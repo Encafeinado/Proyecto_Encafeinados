@@ -320,22 +320,6 @@ export class PaymentComponent implements OnInit {
     });
   }
 
-  clearSelectedYear(event: MouseEvent): void {
-    event.stopPropagation();
-    this.selectedYear = null;
-    this.onFilterChange();
-  }
-
-  clearSelectedMonth(event: MouseEvent): void {
-    event.stopPropagation();
-    this.selectedMonth = null;
-    this.onFilterChange();
-  }
-
-  onFilterChange(): void {
-    this.filterPayments();
-  }
-
   filterPayments(): void {
     console.log('Filtrando pagos con:', {
       year: this.selectedYear,
