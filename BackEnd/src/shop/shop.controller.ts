@@ -39,7 +39,7 @@ export class ShopController {
     @Param('id') id: string,
     @Query('year') year: number,
     @Query('month') month: number,
-  ): Promise<number> {
+  ): Promise<{ codeUsageDates: { date: Date }[] }> {
     return this.shopService.getUsedCodesByMonth(id, year, month);
   }
   
@@ -86,6 +86,8 @@ async verifyCodeByUser(
   findAllShops(@Request() req: Request) {
     return this.shopService.findAll();
   }  
+
+  
   @Get()
   findAll(@Request() req: Request) {
     return this.shopService.findAll();

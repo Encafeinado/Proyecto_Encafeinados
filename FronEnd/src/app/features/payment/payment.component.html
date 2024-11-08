@@ -2,7 +2,7 @@
   <!-- Fila para la imagen -->
   <div class="row mb-4 justify-content-center">
     <div class="col-md-8 text-center">
-      <img src="assets/images/QR.png" alt="Imagen de encabezado" class="img-fluid" />
+      <img src="../../../../assets/images/QR.png" alt="Imagen de encabezado" class="img-fluid qr-image" />
     </div>
   </div>
 
@@ -11,25 +11,29 @@
     <!-- Selector de años -->
     <div class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0">
       <label for="years" class="mr-2">Año:</label>
-      <div class="custom-select year-select" (click)="toggleYearDropdown()">
-        <div class="selected-value">{{ selectedYear || 'Seleccione un año' }}</div>
-        <div class="options" *ngIf="yearDropdownOpen">
+      <div class="custom-select year-select" (click)="toggleYearDropdown()" style="position: relative; display: inline-block; width: 100%;">
+        <div class="selected-value" style="display: flex; align-items: center; justify-content: space-between; padding-right: 10px;">
+          {{ selectedYear || 'Seleccione un año' }}
+        </div>
+        <div class="options" *ngIf="yearDropdownOpen" style="position: absolute; top: 100%; left: 0; width: 100%; z-index: 1;">
           <div class="option" *ngFor="let year of years" (click)="selectYear(year)">{{ year }}</div>
         </div>
       </div>
     </div>
-  
+
     <!-- Selector de meses y botón de subir comprobante en la misma fila -->
     <div class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0">
       <label for="months" class="mr-2">Mes:</label>
-      <div class="custom-select month-select" (click)="toggleMonthDropdown()">
-        <div class="selected-value">{{ getSelectedMonthName() }}</div>
-        <div class="options" *ngIf="monthDropdownOpen">
+      <div class="custom-select month-select" (click)="toggleMonthDropdown()" style="position: relative; display: inline-block; width: 100%;">
+        <div class="selected-value" style="display: flex; align-items: center; justify-content: space-between; padding-right: 10px;">
+          {{ getSelectedMonthName() }}
+        </div>
+        <div class="options" *ngIf="monthDropdownOpen" style="position: absolute; top: 100%; left: 0; width: 100%; z-index: 1;">
           <div class="option" *ngFor="let month of months" (click)="selectMonth(month.value)">{{ month.name }}</div>
         </div>
       </div>
-    </div>    
-  
+    </div>
+
     <!-- Subir comprobante -->
     <div class="col-12 col-sm-4 col-md-6 mb-2 mb-sm-0 qr-upload">
       <label for="qrUpload" class="mr-2">Subir comprobante:</label>
@@ -41,43 +45,54 @@
       </div>
     </div>
   </div>
-  
-  <!-- Tabla de códigos usados -->
- 
-    <div class="col-md-12">
-      <table class="table table-bordered table-hover">
-        <thead class="thead-light">
-          <tr>
-            <th class="text-center">Código Usado</th>
-            <th class="text-center">Valor</th>
-            <th class="text-center">Estado</th>
-            <th class="text-center">Acción</th><!-- Nueva columna para el icono de guardar -->
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="filteredCodes.length === 0">
-            <td class="text-center" colspan="5">No hay registros</td>
-          </tr>
-          <tr *ngFor="let code of filteredCodes">
-            <td class="text-center">{{ code.code }}</td>
-            <td class="text-center">{{ code.value | currency:'USD':'symbol':'1.0-0' }}</td>
-            <td class="text-center"
-              [ngClass]="{'text-success': code.status.toLowerCase() === 'pagado', 'text-danger': code.status.toLowerCase() === 'pendiente'}">
-              {{ code.status }}
-            </td>
-            <td class="text-center">
-              <button class="btn btn-success btn-sm" (click)="saveFile(code)"
-                [disabled]="isSaving || code.status.toLowerCase() === 'pagado'"
-                [ngClass]="{'btn-disabled': isSaving || code.status.toLowerCase() === 'pagado'}">
-                <i class="fas fa-save"></i> <!-- Ícono de Font Awesome -->
-              </button>
 
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <!-- Tabla de códigos usados -->
+
+  <div class="col-md-12">
+    <table class="table table-bordered table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th class="text-center">Código Usado</th>
+          <th class="text-center">Valor</th>
+          <th class="text-center">Estado</th>
+          <th class="text-center">Acción</th><!-- Nueva columna para el icono de guardar -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="filteredCodes.length === 0">
+          <td class="text-center" colspan="5">No hay registros</td>
+        </tr>
+        <tr *ngFor="let code of filteredCodes">
+          <td class="text-center">{{ code.code }}</td>
+          <td class="text-center">{{ code.value | currency:'USD':'symbol':'1.0-0' }}</td>
+          <td class="text-center">
+            <span
+              [ngClass]="{
+                'paid': code.status.toLowerCase() === 'pagado',
+                'pending': code.status.toLowerCase() === 'pendiente'
+              }"
+              [style.display]="'inline-block'"
+              [style.padding]="'5px 10px'"
+              [style.borderRadius]="'5px'"
+              [style.fontWeight]="'bold'"
+              [style.backgroundColor]="code.status.toLowerCase() === 'pagado' ? '#d4edda' : '#f8d7da'"
+              [style.color]="code.status.toLowerCase() === 'pagado' ? '#155724' : '#721c24'">
+              {{ code.status }}
+            </span>
+          </td>
+                    
+          <td class="text-center">
+            <button class="btn btn-success btn-sm" (click)="saveFile(code)"
+              [disabled]="isSaving || code.status.toLowerCase() === 'pagado'"
+              [ngClass]="{'btn-disabled': isSaving || code.status.toLowerCase() === 'pagado' }">
+              <i class="fas fa-save"></i> <!-- Ícono de Font Awesome -->
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
+</div>
 
 
 <ng-template #modalPayment let-modal>
@@ -91,8 +106,8 @@
       <p>¿Está seguro de que deseas guardar el comprobante pago?</p>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-primary" (click)="modal.dismiss('cancel')">Cancelar</button>
-      <button type="button" class="btn btn-primary" (click)="confirmUpload(modal)">Confirmar</button>
+      <button type="button" class="btn" (click)="confirmUpload(modal)">Confirmar</button>
+      <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
     </div>
   </div>
 </ng-template>

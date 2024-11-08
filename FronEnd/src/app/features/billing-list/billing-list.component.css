@@ -34,7 +34,67 @@
 .table .btn-sm {
   padding: 3px 6px;
   font-size: 0.875rem;
-} 
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+  border-radius: 10px;
+  overflow: hidden; /* Para que los bordes redondeados se mantengan */
+}
+
+.table th,
+.table td {
+  padding: 15px;
+  text-align: center;
+  border: 1px solid #ddd; /* Borde de las celdas */
+  transition: background-color 0.3s ease; /* Transición suave para el hover */
+}
+
+.thead-light {
+  background-color: #007bff; /* Color de fondo del encabezado */
+  color: #fff; /* Color del texto en el encabezado */
+}
+
+.table-row:hover {
+  background-color: #f1f1f1; /* Color de fondo al pasar el mouse */
+}
+
+.status-button {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 15px;
+  color: #fff;
+  font-weight: bold; /* Negrita para resaltar el estado */
+}
+
+.paid {
+  background-color: #28a745; /* Verde para pagado */
+}
+
+.pending {
+  background-color: #ffc107; /* Amarillo para pendiente */
+}
+
+.btn-primary {
+  background-color: #007bff; /* Color de fondo del botón */
+  color: #fff; /* Color del texto del botón */
+  border: none; /* Sin borde */
+  border-radius: 5px; /* Bordes redondeados */
+  transition: background-color 0.3s ease; /* Transición suave */
+}
+
+.btn-primary:hover {
+  background-color: #0056b3; /* Color más oscuro al pasar el mouse */
+}
+
+@media (max-width: 768px) {
+  .table th,
+  .table td {
+    padding: 10px; /* Ajustar padding para dispositivos móviles */
+  }
+}
 
 .grid-section {
   margin-top: 20px;
@@ -47,7 +107,8 @@
   text-align: center;
 }
 
-.grid-section th, .grid-section td {
+.grid-section th,
+.grid-section td {
   padding: 15px; /* Aumenta el padding para que el contenido no quede tan compacto */
   border: 1px solid #ddd;
 }
@@ -79,44 +140,50 @@
 }
 
 /* Estilos para la paginación */
-.pagination {
-  margin-top: 20px;
-  justify-content: center; /* Centra los controles de paginación */
-  display: flex; /* Usa flexbox para el layout */
+.pagination-slider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
 }
 
-.pagination .page-item {
-  margin: 0 5px; /* Espacio entre los items de la paginación */
+.pagination-slider .btn {
+  color: #0f1eee; /* Color del texto azul */
+  padding: 6px 18px; /* Espaciado más pequeño para botones menos grandes */
+  border: 2px solid #0f1eee; /* Borde azul */
+  border-radius: 23px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  background-color: white; /* Fondo blanco */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
 }
 
-.pagination .page-link {
-  padding: 5px 10px; /* Reduce el relleno de los enlaces de paginación */
-  border: none; /* Elimina el borde predeterminado */
-  border-radius: 20px; /* Esquinas redondeadas */
-  background-color: #0f1eee; /* Fondo azul */
-  color: #ffffff; /* Color del texto */
-  font-weight: bold; /* Texto en negrita */
-  font-size: 0.9rem; /* Tamaño de fuente más pequeño */
-  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s; /* Transiciones suaves */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+.pagination-slider .btn:hover {
+  background-color: #0f1eee; /* Fondo azul en hover */
+  color: white; /* Texto blanco */
+  transform: translateY(-2px); /* Pequeño efecto de desplazamiento */
 }
 
-.pagination .page-link:hover {
-  background-color: #0b1bb7; /* Cambia el fondo al pasar el ratón a un azul más oscuro */
-  color: #ffffff; /* Color del texto permanece blanco */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra más prominente */
+.pagination-slider .btn[disabled] {
+  background-color: #f1f1f1; /* Fondo suave cuando está deshabilitado */
+  border-color: #333; /* Borde más suave */
+  color: #333; /* Texto gris claro */
+  cursor: not-allowed; /* Cursor deshabilitado */
+  box-shadow: none; /* Sin sombra */
 }
 
-.pagination .page-item.active .page-link {
-  background-color: #0b1bb7; /* Fondo azul más oscuro para el item activo */
-  color: #ffffff; /* Texto blanco para el item activo */
+.pagination-slider .btn.prev[disabled], 
+.pagination-slider .btn.next[disabled] {
+  background-color: #e4e4e4; /* Fondo más claro para botones deshabilitados (anterior y siguiente) */
+  border-color: #333; /* Borde más claro */
 }
 
-.pagination .page-item.disabled .page-link {
-  color: #25292c; /* Color gris para el enlace deshabilitado */
-  background-color: #b8dbfe; /* Fondo gris claro para el enlace deshabilitado */
-  cursor: not-allowed; /* Cambia el cursor para indicar que no es interactivo */
-  opacity: 0.7; /* Añade opacidad para el enlace deshabilitado */
+.pagination-slider .page-indicator {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333; /* Gris más oscuro para el texto de la página */
+  margin: 0 10px; /* Un poco de separación entre el texto y los botones */
 }
 
 /* Mejora para la tabla en pantallas pequeñas */
@@ -132,7 +199,8 @@
   margin-top: 20px;
 }
 
-.table th, .table td {
+.table th,
+.table td {
   padding: 15px;
   border: 1px solid #ddd;
 }
@@ -149,7 +217,8 @@
     font-size: 0.9rem; /* Reduce ligeramente el tamaño de fuente */
   }
 
-  .table th, .table td {
+  .table th,
+  .table td {
     padding: 10px; /* Ajusta el padding para reducir el tamaño */
   }
 
@@ -164,7 +233,6 @@
     font-size: 0.8rem;
   }
 }
-
 
 .modal-content {
   background-color: #ffffff;
@@ -221,7 +289,7 @@
   object-fit: contain;
 }
 
-.modal-title{
+.modal-title {
   font-size: 1.5em;
   margin: 0;
   text-align: center; /* Asegura que el texto esté centrado */
@@ -253,7 +321,7 @@ label {
   margin-bottom: 5px; /* Espacio entre el label y el select */
 }
 
-.custom-select { 
+.custom-select {
   position: relative;
   display: inline-block;
   width: 100%; /* Ocupa el 100% del ancho del contenedor */
@@ -267,6 +335,7 @@ label {
   border-radius: 4px;
   background-color: #fff;
   transition: background-color 0.3s;
+  justify-content: space-between;
   white-space: nowrap; /* Evita que el texto se divida en varias líneas */
   overflow: hidden; /* Oculta el texto que se desborda */
   text-overflow: ellipsis; /* Muestra puntos suspensivos si hay desbordamiento */
@@ -294,3 +363,93 @@ label {
 .option:hover {
   background-color: #f0f0f0; /* Cambiar el color al pasar el mouse */
 }
+
+.facturacion-card {
+  background: linear-gradient(
+    135deg,
+    #cce4ff,
+    #e6f7ff
+  ); /* Gradiente azul suave y moderno */
+  border-radius: 15px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Alinea a la izquierda para dar más espacio */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra más suave */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease; /* Añadido transición para el fondo */
+  width: 100%; /* Ocupar todo el ancho del contenedor */
+  max-width: 480px; /* Ajuste del ancho máximo */
+  margin: 15px; /* Espacio entre las tarjetas */
+  border: 1px solid transparent; /* Borde transparente por defecto */
+}
+
+.facturacion-card:hover {
+  transform: translateY(-3px); /* Movimiento más sutil */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Sombra más intensa al pasar el mouse */
+  background: linear-gradient(
+    135deg,
+    #b2d9ff,
+    #e0f2ff
+  ); /* Cambia el gradiente al pasar el mouse */
+  border: 1px solid #4a90e2; /* Añadir borde al pasar el mouse */
+}
+
+.facturacion-content {
+  display: flex;
+  align-items: center;
+  width: 100%; /* Asegúrate de que el contenido use todo el ancho */
+}
+
+.icon {
+  font-size: 2.5rem; /* Tamaño de ícono adecuado */
+  color: #4a4a4a; /* Color gris oscuro */
+  background-color: #ffffff; /* Fondo blanco para mayor contraste */
+  padding: 12px;
+  border-radius: 50%;
+  margin-right: 15px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); /* Sombra suave para los iconos */
+}
+
+.facturacion-card h5 {
+  font-size: 1.4rem; /* Aumentar tamaño de título para mejor legibilidad */
+  color: #333; /* Color más oscuro para mayor contraste */
+  margin: 0;
+  font-weight: 600; /* Peso de fuente ajustado para mayor énfasis */
+}
+
+.total-facturacion,
+.tiendas-pendientes {
+  font-size: 1.6rem; /* Tamaño de texto aumentado para mayor claridad */
+  font-weight: bold;
+  color: #222; /* Color gris oscuro para el texto */
+}
+
+.total-facturacion {
+  color: #28a745; /* Verde para total */
+}
+
+.tiendas-pendientes {
+  color: #dc3545; /* Rojo para tiendas pendientes */
+}
+
+.status-button {
+  display: inline-block; /* Asegura que se comporte como un botón */
+  padding: 5px 10px; /* Espaciado interno */
+  border-radius: 5px; /* Bordes redondeados */
+  background-color: #e7f0f9; /* Color de fondo claro */
+  color: #007bff; /* Color del texto más fuerte */
+  font-weight: bold; /* Texto en negrita */
+  text-align: center; /* Centrar texto */
+  text-decoration: none; /* Sin subrayado */
+}
+
+.status-button.paid {
+  background-color: #d4edda; /* Color de fondo para "Pagado" */
+  color: #155724; /* Color de texto para "Pagado" */
+}
+
+.status-button.pending {
+  background-color: #f8d7da; /* Color de fondo para "Pendiente" */
+  color: #721c24; /* Color de texto para "Pendiente" */
+}
+

@@ -1,10 +1,37 @@
 <div class="container facturacion-container">
   <div class="row mb-4">
+    <div class="col-md-6 d-flex justify-content-center">
+      <div class="facturacion-card">
+        <div class="facturacion-content">
+          <i class="fas fa-coins icon"></i>
+          <div>
+            <h5>Total Facturación</h5>
+            <p class="total-facturacion">{{ formattedAmountPayments }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 d-flex justify-content-center">
+      <div class="facturacion-card">
+        <div class="facturacion-content">
+          <i class="fas fa-store-alt icon"></i>
+          <div>
+            <h5>Tiendas por Pagar</h5>
+            <p class="tiendas-pendientes">{{pendingPaymentsCount}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-4">
     <div class="col-md-3">
       <label for="store" class="mr-2">Tienda:</label>
-      <div class="custom-select store-select" (click)="toggleStoreDropdown()">
-        <div class="selected-value">{{ getSelectedStoreName() }}</div>
-        <div class="options" *ngIf="storeDropdownOpen">
+      <div class="custom-select store-select" (click)="toggleStoreDropdown()" style="position: relative; display: inline-block; width: 100%;">
+        <div class="selected-value" style="display: flex; align-items: center; justify-content: space-between; padding-right: 10px;">
+          {{ getSelectedStoreName() }}
+          <span *ngIf="selectedStoreId" class="clear-filter" (click)="clearSelectedStore($event)" style="cursor: pointer; margin-left: auto;">✖️</span>
+        </div>
+        <div class="options" *ngIf="storeDropdownOpen" style="position: absolute; top: 100%; left: 0; width: 100%; z-index: 1;">
           <div class="option" *ngFor="let store of stores" (click)="selectStore(store._id)">{{ store.name }}</div>
         </div>
       </div>
@@ -12,9 +39,12 @@
     
     <div class="col-md-3">
       <label for="years" class="mr-2">Año:</label>
-      <div class="custom-select year-select" (click)="toggleYearDropdown()">
-        <div class="selected-value">{{ selectedYear || 'Seleccione un año' }}</div>
-        <div class="options" *ngIf="yearDropdownOpen">
+      <div class="custom-select year-select" (click)="toggleYearDropdown()" style="position: relative; display: inline-block; width: 100%;">
+        <div class="selected-value" style="display: flex; align-items: center; justify-content: space-between; padding-right: 10px;">
+          {{ selectedYear || 'Seleccione un año' }}
+          <span *ngIf="selectedYear" class="clear-filter" (click)="clearSelectedYear($event)" style="cursor: pointer; margin-left: auto;">✖️</span>
+        </div>
+        <div class="options" *ngIf="yearDropdownOpen" style="position: absolute; top: 100%; left: 0; width: 100%; z-index: 1;">
           <div class="option" *ngFor="let year of years" (click)="selectYear(year)">{{ year }}</div>
         </div>
       </div>
@@ -22,13 +52,30 @@
     
     <div class="col-md-3">
       <label for="months" class="mr-2">Mes:</label>
-      <div class="custom-select month-select" (click)="toggleMonthDropdown()">
-        <div class="selected-value">{{ getSelectedMonthName() }}</div>
-        <div class="options" *ngIf="monthDropdownOpen">
+      <div class="custom-select month-select" (click)="toggleMonthDropdown()" style="position: relative; display: inline-block; width: 100%;">
+        <div class="selected-value" style="display: flex; align-items: center; justify-content: space-between; padding-right: 10px;">
+          {{ getSelectedMonthName() }}
+          <span *ngIf="selectedMonth" class="clear-filter" (click)="clearSelectedMonth($event)" style="cursor: pointer; margin-left: auto;">✖️</span>
+        </div>
+        <div class="options" *ngIf="monthDropdownOpen" style="position: absolute; top: 100%; left: 0; width: 100%; z-index: 1;">
           <div class="option" *ngFor="let month of months" (click)="selectMonth(month.value)">{{ month.name }}</div>
         </div>
       </div>
-    </div>    
+    </div>
+    
+    <div class="col-md-3">
+      <label for="status" class="mr-2">Estado:</label>
+      <div class="custom-select status-select" (click)="toggleStatusDropdown()" style="position: relative; display: inline-block; width: 100%;">
+        <div class="selected-value" style="display: flex; align-items: center; justify-content: space-between; padding-right: 10px;">
+          {{ selectedStatus === true ? 'Pagado' : selectedStatus === false ? 'Pendiente' : 'Seleccione un estado' }}
+          <span *ngIf="selectedStatus !== null" class="clear-filter" (click)="clearSelectedStatus($event)" style="cursor: pointer; margin-left: auto;">✖️</span>
+        </div>
+        <div class="options" *ngIf="statusDropdownOpen" style="position: absolute; top: 100%; left: 0; width: 100%; z-index: 1;">
+          <div class="option" (click)="selectStatus(true)">Pagado</div>
+          <div class="option" (click)="selectStatus(false)">Pendiente</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Tabla de lista de pagos -->
@@ -41,45 +88,42 @@
             <tr>
               <th class="text-center">Tienda</th>
               <th class="text-center">Mes</th>
-              <th class="text-center">Estado</th>
               <th class="text-center">Año</th>
+              <th class="text-center">Estado</th>
               <th class="text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngIf="getPaginatedPayments().length === 0">
+            <tr *ngIf="filteredPayments.length === 0">
               <td class="text-center" colspan="5">No hay registros</td>
             </tr>
-            <tr *ngFor="let payment of getPaginatedPayments()">
+            <tr *ngFor="let payment of getPaginatedPayments()" class="table-row">
               <td class="text-center">{{ payment.nameShop }}</td>
-              <td class="text-center">{{ payment.month }}</td>
-              <td class="text-center">{{ payment.statusPayment ? 'Pagado' : 'Pendiente' }}</td>
+              <td class="text-center">{{ payment.month | number: '2.0' }}</td>
               <td class="text-center">{{ payment.year }}</td>
               <td class="text-center">
-                <button class="btn btn-primary btn-sm" (click)="viewDetails(payment)">
+                <span
+                  [ngClass]="{'status-button': true, 'paid': payment.statusPayment, 'pending': !payment.statusPayment}">
+                  {{ payment.statusPayment ? 'Pagado' : 'Pendiente' }}
+                </span>
+              </td>
+              <td class="text-center">
+                <button class="btn btn-primary btn-sm" (click)="viewDetails(payment)" [disabled]="!payment.statusPayment">
                   <i class="fas fa-search"></i>
                 </button>
               </td>
             </tr>
           </tbody>
+                    
         </table>
       </div>
 
       <!-- Controles de paginación -->
-      <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-          <li class="page-item" [class.disabled]="page === 1">
-            <a class="page-link" (click)="setPage(page - 1)">Anterior</a>
-          </li>
-          <li class="page-item" *ngFor="let i of [].constructor(totalPages); let index = index"
-            [class.active]="page === (index + 1)">
-            <a class="page-link" (click)="setPage(index + 1)">{{ index + 1 }}</a>
-          </li>
-          <li class="page-item" [class.disabled]="page === totalPages">
-            <a class="page-link" (click)="setPage(page + 1)">Siguiente</a>
-          </li>
-        </ul>
-      </nav>
+      <div class="pagination-slider">
+        <button class="btn prev" [disabled]="page === 1" (click)="setPage(page - 1)">⟨ Anterior</button>
+        <span class="page-indicator">Página {{ page }} de {{ totalPages }}</span>
+        <button class="btn next" [disabled]="page === totalPages" (click)="setPage(page + 1)">Siguiente ⟩</button>
+      </div>           
     </div>
   </div>
   <div *ngIf="selectedPaymentImage" class="modal" tabindex="-1" style="display: block;">

@@ -11,6 +11,8 @@ export class BillingListComponent implements OnInit, OnDestroy {
   monthDropdownOpen: boolean = false; // Estado para el dropdown del mes
   storeDropdownOpen: boolean = false; // Estado para el dropdown de tienda
   selectedStoreId: string | null = null; // ID de la tienda seleccionada
+  selectedStatus: boolean | null = null; // Cambiar a boolean
+  statusDropdownOpen: boolean = false; // Controla la visibilidad del dropdown
   codesUsedInMonth: number = 0;
   filteredCodes: { code: string; value: number; status: string }[] = [];
   selectedYear: number | null = null;
@@ -39,6 +41,11 @@ export class BillingListComponent implements OnInit, OnDestroy {
   pageSize: number = 5;
   totalPayments: number = 0;
   totalPages: number = 0;
+  pendingPaymentsCount: number = 0; // Asegúrate de agregar esto en tu clase
+  amountPayments: number = 0;
+  formattedAmountPayments: string = '';
+  pendingStores: any[] = [];
+  startDate: Date = new Date(2024, 9, 1);
 
   constructor(private storeService: StoreService) {}
 
@@ -47,6 +54,9 @@ export class BillingListComponent implements OnInit, OnDestroy {
     this.loadStores();
     this.loadPayments();
     document.addEventListener('click', this.handleClickOutside.bind(this));
+    setInterval(() => {
+      this.loadPayments();
+    }, 10000); // 10 segundos
   }
 
   ngOnDestroy() {
@@ -76,6 +86,16 @@ export class BillingListComponent implements OnInit, OnDestroy {
     this.storeDropdownOpen = !this.storeDropdownOpen;
     this.yearDropdownOpen = false; // Cierra el dropdown del año si está abierto
     this.monthDropdownOpen = false; // Cierra el dropdown del mes si está abierto
+  }
+
+  toggleStatusDropdown() {
+    this.statusDropdownOpen = !this.statusDropdownOpen;
+  }
+
+  selectStatus(status: boolean) {
+    this.selectedStatus = status; // Ahora selecciona true o false
+    this.statusDropdownOpen = false;
+    this.onFilterChange();
   }
 
   selectStore(storeId: string): void {
@@ -115,13 +135,16 @@ export class BillingListComponent implements OnInit, OnDestroy {
         this.filteredPayments = this.payments;
         this.totalPayments = this.filteredPayments.length;
         this.calculateTotalPages();
-        console.log('Pagos cargados:', data);
+        this.countPendingPayments();
+        this.amountPaymentsShop();
+        // console.log('Pagos cargados:', data);
       },
       (error) => {
         console.error('Error al cargar pagos:', error);
       }
     );
   }
+  
 
   onFilterChange(): void {
     this.filterPayments();
@@ -138,6 +161,7 @@ export class BillingListComponent implements OnInit, OnDestroy {
       storeId: this.selectedStoreId,
       year: this.selectedYear,
       month: this.selectedMonth,
+      status: this.selectedStatus,
     });
 
     this.filteredPayments = this.payments.filter((payment) => {
@@ -148,8 +172,11 @@ export class BillingListComponent implements OnInit, OnDestroy {
         payment.month === parseInt(this.selectedMonth, 10);
       const shopMatches =
         !this.selectedStoreId || payment.shopId === this.selectedStoreId;
+      const statusMatches =
+        this.selectedStatus === null ||
+        payment.statusPayment === this.selectedStatus; // Compara con true o false
 
-      return yearMatches && monthMatches && shopMatches;
+      return yearMatches && monthMatches && shopMatches && statusMatches;
     });
 
     console.log('Pagos filtrados:', this.filteredPayments);
@@ -200,6 +227,7 @@ export class BillingListComponent implements OnInit, OnDestroy {
     const yearSelect = document.querySelector('.year-select');
     const monthSelect = document.querySelector('.month-select');
     const storeSelect = document.querySelector('.store-select'); // Agrega esta línea
+    const statusSelect = document.querySelector('.status-select'); // Agrega esta línea
 
     // Cierra el dropdown del año si se hace clic fuera de él
     if (this.yearDropdownOpen && yearSelect && !yearSelect.contains(target)) {
@@ -223,5 +251,76 @@ export class BillingListComponent implements OnInit, OnDestroy {
     ) {
       this.storeDropdownOpen = false;
     }
+
+    // Cierra el dropdown de estado si se hace clic fuera de él
+    if (
+      this.statusDropdownOpen &&
+      statusSelect &&
+      !statusSelect.contains(target)
+    ) {
+      this.statusDropdownOpen = false;
+    }
   }
+
+  countPendingPayments() {
+    this.pendingPaymentsCount = this.payments.filter(
+      (payment) => payment.statusPayment === false
+    ).length;
+    // console.log(this.pendingPaymentsCount);
+  }
+
+  amountPaymentsShop() {
+    this.amountPayments = this.payments.reduce((total, payment) => {
+      return total + (payment.amount || 0); // Asegúrate de que 'amount' sea el nombre correcto
+    }, 0);
+
+    // Formatea el monto a pesos colombianos
+    this.formattedAmountPayments = new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+    }).format(this.amountPayments);
+
+    // console.log(this.amountPayments);
+    // console.log(this.formattedAmountPayments); // Para verificar el formato
+  }
+
+  clearSelectedStore(event: MouseEvent): void {
+    event.stopPropagation(); // Previene que el clic cierre el dropdown
+    this.selectedStoreId = null; // Limpia la selección de la tienda
+    this.onFilterChange(); // Aplica los cambios
+  }
+
+  clearSelectedYear(event: MouseEvent): void {
+    event.stopPropagation();
+    this.selectedYear = null;
+    this.onFilterChange();
+  }
+
+  clearSelectedMonth(event: MouseEvent): void {
+    event.stopPropagation();
+    this.selectedMonth = null;
+    this.onFilterChange();
+  }
+
+  clearSelectedStatus(event: MouseEvent): void {
+    event.stopPropagation();
+    this.selectedStatus = null;
+    this.onFilterChange();
+  }
+
+  getPageRange(totalPages: number, currentPage: number): number[] {
+    const range: number[] = [];
+    let start = currentPage > 3 ? currentPage - 2 : 1;
+    let end = currentPage + 2 < totalPages ? currentPage + 2 : totalPages;
+  
+    if (end - start < 4) {
+      start = end - 4 > 0 ? end - 4 : 1;
+    }
+  
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+  
 }
