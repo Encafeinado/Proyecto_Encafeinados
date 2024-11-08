@@ -137,7 +137,7 @@ export class BillingListComponent implements OnInit, OnDestroy {
         this.calculateTotalPages();
         this.countPendingPayments();
         this.amountPaymentsShop();
-        console.log('Pagos cargados:', data);
+        // console.log('Pagos cargados:', data);
       },
       (error) => {
         console.error('Error al cargar pagos:', error);
@@ -266,7 +266,7 @@ export class BillingListComponent implements OnInit, OnDestroy {
     this.pendingPaymentsCount = this.payments.filter(
       (payment) => payment.statusPayment === false
     ).length;
-    console.log(this.pendingPaymentsCount);
+    // console.log(this.pendingPaymentsCount);
   }
 
   amountPaymentsShop() {
@@ -280,8 +280,8 @@ export class BillingListComponent implements OnInit, OnDestroy {
       currency: 'COP',
     }).format(this.amountPayments);
 
-    console.log(this.amountPayments);
-    console.log(this.formattedAmountPayments); // Para verificar el formato
+    // console.log(this.amountPayments);
+    // console.log(this.formattedAmountPayments); // Para verificar el formato
   }
 
   clearSelectedStore(event: MouseEvent): void {
