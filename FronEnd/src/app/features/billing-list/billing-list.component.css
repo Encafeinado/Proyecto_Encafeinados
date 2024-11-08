@@ -453,7 +453,3 @@ label {
   color: #721c24; /* Color de texto para "Pendiente" */
 }
 
-.clear-filter {
-  margin-left: 10px; /* Espacio a la izquierda de la X */
-  cursor: pointer; /* Cambia el cursor al pasar sobre la X */
-}
