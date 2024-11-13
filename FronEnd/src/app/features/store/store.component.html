@@ -74,10 +74,25 @@
         <p>¿Estás seguro de que quieres {{ isStoreOpen ? 'cerrar' : 'abrir' }} la tienda en el mapa?</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="confirmToggleStoreActivation()">Sí, {{ isStoreOpen ?
-          'cerrar' : 'abrir' }}</button>
-        <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          (click)="confirmToggleStoreActivation()" 
+          [disabled]="isStoreLoading"
+        >
+          <span *ngIf="isStoreLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          {{ isStoreLoading ? 'Cargando...' : (isStoreOpen ? 'Sí, cerrar' : 'Sí, abrir') }}
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          (click)="closeModal()" 
+          [disabled]="isStoreLoading"
+        >
+          Cancelar
+        </button>
       </div>
+      
     </div>
   </div>
 </div>

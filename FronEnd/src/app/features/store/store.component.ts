@@ -114,27 +114,41 @@ export class StoreComponent implements OnInit {
     this.showModal = false;
   }
 
+  isStoreLoading: boolean = false;
+
+
   confirmToggleStoreActivation() {
+    // Activa el spinner
+    this.isStoreLoading = true;
+  
     const newStatus = !this.isStoreOpen;
     this.storeService.updateShopStatus(this.shopId, newStatus).subscribe({
       next: (shop: Shop) => {
         this.isStoreOpen = newStatus; // Actualiza el estado en la vista
         this.storeStatusService.setStoreActivation(newStatus); // Actualiza el estado en el servicio
-        this.showModal = false;
-
+        this.showModal = false; // Cierra el modal
+  
         console.log('Estado de la tienda actualizado:', newStatus ? 'Abierta' : 'Cerrada');
         console.log('Información de la tienda actualizada:', shop);
-
+  
         if (this.isStoreOpen) {
           this.toastr.success('Abriste tu tienda en el mapa', 'Tienda Abierta');
         } else {
           this.toastr.success('Cerraste tu tienda en el mapa', 'Tienda Cerrada');
         }
+  
+        // Desactiva el spinner
+        this.isStoreLoading = false;
       },
       error: (err) => {
         console.error('Error al actualizar el estado de la tienda:', err);
         this.toastr.error('Error al actualizar el estado de la tienda', 'Error');
+  
+        // Desactiva el spinner en caso de error
+        this.isStoreLoading = false;
       }
     });
   }
+  
+  
 }

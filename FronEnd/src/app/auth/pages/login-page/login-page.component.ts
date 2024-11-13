@@ -68,7 +68,8 @@ export class LoginPageComponent {
   }
 
   
-  
+  isLoading: boolean = false;
+
  
 
   login(): void {
@@ -76,11 +77,17 @@ export class LoginPageComponent {
       this.showError = true; // Muestra el mensaje de error
       return;
     }
-
+  
+    // Activa el spinner
+    this.isLoading = true;
+  
     const { email, password } = this.myForm.value;
-
+  
     this.authService.login(email, password).subscribe(
       (response) => {
+        // Desactiva el spinner
+        this.isLoading = false;
+  
         if (response) {
           this.toastr.success('Inicio de sesión exitoso');
           this.router.navigate(['/landing']);
@@ -89,8 +96,11 @@ export class LoginPageComponent {
         }
       },
       () => {
-        this.showError = true; // Maneja el error general
+        // Desactiva el spinner y muestra error general
+        this.isLoading = false;
+        this.showError = true;
       }
     );
   }
 }
+  
