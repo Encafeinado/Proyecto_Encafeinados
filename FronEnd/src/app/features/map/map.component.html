@@ -179,9 +179,28 @@
 
     </div>
     <div class="modal-footer-code">
-      <button type="button" class="btn" (click)="verifyCode()" [disabled]="isButtonDisabled">Verificar</button>
-      <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
+      <button 
+        type="button" 
+        class="btn" 
+        (click)="verifyCode()" 
+        [disabled]="isButtonDisabled || isLoading"
+      >
+        <ng-container *ngIf="isLoading; else normalText">
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Verificando...
+        </ng-container>
+        <ng-template #normalText>Verificar</ng-template>
+      </button>
+      <button 
+        type="button" 
+        class="btn" 
+        (click)="modal.dismiss('cancel')" 
+        [disabled]="isLoading"
+      >
+        Cancelar
+      </button>
     </div>
+    
   </div>
 </ng-template>
 

@@ -234,9 +234,21 @@
             </div>
 
             <div class="text-center pt-1 mb-5 pb-1">
-              <button data-mdb-button-init data-mdb-ripple-init class="login100-form-btn" [disabled]="myForm.invalid"
-                type="submit">Registrar</button>
+              <button 
+                data-mdb-button-init 
+                data-mdb-ripple-init 
+                class="login100-form-btn" 
+                [disabled]="myForm.invalid || isLoading" 
+                type="submit"
+              >
+                <ng-container *ngIf="isLoading; else buttonText">
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  Registrando...
+                </ng-container>
+                <ng-template #buttonText>Registrar</ng-template>
+              </button>
             </div>
+            
             <div class="flex-col-c p-t-3 mt-3">
               <span class="txt1 p-b-2">
                 ¿Ya tienes cuenta?
