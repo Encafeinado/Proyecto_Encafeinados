@@ -79,6 +79,7 @@ export class RegisterPageComponent {
     'yahoo.com.mx',
     'yopmail.com',
     '@icloud.com',
+    'aliencreativo.com'
   ];
 
   public myForm: FormGroup = this.fb.group(
