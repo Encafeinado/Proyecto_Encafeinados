@@ -10,6 +10,7 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 })
 export class PaymentComponent implements OnInit {
   modalRef!: NgbModalRef;
+  
   amount: number = 0;
   payments: any[] = [];
   yearDropdownOpen: boolean = false; // Estado para el dropdown del año
@@ -215,11 +216,18 @@ export class PaymentComponent implements OnInit {
     this.openConfirmationModal(this.modalPayment);
   }
 
+
+
+
   async confirmUpload(modal: any): Promise<void> {
+    // Activa el spinner
+    this.isSaving = true;
+  
     await this.loadUserData();
   
     if (!this.userRole || !this.shopData || !this.shopData.name) {
       console.error('Datos de la tienda no disponibles');
+      this.isSaving = false; // Desactiva el spinner
       modal.dismiss('cancel');
       return;
     }
@@ -251,18 +259,22 @@ export class PaymentComponent implements OnInit {
         (response) => {
           console.log('Pago actualizado con éxito:', response);
           this.updatePaymentStatusToPaid();
+          this.isSaving = false; // Desactiva el spinner
           modal.close('uploaded');
         },
         (error) => {
           console.error('Error al actualizar el pago:', error);
+          this.isSaving = false; // Desactiva el spinner
           modal.dismiss('cancel');
         }
       );
     } else {
       console.error('No se encontró un pago existente para actualizar');
+      this.isSaving = false; // Desactiva el spinner
       modal.dismiss('cancel');
     }
   }
+  
   
 
   updatePaymentStatusToPaid(): void {

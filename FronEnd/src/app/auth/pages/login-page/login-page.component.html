@@ -73,22 +73,23 @@
                   data-mdb-button-init 
                   data-mdb-ripple-init 
                   class="login100-form-btn" 
-                  [disabled]="myForm.invalid" 
+                  [disabled]="myForm.invalid || isLoading" 
                   type="submit"
                 >
-                  Iniciar Sesión
+                  <ng-container *ngIf="isLoading; else buttonText">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Cargando...
+                  </ng-container>
+                  <ng-template #buttonText>Iniciar Sesión</ng-template>
                 </button>
                 <a class="text-muted mt-3 d-block" routerLink="/auth/forgot-password">¿Olvidaste tu contraseña?</a>
-
+              
                 <div class="flex-col-c p-t-3 mt-3">
-                  <span class="txt1 p-b-2">
-                    ¿No tienes cuenta?
-                  </span>
-                  <a routerLink="/auth/register" >
-                    Crea una aquí
-                  </a>
+                  <span class="txt1 p-b-2">¿No tienes cuenta?</span>
+                  <a routerLink="/auth/register">Crea una aquí</a>
                 </div>
               </div>
+              
             </form>
           </div>
         </div>

@@ -6,7 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AddImageDto } from './dto/add-image.dto';
-import { CreatePaymentDto } from './dto/create-Payment.dto';
+import { CreatePaymentDto } from './dto/create-payment.dto';
 import { Payment, PaymentDocument } from './entities/payment.entity';
 import * as moment from 'moment';
 import { Cron, CronExpression } from '@nestjs/schedule';

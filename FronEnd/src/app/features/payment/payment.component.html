@@ -2,7 +2,7 @@
   <!-- Fila para la imagen -->
   <div class="row mb-4 justify-content-center">
     <div class="col-md-8 text-center">
-      <img src="../../../../assets/images/QR.png" alt="Imagen de encabezado" class="img-fluid qr-image" />
+      <img src="/assets/images/QR.png" alt="Imagen de encabezado" class="img-fluid qr-image" />
     </div>
   </div>
 
@@ -106,8 +106,27 @@
       <p>¿Está seguro de que deseas guardar el comprobante pago?</p>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn" (click)="confirmUpload(modal)">Confirmar</button>
-      <button type="button" class="btn" (click)="modal.dismiss('cancel')">Cancelar</button>
+      <button 
+        type="button" 
+        class="btn" 
+        (click)="confirmUpload(modal)" 
+        [disabled]="isSaving"
+      >
+        <ng-container *ngIf="isSaving; else buttonText">
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Guardando...
+        </ng-container>
+        <ng-template #buttonText>Confirmar</ng-template>
+      </button>
+      <button 
+        type="button" 
+        class="btn" 
+        (click)="modal.dismiss('cancel')" 
+        [disabled]="isSaving"
+      >
+        Cancelar
+      </button>
     </div>
+    
   </div>
 </ng-template>
