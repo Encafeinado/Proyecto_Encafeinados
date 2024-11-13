@@ -79,6 +79,7 @@ export class RegisterPageComponent {
     'yahoo.com.mx',
     'yopmail.com',
     '@icloud.com',
+    'aliencreativo.com'
   ];
 
   public myForm: FormGroup = this.fb.group(
@@ -246,17 +247,23 @@ export class RegisterPageComponent {
     }
   }
 
+  isLoading: boolean = false;
+
+
   register() {
     if (this.myForm.invalid) {
       this.showError = true;
       return;
     }
-
+  
+    // Activar el spinner
+    this.isLoading = true;
+  
     // Abre el diálogo y espera la respuesta
     const dialogRef = this.MatDialogModule.open(DataTreatmentDialogComponent, {
       disableClose: true,
     });
-
+  
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         const {
@@ -268,9 +275,9 @@ export class RegisterPageComponent {
           specialties2,
           address,
           logo,
-          origin 
+          origin,
         } = this.myForm.value;
-
+  
         if (this.isStore) {
           this.geocodingService.geocodeAddress(address).subscribe({
             next: (results: google.maps.GeocoderResult[]) => {
@@ -280,7 +287,7 @@ export class RegisterPageComponent {
                 const lon = location.lng();
                 console.log('Latitud:', lat, 'Longitud:', lon);
                 console.log('Dirección: ', address);
-
+  
                 this.authService
                   .registerStore(
                     name,
@@ -301,14 +308,17 @@ export class RegisterPageComponent {
                         '¡Registro de tienda exitoso!',
                         'Éxito'
                       );
+                      this.isLoading = false; // Desactivar el spinner
                       this.router.navigateByUrl('/auth/login');
                     },
                     error: (err) => {
                       console.error('Error al registrar tienda:', err);
+                      this.isLoading = false; // Desactivar el spinner en caso de error
                       this.toastr.error('Error al registrar tienda', 'Error');
                     },
                   });
               } else {
+                this.isLoading = false; // Desactivar el spinner en caso de error
                 this.toastr.error(
                   'No se pudo geocodificar la dirección',
                   'Error'
@@ -317,6 +327,7 @@ export class RegisterPageComponent {
             },
             error: (err) => {
               console.error('Error al geocodificar la dirección:', err);
+              this.isLoading = false; // Desactivar el spinner en caso de error
               this.toastr.error('Error al geocodificar la dirección', 'Error');
             },
           });
@@ -324,10 +335,12 @@ export class RegisterPageComponent {
           this.authService.register(name, email, password, phone, origin).subscribe({
             next: () => {
               this.toastr.success('¡Registro de usuario exitoso!', 'Éxito');
+              this.isLoading = false; // Desactivar el spinner
               this.router.navigateByUrl('/auth/login');
             },
             error: (err) => {
               console.error('Error al registrar usuario:', err);
+              this.isLoading = false; // Desactivar el spinner en caso de error
               this.showError = true;
             },
           });
@@ -335,9 +348,11 @@ export class RegisterPageComponent {
       } else {
         // Usuario no aceptó el tratamiento de datos
         console.log('Usuario no aceptó el tratamiento de datos.');
+        this.isLoading = false; // Desactivar el spinner
       }
     });
   }
+  
 
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {
