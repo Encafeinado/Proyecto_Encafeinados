@@ -55,7 +55,9 @@ export class BillingListComponent implements OnInit, OnDestroy {
     this.loadPayments();
     document.addEventListener('click', this.handleClickOutside.bind(this));
     setInterval(() => {
-      this.loadPayments();
+      this.updatePayments();
+      this.amountPaymentsShop();
+      this.countPendingPayments();
     }, 10000); // 10 segundos
   }
 
@@ -120,13 +122,50 @@ export class BillingListComponent implements OnInit, OnDestroy {
     this.storeService.getAllShops().subscribe(
       (data: any) => {
         this.stores = data;
-        console.log('Tiendas cargadas:', data);
+        // console.log('Tiendas cargadas:', data);
       },
       (error) => {
         console.error('Error al cargar tiendas:', error);
       }
     );
   }
+
+  updatePayments(): void {
+    this.storeService.getAllPayments().subscribe(
+      (data: any) => {
+        this.payments = data;
+  
+        // Si no hay filtros seleccionados
+        if (
+          !this.selectedStoreId &&
+          !this.selectedYear &&
+          !this.selectedMonth &&
+          this.selectedStatus == null
+        ) {
+          // Copia todos los pagos a `filteredPayments` si no hay filtros
+          this.filteredPayments = [...this.payments];
+          this.totalPayments = this.filteredPayments.length;
+          this.calculateTotalPages();
+          this.countPendingPayments();
+          this.amountPaymentsShop();
+  
+          // Mostrar los valores de `statusPayment` y `storeName` en la consola
+          this.filteredPayments.forEach(payment => {
+            // console.log(`Tienda: ${payment.nameShop}, Estado: ${payment.statusPayment ? "Pagado" : "Pendiente"}`);
+          });
+  
+          // console.log("Actualización completa sin filtros");
+        } else {
+          // Solo almacenar datos sin alterarlos
+          // console.log("Datos actualizados con filtros aplicados");
+        }
+      },
+      (error) => {
+        console.error('Error al actualizar pagos:', error);
+      }
+    );
+  }
+  
 
   loadPayments(): void {
     this.storeService.getAllPayments().subscribe(
@@ -152,17 +191,17 @@ export class BillingListComponent implements OnInit, OnDestroy {
 
   onStoreSelected(event: any): void {
     this.selectedStoreId = event.target.value;
-    console.log('Tienda seleccionada:', this.selectedStoreId);
+    // console.log('Tienda seleccionada:', this.selectedStoreId);
     this.onFilterChange();
   }
 
   filterPayments(): void {
-    console.log('Filtrando pagos con:', {
-      storeId: this.selectedStoreId,
-      year: this.selectedYear,
-      month: this.selectedMonth,
-      status: this.selectedStatus,
-    });
+    // console.log('Filtrando pagos con:', {
+    //   storeId: this.selectedStoreId,
+    //   year: this.selectedYear,
+    //   month: this.selectedMonth,
+    //   status: this.selectedStatus,
+    // });
 
     this.filteredPayments = this.payments.filter((payment) => {
       const yearMatches =
@@ -179,7 +218,7 @@ export class BillingListComponent implements OnInit, OnDestroy {
       return yearMatches && monthMatches && shopMatches && statusMatches;
     });
 
-    console.log('Pagos filtrados:', this.filteredPayments);
+    // console.log('Pagos filtrados:', this.filteredPayments);
     this.totalPayments = this.filteredPayments.length;
     this.calculateTotalPages();
   }
@@ -271,15 +310,15 @@ export class BillingListComponent implements OnInit, OnDestroy {
 
   amountPaymentsShop() {
     this.amountPayments = this.payments.reduce((total, payment) => {
-      return total + (payment.amount || 0); // Asegúrate de que 'amount' sea el nombre correcto
+      return payment.statusPayment === true ? total + (payment.amount || 0) : total;
     }, 0);
-
+  
     // Formatea el monto a pesos colombianos
     this.formattedAmountPayments = new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
     }).format(this.amountPayments);
-
+  
     // console.log(this.amountPayments);
     // console.log(this.formattedAmountPayments); // Para verificar el formato
   }
