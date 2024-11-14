@@ -373,6 +373,8 @@ export class MapComponent implements OnInit, OnDestroy {
         return 'assets/images/ruta-vibrante.jpg';
       case 'encafeinados tienda':
         return 'assets/images/fachadaEncafeinados.jpg';
+      case 'meraki coworking house':
+        return 'assets/images/meraki.jpeg';
       case 'saudade café':
         return 'assets/images/ruta-saudade.jpg';
       case 'milagro coffee shop':
