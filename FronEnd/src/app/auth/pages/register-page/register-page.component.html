@@ -82,6 +82,12 @@
                 class="error-message">
                 El formato del correo no es válido.
               </div>
+              <div *ngIf="myForm.get('email')?.hasError('emailAlreadyRegistered') && myForm.get('email')?.touched"
+              class="error-message">
+                ya está en uso.
+              </div>
+              
+              
             </div>
 
             <!-- Procedencia -->

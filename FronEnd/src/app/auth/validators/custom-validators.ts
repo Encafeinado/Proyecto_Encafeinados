@@ -133,15 +133,19 @@ export function validateEmailForLogin(authService: AuthService): AsyncValidatorF
 
     return authService.checkEmailExistence(email).pipe(
       map(response => {
-        if (response?.emailNotRegistered) {
-          return { emailNotRegistered: true };
+        if (!response?.emailNotRegistered) {
+          return { emailAlreadyRegistered: true }; // Error si el correo ya está registrado
         }
-        return null;
+        return null; // El correo no está registrado
       }),
-      catchError(() => of({ emailNotRegistered: true })) // Manejo de errores
+      catchError(() => {
+        console.error('Error verificando existencia del correo');
+        return of(null); // Manejo de errores
+      })
     );
   };
 }
+
 
 
 // Validador de nombre con símbolos y números
