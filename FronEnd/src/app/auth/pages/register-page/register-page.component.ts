@@ -26,6 +26,7 @@ import {
 } from '../../validators/custom-validators';
 import { DataTreatmentDialogComponent } from 'src/app/data-treatment-dialog/data-treatment-dialog.component';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { validateEmailForLogin } from '../../validators/custom-validators';
 
 interface CustomFile {
   filename: string;
@@ -100,11 +101,15 @@ export class RegisterPageComponent {
       email: [
         '',
         {
-          validators: [Validators.required],
-          asyncValidators: [emailDomainValidator(this.validDomains)],
-          updateOn: 'change', // Se actualiza cuando pierde el foco
+          validators: [Validators.required, Validators.email], // Validadores síncronos
+          asyncValidators: [
+            emailDomainValidator(this.validDomains), // Validador de dominio
+            validateEmailForLogin(this.authService),        // Validador para verificar si el correo ya está registrado
+          ], // Validadores asíncronos
+          updateOn: 'change', // Se actualiza al cambiar
         },
       ],
+      
 
       password: [
         '',
