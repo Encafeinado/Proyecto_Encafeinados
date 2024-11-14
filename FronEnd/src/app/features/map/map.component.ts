@@ -371,6 +371,9 @@ export class MapComponent implements OnInit, OnDestroy {
     switch (destinationName.toLowerCase()) {
       case 'vibrante café':
         return 'assets/images/ruta-vibrante.jpg';
+
+        case 'meraki coworking house':
+          return 'assets/images/meraki.jpeg';
       case 'aroma café sabaneta':
         return 'assets/images/ruta-aroma.jpg';
       case 'saudade café':
