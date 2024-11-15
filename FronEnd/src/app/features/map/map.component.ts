@@ -371,12 +371,18 @@ export class MapComponent implements OnInit, OnDestroy {
     switch (destinationName.toLowerCase()) {
       case 'vibrante café':
         return 'assets/images/ruta-vibrante.jpg';
-      case 'aroma café sabaneta':
-        return 'assets/images/ruta-aroma.jpg';
+      case 'encafeinados tienda':
+        return 'assets/images/fachadaEncafeinados.jpg';
+      case 'meraki coworking house':
+        return 'assets/images/meraki.jpeg';
       case 'saudade café':
         return 'assets/images/ruta-saudade.jpg';
       case 'milagro coffee shop':
-        return 'assets/images/ruta-milagro.jpg';
+        return 'assets/images/fachadaMilagro.jpg';
+      case 'del cafetal':
+        return 'assets/images/fachadaDelcafetal.jpeg';
+      case 'zendaya coffee studio':
+        return 'assets/images/fachadaZendaya2.jpg';
       default:
         return 'assets/images/default-image.jpg'; // Imagen por defecto si no coincide el nombre
     }
