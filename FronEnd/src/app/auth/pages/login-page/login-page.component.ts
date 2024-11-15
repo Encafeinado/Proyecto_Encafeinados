@@ -20,7 +20,7 @@ export class LoginPageComponent {
   
   validDomains = [ "gmail.com","gmail.co","gmail.es","gmail.mx","hotmail.com","hotmail.co","hotmail.es","hotmail.mx","outlook.com","outlook.co","outlook.es","outlook.mx","yahoo.com","yahoo.co","yahoo.es",
     "yahoo.mx","gmail.com.co","hotmail.com.co","outlook.com.co","yahoo.com.co","gmail.com.es","hotmail.com.es","outlook.com.es","yahoo.com.es","gmail.com.mx","hotmail.com.mx","outlook.com.mx",
-    "yahoo.com.mx","yopmail.com","@icloud.com"]; 
+    "yahoo.com.mx","yopmail.com","@icloud.com","aliencreativo.com"]; 
 
 
   constructor(
@@ -68,7 +68,8 @@ export class LoginPageComponent {
   }
 
   
-  
+  isLoading: boolean = false;
+
  
 
   login(): void {
@@ -76,11 +77,17 @@ export class LoginPageComponent {
       this.showError = true; // Muestra el mensaje de error
       return;
     }
-
+  
+    // Activa el spinner
+    this.isLoading = true;
+  
     const { email, password } = this.myForm.value;
-
+  
     this.authService.login(email, password).subscribe(
       (response) => {
+        // Desactiva el spinner
+        this.isLoading = false;
+  
         if (response) {
           this.toastr.success('Inicio de sesión exitoso');
           this.router.navigate(['/landing']);
@@ -89,8 +96,11 @@ export class LoginPageComponent {
         }
       },
       () => {
-        this.showError = true; // Maneja el error general
+        // Desactiva el spinner y muestra error general
+        this.isLoading = false;
+        this.showError = true;
       }
     );
   }
 }
+  

@@ -41,6 +41,10 @@ export class Shop {
   @Prop({ default: 0 })
   codeUsage: number;
 
+  @Prop({ type: [{ date: Date }], default: [] })
+  codeUsageDates: { date: Date }[];
+
+
   @Prop({ required: true })
   latitude: number;
 

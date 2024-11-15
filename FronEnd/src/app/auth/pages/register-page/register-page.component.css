@@ -16,7 +16,22 @@
     background-color: #f0f0f0; /* Cambia el fondo cuando el usuario pasa el ratón por encima */
   }
   
-
+  .spinner-border {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 0.15em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+  }
+  
+  @keyframes spinner-border {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
 
 
   /* Estilos generales */

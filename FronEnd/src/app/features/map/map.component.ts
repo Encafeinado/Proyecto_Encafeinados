@@ -371,12 +371,18 @@ export class MapComponent implements OnInit, OnDestroy {
     switch (destinationName.toLowerCase()) {
       case 'vibrante café':
         return 'assets/images/ruta-vibrante.jpg';
-      case 'aroma café sabaneta':
-        return 'assets/images/ruta-aroma.jpg';
+      case 'encafeinados tienda':
+        return 'assets/images/fachadaEncafeinados.jpg';
+      case 'meraki coworking house':
+        return 'assets/images/meraki.jpeg';
       case 'saudade café':
         return 'assets/images/ruta-saudade.jpg';
       case 'milagro coffee shop':
-        return 'assets/images/ruta-milagro.jpg';
+        return 'assets/images/fachadaMilagro.jpg';
+      case 'del cafetal':
+        return 'assets/images/fachadaDelcafetal.jpeg';
+      case 'zendaya coffee studio':
+        return 'assets/images/fachadaZendaya2.jpg';
       default:
         return 'assets/images/default-image.jpg'; // Imagen por defecto si no coincide el nombre
     }
@@ -1314,17 +1320,23 @@ export class MapComponent implements OnInit, OnDestroy {
     this.openModal(this.modalReviewShop, '', 'statusValue', '', '', '');
   }
 
+  isLoading = false;
+
   verifyCode() {
-    // console.log('Primer bloque');
+    // Evitar múltiples clics
+    if (this.isLoading) return;
+  
+    // Activar el spinner
+    this.isLoading = true;
+  
     this.storeService
       .verifyCodeCode(this.enteredCode, this.enteredReview, this.enteredRating)
       .subscribe(
-        // this.storeService.verifyCodeCode(this.enteredCode).subscribe(
         (response) => {
           console.log(response);
           this.message = response.message;
           console.log(this.message);
-
+  
           if (this.message === 'Código de verificación guardado exitosamente') {
             this.verifiedcode = true;
             if (response.shop) {
@@ -1339,7 +1351,9 @@ export class MapComponent implements OnInit, OnDestroy {
                     toastr.success(
                       'Código verificado y CoffeeCoins añadidos exitosamente'
                     );
-                    // window.location.reload();
+                    // Finalizar el spinner
+                    this.isLoading = false;
+  
                     this.reloadComponent();
                     this.modalRef.close();
                   },
@@ -1353,6 +1367,8 @@ export class MapComponent implements OnInit, OnDestroy {
                     } else {
                       toastr.error('Error al añadir CoffeeCoins');
                     }
+                    // Finalizar el spinner
+                    this.isLoading = false;
                     this.modalRef.close();
                   }
                 );
@@ -1360,12 +1376,17 @@ export class MapComponent implements OnInit, OnDestroy {
               toastr.success(
                 'Código verificado y CoffeeCoins añadidos exitosamente'
               );
+              // Finalizar el spinner
+              this.isLoading = false;
+  
               this.reloadComponent();
               // window.location.reload();
             }
           } else {
             this.verifiedcode = false;
             toastr.error('Código de verificación no válido');
+            // Finalizar el spinner
+            this.isLoading = false;
           }
           console.log('5 bloque');
           this.verified = false;
@@ -1379,15 +1400,17 @@ export class MapComponent implements OnInit, OnDestroy {
             toastr.warning(
               'La tienda ya está presente en el álbum pero te aumentamos coffecoins'
             );
-            // window.location.reload();
-            this.modalRef.close();
           } else {
             this.message = 'Error al verificar el código';
             toastr.error('Error al verificar el código');
           }
+          // Finalizar el spinner en caso de error
+          this.isLoading = false;
+          this.modalRef.close();
         }
       );
   }
+  
 
   fetchUserData(): void {
     const token = localStorage.getItem('token');

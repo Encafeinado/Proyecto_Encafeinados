@@ -32,6 +32,7 @@ body {
   border-radius: 15px; /* Bordes redondeados */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra sutil */
   transition: transform 0.3s ease;
+  overflow: hidden; /* Recorta cualquier parte fuera del contenedor */
 }
 
 .video-container:hover {
@@ -39,9 +40,12 @@ body {
 }
 
 video {
-  width: 100%; /* Asegura que el video ocupe todo el ancho del contenedor */
-  border-radius: 10px; /* Bordes redondeados para el video */
+  width: 100%; /* Ocupa todo el ancho del contenedor */
+  max-height: 500px; /* Ajusta este valor según el tamaño deseado */
+  border-radius: 10px; /* Bordes redondeados */
+  
 }
+
 
 
 
@@ -293,7 +297,7 @@ footer p {
   }
 
   .video-container {
-    width: 100%; /* En pantallas pequeñas, el video ocupará el 100% del ancho */
+    width: 60%; /* En pantallas pequeñas, el video ocupará el 100% del ancho */
   }
 
   .contact-info h2,

@@ -1,24 +1,32 @@
-
 import {
   Body,
   Controller,
-  Delete,
   Get,
   NotFoundException,
   Param,
+  Patch,
   Post
 } from '@nestjs/common';
 import { AddImageDto } from './dto/add-image.dto';
-import { CreatePaymentDto } from './dto/create-Payment.dto';
+import { CreatePaymentDto } from './dto/create-payment.dto';
 import { PaymentService } from './payment.service';
 
 @Controller('payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
-  @Post('create') // Aquí añadimos 'create' para definir la ruta explícita
+  @Post('create') // Ruta para crear un nuevo pago
   async create(@Body() createPaymentDto: CreatePaymentDto) {
     return this.paymentService.create(createPaymentDto);
+  }
+  
+  @Patch(':id') // Ruta para actualizar un pago existente
+  async update(@Param('id') id: string, @Body() updatePaymentDto: CreatePaymentDto) {
+    const updatedPayment = await this.paymentService.update(id, updatePaymentDto);
+    if (!updatedPayment) {
+      throw new NotFoundException('Pago no encontrado para actualizar');
+    }
+    return updatedPayment;
   }
 
   @Post(':id/images')
@@ -29,7 +37,6 @@ export class PaymentController {
     return this.paymentService.addImage(paymentId, addImageDto);
   }
 
-
   @Get('status/:shopId')
   async getPaymentStatusByShopId(@Param('shopId') shopId: string) {
     const payment = await this.paymentService.findPaymentStatusByShopId(shopId);
@@ -39,8 +46,11 @@ export class PaymentController {
     return { statusPayment: payment.statusPayment };
   }
   
-
-
+  @Get('test-register-monthly') // Endpoint temporal para prueba
+  async testRegisterMonthlyPayments() {
+    await this.paymentService.checkAndRegisterMonthlyPayments();
+    return { message: 'Monthly payments checked and registered if needed' };
+  }
 
   @Get()
   async findAll() {
