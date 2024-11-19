@@ -15,16 +15,18 @@ export class ShopService {
   fetchShopData(token: string) {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
-
-    return this.http.get<any>(this.apiUrl, { headers }).pipe(
+  
+    return this.http.get<any[]>(this.apiUrl, { headers }).pipe(
       catchError(error => {
         console.error('Error al obtener los datos de la tienda:', error);
         return throwError(() => error);
       })
     );
   }
+  
+  
 
   getShopById(id: string, token: string) {
     const headers = new HttpHeaders({

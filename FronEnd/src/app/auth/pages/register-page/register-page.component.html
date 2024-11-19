@@ -90,6 +90,45 @@
               
             </div>
 
+             <!-- Celular -->
+             <div class="wrap-input100 m-b-23 form-outline mb-4">
+              <span class="label-input100">Celular</span>
+              <div class="input-with-eye">
+                <input class="input100 small-placeholder form-control" type="text" formControlName="phone"
+                  placeholder="Celular">
+                <span class="focus-input100"></span>
+              </div>
+
+              <!-- Mostrar un solo error a la vez, usando 'dirty' -->
+              <div *ngIf="myForm.get('phone')?.dirty">
+                <!-- Validación de campo requerido -->
+                <div *ngIf="myForm.get('phone')?.hasError('required')" class="error-message">
+                  El campo celular es obligatorio.
+                </div>
+
+                <!-- Validación de solo números -->
+                <div
+                  *ngIf="myForm.get('phone')?.hasError('invalidPhoneNumber') && !myForm.get('phone')?.hasError('required')"
+                  class="error-message">
+                  Solo debe contener números.
+                </div>
+
+                <!-- Validación de longitud mínima (solo se muestra si no hay error de 'invalidPhoneNumber') -->
+                <div
+                  *ngIf="myForm.get('phone')?.hasError('minlength') && !myForm.get('phone')?.hasError('required') && !myForm.get('phone')?.hasError('invalidPhoneNumber')"
+                  class="error-message">
+                  Mínimo debe tener 10 números.
+                </div>
+
+                <!-- Validación de longitud máxima (solo se muestra si no hay error de 'invalidPhoneNumber') -->
+                <div
+                  *ngIf="myForm.get('phone')?.hasError('maxlength') && !myForm.get('phone')?.hasError('required') && !myForm.get('phone')?.hasError('invalidPhoneNumber')"
+                  class="error-message">
+                  Máximo debe tener 10 números.
+                </div>
+              </div>
+            </div>
+
             <!-- Procedencia -->
             <div *ngIf="isUser" class="wrap-input100 m-b-23 form-outline mb-4">
               <span class="label-input100">Procedencia</span>
@@ -110,6 +149,8 @@
                 El campo procedencia es obligatorio.
               </div>
             </div>
+
+            
 
             <!-- Contraseña -->
             <div class="wrap-input100 m-b-23 form-outline mb-4">
@@ -165,44 +206,7 @@
               </div>
             </div>
 
-            <!-- Celular -->
-            <div class="wrap-input100 m-b-23 form-outline mb-4">
-              <span class="label-input100">Celular</span>
-              <div class="input-with-eye">
-                <input class="input100 small-placeholder form-control" type="text" formControlName="phone"
-                  placeholder="Celular">
-                <span class="focus-input100"></span>
-              </div>
-
-              <!-- Mostrar un solo error a la vez, usando 'dirty' -->
-              <div *ngIf="myForm.get('phone')?.dirty">
-                <!-- Validación de campo requerido -->
-                <div *ngIf="myForm.get('phone')?.hasError('required')" class="error-message">
-                  El campo celular es obligatorio.
-                </div>
-
-                <!-- Validación de solo números -->
-                <div
-                  *ngIf="myForm.get('phone')?.hasError('invalidPhoneNumber') && !myForm.get('phone')?.hasError('required')"
-                  class="error-message">
-                  Solo debe contener números.
-                </div>
-
-                <!-- Validación de longitud mínima (solo se muestra si no hay error de 'invalidPhoneNumber') -->
-                <div
-                  *ngIf="myForm.get('phone')?.hasError('minlength') && !myForm.get('phone')?.hasError('required') && !myForm.get('phone')?.hasError('invalidPhoneNumber')"
-                  class="error-message">
-                  Mínimo debe tener 10 números.
-                </div>
-
-                <!-- Validación de longitud máxima (solo se muestra si no hay error de 'invalidPhoneNumber') -->
-                <div
-                  *ngIf="myForm.get('phone')?.hasError('maxlength') && !myForm.get('phone')?.hasError('required') && !myForm.get('phone')?.hasError('invalidPhoneNumber')"
-                  class="error-message">
-                  Máximo debe tener 10 números.
-                </div>
-              </div>
-            </div>
+           
 
 
             <!-- Campos específicos para tiendas -->
@@ -255,12 +259,12 @@
               </button>
             </div>
             
-            <div class="flex-col-c p-t-3 mt-3">
+            <!-- <div class="flex-col-c p-t-3 mt-3">
               <span class="txt1 p-b-2">
                 ¿Ya tienes cuenta?
               </span>
               <a routerLink="/auth/login" class="txt2">Inicia sesión</a>
-            </div>
+            </div> -->
           </form>
         </div>
       </div>

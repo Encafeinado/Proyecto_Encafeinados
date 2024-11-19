@@ -7,19 +7,44 @@
     </header>
   
     <!-- Carrusel -->
-    <div id="coffeeCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+    <div id="coffeeCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
       <div class="carousel-inner">
-        <div class="carousel-item active">
-          <div class="carousel-image-container">
-            <img src="../../../../assets/images/sitioenconstruccion.png" alt="Sitio en construcción">
+        <ng-container *ngFor="let shop of shopLogos; let i = index">
+          <div class="carousel-item" [ngClass]="{ 'active': i === 0 }">
+            <h5 class="shop-name">{{ shop.name }}</h5>
+            <div class="carousel-image-container text-center">
+              <!-- Nombre de la tienda arriba de la imagen -->
+              <img [src]="shop.logoUrl" [alt]="shop.name" class="img-fluid" style="max-height: 300px;">
+            </div>
           </div>
-        </div>
+        </ng-container>
       </div>
+    
+      <!-- Controles del carrusel -->
+      <button class="carousel-control-prev" type="button" data-bs-target="#coffeeCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#coffeeCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Siguiente</span>
+      </button>
     </div>
-
+    
     <!-- Pie de página -->
     <footer class="text-center my-5">
       <p>&copy; 2024 Encafeinados. Todos los derechos reservados.</p>
     </footer>
   </div>
 </div>
+<style>
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro para mejor visibilidad */
+    background-size: 100%; /* Asegura que el icono se ajuste al tamaño del contenedor */
+    width: 60px; /* Ajusta el tamaño del ícono */
+    height: 60px;
+    border-radius: 50%; /* Opcional: agrega bordes redondeados */
+  }
+</style>
+
