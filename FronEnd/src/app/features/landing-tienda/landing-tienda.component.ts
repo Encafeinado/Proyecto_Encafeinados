@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ShopService } from 'src/app/service/shop.service';
-declare var bootstrap: any;
 
 @Component({
   selector: 'app-landing',
@@ -17,26 +16,10 @@ export class LandingTiendaComponent implements OnInit {
     this.fetchShopData();
   }
 
-  ngAfterViewInit(): void {
-    const carouselElement = document.getElementById('coffeeCarousel');
-    if (carouselElement) {
-      new bootstrap.Carousel(carouselElement, {
-        interval: 3000, // Cambia cada 3 segundos
-        ride: 'carousel',
-      });
-    }
-  }
-
   fetchShopData(): void {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('Token no encontrado en el almacenamiento local.');
-      return;
-    }
-  
-    this.shopService.fetchShopData(token).subscribe(
+    this.shopService.fetchShopData2().subscribe(
       (data: any[]) => {
-        console.log('Datos recibidos:', data); // Agrega esto para verificar los datos
+        console.log('Datos recibidos:', data); // Verificar los datos recibidos
         this.shopData = data;
         this.populateShopLogos();
       },
@@ -45,6 +28,8 @@ export class LandingTiendaComponent implements OnInit {
       }
     );
   }
+  
+  
   
   async populateShopLogos(): Promise<void> {
     this.shopLogos = await Promise.all(
@@ -74,7 +59,6 @@ export class LandingTiendaComponent implements OnInit {
     }
   }
 
-  
   convertBufferToDataUrl(buffer: any, mimeType: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       try {
@@ -98,6 +82,4 @@ export class LandingTiendaComponent implements OnInit {
 
     return this.shopData.length;
   }
-
-  
 }
