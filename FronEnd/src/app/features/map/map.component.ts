@@ -272,18 +272,22 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     // Utilizar la propiedad `circleOverlays` de la clase
-    this.shopMarkers = this.shopData.map((shop: any) => ({
-      position: {
-        lat: shop.latitude,
-        lng: shop.longitude,
-      },
-      title: shop.name,
-      status: shop.statusShop,
-      specialties1: shop.specialties1,
-      specialties2: shop.specialties2,
-      imageLogoUrl: this.getImageLogo(shop.logo),
-      imageUrl: this.getShopImageUrl(shop.name),
-    }));
+    this.shopMarkers = this.shopData.map((shop: any) => {
+      console.log('Datos del logo de la tienda:', shop.name, shop.logo);
+      return {
+        position: {
+          lat: shop.latitude,
+          lng: shop.longitude,
+        },
+        title: shop.name,
+        status: shop.statusShop,
+        specialties1: shop.specialties1,
+        specialties2: shop.specialties2,
+        imageLogoUrl: this.getImageLogo(shop.logo), // Esto podría estar devolviendo una imagen predeterminada
+        imageUrl: this.getShopImageUrl(shop.name),
+      };
+    });
+    
 
 
     const mapElement = document.getElementById('map') as HTMLElement;
@@ -321,12 +325,15 @@ export class MapComponent implements OnInit, OnDestroy {
             position: markerData.position,
             map: map,
             icon: {
-              url: markerData.imageLogoUrl, // Asegúrate de que `logoUrl` sea una cadena de texto válida
-              scaledSize: new google.maps.Size(40, 40), // Tamaño del logo
-            },     
+              url: markerData.imageLogoUrl, // La URL de la imagen ya convertida a base64
+              scaledSize: new google.maps.Size(60, 60), // Aumenta el tamaño para mejorar la visibilidad
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(30, 30), // Ajusta el punto de anclaje al centro del marcador
+            },
             title: markerData.title,
-            optimized: true // Activar optimización
+            optimized: false, // Desactiva optimizaciones para preservar calidad
           });
+          
 
           const overlay = new CircleOverlay(
             marker.getPosition()!,
@@ -389,25 +396,76 @@ export class MapComponent implements OnInit, OnDestroy {
     return `data:image/png;base64,${base64String}`;
   }
 
-  // Método para convertir el array de bytes a base64
   convertBufferToBase64Logo(data: unknown[]): string {
-    // Verifica si los datos son un array de bytes y no están vacíos
     if (!Array.isArray(data) || data.length === 0) {
-      return '';  // Retorna vacío si los datos no son válidos
+      console.error('Buffer vacío o inválido:', data);
+      return ''; // Retorna vacío si los datos no son válidos
     }
   
     try {
-      // Convertir a number[] de manera explícita
-      const byteArray = data as number[];  // Hacemos un type assertion para que data sea tratado como number[]
+      const byteArray = new Uint8Array(data as number[]);
+      const chunkSize = 8192; // Tamaño de los bloques
+      let binaryString = '';
   
-      // Convierte el array de bytes a base64
-      const base64String = btoa(String.fromCharCode.apply(null, byteArray));
-      return base64String;
+      // Divide el array de bytes en bloques más pequeños
+      for (let i = 0; i < byteArray.length; i += chunkSize) {
+        const chunk = byteArray.slice(i, i + chunkSize);
+        binaryString += String.fromCharCode(...chunk);
+      }
+  
+      // Convierte la cadena binaria a Base64
+      return btoa(binaryString);
     } catch (error) {
-      console.error('Error al convertir el buffer a base64:', error);
-      return '';  // Retorna vacío si ocurre un error durante la conversión
+      console.error('Error al convertir buffer a base64:', error);
+      return ''; // Retorna vacío si ocurre un error
     }
   }
+
+  generateCircularMarkerLogo(logoUrl: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const size = 100; // Tamaño del marcador
+      canvas.width = size;
+      canvas.height = size;
+  
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        reject('No se pudo obtener el contexto del canvas.');
+        return;
+      }
+  
+      // Dibujar el marco circular
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2 - 5, 0, 2 * Math.PI);
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = 'blue'; // Color del borde
+      ctx.stroke();
+  
+      // Cargar la imagen del logo
+      const image = new Image();
+      image.crossOrigin = 'anonymous'; // Manejar CORS si el logo está alojado en otro dominio
+      image.src = logoUrl;
+  
+      image.onload = () => {
+        // Dibujar el logo dentro del círculo
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2 - 10, 0, 2 * Math.PI);
+        ctx.clip();
+        ctx.drawImage(image, 10, 10, size - 20, size - 20);
+        ctx.restore();
+  
+        // Retornar el contenido del canvas como una URL base64
+        resolve(canvas.toDataURL());
+      };
+  
+      image.onerror = () => {
+        reject('Error al cargar la imagen del logo.');
+      };
+    });
+  }
+  
+  
   
   getShopImageUrl(destinationName: string): string {
     switch (destinationName.toLowerCase()) {
