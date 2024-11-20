@@ -206,6 +206,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   iniciarMapa() {
+    this.populateShopLogos()
     class CircleOverlay extends google.maps.OverlayView {
       private position: google.maps.LatLng;
       private div: HTMLDivElement;
@@ -280,8 +281,10 @@ export class MapComponent implements OnInit, OnDestroy {
       status: shop.statusShop,
       specialties1: shop.specialties1,
       specialties2: shop.specialties2,
+      imageLogoUrl: this.getImageLogo(shop.logo),
       imageUrl: this.getShopImageUrl(shop.name),
     }));
+
 
     const mapElement = document.getElementById('map') as HTMLElement;
     if (mapElement) {
@@ -317,7 +320,10 @@ export class MapComponent implements OnInit, OnDestroy {
           const marker = new google.maps.Marker({
             position: markerData.position,
             map: map,
-            icon: this.iconoTienda,
+            icon: {
+              url: markerData.imageLogoUrl, // Asegúrate de que `logoUrl` sea una cadena de texto válida
+              scaledSize: new google.maps.Size(40, 40), // Tamaño del logo
+            },     
             title: markerData.title,
             optimized: true // Activar optimización
           });
@@ -367,6 +373,42 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
+  getImageLogo(buffer: any): string {
+    // Verifica si el buffer es válido
+    if (!buffer || !Array.isArray(buffer.data) || buffer.data.length === 0) {
+      return 'assets/IconsMarker/cafeteriaAroma.png';  // Imagen predeterminada si no hay datos
+    }
+  
+    // Convierte el buffer a base64
+    const base64String = this.convertBufferToBase64Logo(buffer.data);
+    if (!base64String) {
+      return 'assets/IconsMarker/cafeteriaAroma.png';  // Imagen predeterminada si no se puede convertir a base64
+    }
+  
+    // Devuelve la imagen con el formato adecuado
+    return `data:image/png;base64,${base64String}`;
+  }
+
+  // Método para convertir el array de bytes a base64
+  convertBufferToBase64Logo(data: unknown[]): string {
+    // Verifica si los datos son un array de bytes y no están vacíos
+    if (!Array.isArray(data) || data.length === 0) {
+      return '';  // Retorna vacío si los datos no son válidos
+    }
+  
+    try {
+      // Convertir a number[] de manera explícita
+      const byteArray = data as number[];  // Hacemos un type assertion para que data sea tratado como number[]
+  
+      // Convierte el array de bytes a base64
+      const base64String = btoa(String.fromCharCode.apply(null, byteArray));
+      return base64String;
+    } catch (error) {
+      console.error('Error al convertir el buffer a base64:', error);
+      return '';  // Retorna vacío si ocurre un error durante la conversión
+    }
+  }
+  
   getShopImageUrl(destinationName: string): string {
     switch (destinationName.toLowerCase()) {
       case 'vibrante café':
@@ -1440,7 +1482,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.shopService.fetchShopData(token).subscribe(
       (data: any) => {
         this.shopData = data;
-        // console.log('Datos de la tienda:', this.shopData); // Agrega esta línea para verificar la estructura de los datos
+        console.log('Datos de la tienda:', this.shopData); // Agrega esta línea para verificar la estructura de los datos
         this.populateShopLogos();
         this.iniciarMapa();
       },
