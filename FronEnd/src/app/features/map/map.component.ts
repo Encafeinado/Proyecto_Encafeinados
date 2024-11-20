@@ -319,55 +319,63 @@ export class MapComponent implements OnInit, OnDestroy {
         console.error('markerPosition no está definido.');
       }
 
-      this.shopMarkers.forEach((markerData) => {
+      this.shopMarkers.forEach(async (markerData) => {
         if (markerData.position) {
-          const marker = new google.maps.Marker({
-            position: markerData.position,
-            map: map,
-            icon: {
-              url: markerData.imageLogoUrl, // La URL de la imagen ya convertida a base64
-              scaledSize: new google.maps.Size(60, 60), // Aumenta el tamaño para mejorar la visibilidad
-              origin: new google.maps.Point(0, 0),
-              anchor: new google.maps.Point(30, 30), // Ajusta el punto de anclaje al centro del marcador
-            },
-            title: markerData.title,
-            optimized: false, // Desactiva optimizaciones para preservar calidad
-          });
-          
-
-          const overlay = new CircleOverlay(
-            marker.getPosition()!,
-            map,
-            markerData.status
-          );
-          this.circleOverlays.push({
-            overlay: overlay,
-            markerData: markerData,
-          });
-
-          // Agregar el listener de click solo si no hay una ruta activa
-          marker.addListener('click', () => {
-            if (!this.rutaActiva) {
-              this.openModal(
-                this.createModal,
-                markerData.title,
-                markerData.status,
-                markerData.specialties1,
-                markerData.specialties2,
-                markerData.imageUrl
-              );
-            } else {
-              this.toastr.warning(
-                'Ya hay una ruta activa. Cancela la ruta actual para seleccionar otra tienda.',
-                'Advertencia'
-              );
-            }
-          });
+          try {
+            // Generar el logo circular para el marcador
+            const circularLogoUrl = await this.generateCircularMarkerLogo(markerData.imageLogoUrl);
+      
+            // Crear el marcador con el logo circular
+            const marker = new google.maps.Marker({
+              position: markerData.position,
+              map: map,
+              icon: {
+                url: circularLogoUrl, // Usa el ícono circular generado
+                scaledSize: new google.maps.Size(60, 60), // Ajusta el tamaño según sea necesario
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(30, 30), // Ajusta el punto de anclaje al centro del marcador
+              },
+              title: markerData.title,
+              optimized: false, // Desactiva optimizaciones para preservar calidad
+            });
+      
+            // Crear el círculo de estado y asociarlo al marcador
+            const overlay = new CircleOverlay(
+              marker.getPosition()!,
+              map,
+              markerData.status
+            );
+            this.circleOverlays.push({
+              overlay: overlay,
+              markerData: markerData,
+            });
+      
+            // Configurar eventos del marcador, como click
+            marker.addListener('click', () => {
+              if (!this.rutaActiva) {
+                this.openModal(
+                  this.createModal,
+                  markerData.title,
+                  markerData.status,
+                  markerData.specialties1,
+                  markerData.specialties2,
+                  markerData.imageUrl
+                );
+              } else {
+                this.toastr.warning(
+                  'Ya hay una ruta activa. Cancela la ruta actual para seleccionar otra tienda.',
+                  'Advertencia'
+                );
+              }
+            });
+          } catch (error) {
+            console.error('Error al generar el logo circular del marcador:', error);
+          }
         } else {
           console.error('Posición del marcador de la tienda no está definida.');
         }
       });
-
+      
       google.maps.event.trigger(map, 'resize');
 
       // Actualización periódica de los estados
@@ -434,7 +442,7 @@ export class MapComponent implements OnInit, OnDestroy {
         return;
       }
   
-      // Dibujar el marco circular
+      // Dibujar el marco circular (borde azul)
       ctx.beginPath();
       ctx.arc(size / 2, size / 2, size / 2 - 5, 0, 2 * Math.PI);
       ctx.lineWidth = 5;
@@ -464,6 +472,7 @@ export class MapComponent implements OnInit, OnDestroy {
       };
     });
   }
+  
   
   
   
