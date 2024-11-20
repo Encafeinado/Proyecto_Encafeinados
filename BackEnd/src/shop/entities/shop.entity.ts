@@ -14,7 +14,7 @@ export class Shop {
   @Prop({ required: true })
   phone: string;
 
-  @Prop({ minLength: 6, required: true })
+  @Prop({required: true })
   password?: string;
 
   @Prop({ default: true })

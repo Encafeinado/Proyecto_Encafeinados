@@ -10,7 +10,7 @@ export class RegisterUserDto {
     @IsCellPhone()
     phone: number;
     
-    @MinLength(6)
+    @MinLength(4)
     password: string;
 
     @IsString()
