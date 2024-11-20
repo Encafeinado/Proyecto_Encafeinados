@@ -15,6 +15,7 @@
         <!-- Opción para Facturación solo visible para usuarios que son tiendas -->
         <li *ngIf="isUserShop()"><a class="dropdown-item" routerLink="/payment"><i class="fas fa-file-invoice me-2"></i>Facturación</a></li>
         <li *ngIf="isUserLanding()"><a class="dropdown-item" routerLink="/landing-tienda">Tiendas Aliadas</a></li>
+        <li *ngIf="isUserLanding()"><a class="dropdown-item" routerLink="/auth/register">Registrar</a></li>
         <li *ngIf="isUserLanding()"><a class="dropdown-item" routerLink="/auth/login">Iniciar sesión</a></li>
         <li *ngIf="isUserLandingTienda()"><a class="dropdown-item">Iniciar sesión Tienda</a></li>
     
@@ -44,9 +45,16 @@
     </li>
   </ul>
   
+   
   <ng-container *ngIf="isUserLanding()">
-    <a class="btn btn-outline-light" routerLink="/auth/login">Iniciar sesión</a>
+    <a class="btn btn-outline-light" routerLink="/auth/register">Registro</a>
   </ng-container>
+  &nbsp;
+  <ng-container *ngIf="isUserLanding()">
+    <a class="btn btn-outline-light" routerLink="/auth/login">Inicio sesión</a>
+  </ng-container>
+
+
 
   <ng-container *ngIf="isUserLandingTienda()">
     <a class="btn btn-outline-light">Iniciar sesión Tienda</a>

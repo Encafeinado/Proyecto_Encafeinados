@@ -116,7 +116,6 @@ export class RegisterPageComponent {
         {
           validators: [
             Validators.required,
-            Validators.minLength(8),
             passwordValidator(),
           ],
           updateOn: 'change', // Se actualiza cuando pierde el foco
@@ -213,6 +212,14 @@ export class RegisterPageComponent {
   togglePasswordVisibilityconfirm() {
     this.hidePasswordconfirm = !this.hidePasswordconfirm;
   }
+
+  allowNumbersOnly(event: KeyboardEvent): void {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode < 48 || charCode > 57) { // Solo permite caracteres numéricos (códigos 48-57)
+      event.preventDefault(); // Bloquea la entrada de caracteres no numéricos
+    }
+  }
+  
 
   passwordMatchValidator(group: FormGroup): ValidationErrors | null {
     const password = group.get('password')?.value;

@@ -7,10 +7,7 @@ import { AuthService } from '../services/auth.service';
 export function passwordValidator(): ValidatorFn {
   return (control: AbstractControl): { [key: string]: boolean } | null => {
     const value = control.value || '';
-    const hasUpperCase = /[A-Z]/.test(value);
-    const hasNumber = /[0-9]/.test(value);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>_\\[\]\-+\/;]/.test(value);
-    const isValid = hasUpperCase && hasNumber && hasSpecialChar;
+    const isValid = /^[0-9]{4}$/.test(value); // Solo números y exactamente 4 dígitos
     return !isValid ? { 'passwordInvalid': true } : null;
   };
 }
