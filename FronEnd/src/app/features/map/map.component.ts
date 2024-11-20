@@ -120,7 +120,7 @@ export class MapComponent implements OnInit, OnDestroy {
   @ViewChild('arriveModal', { static: true }) arriveModal: any;
   @ViewChild('modalReviewShop', { static: true }) modalReviewShop: any;
   @ViewChild('smokeLoader') smokeLoader!: ElementRef;
-  
+
   constructor(
     private modalService: NgbModal,
     private albumService: AlbumService,
@@ -159,9 +159,11 @@ export class MapComponent implements OnInit, OnDestroy {
 
       // Recargar el componente después de 2 segundos
       setTimeout(() => {
-        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-          this.router.navigate([this.router.url]);
-        });
+        this.router
+          .navigateByUrl('/', { skipLocationChange: true })
+          .then(() => {
+            this.router.navigate([this.router.url]);
+          });
       }, 2000);
     });
 
@@ -176,7 +178,7 @@ export class MapComponent implements OnInit, OnDestroy {
         // Recargar toda la página
         window.location.reload();
       }, 3000);
-    });    
+    });
 
     if (this.userId) {
       this.fetchBookData();
@@ -206,7 +208,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   iniciarMapa() {
-    this.populateShopLogos()
+    this.populateShopLogos();
     class CircleOverlay extends google.maps.OverlayView {
       private position: google.maps.LatLng;
       private div: HTMLDivElement;
@@ -225,15 +227,15 @@ export class MapComponent implements OnInit, OnDestroy {
         // Estilos de la bolita
         this.div.style.borderRadius = '50%';
         this.div.style.backgroundColor = status ? 'green' : 'red';
-        this.div.style.width = '10px';
-        this.div.style.height = '10px';
+        this.div.style.width = '11px';
+        this.div.style.height = '11px';
 
         // Contorno blanco (borde)
         this.div.style.border = '1.8px solid white'; // Borde blanco de 1.8px
 
         // Posicionamiento y transformación
         this.div.style.position = 'absolute';
-        this.div.style.transform = 'translate(70%, -458%)';
+        this.div.style.transform = 'translate(125%, -265%)';
 
         this.setMap(map);
       }
@@ -287,8 +289,6 @@ export class MapComponent implements OnInit, OnDestroy {
         imageUrl: this.getShopImageUrl(shop.name),
       };
     });
-    
-
 
     const mapElement = document.getElementById('map') as HTMLElement;
     if (mapElement) {
@@ -323,8 +323,10 @@ export class MapComponent implements OnInit, OnDestroy {
         if (markerData.position) {
           try {
             // Generar el logo circular para el marcador
-            const circularLogoUrl = await this.generateCircularMarkerLogo(markerData.imageLogoUrl);
-      
+            const circularLogoUrl = await this.generateCircularMarkerLogo(
+              markerData.imageLogoUrl
+            );
+
             // Crear el marcador con el logo circular
             const marker = new google.maps.Marker({
               position: markerData.position,
@@ -338,7 +340,7 @@ export class MapComponent implements OnInit, OnDestroy {
               title: markerData.title,
               optimized: false, // Desactiva optimizaciones para preservar calidad
             });
-      
+
             // Crear el círculo de estado y asociarlo al marcador
             const overlay = new CircleOverlay(
               marker.getPosition()!,
@@ -349,7 +351,7 @@ export class MapComponent implements OnInit, OnDestroy {
               overlay: overlay,
               markerData: markerData,
             });
-      
+
             // Configurar eventos del marcador, como click
             marker.addListener('click', () => {
               if (!this.rutaActiva) {
@@ -369,13 +371,16 @@ export class MapComponent implements OnInit, OnDestroy {
               }
             });
           } catch (error) {
-            console.error('Error al generar el logo circular del marcador:', error);
+            console.error(
+              'Error al generar el logo circular del marcador:',
+              error
+            );
           }
         } else {
           console.error('Posición del marcador de la tienda no está definida.');
         }
       });
-      
+
       google.maps.event.trigger(map, 'resize');
 
       // Actualización periódica de los estados
@@ -391,15 +396,15 @@ export class MapComponent implements OnInit, OnDestroy {
   getImageLogo(buffer: any): string {
     // Verifica si el buffer es válido
     if (!buffer || !Array.isArray(buffer.data) || buffer.data.length === 0) {
-      return 'assets/IconsMarker/cafeteriaAroma.png';  // Imagen predeterminada si no hay datos
+      return 'assets/IconsMarker/cafeteriaAroma.png'; // Imagen predeterminada si no hay datos
     }
-  
+
     // Convierte el buffer a base64
     const base64String = this.convertBufferToBase64Logo(buffer.data);
     if (!base64String) {
-      return 'assets/IconsMarker/cafeteriaAroma.png';  // Imagen predeterminada si no se puede convertir a base64
+      return 'assets/IconsMarker/cafeteriaAroma.png'; // Imagen predeterminada si no se puede convertir a base64
     }
-  
+
     // Devuelve la imagen con el formato adecuado
     return `data:image/png;base64,${base64String}`;
   }
@@ -409,18 +414,18 @@ export class MapComponent implements OnInit, OnDestroy {
       console.error('Buffer vacío o inválido:', data);
       return ''; // Retorna vacío si los datos no son válidos
     }
-  
+
     try {
       const byteArray = new Uint8Array(data as number[]);
       const chunkSize = 8192; // Tamaño de los bloques
       let binaryString = '';
-  
+
       // Divide el array de bytes en bloques más pequeños
       for (let i = 0; i < byteArray.length; i += chunkSize) {
         const chunk = byteArray.slice(i, i + chunkSize);
         binaryString += String.fromCharCode(...chunk);
       }
-  
+
       // Convierte la cadena binaria a Base64
       return btoa(binaryString);
     } catch (error) {
@@ -435,25 +440,37 @@ export class MapComponent implements OnInit, OnDestroy {
       const size = 100; // Tamaño del marcador
       canvas.width = size;
       canvas.height = size;
-  
+
       const ctx = canvas.getContext('2d');
       if (!ctx) {
         reject('No se pudo obtener el contexto del canvas.');
         return;
       }
-  
-      // Dibujar el marco circular (borde azul)
+
+      // Dibujar el marco circular (borde negro)
       ctx.beginPath();
       ctx.arc(size / 2, size / 2, size / 2 - 5, 0, 2 * Math.PI);
-      ctx.lineWidth = 5;
-      ctx.strokeStyle = 'blue'; // Color del borde
+      ctx.lineWidth = 6; // Grosor del borde
+      ctx.strokeStyle = '#000'; // Color negro para el borde
       ctx.stroke();
-  
+
+      // Añadir sombra para dar un efecto flotante
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+
+      // Dibujar el fondo blanco dentro del círculo
+      ctx.fillStyle = '#fff'; // Fondo blanco
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2 - 6, 0, 2 * Math.PI);
+      ctx.fill();
+
       // Cargar la imagen del logo
       const image = new Image();
       image.crossOrigin = 'anonymous'; // Manejar CORS si el logo está alojado en otro dominio
       image.src = logoUrl;
-  
+
       image.onload = () => {
         // Dibujar el logo dentro del círculo
         ctx.save();
@@ -462,20 +479,17 @@ export class MapComponent implements OnInit, OnDestroy {
         ctx.clip();
         ctx.drawImage(image, 10, 10, size - 20, size - 20);
         ctx.restore();
-  
+
         // Retornar el contenido del canvas como una URL base64
         resolve(canvas.toDataURL());
       };
-  
+
       image.onerror = () => {
         reject('Error al cargar la imagen del logo.');
       };
     });
   }
-  
-  
-  
-  
+
   getShopImageUrl(destinationName: string): string {
     switch (destinationName.toLowerCase()) {
       case 'vibrante café':
@@ -1434,10 +1448,10 @@ export class MapComponent implements OnInit, OnDestroy {
   verifyCode() {
     // Evitar múltiples clics
     if (this.isLoading) return;
-  
+
     // Activar el spinner
     this.isLoading = true;
-  
+
     this.storeService
       .verifyCodeCode(this.enteredCode, this.enteredReview, this.enteredRating)
       .subscribe(
@@ -1445,7 +1459,7 @@ export class MapComponent implements OnInit, OnDestroy {
           console.log(response);
           this.message = response.message;
           console.log(this.message);
-  
+
           if (this.message === 'Código de verificación guardado exitosamente') {
             this.verifiedcode = true;
             if (response.shop) {
@@ -1462,7 +1476,7 @@ export class MapComponent implements OnInit, OnDestroy {
                     );
                     // Finalizar el spinner
                     this.isLoading = false;
-  
+
                     this.reloadComponent();
                     this.modalRef.close();
                   },
@@ -1487,7 +1501,7 @@ export class MapComponent implements OnInit, OnDestroy {
               );
               // Finalizar el spinner
               this.isLoading = false;
-  
+
               this.reloadComponent();
               // window.location.reload();
             }
@@ -1519,7 +1533,6 @@ export class MapComponent implements OnInit, OnDestroy {
         }
       );
   }
-  
 
   fetchUserData(): void {
     const token = localStorage.getItem('token');
@@ -1602,8 +1615,9 @@ export class MapComponent implements OnInit, OnDestroy {
   getMimeType(format: string): string {
     switch (format) {
       case 'jpeg':
-      case 'jpg':
         return 'image/jpeg';
+      case 'jpg':
+        return 'image/jpg';
       case 'png':
         return 'image/png';
       case 'gif':
