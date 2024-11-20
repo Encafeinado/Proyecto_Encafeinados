@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { environment } from 'src/environments/environments';
+import { Observable } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
@@ -12,19 +14,35 @@ export class ShopService {
 
   constructor(private http: HttpClient) {}
 
-  fetchShopData(token: string) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    });
+    fetchShopData(token: string) {
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      });
+    
+      return this.http.get<any[]>(this.apiUrl, { headers }).pipe(
+        catchError(error => {
+          console.error('Error al obtener los datos de la tienda:', error);
+          return throwError(() => error);
+        })
+      );
+    }
 
-    return this.http.get<any>(this.apiUrl, { headers }).pipe(
-      catchError(error => {
-        console.error('Error al obtener los datos de la tienda:', error);
-        return throwError(() => error);
-      })
-    );
-  }
+
+    fetchShopData2(): Observable<any[]> {
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+      });
+    
+      return this.http.get<any[]>(this.apiUrl, { headers }).pipe(
+        catchError(error => {
+          console.error('Error al obtener los datos de la tienda:', error);
+          return throwError(() => error);
+        })
+      );
+    }
+    
+  
 
   getShopById(id: string, token: string) {
     const headers = new HttpHeaders({

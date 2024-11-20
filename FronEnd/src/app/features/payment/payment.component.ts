@@ -166,7 +166,7 @@ export class PaymentComponent implements OnInit {
         this.codesUsedInMonth = filteredDates.length;
 
         if (this.codesUsedInMonth > 0) {
-          const totalValue = this.codesUsedInMonth * 200;
+          const totalValue = this.codesUsedInMonth * 400;
           this.amount = totalValue;
 
           // Find payment for the specified year and month
