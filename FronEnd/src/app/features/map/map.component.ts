@@ -506,6 +506,10 @@ export class MapComponent implements OnInit, OnDestroy {
         return 'assets/images/fachadaDelcafetal.jpeg';
       case 'zendaya coffee studio':
         return 'assets/images/fachadaZendaya2.jpg';
+      case 'la panetteria':
+        return 'assets/images/fachadaPanatteria.jpeg';
+      case 'la libre café cultural':
+        return 'assets/images/fachadaLaLibre.jpg';
       default:
         return 'assets/images/default-image.jpg'; // Imagen por defecto si no coincide el nombre
     }
