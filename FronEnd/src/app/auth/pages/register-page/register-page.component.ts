@@ -79,7 +79,7 @@ export class RegisterPageComponent {
     'outlook.com.mx',
     'yahoo.com.mx',
     'yopmail.com',
-    '@icloud.com',
+    'icloud.com',
     'aliencreativo.com'
   ];
 
