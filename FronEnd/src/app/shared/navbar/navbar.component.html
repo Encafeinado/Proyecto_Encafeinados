@@ -22,7 +22,7 @@
         <li *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage() && !isOnLoginAdminPage() && !isOnLoginAdminPage() ">
           <a *ngIf="userName" class="dropdown-item" routerLink="/perfil"><i class="fas fa-user"></i> {{ userName }}</a>
         </li>
-        <li *ngIf="authService.isAuthenticated() && !isOnLoginPage() && !isOnRegisterPage() && !isOnResetPage() && !isOnRequestPage() && !isOnLoginAdminPage()">
+        <li *ngIf="authService.isAuthenticated() && !isOnLoginPage() && !isOnRegisterPage() && !isOnResetPage() && !isOnRequestPage() && !isOnLoginAdminPage()" >
           <a class="dropdown-item" (click)="openLogoutModal(sesionModal)"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
         </li>
       </ul>
@@ -56,9 +56,9 @@
 
 
 
-  <ng-container *ngIf="isUserLandingTienda()">
+<!--   <ng-container *ngIf="isUserLandingTienda()">
     <a class="btn btn-outline-light">Iniciar sesión Tienda</a>
-  </ng-container>
+  </ng-container> -->
 
   <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage() && !isOnLoginAdminPage() ">
     <div *ngIf="userName" class="dropdown">
