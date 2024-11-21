@@ -47,11 +47,35 @@
               <!-- Ajuste del tamaño y grosor del texto -->
             </li>
             <li style="margin-bottom: 12px; display: flex; align-items: center;">
-              <img src="assets/IconsMarker/cafeteriaAroma.png" alt="Icono de tienda de café"
-                style="width: 24px; height: 24px; margin-right: 10px;">
-              <span style="font-size: 14px; color: #555; font-weight: 400;">Tienda de café</span>
-              <!-- Ajuste del tamaño y grosor del texto -->
-            </li>
+              <div
+                style="
+                  width: 28px; /* Tamaño total del círculo */
+                  height: 28px; 
+                  display: flex; 
+                  justify-content: center; 
+                  align-items: center; 
+                  border: 2px solid #000; /* Borde negro más delgado */
+                  border-radius: 50%; /* Forma circular */
+                  background: #fff; /* Fondo blanco */
+                  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5); /* Sombra */
+                  margin-right: 10px; /* Espaciado entre el logo y el texto */
+                  overflow: hidden; /* Asegura que la imagen no se salga del círculo */
+                "
+              >
+                <!-- <img
+                  src="assets/images/encafeinadosLogo.png"
+                  alt="Icono de tienda de café"
+                  style="
+                    width: 80%; /* Imagen ocupa todo el contenedor */
+                    height: 80%; 
+                    object-fit: cover; /* Escala la imagen manteniendo proporciones */
+                  "
+                /> -->
+              </div>
+              <span style="font-size: 14px; color: #555; font-weight: 400;">
+                Tienda de café
+              </span>
+            </li>                       
             <li style="margin-bottom: 12px; display: flex; align-items: center;">
               <span style="color: green; font-size: 18px;">&#8226;</span>
               <span style="font-size: 14px; color: #555; font-weight: 400; margin-left: 10px;">Tienda abierta</span>
@@ -179,28 +203,18 @@
 
     </div>
     <div class="modal-footer-code">
-      <button 
-        type="button" 
-        class="btn" 
-        (click)="verifyCode()" 
-        [disabled]="isButtonDisabled || isLoading"
-      >
+      <button type="button" class="btn" (click)="verifyCode()" [disabled]="isButtonDisabled || isLoading">
         <ng-container *ngIf="isLoading; else normalText">
           <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           Verificando...
         </ng-container>
         <ng-template #normalText>Verificar</ng-template>
       </button>
-      <button 
-        type="button" 
-        class="btn" 
-        (click)="modal.dismiss('cancel')" 
-        [disabled]="isLoading"
-      >
+      <button type="button" class="btn" (click)="modal.dismiss('cancel')" [disabled]="isLoading">
         Cancelar
       </button>
     </div>
-    
+
   </div>
 </ng-template>
 
@@ -241,7 +255,8 @@
       <div class="album-scroll-container">
         <div class="album">
           <div class="album-page" *ngFor="let shop of shopLogos">
-            <img *ngIf="shop.logoUrl" [src]="shop.logoUrl" [class.colored]="isLogoColored(shop.logoUrl)" alt="{{ shop.name }}">
+            <img *ngIf="shop.logoUrl" [src]="shop.logoUrl" [class.colored]="isLogoColored(shop.logoUrl)"
+              alt="{{ shop.name }}">
           </div>
         </div>
       </div>
