@@ -15,18 +15,19 @@
         <!-- Opción para Facturación solo visible para usuarios que son tiendas -->
         <li *ngIf="isUserShop()"><a class="dropdown-item" routerLink="/payment"><i class="fas fa-file-invoice me-2"></i>Facturación</a></li>
         <li *ngIf="isUserLanding()"><a class="dropdown-item" routerLink="/landing-tienda">Tiendas Aliadas</a></li>
+        <li *ngIf="isUserLanding()"><a class="dropdown-item" routerLink="/auth/register">Registrar</a></li>
         <li *ngIf="isUserLanding()"><a class="dropdown-item" routerLink="/auth/login">Iniciar sesión</a></li>
         <li *ngIf="isUserLandingTienda()"><a class="dropdown-item">Iniciar sesión Tienda</a></li>
-    
+
         <li *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage() && !isOnLoginAdminPage() && !isOnLoginAdminPage() ">
           <a *ngIf="userName" class="dropdown-item" routerLink="/perfil"><i class="fas fa-user"></i> {{ userName }}</a>
         </li>
-        <li *ngIf="authService.isAuthenticated() && !isOnLoginPage() && !isOnRegisterPage() && !isOnResetPage() && !isOnRequestPage() && !isOnLoginAdminPage()">
+        <li *ngIf="authService.isAuthenticated() && !isOnLoginPage() && !isOnRegisterPage() && !isOnResetPage() && !isOnRequestPage() && !isOnLoginAdminPage()" >
           <a class="dropdown-item" (click)="openLogoutModal(sesionModal)"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
         </li>
       </ul>
     </div>
-    
+
 
 <!-- Menú para pantallas grandes -->
 <div class="navbar-collapse collapse" id="navbarText">
@@ -44,13 +45,21 @@
     </li>
   </ul>
 
+
   <ng-container *ngIf="isUserLanding()">
-    <a class="btn btn-outline-light" routerLink="/auth/login">Iniciar sesión</a>
+    <a class="btn btn-outline-light" routerLink="/auth/register">Registro</a>
+  </ng-container>
+  &nbsp;
+
+  <ng-container *ngIf="isUserLanding()">
+    <a class="btn btn-outline-light" routerLink="/auth/login">Inicio sesión</a>
   </ng-container>
 
-  <ng-container *ngIf="isUserLandingTienda()">
+
+
+<!--   <ng-container *ngIf="isUserLandingTienda()">
     <a class="btn btn-outline-light">Iniciar sesión Tienda</a>
-  </ng-container>
+  </ng-container> -->
 
   <ng-container *ngIf="!isUserLanding() && !isUserLandingTienda() && !isOnLoginPage() && !isOnRegisterPage() && !isOnRequestPage() && !isOnResetPage() && !isOnLoginAdminPage() ">
     <div *ngIf="userName" class="dropdown">

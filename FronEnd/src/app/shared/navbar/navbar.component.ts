@@ -76,7 +76,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   shouldShowMobileDropdown(): boolean {
     return (
       this.isUserLanding() || 
-      this.isUserLandingTienda() || 
+      /* this.isUserLandingTienda() ||  */
       this.isPayment() || 
       (this.userName.trim().length > 0 && this.authService.isAuthenticated())
     );

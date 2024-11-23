@@ -8,6 +8,13 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
+.qr-text {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #333; /* Ajusta el color según tu diseño */
+}
+
 .col-md-12 {
   width: 100%; /* Hace que el div sea más ancho que el 100% del contenedor */
   margin-left: 1%; /* Mueve el div hacia la izquierda para centrarlo */
