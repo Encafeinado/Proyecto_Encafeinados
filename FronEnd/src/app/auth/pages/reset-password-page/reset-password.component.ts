@@ -22,7 +22,6 @@ export class ResetPasswordComponent implements OnInit {
     this.resetForm = this.fb.group({
       password: ['', [
         Validators.required,
-        Validators.minLength(8),
         passwordValidator()
       ]],
   
@@ -47,6 +46,13 @@ export class ResetPasswordComponent implements OnInit {
       }
     });
   }
+  allowNumbersOnly(event: KeyboardEvent): void {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode < 48 || charCode > 57) { // Solo permite caracteres numéricos (códigos 48-57)
+      event.preventDefault(); // Bloquea la entrada de caracteres no numéricos
+    }
+  }
+  
 
   togglePasswordVisibility() {
     this.hidePassword = !this.hidePassword;
