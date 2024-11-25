@@ -587,13 +587,13 @@
 /* Estilo por defecto para los logos */
 .album-page img {
   filter: grayscale(100%);
+  opacity: 0.5; /* Reduce la opacidad para el efecto translúcido */
+  transition: all 0.3s ease; /* Suaviza la transición entre estados */
 }
 
-/* Estilo para las imágenes coloreadas */
 .album-page img.colored {
-  filter: grayscale(
-    0%
-  ); /* Quita el filtro grayscale para imágenes coloreadas */
+  filter: grayscale(0%); /* Quita el filtro */
+  opacity: 1; /* Opacidad completa */
 }
 
 .album-info {
