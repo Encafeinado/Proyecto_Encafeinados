@@ -31,6 +31,9 @@ export class AppComponent {
 
   ngOnInit() {
     this.router.events.subscribe((event) => {
+      if (window.location.hash === '/#/' || window.location.hash === '#') {
+        this.router.navigate(['/landing']);}
+
       if (event instanceof NavigationStart) {
         this.isLoading = true;
       } else if (
