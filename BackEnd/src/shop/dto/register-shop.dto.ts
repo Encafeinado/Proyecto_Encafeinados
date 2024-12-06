@@ -13,7 +13,7 @@ export class RegisterShopDto {
   @IsCellPhone()
   phone: string;
   
-  @MinLength(6)
+  @MinLength(4)
   @IsString()
   password: string;
 

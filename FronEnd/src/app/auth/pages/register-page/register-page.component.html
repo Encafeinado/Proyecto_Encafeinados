@@ -8,7 +8,7 @@
             <div class="text-center mb-4">
               <img src="assets/images/logosinfondo.png" alt="Logo" style="width: 100px; height: auto;">
             </div>
-            <p class="h5 mb-4 text-center">Registro de Usuario</p>
+            <p class="h5 mb-4 text-center">Registro de CoffeeLovers</p>
             <div *ngIf="showError" class="custom-error">
               El correo electrónico ya está en uso.
             </div>
@@ -90,83 +90,8 @@
               
             </div>
 
-            <!-- Procedencia -->
-            <div *ngIf="isUser" class="wrap-input100 m-b-23 form-outline mb-4">
-              <span class="label-input100">Procedencia</span>
-              <div class="radio-group">
-                <label class="radio-option">
-                  <input type="radio" formControlName="origin" value="Local">
-                  <span class="radio-label">Local</span>
-                </label>
-                <label class="radio-option">
-                  <input type="radio" formControlName="origin" value="Extranjero">
-                  <span class="radio-label">Extranjero</span>
-                </label>
-              </div>
-
-              <!-- Mostrar error si el campo está vacío -->
-              <div *ngIf="myForm.get('origin')?.touched && myForm.get('origin')?.hasError('required')"
-                class="error-message">
-                El campo procedencia es obligatorio.
-              </div>
-            </div>
-
-            <!-- Contraseña -->
-            <div class="wrap-input100 m-b-23 form-outline mb-4">
-              <span class="label-input100">Contraseña</span>
-              <div class="input-with-eye">
-                <input class="input100 small-placeholder form-control" type="{{ hidePassword ? 'password' : 'text' }}"
-                  formControlName="password" placeholder="Contraseña" autocomplete="new-password">
-                <span class="focus-input100"></span>
-                <div class="eye-icon" (click)="togglePasswordVisibility()">
-                  <i class="fa" [ngClass]="{'fa-eye': hidePassword, 'fa-eye-slash': !hidePassword}"></i>
-                </div>
-              </div>
-
-              <!-- Solo se muestra un error a la vez, en este orden: requerido, minlength, passwordInvalid -->
-              <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('required')"
-                class="error-message">
-                El campo contraseña es obligatorio.
-              </div>
-              <div
-                *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('minlength') && !myForm.get('password')?.hasError('required')"
-                class="error-message">
-                Minimo debe tener 8 caracteres.
-              </div>
-              <div
-                *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('passwordInvalid') && !myForm.get('password')?.hasError('required') && !myForm.get('password')?.hasError('minlength')"
-                class="error-message">
-                Falto mayúscula, número o simbolo
-              </div>
-            </div>
-
-            <!-- Confirmar Contraseña -->
-            <div class="wrap-input100 m-b-23 form-outline mb-4">
-              <span class="label-input100">Confirmar Contraseña</span>
-              <div class="input-with-eye">
-                <input class="input100 small-placeholder form-control"
-                  type="{{ hidePasswordconfirm ? 'password' : 'text' }}" formControlName="confirmPassword"
-                  placeholder="Confirmar contraseña" autocomplete="new-password">
-                <span class="focus-input100"></span>
-                <div class="eye-icon" (click)="togglePasswordVisibilityconfirm()">
-                  <i class="fa" [ngClass]="{'fa-eye': hidePasswordconfirm, 'fa-eye-slash': !hidePasswordconfirm}"></i>
-                </div>
-              </div>
-
-              <!-- Mostrar un error a la vez -->
-              <div *ngIf="myForm.get('confirmPassword')?.touched && myForm.get('confirmPassword')?.hasError('required')"
-                class="error-message">
-                El campo confirmar es obligatorio.
-              </div>
-              <div
-                *ngIf="myForm.hasError('mismatch') && myForm.get('confirmPassword')?.dirty && !myForm.get('confirmPassword')?.hasError('required')"
-                class="error-message">
-                Las contraseñas no coinciden.
-              </div>
-            </div>
-
-            <!-- Celular -->
-            <div class="wrap-input100 m-b-23 form-outline mb-4">
+             <!-- Celular -->
+             <div class="wrap-input100 m-b-23 form-outline mb-4">
               <span class="label-input100">Celular</span>
               <div class="input-with-eye">
                 <input class="input100 small-placeholder form-control" type="text" formControlName="phone"
@@ -203,6 +128,91 @@
                 </div>
               </div>
             </div>
+
+            <!-- Procedencia -->
+            <div *ngIf="isUser" class="wrap-input100 m-b-23 form-outline mb-4">
+              <span class="label-input100">Procedencia</span>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" formControlName="origin" value="Local">
+                  <span class="radio-label">Local</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" formControlName="origin" value="Extranjero">
+                  <span class="radio-label">Extranjero</span>
+                </label>
+              </div>
+
+              <!-- Mostrar error si el campo está vacío -->
+              <div *ngIf="myForm.get('origin')?.touched && myForm.get('origin')?.hasError('required')"
+                class="error-message">
+                El campo procedencia es obligatorio.
+              </div>
+            </div>
+
+            
+
+            <!-- Contraseña -->
+            <div class="wrap-input100 m-b-23 form-outline mb-4">
+              <span class="label-input100">Contraseña</span>
+              <div class="input-with-eye">
+                <input
+                  class="input100 small-placeholder form-control"
+                  type="{{ hidePassword ? 'password' : 'text' }}"
+                  formControlName="password"
+                  placeholder="Contraseña"
+                  autocomplete="new-password"
+                  maxlength="4" 
+                  (keypress)="allowNumbersOnly($event)" 
+                />
+                <span class="focus-input100"></span>
+                <div class="eye-icon" (click)="togglePasswordVisibility()">
+                  <i class="fa" [ngClass]="{ 'fa-eye': hidePassword, 'fa-eye-slash': !hidePassword }"></i>
+                </div>
+              </div>
+            
+
+              <!-- Solo se muestra un error a la vez, en este orden: requerido, minlength, passwordInvalid -->
+              <div *ngIf="myForm.get('password')?.touched && myForm.get('password')?.hasError('required')"
+                class="error-message">
+                El campo contraseña es obligatorio.
+              </div>
+           
+             <!--  <div
+                *ngIf="myForm.get('password')?.dirty && myForm.get('password')?.hasError('passwordInvalid') && !myForm.get('password')?.hasError('required') && !myForm.get('password')?.hasError('minlength')"
+                class="error-message">
+                Falto mayúscula, número o simbolo
+              </div> -->
+            
+            </div>
+
+            <!-- Confirmar Contraseña -->
+            <div class="wrap-input100 m-b-23 form-outline mb-4">
+              <span class="label-input100">Confirmar Contraseña</span>
+              <div class="input-with-eye">
+                <input class="input100 small-placeholder form-control"
+                  type="{{ hidePasswordconfirm ? 'password' : 'text' }}" formControlName="confirmPassword"
+                  placeholder="Confirmar contraseña" autocomplete="new-password"  maxlength="4" 
+                  (keypress)="allowNumbersOnly($event)" >
+                <span class="focus-input100"></span>
+                <div class="eye-icon" (click)="togglePasswordVisibilityconfirm()">
+                  <i class="fa" [ngClass]="{'fa-eye': hidePasswordconfirm, 'fa-eye-slash': !hidePasswordconfirm}"></i>
+                </div>
+              </div>
+
+              <!-- Mostrar un error a la vez -->
+              <div *ngIf="myForm.get('confirmPassword')?.touched && myForm.get('confirmPassword')?.hasError('required')"
+                class="error-message">
+                El campo confirmar es obligatorio.
+              </div>
+              <div
+                *ngIf="myForm.hasError('mismatch') && myForm.get('confirmPassword')?.dirty && !myForm.get('confirmPassword')?.hasError('required')"
+                class="error-message">
+                Las contraseñas no coinciden.
+              </div>
+            </div>
+
+           
 
 
             <!-- Campos específicos para tiendas -->
@@ -255,12 +265,12 @@
               </button>
             </div>
             
-            <div class="flex-col-c p-t-3 mt-3">
+            <!-- <div class="flex-col-c p-t-3 mt-3">
               <span class="txt1 p-b-2">
                 ¿Ya tienes cuenta?
               </span>
               <a routerLink="/auth/login" class="txt2">Inicia sesión</a>
-            </div>
+            </div> -->
           </form>
         </div>
       </div>

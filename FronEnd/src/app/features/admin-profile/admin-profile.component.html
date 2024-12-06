@@ -6,7 +6,7 @@
       <div class="row justify-content-center">
         <div class="col-lg-2 col-md-3 col-sm-6">
           <div class="card stat-box">
-            <h2>Total CoffeLovers</h2>
+            <h2>Total CoffeeLovers</h2>
             <div class="text-xl">{{ totalClients }}</div>
             <div class="icon-container">
               <i class="pi pi-users text-blue-500 text-xl"></i>
@@ -16,7 +16,7 @@
         
         <div class="col-lg-2 col-md-3 col-sm-6">
           <div class="card stat-box">
-            <h2>Total CoffeCoins</h2>
+            <h2>Total CoffeeCoins</h2>
             <div class="text-xl">{{ totalCafecoins }}</div>
             <div class="icon-container">
               <i class="pi pi-coins text-orange-500 text-xl"></i>
@@ -85,7 +85,7 @@
 
         <!-- Top 5 Usuarios por Cafecoins -->
         <div class="top5-item">
-          <h2>Top 5 CoffeLovers por CoffeCoins</h2>
+          <h2>Top 5 CoffeeLovers por CoffeeCoins</h2>
           <ul>
             <li *ngFor="let user of top5UsersByCafecoins; let i = index" style="text-align: left;">
               <span class="top-number">{{ i + 1 }}.</span> {{ user.name }}: {{ user.cafecoin }} Coffecoins
@@ -95,7 +95,7 @@
 
         <!-- Top 5 Usuarios por Estampitas -->
         <div class="top5-item">
-          <h2>Top 5 CoffeLovers por Sellos</h2>
+          <h2>Top 5 CoffeeLovers por Sellos</h2>
           <ul>
             <li *ngFor="let user of top5UsersByStickers; let i = index" style="text-align: left;">
               <span class="top-number">{{ i + 1 }}.</span> {{ user.name }}: {{ user.stickerCount }} sellos <br>
@@ -105,7 +105,7 @@
 
         <!-- Top 5 Usuarios por Coffecoins y Estampitas -->
         <div class="top5-item">
-          <h2>Top 5 CoffeLovers por Coffecoins y Sellos</h2>
+          <h2>Top 5 CoffeeLovers por CoffeeCoins y Sellos</h2>
           <ul>
             <li *ngFor="let user of top5UsersByCafecoinsAndStickers; let i = index" style="text-align: left;">
               <span class="top-number">{{ i + 1 }}.</span> {{ user.name }}: {{ user.cafecoin }} Coffecoins - {{

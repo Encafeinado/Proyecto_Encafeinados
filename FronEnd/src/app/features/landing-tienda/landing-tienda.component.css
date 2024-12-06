@@ -20,11 +20,21 @@ header p {
   object-fit: cover;
 }
 
+
 section h2 {
   font-size: 2rem;
   margin-bottom: 20px;
   color: #FDDE55; /* Amarillo brillante */
 }
+
+.shop-name {
+  font-size: 1.5rem; /* Ajusta el tamaño según necesites */
+  font-weight: bold;
+  text-align: center; /* Centra el texto */
+  margin-bottom: 1rem; /* Controla el espacio inferior */
+  color: #333; /* Cambia el color si lo deseas */
+}
+
 
 section p {
   font-size: 1.2rem;
@@ -51,6 +61,17 @@ header[_ngcontent-ng-c1097974527] h1[_ngcontent-ng-c1097974527] {
   line-height: 1; /* Espacio entre líneas */
   text-align: center; /* Centra el texto horizontalmente */
   margin-bottom: 10px; /* Reduce el espacio debajo del encabezado */
+}
+.carousel-image-container img {
+  max-width: 100%;
+  max-height: 300px;
+  margin: 0 auto;
+}
+
+.carousel-image-container h5 {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: #333;
 }
 
 
@@ -85,6 +106,13 @@ header[_ngcontent-ng-c1097974527] h1[_ngcontent-ng-c1097974527] {
   .carousel-image-container img:hover {
     transform: none; /* No aplicar transformación en dispositivos móviles */
   }
+
+  header h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #0f1eee; /* Azul principal */
+  }
+  
 
   .main-content{
     padding-top: 120px;

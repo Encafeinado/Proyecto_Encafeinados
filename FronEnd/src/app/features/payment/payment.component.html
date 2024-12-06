@@ -2,9 +2,11 @@
   <!-- Fila para la imagen -->
   <div class="row mb-4 justify-content-center">
     <div class="col-md-8 text-center">
+      <p class="qr-text">QR para el pago</p> <!-- Texto descriptivo -->
       <img src="assets/images/QR.png" alt="Imagen de encabezado" class="img-fluid qr-image" />
     </div>
   </div>
+  
 
 
   <div class="row mb-4 align-items-center">
@@ -55,7 +57,7 @@
           <th class="text-center">Código Usado</th>
           <th class="text-center">Valor</th>
           <th class="text-center">Estado</th>
-          <th class="text-center">Acción</th><!-- Nueva columna para el icono de guardar -->
+          <th class="text-center">Registrar comprobante</th>
         </tr>
       </thead>
       <tbody>
@@ -82,12 +84,15 @@
           </td>
                     
           <td class="text-center">
-            <button class="btn btn-success btn-sm" (click)="saveFile(code)"
-              [disabled]="isSaving || code.status.toLowerCase() === 'pagado'"
-              [ngClass]="{'btn-disabled': isSaving || code.status.toLowerCase() === 'pagado' }">
+            <button class="btn btn-success btn-sm" 
+                    (click)="saveFile(code)"
+                    [disabled]="isSaving || code.status.toLowerCase() === 'pagado'"
+                    [ngClass]="{'btn-disabled': isSaving || code.status.toLowerCase() === 'pagado' }"
+                    title="Botón de pago">
               <i class="fas fa-save"></i> <!-- Ícono de Font Awesome -->
             </button>
           </td>
+          
         </tr>
       </tbody>
     </table>
